@@ -5,6 +5,7 @@
 - [x] Connect the independent Git repository.
 - [x] Define scope, ownership, agent rules, roadmap, and quality contracts.
 - [x] Record the legacy frontend rejection policy.
+- [x] Publish the greenfield documentation baseline to `origin/main`.
 - [ ] Accept framework and rendering ADRs.
 - [ ] Scaffold the runtime with locked dependencies and CI.
 
