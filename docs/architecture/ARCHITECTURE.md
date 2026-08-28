@@ -1,6 +1,6 @@
 # Public Site Architecture
 
-The public site is an independently deployable consumer of the backend's published API. Runtime implementation is intentionally undecided until an ADR selects the framework and rendering strategy.
+The public site is an independently deployable consumer of the backend's published API. The accepted architecture uses Astro for routes, document structure, metadata, and static-first rendering; TypeScript for adapters and validation; Tailwind CSS over semantic tokens; and React only for bounded stateful islands.
 
 ## Required layers
 
@@ -14,6 +14,6 @@ The public site is an independently deployable consumer of the backend's publish
 
 Page components must not call raw endpoints directly. Domain adapters own response normalization. The UI owns display states, never publication truth.
 
-## Rendering decision criteria
+## Remaining rendering decisions
 
-SEO, bilingual routing, content freshness, preview behavior, deployment target, cache invalidation, failure recovery, bundle size, and operational simplicity must be evaluated in the ADR.
+Detailed prerender/server boundaries, bilingual routing, content freshness, preview behavior, deployment target, cache invalidation, failure recovery, bundle size, and operational simplicity must be fixed before feature implementation.

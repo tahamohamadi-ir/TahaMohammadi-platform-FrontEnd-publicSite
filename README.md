@@ -5,7 +5,7 @@ Greenfield public frontend for the bilingual personal platform. This repository 
 ## Current state
 
 - Repository and governance baseline: ready.
-- Framework scaffold: not started; select it through an ADR before adding runtime code.
+- Runtime scaffold: not started; the accepted baseline is Astro, TypeScript, Tailwind CSS, and bounded React islands.
 - Canonical cross-repository contracts: `../../Docs/` in the local platform workspace.
 - Public-site execution plan: [ROADMAP.md](ROADMAP.md) and [TASK-LIST.md](TASK-LIST.md).
 
@@ -19,4 +19,4 @@ Greenfield public frontend for the bilingual personal platform. This repository 
 
 ## Start here
 
-Read [AGENTS.md](AGENTS.md), [PROJECT-MANIFEST.md](PROJECT-MANIFEST.md), and [docs/architecture/ARCHITECTURE.md](docs/architecture/ARCHITECTURE.md). Do not scaffold the app before the framework, rendering, routing, and deployment ADRs are accepted.
+Read [AGENTS.md](AGENTS.md), [PROJECT-MANIFEST.md](PROJECT-MANIFEST.md), and [docs/architecture/ARCHITECTURE.md](docs/architecture/ARCHITECTURE.md). Before scaffolding, confirm the accepted static-first architecture and record remaining routing, deployment, package-manager, and testing decisions.
