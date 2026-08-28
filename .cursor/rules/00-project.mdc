@@ -1,0 +1,6 @@
+---
+description: Public-site repository rules
+alwaysApply: true
+---
+
+Read AGENTS.md and PROJECT-MANIFEST.md before editing. This is a greenfield bilingual public frontend. Do not copy the legacy frontend, invent content or API fields, or omit RTL, accessibility, content-state, and visual QA evidence.
