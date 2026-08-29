@@ -9,6 +9,7 @@
 5. `../../Docs/04-design/`
 6. `../../Docs/references/frontend-design-authority/README.md`
 7. `TASK-LIST.md`
+8. `../../Docs/05-delivery/MULTI-AGENT-TASK-BOARD.md` (pick one `PUBLIC-*` task)
 
 ## Scope
 

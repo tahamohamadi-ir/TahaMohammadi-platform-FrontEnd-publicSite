@@ -1,50 +1,75 @@
 # Public Site Task List
 
-## Repository baseline
+Detailed execution queue. Cross-repo board: `../../Docs/05-delivery/MULTI-AGENT-TASK-BOARD.md` (IDs prefixed `PUBLIC-`).
 
-- [x] Connect the independent Git repository.
-- [x] Define scope, ownership, agent rules, roadmap, and quality contracts.
-- [x] Record the legacy frontend rejection policy.
-- [x] Publish the greenfield documentation baseline to `origin/main`.
-- [x] Accept the static-first Astro and bounded React-island architecture.
-- [ ] Accept package-manager, detailed routing, deployment, testing, and browser-support ADRs.
-- [ ] Scaffold the runtime with locked dependencies and CI.
-- [x] Read the tracked frontend design authority and PF-01 through PF-08 contract.
+Status: `[x]` done, `[ ]` open, `[~]` in progress.
 
-## Foundation
+---
 
-- [ ] Add validated public environment schema.
-- [ ] Confirm PS-01 through PS-04, PS-06, and PS-07 are still passing before any runtime scaffold.
-- [ ] Implement typed API client from the accepted OpenAPI snapshot (`Docs/03-contracts/OPENAPI-ACCEPTANCE.md`).
-- [x] PS-05 accepted public OpenAPI artifact exists; client generation is unblocked for scaffold foundation work.
-- [ ] Implement locale-aware route helpers and alternate links.
-- [ ] Implement only route families accepted by the central Route Registry.
-- [ ] Implement design tokens, fonts, themes, focus, and reduced motion.
-- [ ] Block runtime font activation until PS-10 completes.
-- [ ] Implement shared loading, empty, unavailable, error, and ready states.
-- [ ] Add test fixtures for both locales and all content states.
+## PUB-0 — Scaffold and toolchain
 
-## Experiences
+- [ ] **PUBLIC-010** Init Astro 7 + TypeScript 5.9; commit lockfile; `npm run build` green.
+- [ ] **PUBLIC-011** ESLint + Prettier aligned with repo conventions.
+- [ ] **PUBLIC-012** GitHub Actions: install, typecheck, build (Phase 1 CI).
+- [ ] **PUBLIC-013** ADRs: package manager, routing, deployment, testing, browsers.
 
-- [ ] Language gateway.
-- [ ] Responsive global shell and navigation.
-- [ ] Home composition using Light/Dark and RTL visual references.
-- [ ] PF-07 About/profile/CV using owner-approved content only.
-- [ ] PF-05 Research/publications and PF-04 projects using accepted public DTOs only.
-- [ ] PF-03 Writing and PF-01/PF-02 Creative using accepted public DTOs only.
-- [ ] PF-06 Teaching using accepted public DTOs only.
-- [ ] CV/resume downloads with truthful availability.
-- [ ] Contact flow with privacy and abuse controls.
-- [ ] Search with usable unavailable and zero-result states.
+## PUB-1 — i18n, theme, fonts
 
-## Release evidence
+- [ ] **PUBLIC-020** Tailwind CSS 4 on semantic CSS variables from design authority.
+- [ ] **PUBLIC-030** `astro:i18n` for `fa`/`en`; strict no-fallback policy.
+- [ ] **PUBLIC-040** Language gateway `/` per `ROUTE-REGISTRY.md`.
+- [ ] **PUBLIC-050** Self-host Newsreader, Inter, Estedad, Vazirmatn (OFL + license files).
+- [ ] **PUBLIC-060** `--font-display` / `--font-body` per locale; computed-style tests.
+- [ ] **PUBLIC-070** Light / Dark / system theme island; `prefers-color-scheme` respect.
+- [ ] **PUBLIC-080** Focus, skip link, reduced-motion baseline.
 
-- [ ] Keyboard, screen-reader, zoom, contrast, and RTL review.
-- [ ] Mobile, tablet, desktop, and wide-layout visual review.
-- [ ] Light, dark, and system-theme review.
-- [ ] Performance-budget report.
-- [ ] Metadata, sitemap, robots, canonical, and hreflang validation.
-- [ ] Backend failure and recovery tests.
-- [ ] Content and asset reconciliation against canonical registers.
-- [ ] Verify each promoted asset against central SHA-256, promotion ledger, crop, alt/caption, and derivative decision.
-- [ ] Preview release, rollback drill, and owner acceptance.
+## PUB-2 — API and routes
+
+- [x] PS-05 OpenAPI accepted; client generation unblocked.
+- [ ] **PUBLIC-090** Generate types from accepted public OpenAPI hash.
+- [ ] **PUBLIC-100** Typed client; enforce published-only gate on reads.
+- [ ] **PUBLIC-110** Route helpers, canonical URLs, hreflang, alternates.
+- [ ] **PUBLIC-120** Env schema + dev proxy to backend (`LOCAL-DEVELOPMENT.md`).
+
+## PUB-3 — Design system and atlas
+
+- [ ] **PUBLIC-130** Import semantic tokens from `agent-kit/tokens.json`.
+- [ ] **PUBLIC-140** Primitives per `components.json` (24 components).
+- [ ] **PUBLIC-150** Header, Footer, shell, navigation (RTL/LTR).
+- [ ] **PUBLIC-160** Six templates per `templates.json`.
+- [ ] **PUBLIC-170** Visual Atlas `/_design/` local-only; excluded from production.
+- [ ] **PUBLIC-180** State components: loading, empty, unavailable, error, untranslated.
+
+## PUB-4 — Page families (PF-01..PF-08)
+
+- [ ] **PUBLIC-190** Home `/{locale}/` — hero, research statement, focus cards, featured projects.
+- [ ] **PUBLIC-200** About — profile sections; fetch only `/api/profiles/{locale}/about`.
+- [ ] **PUBLIC-201** Research + publications indexes and details.
+- [ ] **PUBLIC-210** Projects index + detail; sanitized media only.
+- [ ] **PUBLIC-211** Writing index + long-form detail.
+- [ ] **PUBLIC-212** Books, talks, downloads (honest unavailable until records exist).
+- [ ] **PUBLIC-220** Teaching + creative with **seed v1.1 empty states** (`seed.empty.teaching.*`, `seed.empty.creative.*`).
+- [ ] **PUBLIC-221** CV/resume with **seed.empty.cv.*** until owner files approved.
+- [ ] **PUBLIC-230** Contact — form + JSON; handle 422 HTML per error matrix.
+- [ ] **PUBLIC-240** Pagefind search per locale.
+
+## PUB-5 — SEO, assets, quality
+
+- [ ] **PUBLIC-250** sitemap, robots, canonical, hreflang validation.
+- [ ] **PUBLIC-260** Asset promotion group A (decorative) per `ASSET-PROMOTION-LEDGER.md`.
+- [ ] **PUBLIC-261** Asset promotion group B after owner mapping confirmation.
+- [ ] **PUBLIC-270** PF visual comparison vs `concepts/page-families/`.
+- [ ] **PUBLIC-280** Responsive matrix: 6 widths × 2 locales × 2 themes.
+- [ ] **PUBLIC-290** Performance budget (LCP, CLS, font preload).
+- [ ] **PUBLIC-300** No-JS readability audit all route families.
+- [ ] **PUBLIC-310** Contract fixture tests in CI.
+- [ ] **PUBLIC-320** Integrated staging smoke with backend.
+- [ ] **PUBLIC-350** Release evidence (`R4` + `R8` public).
+
+---
+
+## Completed baseline
+
+- [x] Repository connected; greenfield policy documented.
+- [x] Design authority + PF contracts read.
+- [x] Static-first Astro architecture accepted (ADR-0002).
