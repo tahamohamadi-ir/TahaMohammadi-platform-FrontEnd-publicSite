@@ -1,12 +1,25 @@
 import { expect, test } from '@playwright/test';
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 type ThemeEventDetail = { requested: 'system' | 'light' | 'dark'; resolved: 'light' | 'dark' };
 
 declare global {
   interface Window {
     __tmThemeEvents: ThemeEventDetail[];
+    __tmApplyTheme: (mode: 'system' | 'light' | 'dark') => void;
   }
 }
+
+const repositoryRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
+const tokens = JSON.parse(
+  readFileSync(path.join(repositoryRoot, 'contracts', 'design-authority', 'tokens.json'), 'utf8'),
+) as { semanticLight: Record<string, string>; semanticDark: Record<string, string> };
+const toKebabCase = (value: string) =>
+  value
+    .replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`)
+    .replace(/([a-z])([0-9])/g, '$1-$2');
 
 test.describe('WP-10 foundation acceptance', () => {
   const matrix = [
@@ -40,6 +53,31 @@ test.describe('WP-10 foundation acceptance', () => {
       await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
     });
   }
+
+  test('derives every computed semantic role from the pinned light and dark token snapshot @visual', async ({ page }) => {
+    await page.goto('/en/');
+
+    for (const [theme, semanticRoles] of [
+      ['light', tokens.semanticLight],
+      ['dark', tokens.semanticDark],
+    ] as const) {
+      await page.evaluate((requestedTheme) => window.__tmApplyTheme(requestedTheme), theme);
+      await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
+
+      for (const [role, expectedValue] of Object.entries(semanticRoles)) {
+        if (role === 'status') continue;
+        const property = `--color-${toKebabCase(role)}`;
+        await expect
+          .poll(() =>
+            page.evaluate(
+              ({ propertyName }) => getComputedStyle(document.documentElement).getPropertyValue(propertyName).trim(),
+              { propertyName: property },
+            ),
+          )
+          .toBe(expectedValue);
+      }
+    }
+  });
 
   test('keeps multiple theme controls independent and cycles system light dark @wp10-foundation', async ({ page }) => {
     await page.emulateMedia({ colorScheme: 'dark' });

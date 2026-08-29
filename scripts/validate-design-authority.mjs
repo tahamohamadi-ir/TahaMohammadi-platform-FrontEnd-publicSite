@@ -4,7 +4,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const repositoryRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const snapshotRoot = path.join(repositoryRoot, 'contracts', 'design-authority');
+const snapshotRoot = process.env.DESIGN_AUTHORITY_SNAPSHOT_ROOT || path.join(repositoryRoot, 'contracts', 'design-authority');
 const readJson = (file) => JSON.parse(fs.readFileSync(file, 'utf8'));
 const sha256 = (file) => crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
 const snapshotSha256 = (file) =>
@@ -22,6 +22,7 @@ if (manifest.snapshotDate !== '2026-08-29') fail('snapshot date must remain 2026
 for (const entry of Object.values(manifest.files)) {
   const localFile = path.join(snapshotRoot, entry.filename);
   if (!fs.existsSync(localFile)) fail(`missing local snapshot ${entry.filename}`);
+  if (sha256(localFile) !== entry.rawSha256) fail(`local snapshot raw-byte hash drift for ${entry.filename}`);
   if (snapshotSha256(localFile) !== entry.sha256) fail(`local snapshot hash drift for ${entry.filename}`);
 }
 

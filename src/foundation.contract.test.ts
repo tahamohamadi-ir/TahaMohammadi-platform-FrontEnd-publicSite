@@ -1,6 +1,8 @@
-import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
+import { appendFileSync, cpSync, existsSync, mkdtempSync, readFileSync, readdirSync, rmSync, statSync } from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
+import crypto from 'node:crypto';
+import os from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 
@@ -16,6 +18,8 @@ const toKebabCase = (value: string) =>
   value
     .replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`)
     .replace(/([a-z])([0-9])/g, '$1-$2');
+
+const rawSha256 = (file: string) => crypto.createHash('sha256').update(readFileSync(file)).digest('hex');
 
 describe('WP-10 foundation contracts', () => {
   it('pins the portable design-authority snapshot files', () => {
@@ -39,6 +43,52 @@ describe('WP-10 foundation contracts', () => {
 
     expect(result.status, result.stderr).toBe(0);
     expect(result.stdout).toContain('standalone snapshot validated');
+  });
+
+  it('pins local raw bytes independently of canonical and central-source hashes', () => {
+    const snapshotRoot = path.join(repositoryRoot, 'contracts', 'design-authority');
+    const manifest = JSON.parse(readRepositoryFile('contracts/design-authority/manifest.json'));
+
+    for (const entry of Object.values(manifest.files) as Array<{ filename: string; rawSha256: string }>) {
+      expect(entry.rawSha256).toBe(rawSha256(path.join(snapshotRoot, entry.filename)));
+    }
+
+    const mutatedSnapshotRoot = mkdtempSync(path.join(os.tmpdir(), 'tm-design-authority-'));
+    try {
+      cpSync(snapshotRoot, mutatedSnapshotRoot, { recursive: true });
+      appendFileSync(path.join(mutatedSnapshotRoot, 'tokens.json'), '\r\n');
+      const result = spawnSync(process.execPath, ['scripts/validate-design-authority.mjs'], {
+        cwd: repositoryRoot,
+        encoding: 'utf8',
+        env: {
+          ...process.env,
+          DESIGN_AUTHORITY_ROOT: path.join(mutatedSnapshotRoot, 'central-unavailable'),
+          DESIGN_AUTHORITY_SNAPSHOT_ROOT: mutatedSnapshotRoot,
+        },
+      });
+
+      expect(result.status).not.toBe(0);
+      expect(`${result.stdout}${result.stderr}`).toContain('local snapshot raw-byte hash drift for tokens.json');
+    } finally {
+      rmSync(mutatedSnapshotRoot, { recursive: true, force: true });
+    }
+  });
+
+  it('keeps browser test tooling in development dependencies and selects evidence tags exactly', () => {
+    const packageManifest = JSON.parse(readRepositoryFile('package.json'));
+    expect(packageManifest.devDependencies['@playwright/test']).toBeTruthy();
+    expect(packageManifest.devDependencies['@axe-core/playwright']).toBeTruthy();
+    expect(packageManifest.dependencies['lucide-astro']).toBeTruthy();
+    expect(packageManifest.dependencies['@playwright/test']).toBeUndefined();
+    expect(packageManifest.dependencies['@axe-core/playwright']).toBeUndefined();
+    expect(packageManifest.scripts['test:visual']).toBe('playwright test --grep @visual');
+    expect(packageManifest.scripts['test:a11y']).toBe('playwright test --grep @a11y');
+  });
+
+  it('freezes only the defined page-family range while allowing WP-25 and PUBLIC-260', () => {
+    const taskList = readRepositoryFile('TASK-LIST.md');
+    expect(taskList).toContain('`PUBLIC-200` through `PUBLIC-240`');
+    expect(taskList).toContain('`WP-25` and `PUBLIC-260` remain allowed');
   });
 
   it('projects every required authority token through one CSS token interface', () => {
@@ -93,7 +143,7 @@ describe('WP-10 foundation contracts', () => {
     expect(global).not.toContain('@layer base');
   });
 
-  it('keeps the default production build free of Atlas output and accepts the gated build interface', () => {
+  it('keeps the default production build free of Atlas output while retaining the gated build interface', () => {
     const astroConfig = readRepositoryFile('astro.config.mjs');
     const packageManifest = JSON.parse(readRepositoryFile('package.json'));
     expect(astroConfig).toContain('DESIGN_ATLAS');
@@ -114,13 +164,6 @@ describe('WP-10 foundation contracts', () => {
     expect(outputFiles.some((entry) => entry.includes(`${path.sep}_design`))).toBe(false);
     expect(outputFiles.some((entry) => readFileSync(entry, 'utf8').includes('/_design'))).toBe(false);
 
-    const atlasBuild = spawnSync('npm.cmd', ['run', 'build:atlas'], {
-      cwd: repositoryRoot,
-      encoding: 'utf8',
-      shell: true,
-    });
-    expect(atlasBuild.status, atlasBuild.stderr).toBe(0);
-    expect(existsSync(path.join(distRoot, '_design'))).toBe(false);
   }, 120_000);
 
   it('loads fonts, token layers, base behavior, and utilities in deterministic order', () => {

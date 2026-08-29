@@ -2,7 +2,7 @@ import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 
 test.describe('WP-10 focus and motion accessibility', () => {
-  test('retains a visible keyboard focus treatment and reduces motion @wp10-foundation', async ({ page }) => {
+  test('retains a visible keyboard focus treatment and reduces motion @a11y', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto('/');
 
@@ -15,7 +15,7 @@ test.describe('WP-10 focus and motion accessibility', () => {
     ).toBeLessThanOrEqual(0.00001);
   });
 
-  test('has no automatic accessibility violations on the theme control @wp10-foundation', async ({ page }) => {
+  test('has no automatic accessibility violations on the theme control @a11y', async ({ page }) => {
     await page.goto('/');
     const results = await new AxeBuilder({ page }).include('[data-theme-toggle]').analyze();
     expect(results.violations).toEqual([]);

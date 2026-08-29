@@ -42,7 +42,7 @@ Status: `[x]` done, `[ ]` open, `[~]` in progress.
 
 ## PUB-4 — Page families (PF-01..PF-08)
 
-**Recovery freeze:** `PUBLIC-200+` remains frozen until `PUBLIC-190` receives independent visual QA `PASS` and explicit owner acceptance. The prerequisite chain is `PUBLIC-070 → PUBLIC-080 → PUBLIC-130 → PUBLIC-140 → PUBLIC-150 → PUBLIC-160 → PUBLIC-170`, plus `PUBLIC-180` and `BACKEND-070`, before visual acceptance can close `PUBLIC-190`.
+**Recovery freeze:** Page-family development `PUBLIC-200` through `PUBLIC-240` remains frozen until `PUBLIC-190` receives independent visual QA `PASS` and explicit owner acceptance. `WP-25` and `PUBLIC-260` remain allowed. The prerequisite chain is `PUBLIC-070 → PUBLIC-080 → PUBLIC-130 → PUBLIC-140 → PUBLIC-150 → PUBLIC-160 → PUBLIC-170`, plus `PUBLIC-180` and `BACKEND-070`, before visual acceptance can close `PUBLIC-190`.
 
 - [~] **PUBLIC-190** Home `/{locale}/` — **structure complete; visual acceptance open**. No final acceptance claim; independent QA and owner approval remain required.
 - [ ] **PUBLIC-200** About — profile sections; fetch only `/api/profiles/{locale}/about`.
