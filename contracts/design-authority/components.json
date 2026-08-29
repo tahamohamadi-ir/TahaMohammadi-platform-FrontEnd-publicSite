@@ -1,0 +1,36 @@
+{
+  "version": "1.0.0",
+  "sharedRules": {
+    "states": ["rest", "hover", "focus-visible", "active", "disabled", "loading", "empty", "no-results", "error", "unavailable-translation", "reduced-motion"],
+    "direction": "CSS logical properties; DOM reading order never reversed",
+    "content": "cms-owned",
+    "javascript": "progressive-enhancement-only",
+    "targetMin": "44px"
+  },
+  "components": [
+    { "name": "Button", "anatomy": ["label", "optional icon"], "variants": ["primary", "secondary", "quiet"], "rules": ["one primary CTA per viewport", "hover has focus parity", "gold is not a button fill"] },
+    { "name": "IconButton", "anatomy": ["icon", "accessible name"], "variants": ["quiet", "outlined"], "rules": ["never icon-only without an accessible name"] },
+    { "name": "Link", "anatomy": ["label", "optional directional icon"], "variants": ["inline", "standalone"], "rules": ["directional icon flips in RTL"] },
+    { "name": "Chip", "anatomy": ["label", "optional remove"], "variants": ["neutral", "selected", "taxonomy"] },
+    { "name": "Badge", "anatomy": ["status shape", "label"], "variants": ["status", "type"], "rules": ["meaning never color-only"] },
+    { "name": "ThemeToggle", "anatomy": ["current theme icon", "label for assistive tech"], "variants": ["light", "dark", "system"] },
+    { "name": "LanguageToggle", "anatomy": ["language icon", "available locale menu"], "variants": ["compact", "menu"], "rules": ["separate gateway remains canonical root", "unavailable locale is explicit"] },
+    { "name": "Header", "anatomy": ["mark", "primary navigation", "utilities", "contact action"], "variants": ["desktop", "compact"], "rules": ["glass allowed here only", "active route uses text plus rule"] },
+    { "name": "Breadcrumbs", "anatomy": ["ordered ancestors", "current label"], "rules": ["missing ancestor is omitted"] },
+    { "name": "LocalTabs", "anatomy": ["labelled navigation", "active marker"], "variants": ["inline", "overflow disclosure"] },
+    { "name": "FilterBar", "anatomy": ["query", "facets", "sort", "clear", "result summary"], "variants": ["expanded", "disclosure"], "rules": ["URL-backed before JS", "empty and no-results differ"] },
+    { "name": "Pagination", "anatomy": ["previous", "pages", "next", "summary"], "rules": ["ordinary URLs before JS"] },
+    { "name": "SectionLead", "anatomy": ["eyebrow", "H1", "summary", "primary CTA", "optional secondary CTA", "optional media"], "rules": ["one H1", "media failure preserves meaning"] },
+    { "name": "Card", "anatomy": ["optional media", "type", "title", "summary", "metadata", "action"], "variants": ["default", "research", "editorial", "visual"] },
+    { "name": "FeaturedRecord", "anatomy": ["label", "title", "summary", "metadata", "media", "CTA"], "rules": ["omit if selection inactive", "never one giant focus target"] },
+    { "name": "ContentRow", "anatomy": ["type", "title", "excerpt", "metadata", "tags", "status", "action"], "rules": ["optional data collapses without placeholders"] },
+    { "name": "PublicationRow", "anatomy": ["type/status", "title", "authors", "venue/date/identifier", "files"], "rules": ["unverified fields omitted", "citation text never shrinks for actions"] },
+    { "name": "MetadataGroup", "anatomy": ["definition-list labels", "values"], "rules": ["mixed-direction values use bdi", "empty values omitted"] },
+    { "name": "TimelineNode", "anatomy": ["type", "label", "period", "summary", "optional detail link"], "rules": ["ordered list fallback", "unknown dates absent"] },
+    { "name": "MediaTile", "anatomy": ["reserved aspect media", "caption", "record link"], "variants": ["grid", "lead", "failed"], "rules": ["failed media retains caption and link"] },
+    { "name": "TOCItem", "anatomy": ["heading link", "current marker"], "variants": ["level1", "level2"], "rules": ["static list survives observer failure"] },
+    { "name": "ContactCTA", "anatomy": ["collaboration statement", "primary action", "optional CV"], "rules": ["no ambient pulse"] },
+    { "name": "Input", "anatomy": ["persistent label", "control", "hint", "error"], "variants": ["rest", "focus", "error", "disabled"], "rules": ["errors not color-only"] },
+    { "name": "Textarea", "anatomy": ["persistent label", "control", "counter/hint", "error"], "variants": ["rest", "focus", "error", "disabled"], "rules": ["typed content retained on failure"] }
+  ]
+}

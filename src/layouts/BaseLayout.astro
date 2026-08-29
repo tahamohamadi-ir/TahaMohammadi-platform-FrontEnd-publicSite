@@ -73,25 +73,45 @@ const { title, lang, dir, gateway = false, canonical, alternates } = Astro.props
       (function () {
         const storageKey = 'tm-theme';
         const root = document.documentElement;
+        const modes = ['system', 'light', 'dark'];
 
         function systemTheme() {
           return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
         }
 
         function applyTheme(mode) {
-          if (mode === 'system') {
-            root.removeAttribute('data-theme');
-            root.style.colorScheme = systemTheme();
-            return;
-          }
-          root.dataset.theme = mode;
-          root.style.colorScheme = mode;
+          const requested = modes.includes(mode) ? mode : 'system';
+          const resolved = requested === 'system' ? systemTheme() : requested;
+          root.dataset.themeRequested = requested;
+          root.dataset.theme = resolved;
+          root.style.colorScheme = resolved;
+          window.dispatchEvent(
+            new CustomEvent('tm-themechange', { detail: { requested, resolved } }),
+          );
+          return { requested, resolved };
         }
 
-        applyTheme(localStorage.getItem(storageKey) || 'system');
+        let storedTheme = 'system';
+        try {
+          storedTheme = localStorage.getItem(storageKey) || 'system';
+        } catch {}
+        applyTheme(storedTheme);
 
         window.__tmApplyTheme = applyTheme;
         window.__tmThemeStorageKey = storageKey;
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+          if (root.dataset.themeRequested === 'system') applyTheme('system');
+        });
+        document.addEventListener('click', (event) => {
+          if (!(event.target instanceof Element)) return;
+          if (!event.target.closest('[data-theme-toggle]')) return;
+          const current = root.dataset.themeRequested || 'system';
+          const next = modes[(modes.indexOf(current) + 1) % modes.length];
+          try {
+            localStorage.setItem(storageKey, next);
+          } catch {}
+          applyTheme(next);
+        });
       })();
     </script>
   </head>

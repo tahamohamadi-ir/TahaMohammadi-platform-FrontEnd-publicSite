@@ -1,5 +1,6 @@
 ---
 import { shellCopy, type Locale } from '../lib/navigation';
+import { Moon, Sun } from 'lucide-astro';
 
 interface Props {
   locale?: Locale;
@@ -11,32 +12,11 @@ const themeLabel = shellCopy.themeToggle[locale];
 
 <button
   type="button"
-  id="theme-toggle"
   class="theme-toggle theme-toggle--shell"
+  data-theme-toggle
   aria-label={themeLabel}
   title={themeLabel}
 >
-  <span class="theme-toggle__icon theme-toggle__icon--light" aria-hidden="true">☀</span>
-  <span class="theme-toggle__icon theme-toggle__icon--dark" aria-hidden="true">☾</span>
+  <span class="theme-toggle__icon theme-toggle__icon--light" aria-hidden="true"><Sun size={18} /></span>
+  <span class="theme-toggle__icon theme-toggle__icon--dark" aria-hidden="true"><Moon size={18} /></span>
 </button>
-
-<script is:inline>
-  (function () {
-    const storageKey = window.__tmThemeStorageKey || 'tm-theme';
-    const applyTheme = window.__tmApplyTheme;
-
-    if (!applyTheme) return;
-
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-      if ((localStorage.getItem(storageKey) || 'system') === 'system') applyTheme('system');
-    });
-
-    document.getElementById('theme-toggle')?.addEventListener('click', () => {
-      const order = ['system', 'light', 'dark'];
-      const current = localStorage.getItem(storageKey) || 'system';
-      const next = order[(order.indexOf(current) + 1) % order.length];
-      localStorage.setItem(storageKey, next);
-      applyTheme(next);
-    });
-  })();
-</script>

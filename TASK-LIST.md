@@ -20,8 +20,8 @@ Status: `[x]` done, `[ ]` open, `[~]` in progress.
 - [x] **PUBLIC-040** Language gateway `/` per `ROUTE-REGISTRY.md`.
 - [x] **PUBLIC-050** Self-host Newsreader, Inter, Estedad, Vazirmatn (OFL + license files). WOFF2 under `public/fonts/`; `@font-face` in `src/styles/fonts.css`; CDN removed from `BaseLayout.astro`; locale tokens wired per `FONT-ACQUISITION-PLAN.md`. **Remaining for PS-10:** subset/coverage fixtures, computed-style QA (PUBLIC-060), CLS/preload budget (PUBLIC-290).
 - [ ] **PUBLIC-060** `--font-display` / `--font-body` per locale; computed-style tests.
-- [ ] **PUBLIC-070** Light / Dark / system theme island; `prefers-color-scheme` respect.
-- [ ] **PUBLIC-080** Focus, skip link, reduced-motion baseline.
+- [x] **PUBLIC-070** Light / Dark / system theme foundation; resolved before paint, persisted, and multi-instance safe. Evidence: WP-10 focused Playwright acceptance.
+- [x] **PUBLIC-080** Focus, skip link, reduced-motion baseline. Evidence: WP-10 keyboard-focus and reduced-motion acceptance.
 
 ## PUB-2 — API and routes
 
@@ -33,7 +33,7 @@ Status: `[x]` done, `[ ]` open, `[~]` in progress.
 
 ## PUB-3 — Design system and atlas
 
-- [ ] **PUBLIC-130** Import semantic tokens from `agent-kit/tokens.json`.
+- [x] **PUBLIC-130** Pin and validate semantic tokens from `agent-kit/tokens.json`; portable snapshot validates locally and against central authority.
 - [ ] **PUBLIC-140** Primitives per `components.json` (24 components).
 - [~] **PUBLIC-150** Header, Footer, shell, navigation (RTL/LTR).
 - [ ] **PUBLIC-160** Six templates per `templates.json`.
@@ -42,7 +42,9 @@ Status: `[x]` done, `[ ]` open, `[~]` in progress.
 
 ## PUB-4 — Page families (PF-01..PF-08)
 
-- [x] **PUBLIC-190** Home `/{locale}/` — hero, research statement, focus cards, featured projects.
+**Recovery freeze:** `PUBLIC-200+` remains frozen until `PUBLIC-190` receives independent visual QA `PASS` and explicit owner acceptance. The prerequisite chain is `PUBLIC-070 → PUBLIC-080 → PUBLIC-130 → PUBLIC-140 → PUBLIC-150 → PUBLIC-160 → PUBLIC-170`, plus `PUBLIC-180` and `BACKEND-070`, before visual acceptance can close `PUBLIC-190`.
+
+- [~] **PUBLIC-190** Home `/{locale}/` — **structure complete; visual acceptance open**. No final acceptance claim; independent QA and owner approval remain required.
 - [ ] **PUBLIC-200** About — profile sections; fetch only `/api/profiles/{locale}/about`.
 - [ ] **PUBLIC-201** Research + publications indexes and details.
 - [ ] **PUBLIC-210** Projects index + detail; sanitized media only.

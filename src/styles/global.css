@@ -1,5 +1,8 @@
 @import "tailwindcss";
 @import "./fonts.css";
+@import "./tokens.css";
+@import "./base.css";
+@import "./utilities.css";
 
 /*
  * Semantic tokens mapped from Docs/references/frontend-design-authority/agent-kit/tokens.json
@@ -29,13 +32,13 @@ html[data-theme='light'] {
   --color-surface: #ffffff;
   --color-surface-muted: #f1f4f2;
   --color-ink: #182328;
-  --color-ink-secondary: #4f5d63;
-  --color-ink-tertiary: #6b787e;
+  --color-ink-secondary: #616e74;
+  --color-ink-tertiary: #7c8a8f;
   --color-inverse: #ffffff;
   --color-brand: #087c73;
   --color-brand-hover: #0a6a62;
   --color-brand-soft: #e4f7f4;
-  --color-signature: #8f6a24;
+  --color-signature: #a77b28;
   --color-signature-soft: #f3e8cf;
   --color-research: #6047b8;
   --color-research-soft: #eeeaf9;

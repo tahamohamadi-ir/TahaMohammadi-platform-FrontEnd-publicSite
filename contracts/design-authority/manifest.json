@@ -1,0 +1,26 @@
+{
+  "version": "1.0.0",
+  "snapshotDate": "2026-08-29",
+  "centralSourcePath": "D:/Project/tahamohammadi-platform/Docs/references/frontend-design-authority/agent-kit",
+  "inventories": {
+    "components": 24,
+    "templates": 6
+  },
+  "files": {
+    "tokens": {
+      "filename": "tokens.json",
+      "sha256": "ecf490bff200ca7dc836ae126f03d21e46c725fded7c05420871aac7907c52ab",
+      "sourceSha256": "3528b78592d9d81b606f73b0da5491e43667674cb30308fdef60e71a7f7aed91"
+    },
+    "components": {
+      "filename": "components.json",
+      "sha256": "e8e7965c7a5c0ea191ef64a5822f4b716a465051bf962a085ac46449e3515556",
+      "sourceSha256": "f074edf6af11b545e1e196578e6104fdc9f81d2ffb6d4b161b4979c51d5f640d"
+    },
+    "templates": {
+      "filename": "templates.json",
+      "sha256": "3cdaca2fd779ade1299a63bdf386250b66f2efad7c6b88f35480d659e72f4200",
+      "sourceSha256": "9eab705b4215651a8ddb2f542d070e90b9cf7e2b47b16d9a412ef1c5ac81641c"
+    }
+  }
+}

@@ -21,6 +21,7 @@ function localPromotedMediaPath(urlPath) {
 }
 
 const site = process.env.PUBLIC_SITE_URL ?? 'http://127.0.0.1:4321';
+const designAtlasEnabled = process.env.DESIGN_ATLAS === '1';
 const apiProxyTarget =
   process.env.PUBLIC_API_PROXY_TARGET ?? 'http://127.0.0.1:8000';
 
@@ -50,6 +51,9 @@ export default defineConfig({
     },
   },
   vite: {
+    define: {
+      __TM_DESIGN_ATLAS__: JSON.stringify(designAtlasEnabled),
+    },
     plugins: [tailwindcss()],
     server: {
       proxy: {

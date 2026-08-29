@@ -1,0 +1,20 @@
+{
+  "version": "1.0.0",
+  "homepageOrder": ["identity-lead", "relationship-graph", "research-fit", "journey-timeline", "selected-projects", "selected-publications", "gallery-writing-learning-previews", "collaboration-cv-contact"],
+  "templates": [
+    { "id": "home", "required": ["Header", "SectionLead", "semantic graph list", "research fit", "TimelineNode", "ContactCTA", "Footer"], "optional": ["FeaturedRecord", "PublicationRow", "preview rails"], "cms": "home composition with guarded ordering" },
+    { "id": "collection-index", "routes": ["projects", "creative", "research"], "required": ["Header", "Breadcrumbs", "SectionLead", "FilterBar", "ContentRow or MediaGrid", "Pagination", "Footer"] },
+    { "id": "editorial-index", "routes": ["writing", "teaching"], "required": ["Header", "Breadcrumbs", "SectionLead", "optional FeaturedRecord", "FilterBar", "ContentRow", "Pagination", "Footer"] },
+    { "id": "long-form-detail", "routes": ["writing detail", "teaching detail"], "required": ["Header", "Breadcrumbs", "article lead", "TOC", "portable rich body", "related content", "Footer"] },
+    { "id": "evidence-visual-detail", "routes": ["project detail", "research detail", "publication detail", "creative detail"], "required": ["Header", "Breadcrumbs", "evidence lead", "MetadataGroup", "ordered media/body", "limitations/rights where applicable", "related content", "Footer"] },
+    { "id": "about-contact-utility", "routes": ["about", "cv", "contact"], "required": ["Header", "Breadcrumbs", "SectionLead", "typed records or approved contact path", "Footer"] }
+  ],
+  "representativeFrames": [
+    { "name": "Desktop Light Home", "width": 1440, "theme": "light", "direction": "ltr" },
+    { "name": "Desktop Dark Home", "width": 1440, "theme": "dark", "direction": "ltr" },
+    { "name": "Mobile Light Persian", "width": 390, "theme": "light", "direction": "rtl" },
+    { "name": "Tablet Reflow", "width": 768, "theme": "light", "direction": "ltr" },
+    { "name": "State Sheet", "width": 1280, "theme": "both", "direction": "both" }
+  ],
+  "prototypePath": ["language gateway", "Home", "graph node", "Research", "publication detail", "Contact"]
+}

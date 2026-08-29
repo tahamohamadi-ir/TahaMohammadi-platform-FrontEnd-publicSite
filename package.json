@@ -10,10 +10,17 @@
     "astro": "astro",
     "test": "vitest run",
     "test:watch": "vitest",
-    "generate:api-types": "node scripts/generate-api-types.mjs"
+    "generate:api-types": "node scripts/generate-api-types.mjs",
+    "validate:design": "node scripts/validate-design-authority.mjs",
+    "test:visual": "playwright test --grep @wp10-foundation",
+    "test:a11y": "playwright test --grep @wp10-foundation",
+    "build:atlas": "set \"DESIGN_ATLAS=1\"&& astro build"
   },
   "dependencies": {
-    "astro": "^7.2.9"
+    "@axe-core/playwright": "^4.13.0",
+    "@playwright/test": "^1.62.1",
+    "astro": "^7.2.9",
+    "lucide-astro": "^0.556.0"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.1.18",
