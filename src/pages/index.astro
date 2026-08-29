@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ThemeToggle from '../components/ThemeToggle.astro';
+import { GATEWAY_ROLE_LINE } from '../lib/navigation';
 ---
 
 <BaseLayout title="Taha Mohammadi — Language gateway" lang="en" dir="ltr" gateway>
@@ -41,13 +42,10 @@ import ThemeToggle from '../components/ThemeToggle.astro';
       </div>
 
       <h1 id="gateway-name" class="gateway__title">
-        <span class="gateway__title-primary">Taha</span>
-        <span class="gateway__title-accent"> Mohammadi</span>
+        <span class="gateway__title-primary">Taha</span><span class="gateway__title-accent"> Mohammadi</span>
       </h1>
 
-      <p class="gateway__prompt gateway__prompt--lead">
-        Software Engineer &amp; Researcher in Human-Centered AI, Data Systems, and Visual Analytics
-      </p>
+      <p class="gateway__roles">{GATEWAY_ROLE_LINE}</p>
     </section>
 
     <footer class="gateway__footer">

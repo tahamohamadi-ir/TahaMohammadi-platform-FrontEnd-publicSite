@@ -1,0 +1,74 @@
+---
+import { localePath, primaryNav, shellCopy, type Locale } from '../lib/navigation';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const homeHref = localePath(locale);
+const contactHref = localePath(locale, 'contact');
+const cvHref = localePath(locale, 'cv');
+---
+
+<footer class="site-footer">
+  <div class="site-footer__cta">
+    <p class="site-footer__cta-text">{shellCopy.footerCta[locale]}</p>
+    <div class="site-footer__cta-actions">
+      <a href={contactHref} class="site-footer__button site-footer__button--primary">
+        {shellCopy.contact[locale]}
+      </a>
+      <a href={cvHref} class="site-footer__button site-footer__button--ghost">
+        {shellCopy.cv[locale]}
+      </a>
+    </div>
+  </div>
+
+  <div class="site-footer__grid">
+    <div class="site-footer__brand">
+      <a href={homeHref} class="site-footer__brand-link">
+        <img
+          src="/media/brand/taha-mark-primary.png"
+          alt=""
+          width="32"
+          height="32"
+          class="site-footer__mark"
+        />
+        <span>{shellCopy.brandName[locale]}</span>
+      </a>
+    </div>
+
+    <nav class="site-footer__nav" aria-label={shellCopy.footerExplore[locale]}>
+      <p class="site-footer__nav-title">{shellCopy.footerExplore[locale]}</p>
+      <ul class="site-footer__nav-list">
+        {
+          primaryNav.map((item) => (
+            <li>
+              <a href={localePath(locale, item.pathSegment)}>{item.label[locale]}</a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <nav class="site-footer__nav" aria-label={shellCopy.footerConnect[locale]}>
+      <p class="site-footer__nav-title">{shellCopy.footerConnect[locale]}</p>
+      <ul class="site-footer__nav-list">
+        <li>
+          <a href={contactHref}>{shellCopy.contact[locale]}</a>
+        </li>
+        <li>
+          <a href={cvHref}>{shellCopy.cv[locale]}</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+
+  <p class="site-footer__legal">
+    {
+      locale === 'fa'
+        ? `© ${new Date().getFullYear()} ${shellCopy.brandName.fa}`
+        : `© ${new Date().getFullYear()} ${shellCopy.brandName.en}`
+    }
+  </p>
+</footer>

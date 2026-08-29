@@ -1,0 +1,12 @@
+---
+import { shellCopy, type Locale } from '../lib/navigation';
+
+interface Props {
+  locale: Locale;
+  target?: string;
+}
+
+const { locale, target = '#main-content' } = Astro.props;
+---
+
+<a href={target} class="skip-link">{shellCopy.skipLink[locale]}</a>

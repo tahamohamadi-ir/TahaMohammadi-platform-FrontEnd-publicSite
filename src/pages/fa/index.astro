@@ -1,16 +1,8 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import HomeHero from '../../components/home/HomeHero.astro';
 ---
 
-<BaseLayout title="طاها محمدی — صفحهٔ اصلی" lang="fa" dir="rtl">
-  <main class="mx-auto max-w-page px-6 py-12">
-    <p class="text-sm text-ink-tertiary">پوستهٔ اولیه</p>
-    <h1 class="mt-2 text-3xl font-semibold text-ink">طاها محمدی</h1>
-    <p class="mt-4 max-w-prose text-ink-secondary">
-      این صفحهٔ موقت است. محتوای واقعی پس از تأیید مالک و انتشار API در دسترس قرار می‌گیرد.
-    </p>
-    <p class="mt-6">
-      <a href="/" class="text-brand underline-offset-4 hover:underline">بازگشت به درگاه زبان</a>
-    </p>
-  </main>
-</BaseLayout>
+<SiteLayout title="طه محمدی — صفحهٔ اصلی" locale="fa" dir="rtl">
+  <HomeHero locale="fa" />
+</SiteLayout>

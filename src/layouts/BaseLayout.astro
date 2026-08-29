@@ -1,14 +1,21 @@
 ---
 import '../styles/global.css';
 
+interface AlternateLink {
+  hreflang: string;
+  href: string;
+}
+
 interface Props {
   title: string;
   lang: string;
   dir: 'rtl' | 'ltr';
   gateway?: boolean;
+  canonical?: string;
+  alternates?: AlternateLink[];
 }
 
-const { title, lang, dir, gateway = false } = Astro.props;
+const { title, lang, dir, gateway = false, canonical, alternates } = Astro.props;
 ---
 
 <!doctype html>
@@ -18,6 +25,12 @@ const { title, lang, dir, gateway = false } = Astro.props;
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
+    {canonical && <link rel="canonical" href={canonical} />}
+    {
+      alternates?.map(({ hreflang, href }) => (
+        <link rel="alternate" hreflang={hreflang} href={href} />
+      ))
+    }
     <link rel="icon" href="/favicon.png" type="image/png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -25,8 +38,39 @@ const { title, lang, dir, gateway = false } = Astro.props;
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Newsreader:opsz,wght@8..72,500;8..72,600&display=swap"
       rel="stylesheet"
     />
+    <script is:inline>
+      (function () {
+        const storageKey = 'tm-theme';
+        const root = document.documentElement;
+
+        function systemTheme() {
+          return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+
+        function applyTheme(mode) {
+          if (mode === 'system') {
+            root.removeAttribute('data-theme');
+            root.style.colorScheme = systemTheme();
+            return;
+          }
+          root.dataset.theme = mode;
+          root.style.colorScheme = mode;
+        }
+
+        applyTheme(localStorage.getItem(storageKey) || 'system');
+
+        window.__tmApplyTheme = applyTheme;
+        window.__tmThemeStorageKey = storageKey;
+      })();
+    </script>
   </head>
-  <body class:list={['min-h-screen bg-canvas text-ink antialiased', gateway && 'gateway-body']}>
+  <body
+    class:list={[
+      'min-h-screen bg-canvas text-ink antialiased',
+      gateway && 'gateway-body',
+      !gateway && 'site-body',
+    ]}
+  >
     <slot />
   </body>
 </html>

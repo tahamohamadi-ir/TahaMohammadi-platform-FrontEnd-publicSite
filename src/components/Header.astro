@@ -1,0 +1,126 @@
+---
+import ThemeToggle from './ThemeToggle.astro';
+import {
+  alternateLocale,
+  localePath,
+  primaryNav,
+  shellCopy,
+  isNavActive,
+  type Locale,
+} from '../lib/navigation';
+
+interface Props {
+  locale: Locale;
+  currentPath: string;
+}
+
+const { locale, currentPath } = Astro.props;
+const otherLocale = alternateLocale(locale);
+const homeHref = localePath(locale);
+---
+
+<header class="site-header">
+  <div class="site-header__inner">
+    <a href={homeHref} class="site-header__brand" aria-label={shellCopy.brandName[locale]}>
+      <img
+        src="/media/brand/taha-mark-primary.png"
+        alt=""
+        width="40"
+        height="40"
+        class="site-header__mark"
+      />
+    </a>
+
+    <nav class="site-header__nav site-header__nav--desktop" aria-label={shellCopy.mainMenu[locale]}>
+      <ul class="site-header__nav-list">
+        {
+          primaryNav.map((item) => {
+            const href = localePath(locale, item.pathSegment);
+            const active = isNavActive(currentPath, locale, item.pathSegment);
+            return (
+              <li>
+                <a
+                  href={href}
+                  class:list={['site-header__nav-link', active && 'site-header__nav-link--active']}
+                  aria-current={active ? 'page' : undefined}
+                >
+                  {item.label[locale]}
+                </a>
+              </li>
+            );
+          })
+        }
+      </ul>
+    </nav>
+
+    <div class="site-header__utilities">
+      <div class="site-header__locale-group" role="group" aria-label={shellCopy.localeSwitch[locale]}>
+        {
+          locale === 'en' ? (
+            <>
+              <span class="site-header__locale site-header__locale--current" aria-current="true">
+                EN
+              </span>
+              <span class="site-header__locale-sep" aria-hidden="true">
+                /
+              </span>
+              <a
+                href={localePath(otherLocale)}
+                class="site-header__locale site-header__locale--link"
+                lang={otherLocale}
+                hreflang={otherLocale}
+              >
+                FA
+              </a>
+            </>
+          ) : (
+            <>
+              <a
+                href={localePath(otherLocale)}
+                class="site-header__locale site-header__locale--link"
+                lang={otherLocale}
+                hreflang={otherLocale}
+              >
+                EN
+              </a>
+              <span class="site-header__locale-sep" aria-hidden="true">
+                /
+              </span>
+              <span class="site-header__locale site-header__locale--current" aria-current="true">
+                FA
+              </span>
+            </>
+          )
+        }
+      </div>
+      <ThemeToggle locale={locale} />
+      <details class="site-header__drawer">
+        <summary class="site-header__menu-trigger">{shellCopy.menuToggle[locale]}</summary>
+        <nav class="site-header__nav site-header__nav--mobile" aria-label={shellCopy.mainMenu[locale]}>
+          <ul class="site-header__nav-list site-header__nav-list--stacked">
+            {
+              primaryNav.map((item) => {
+                const href = localePath(locale, item.pathSegment);
+                const active = isNavActive(currentPath, locale, item.pathSegment);
+                return (
+                  <li>
+                    <a
+                      href={href}
+                      class:list={[
+                        'site-header__nav-link',
+                        active && 'site-header__nav-link--active',
+                      ]}
+                      aria-current={active ? 'page' : undefined}
+                    >
+                      {item.label[locale]}
+                    </a>
+                  </li>
+                );
+              })
+            }
+          </ul>
+        </nav>
+      </details>
+    </div>
+  </div>
+</header>

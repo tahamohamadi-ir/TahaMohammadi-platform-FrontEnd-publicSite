@@ -24,6 +24,7 @@ This repository owns the public browsing experience only. It may consume publish
 - Do not adopt a runtime image until its central Asset Promotion Ledger row is approved.
 - Never invent API fields, endpoints, profile data, links, publication records, or translation status.
 - Keep locale in the URL and set `lang`, `dir`, canonical, and alternate links from one route contract.
+- **Theme and locale parity:** ship Light and Dark together for every visual surface; ship `fa` and `en` together for every user-facing string, route, and layout change. Do not merge a feature that only works in one theme or one locale.
 - Build every data surface with loading, empty, error, unavailable, and ready states.
 - Use semantic HTML before components; preserve keyboard order and visible focus.
 - Add tests with each behavior change and update the task list and handoff evidence.
