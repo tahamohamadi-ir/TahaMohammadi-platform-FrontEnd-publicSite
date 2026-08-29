@@ -42,7 +42,7 @@ Status: `[x]` done, `[ ]` open, `[~]` in progress.
 
 ## PUB-4 — Page families (PF-01..PF-08)
 
-- [~] **PUBLIC-190** Home `/{locale}/` — hero, research statement, focus cards, featured projects.
+- [x] **PUBLIC-190** Home `/{locale}/` — hero, research statement, focus cards, featured projects.
 - [ ] **PUBLIC-200** About — profile sections; fetch only `/api/profiles/{locale}/about`.
 - [ ] **PUBLIC-201** Research + publications indexes and details.
 - [ ] **PUBLIC-210** Projects index + detail; sanitized media only.

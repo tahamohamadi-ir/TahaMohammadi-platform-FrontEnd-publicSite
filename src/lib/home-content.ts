@@ -4,6 +4,7 @@
  */
 
 import type { Locale } from './navigation';
+import { shellCopy } from './navigation';
 
 /** profile.identity.{locale}.data.name */
 const displayName: Record<Locale, string> = {
@@ -538,5 +539,32 @@ export function getHomeExploreContent(locale: Locale): HomeExploreContent {
   return {
     title: exploreRailsTitle[locale],
     rails: exploreRails[locale],
+  };
+}
+
+/** availability.phd-2027.{locale} — home collaboration band copy. */
+const collaborationTitle: Record<Locale, string> = {
+  en: '2027 Research Availability',
+  fa: 'آمادگی برای فرصت‌های پژوهشی ۲۰۲۷',
+};
+
+const collaborationMessage: Record<Locale, string> = {
+  en: 'Open to funded PhD and research opportunities for 2027 in Human-Centered AI, Human-AI Interaction, trustworthy AI, visual analytics, intelligent data systems, and digital health.',
+  fa: 'برای فرصت‌های پژوهشی و دکترای دارای تأمین مالی در سال ۲۰۲۷ در حوزه‌های هوش مصنوعی انسان‌محور، تعامل انسان و هوش مصنوعی، هوش مصنوعی قابل‌اعتماد، تحلیل بصری، سامانه‌های هوشمند داده و سلامت دیجیتال آماده گفت‌وگو و همکاری هستم.',
+};
+
+export interface HomeCollaborationContent {
+  title: string;
+  message: string;
+  connectLabel: string;
+  cvLabel: string;
+}
+
+export function getHomeCollaborationContent(locale: Locale): HomeCollaborationContent {
+  return {
+    title: collaborationTitle[locale],
+    message: collaborationMessage[locale],
+    connectLabel: shellCopy.contact[locale],
+    cvLabel: shellCopy.cv[locale],
   };
 }

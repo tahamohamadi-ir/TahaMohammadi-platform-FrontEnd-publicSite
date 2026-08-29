@@ -1,0 +1,41 @@
+---
+import { localePath, type Locale } from '../../lib/navigation';
+import { getHomeCollaborationContent } from '../../lib/home-content';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const content = getHomeCollaborationContent(locale);
+const contactHref = localePath(locale, 'contact');
+const cvHref = localePath(locale, 'cv');
+---
+
+<section class="home-collab" aria-labelledby="home-collab-title">
+  <div class="home-collab__inner">
+    <div class="home-collab__mark" aria-hidden="true">
+      <img
+        src="/media/brand/taha-mark-primary.png"
+        alt=""
+        width="48"
+        height="48"
+        class="home-collab__logo"
+      />
+    </div>
+    <div class="home-collab__copy">
+      <p class="home-collab__eyebrow">{content.title}</p>
+      <h2 id="home-collab-title" class="home-collab__title">
+        {content.message}
+      </h2>
+      <div class="home-collab__actions">
+        <a href={contactHref} class="home-collab__cta home-collab__cta--primary">
+          {content.connectLabel} →
+        </a>
+        <a href={cvHref} class="home-collab__cta home-collab__cta--ghost">
+          {content.cvLabel}
+        </a>
+      </div>
+    </div>
+  </div>
+</section>

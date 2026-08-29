@@ -14,11 +14,17 @@ const projectsHref = localePath(locale, 'projects');
 <section class="home-featured" aria-labelledby="home-featured-title">
   <div class="home-featured__inner">
     <header class="home-featured__header">
-      <h2 id="home-featured-title" class="home-featured__title">{content.title}</h2>
+      <div class="home-section-heading">
+        <h2 id="home-featured-title" class="home-featured__title">{content.title}</h2>
+        <a href={projectsHref} class="home-section-heading__link">
+          {content.viewAll} →
+        </a>
+      </div>
       <p class="home-featured__note">{content.draftNote}</p>
     </header>
 
-    <ul class="home-featured__grid">
+    <div class="home-featured__scroller">
+      <ul class="home-featured__grid">
       {
         content.projects.map((project) => (
           <li>
@@ -45,9 +51,6 @@ const projectsHref = localePath(locale, 'projects');
         ))
       }
     </ul>
-
-    <a href={projectsHref} class="home-featured__view-all">
-      {content.viewAll}
-    </a>
+    </div>
   </div>
 </section>

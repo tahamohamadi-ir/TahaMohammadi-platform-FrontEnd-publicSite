@@ -14,9 +14,14 @@ const researchHref = localePath(locale, 'research');
 <section class="home-publications" aria-labelledby="home-publications-title">
   <div class="home-publications__inner">
     <header class="home-publications__header">
-      <h2 id="home-publications-title" class="home-publications__title">
-        {content.title}
-      </h2>
+      <div class="home-section-heading">
+        <h2 id="home-publications-title" class="home-publications__title">
+          {content.title}
+        </h2>
+        <a href={researchHref} class="home-section-heading__link">
+          {content.viewAll} →
+        </a>
+      </div>
       <p class="home-publications__note">{content.draftNote}</p>
     </header>
 
@@ -36,9 +41,5 @@ const researchHref = localePath(locale, 'research');
         ))
       }
     </ul>
-
-    <a href={researchHref} class="home-publications__view-all">
-      {content.viewAll}
-    </a>
   </div>
 </section>
