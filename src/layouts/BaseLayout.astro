@@ -5,9 +5,10 @@ interface Props {
   title: string;
   lang: string;
   dir: 'rtl' | 'ltr';
+  gateway?: boolean;
 }
 
-const { title, lang, dir } = Astro.props;
+const { title, lang, dir, gateway = false } = Astro.props;
 ---
 
 <!doctype html>
@@ -17,8 +18,15 @@ const { title, lang, dir } = Astro.props;
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
+    <link rel="icon" href="/favicon.png" type="image/png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Newsreader:opsz,wght@8..72,500;8..72,600&display=swap"
+      rel="stylesheet"
+    />
   </head>
-  <body class="min-h-screen bg-canvas text-ink antialiased">
+  <body class:list={['min-h-screen bg-canvas text-ink antialiased', gateway && 'gateway-body']}>
     <slot />
   </body>
 </html>

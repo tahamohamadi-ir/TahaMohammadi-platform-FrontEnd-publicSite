@@ -31,9 +31,11 @@
   --color-focus: #087c73;
   --color-danger: #b3261e;
 
-  /* type tokens */
-  --font-latin: "Inter Variable", system-ui, sans-serif;
-  --font-persian: "Vazirmatn Variable", system-ui, sans-serif;
+  /* type tokens — interim CDN until PUBLIC-050 self-hosted WOFF2 */
+  --font-display-en: "Newsreader", "Georgia", serif;
+  --font-body-en: "Inter", system-ui, sans-serif;
+  --font-latin: var(--font-body-en);
+  --font-persian: "Vazirmatn Variable", "Tahoma", sans-serif;
   --font-body: var(--font-latin);
   --font-display: var(--font-latin);
 
@@ -81,6 +83,11 @@
   --font-display: var(--font-persian);
 }
 
+html[lang="en"] {
+  --font-display: var(--font-display-en);
+  --font-body: var(--font-body-en);
+}
+
 @theme inline {
   --color-canvas: var(--color-canvas);
   --color-surface: var(--color-surface);
@@ -126,4 +133,184 @@
     outline: 2px solid var(--color-focus);
     outline-offset: 2px;
   }
+}
+
+/* Language gateway (PF gateway / language-gateway concept) */
+.gateway-body {
+  overflow: hidden;
+}
+
+.gateway {
+  position: relative;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem 3rem;
+  text-align: center;
+}
+
+.gateway__atmosphere {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: var(--color-canvas);
+  overflow: hidden;
+}
+
+.gateway__atmosphere-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 42%;
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+
+html[data-theme='dark'] .gateway__atmosphere-img--dark,
+html:not([data-theme]) .gateway__atmosphere-img--dark {
+  opacity: 1;
+}
+
+html[data-theme='light'] .gateway__atmosphere-img--light {
+  opacity: 1;
+}
+
+@media (prefers-color-scheme: light) {
+  html:not([data-theme]) .gateway__atmosphere-img--dark {
+    opacity: 0;
+  }
+  html:not([data-theme]) .gateway__atmosphere-img--light {
+    opacity: 1;
+  }
+}
+
+.gateway__toolbar {
+  position: fixed;
+  top: 1rem;
+  inset-inline-end: 1rem;
+  z-index: 2;
+}
+
+.theme-toggle {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--color-signature) 55%, transparent);
+  background: color-mix(in srgb, var(--color-surface) 35%, transparent);
+  color: var(--color-signature);
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+}
+
+.theme-toggle__icon--dark {
+  display: none;
+}
+
+html[data-theme='dark'] .theme-toggle__icon--light,
+html:not([data-theme]) .theme-toggle__icon--light {
+  display: none;
+}
+
+html[data-theme='dark'] .theme-toggle__icon--dark,
+html:not([data-theme]) .theme-toggle__icon--dark {
+  display: inline;
+}
+
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme]) .theme-toggle__icon--light {
+    display: none;
+  }
+  html:not([data-theme]) .theme-toggle__icon--dark {
+    display: inline;
+  }
+}
+
+html[data-theme='light'] .theme-toggle__icon--light {
+  display: inline;
+}
+
+html[data-theme='light'] .theme-toggle__icon--dark {
+  display: none;
+}
+
+.gateway__main {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  max-width: 36rem;
+}
+
+.gateway__mark {
+  width: 4.5rem;
+  height: auto;
+  margin-bottom: 0.5rem;
+}
+
+.gateway__title {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.gateway__title-primary {
+  color: var(--color-ink);
+}
+
+.gateway__title-accent {
+  color: var(--color-brand);
+}
+
+.gateway__prompt {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--color-ink-secondary);
+}
+
+.gateway__prompt--lead {
+  max-width: 28ch;
+  font-size: 0.875rem;
+  color: var(--color-signature);
+  letter-spacing: 0.02em;
+}
+
+.gateway__nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.gateway__locale {
+  min-width: 9rem;
+  padding: 0.85rem 1.75rem;
+  border: 1px solid color-mix(in srgb, var(--color-signature) 70%, transparent);
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--color-surface) 12%, transparent);
+  color: var(--color-ink);
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  text-decoration: none;
+  transition:
+    border-color 140ms ease,
+    background-color 140ms ease,
+    color 140ms ease;
+}
+
+.gateway__locale:hover {
+  border-color: var(--color-brand);
+  color: var(--color-brand);
+  background: color-mix(in srgb, var(--color-brand-soft) 40%, transparent);
 }

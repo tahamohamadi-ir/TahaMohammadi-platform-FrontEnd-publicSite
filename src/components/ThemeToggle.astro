@@ -1,0 +1,46 @@
+---
+/** Wave 1 gateway: system/light/dark via `data-theme` on `<html>`. */
+---
+
+<button
+  type="button"
+  id="theme-toggle"
+  class="theme-toggle"
+  aria-label="Toggle color theme"
+  title="Toggle theme"
+>
+  <span class="theme-toggle__icon theme-toggle__icon--light" aria-hidden="true">☀</span>
+  <span class="theme-toggle__icon theme-toggle__icon--dark" aria-hidden="true">☾</span>
+</button>
+
+<script is:inline>
+  (function () {
+    const storageKey = 'tm-theme';
+    const root = document.documentElement;
+
+    function systemTheme() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+
+    function applyTheme(mode) {
+      const resolved = mode === 'system' ? systemTheme() : mode;
+      root.dataset.theme = resolved;
+      root.style.colorScheme = resolved;
+    }
+
+    const stored = localStorage.getItem(storageKey) || 'system';
+    applyTheme(stored);
+
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+      if ((localStorage.getItem(storageKey) || 'system') === 'system') applyTheme('system');
+    });
+
+    document.getElementById('theme-toggle')?.addEventListener('click', () => {
+      const current = localStorage.getItem(storageKey) || 'system';
+      const order = ['system', 'light', 'dark'];
+      const next = order[(order.indexOf(current) + 1) % order.length];
+      localStorage.setItem(storageKey, next);
+      applyTheme(next);
+    });
+  })();
+</script>
