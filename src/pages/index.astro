@@ -6,44 +6,41 @@ import ThemeToggle from '../components/ThemeToggle.astro';
 <BaseLayout title="Taha Mohammadi — Language gateway" lang="en" dir="ltr" gateway>
   <div class="gateway">
     <div class="gateway__atmosphere" aria-hidden="true">
-      <picture>
-        <source srcset="/media/art/portal-centered-light.png" media="(prefers-color-scheme: light)" />
-        <img
-          class="gateway__atmosphere-img gateway__atmosphere-img--dark"
-          src="/media/art/portal-centered-dark.png"
-          alt=""
-          width="1920"
-          height="1080"
-          decoding="async"
-          fetchpriority="high"
-        />
-        <img
-          class="gateway__atmosphere-img gateway__atmosphere-img--light"
-          src="/media/art/portal-centered-light.png"
-          alt=""
-          width="1920"
-          height="1080"
-          decoding="async"
-        />
-      </picture>
+      <img
+        class="gateway__atmosphere-img gateway__atmosphere-img--dark"
+        src="/media/art/portal-centered-dark.png"
+        alt=""
+        width="1920"
+        height="1080"
+        decoding="async"
+        fetchpriority="high"
+      />
+      <img
+        class="gateway__atmosphere-img gateway__atmosphere-img--light"
+        src="/media/art/portal-centered-light.png"
+        alt=""
+        width="1920"
+        height="1080"
+        decoding="async"
+      />
     </div>
 
     <header class="gateway__toolbar">
       <ThemeToggle />
     </header>
 
-    <main class="gateway__main">
+    <section class="gateway__hero" aria-labelledby="gateway-name">
       <div class="gateway__brand" aria-hidden="true">
         <img
           src="/media/brand/taha-mark-primary.png"
           alt=""
-          width="72"
-          height="72"
+          width="56"
+          height="56"
           class="gateway__mark"
         />
       </div>
 
-      <h1 class="gateway__title">
+      <h1 id="gateway-name" class="gateway__title">
         <span class="gateway__title-primary">Taha</span>
         <span class="gateway__title-accent"> Mohammadi</span>
       </h1>
@@ -51,13 +48,14 @@ import ThemeToggle from '../components/ThemeToggle.astro';
       <p class="gateway__prompt gateway__prompt--lead">
         Software Engineer &amp; Researcher in Human-Centered AI, Data Systems, and Visual Analytics
       </p>
+    </section>
 
+    <footer class="gateway__footer">
       <p class="gateway__prompt">Choose your language</p>
-
       <nav aria-label="Language selection" class="gateway__nav">
         <a href="/en/" class="gateway__locale" lang="en">English</a>
         <a href="/fa/" class="gateway__locale" lang="fa">فارسی</a>
       </nav>
-    </main>
+    </footer>
   </div>
 </BaseLayout>
