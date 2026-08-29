@@ -1,0 +1,29 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Taha Mohammadi — Language gateway" lang="en" dir="ltr">
+  <main
+    class="mx-auto flex min-h-screen max-w-page flex-col items-center justify-center gap-6 px-6 py-12 text-center"
+  >
+    <p class="text-sm uppercase tracking-wide text-ink-tertiary">Scaffold</p>
+    <h1 class="text-3xl font-semibold text-ink">Taha Mohammadi</h1>
+    <p class="max-w-narrow text-ink-secondary">
+      Wave 0 language gateway. Choose a locale to continue. No owner content is published yet.
+    </p>
+    <nav aria-label="Language selection" class="flex flex-wrap items-center justify-center gap-4">
+      <a
+        href="/fa/"
+        class="rounded-md border border-border-subtle bg-surface px-6 py-3 text-brand hover:border-brand hover:bg-brand-soft"
+      >
+        فارسی
+      </a>
+      <a
+        href="/en/"
+        class="rounded-md border border-border-subtle bg-surface px-6 py-3 text-brand hover:border-brand hover:bg-brand-soft"
+      >
+        English
+      </a>
+    </nav>
+  </main>
+</BaseLayout>

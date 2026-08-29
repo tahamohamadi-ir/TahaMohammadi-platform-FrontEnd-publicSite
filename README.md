@@ -5,7 +5,7 @@ Greenfield public frontend for the bilingual personal platform. This repository 
 ## Current state
 
 - Repository and governance baseline: ready.
-- Runtime scaffold: not started; the accepted baseline is Astro, TypeScript, Tailwind CSS, and bounded React islands.
+- Runtime scaffold: Wave 0 complete (Astro 7, Tailwind 4, i18n gateway); `npm run build` green.
 - Canonical cross-repository contracts: `../../Docs/` in the local platform workspace.
 - Public-site execution plan: [ROADMAP.md](ROADMAP.md) and [TASK-LIST.md](TASK-LIST.md).
 

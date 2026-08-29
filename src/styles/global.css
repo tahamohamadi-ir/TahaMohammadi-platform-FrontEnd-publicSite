@@ -1,0 +1,129 @@
+@import "tailwindcss";
+
+/*
+ * Semantic tokens mapped from Docs/references/frontend-design-authority/agent-kit/tokens.json
+ * Wave 0: manual mapping of key colors, spacing, radius, and type scales.
+ */
+
+:root {
+  color-scheme: light;
+
+  /* semanticLight */
+  --color-canvas: #f7f8f5;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f1f4f2;
+  --color-ink: #182328;
+  --color-ink-secondary: #616e74;
+  --color-ink-tertiary: #7c8a8f;
+  --color-inverse: #ffffff;
+  --color-brand: #087c73;
+  --color-brand-hover: #0a6a62;
+  --color-brand-soft: #e4f7f4;
+  --color-signature: #a77b28;
+  --color-signature-soft: #f3e8cf;
+  --color-research: #6047b8;
+  --color-research-soft: #eeeaf9;
+  --color-context: #137a62;
+  --color-context-soft: #e5f2ed;
+  --color-border-subtle: #dde5e3;
+  --color-border-strong: #b9c7c3;
+  --color-control-border: #748682;
+  --color-focus: #087c73;
+  --color-danger: #b3261e;
+
+  /* type tokens */
+  --font-latin: "Inter Variable", system-ui, sans-serif;
+  --font-persian: "Vazirmatn Variable", system-ui, sans-serif;
+  --font-body: var(--font-latin);
+  --font-display: var(--font-latin);
+
+  /* spacing (selected scale) */
+  --spacing-4: 16px;
+  --spacing-6: 24px;
+  --spacing-8: 32px;
+
+  /* radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+
+    /* semanticDark */
+    --color-canvas: #071225;
+    --color-surface: #0b1630;
+    --color-surface-muted: #122343;
+    --color-ink: #f7f3ea;
+    --color-ink-secondary: #b8c5cc;
+    --color-ink-tertiary: #8797a0;
+    --color-inverse: #071225;
+    --color-brand: #16b8a6;
+    --color-brand-hover: #42d1c2;
+    --color-brand-soft: #103b40;
+    --color-signature: #c89b3c;
+    --color-signature-soft: #332b1c;
+    --color-research: #8b75dc;
+    --color-research-soft: #272341;
+    --color-context: #42a98c;
+    --color-context-soft: #17372f;
+    --color-border-subtle: #263955;
+    --color-border-strong: #405476;
+    --color-control-border: #71839e;
+    --color-focus: #6be6d9;
+    --color-danger: #ef6b68;
+  }
+}
+
+[lang="fa"] {
+  --font-body: var(--font-persian);
+  --font-display: var(--font-persian);
+}
+
+@theme inline {
+  --color-canvas: var(--color-canvas);
+  --color-surface: var(--color-surface);
+  --color-surface-muted: var(--color-surface-muted);
+  --color-ink: var(--color-ink);
+  --color-ink-secondary: var(--color-ink-secondary);
+  --color-ink-tertiary: var(--color-ink-tertiary);
+  --color-inverse: var(--color-inverse);
+  --color-brand: var(--color-brand);
+  --color-brand-hover: var(--color-brand-hover);
+  --color-brand-soft: var(--color-brand-soft);
+  --color-signature: var(--color-signature);
+  --color-signature-soft: var(--color-signature-soft);
+  --color-research: var(--color-research);
+  --color-research-soft: var(--color-research-soft);
+  --color-context: var(--color-context);
+  --color-context-soft: var(--color-context-soft);
+  --color-border-subtle: var(--color-border-subtle);
+  --color-border-strong: var(--color-border-strong);
+  --color-control-border: var(--color-control-border);
+  --color-focus: var(--color-focus);
+  --color-danger: var(--color-danger);
+
+  --font-sans: var(--font-body);
+  --font-display: var(--font-display);
+
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+
+  --max-width-page: 1280px;
+  --max-width-prose: 62ch;
+  --max-width-narrow: 42ch;
+}
+
+@layer base {
+  html {
+    font-family: var(--font-body);
+    background-color: var(--color-canvas);
+    color: var(--color-ink);
+  }
+
+  a:focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+}

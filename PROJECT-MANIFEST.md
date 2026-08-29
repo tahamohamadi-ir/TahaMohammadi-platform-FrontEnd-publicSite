@@ -5,7 +5,7 @@
 | Repository | `tahamohamadi-ir/TahaMohammadi-platform-FrontEnd-publicSite` |
 | Local path | `D:\Project\tahamohammadi-platform\Front-End\public-site` |
 | Product role | Public bilingual site |
-| Status | Documentation baseline; Astro runtime scaffold pending implementation |
+| Status | Wave 0 runtime scaffold implemented (`npm run build` green); feature pages pending |
 | Primary upstream | Backend public API |
 | Canonical shared docs | `D:\Project\tahamohammadi-platform\Docs` |
 | Design authority | `D:\Project\tahamohammadi-platform\Docs\references\frontend-design-authority` |

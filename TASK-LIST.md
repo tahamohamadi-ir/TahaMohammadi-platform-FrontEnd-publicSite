@@ -8,16 +8,16 @@ Status: `[x]` done, `[ ]` open, `[~]` in progress.
 
 ## PUB-0 — Scaffold and toolchain
 
-- [ ] **PUBLIC-010** Init Astro 7 + TypeScript 5.9; commit lockfile; `npm run build` green.
+- [x] **PUBLIC-010** Init Astro 7 + TypeScript 5.9; commit lockfile; `npm run build` green.
 - [ ] **PUBLIC-011** ESLint + Prettier aligned with repo conventions.
 - [ ] **PUBLIC-012** GitHub Actions: install, typecheck, build (Phase 1 CI).
 - [ ] **PUBLIC-013** ADRs: package manager, routing, deployment, testing, browsers.
 
 ## PUB-1 — i18n, theme, fonts
 
-- [ ] **PUBLIC-020** Tailwind CSS 4 on semantic CSS variables from design authority.
-- [ ] **PUBLIC-030** `astro:i18n` for `fa`/`en`; strict no-fallback policy.
-- [ ] **PUBLIC-040** Language gateway `/` per `ROUTE-REGISTRY.md`.
+- [x] **PUBLIC-020** Tailwind CSS 4 on semantic CSS variables from design authority.
+- [x] **PUBLIC-030** `astro:i18n` for `fa`/`en`; strict no-fallback policy.
+- [x] **PUBLIC-040** Language gateway `/` per `ROUTE-REGISTRY.md`.
 - [ ] **PUBLIC-050** Self-host Newsreader, Inter, Estedad, Vazirmatn (OFL + license files).
 - [ ] **PUBLIC-060** `--font-display` / `--font-body` per locale; computed-style tests.
 - [ ] **PUBLIC-070** Light / Dark / system theme island; `prefers-color-scheme` respect.
