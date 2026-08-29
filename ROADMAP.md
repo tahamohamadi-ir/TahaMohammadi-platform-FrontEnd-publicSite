@@ -1,6 +1,6 @@
 # Public Site Roadmap
 
-1. **P0 — Decisions:** apply the accepted static-first Astro architecture; accept package-manager, detailed routing, deployment, testing, and browser-support ADRs.
+1. **P0 — Pre-scaffold gates:** pass `Docs\10-tracking\PRE-SCAFFOLD-READINESS.md`; resolve package-manager, detailed routing, deployment, testing, browser support, font licensing, OpenAPI artifact, and visual-baseline decisions.
 2. **P1 — Foundation:** scaffold, CI, environment validation, tokens, typography, locale router, API client, state primitives.
 3. **P2 — Shell:** language gateway, header, navigation, footer, theme, skip link, metadata.
 4. **P3 — Core pages:** bilingual home, about, CV/resume, contact, search.
