@@ -20,7 +20,7 @@ Status: `[x]` done, `[ ]` open, `[~]` in progress.
 - [x] **PUBLIC-040** Language gateway `/` per `ROUTE-REGISTRY.md`.
 - [x] **PUBLIC-050** Self-host Newsreader, Inter, Estedad, Vazirmatn (OFL + license files). WOFF2 under `public/fonts/`; `@font-face` in `src/styles/fonts.css`; CDN removed from `BaseLayout.astro`; locale tokens wired per `FONT-ACQUISITION-PLAN.md`. **Remaining for PS-10:** subset/coverage fixtures, computed-style QA (PUBLIC-060), CLS/preload budget (PUBLIC-290).
 - [ ] **PUBLIC-060** `--font-display` / `--font-body` per locale; computed-style tests.
-- [x] **PUBLIC-070** Light / Dark / system theme foundation; resolved before paint, persisted, and multi-instance safe. Evidence: WP-10 focused Playwright acceptance.
+- [x] **PUBLIC-070** Light / Dark / system theme foundation; resolved before paint, persisted, and multi-instance safe. Evidence: WP-10 focused Playwright acceptance covers requested/resolved state, preference changes, persistence, event detail/count, and multiple controls.
 - [x] **PUBLIC-080** Focus, skip link, reduced-motion baseline. Evidence: WP-10 keyboard-focus and reduced-motion acceptance.
 
 ## PUB-2 — API and routes
@@ -33,7 +33,7 @@ Status: `[x]` done, `[ ]` open, `[~]` in progress.
 
 ## PUB-3 — Design system and atlas
 
-- [x] **PUBLIC-130** Pin and validate semantic tokens from `agent-kit/tokens.json`; portable snapshot validates locally and against central authority.
+- [x] **PUBLIC-130** Pin and validate semantic tokens from `agent-kit/tokens.json`; complete primitive/semantic/type/motion/layout/component projection and portable snapshot validate locally and against central authority.
 - [ ] **PUBLIC-140** Primitives per `components.json` (24 components).
 - [~] **PUBLIC-150** Header, Footer, shell, navigation (RTL/LTR).
 - [ ] **PUBLIC-160** Six templates per `templates.json`.

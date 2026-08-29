@@ -1,4 +1,5 @@
-/* Portable runtime projection of contracts/design-authority/tokens.json. */
+/* Single runtime projection of contracts/design-authority/tokens.json. */
+
 :root {
   /* Primitive layer */
   --primitive-navy-950: #071225;
@@ -14,15 +15,26 @@
   --primitive-coral-500: #d45f45;
   --primitive-white: #ffffff;
 
-  /* Semantic, type, motion, and layout layer */
-  --font-display-en: "Newsreader Variable", Georgia, serif;
+  /* Semantic, typography, motion, and layout layers */
+  --font-display-en: "Newsreader Variable", "Georgia", serif;
   --font-body-en: "Inter Variable", system-ui, sans-serif;
   --font-display-fa: "Estedad Variable", "Vazirmatn Variable", sans-serif;
-  --font-body-fa: "Vazirmatn Variable", Tahoma, sans-serif;
+  --font-body-fa: "Vazirmatn Variable", "Tahoma", sans-serif;
   --font-display: var(--font-display-en);
   --font-body: var(--font-body-en);
   --font-latin: "Inter Variable";
   --font-persian: "Vazirmatn Variable";
+  --font-size-xs: 12px;
+  --font-size-sm: 14px;
+  --font-size-base: 16px;
+  --font-size-lg: 18px;
+  --font-size-xl: 20px;
+  --font-size-2xl: 24px;
+  --font-size-3xl: 30px;
+  --font-size-display-min: 32px;
+  --font-size-display-max: 48px;
+  --font-line-height-latin-body: 1.6;
+  --font-line-height-persian-body: 1.9;
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
@@ -49,7 +61,20 @@
   --motion-base: 200ms;
   --motion-slow: 280ms;
   --motion-ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --motion-scale-max: 1.02;
   --motion-reduced-duration: 0.01ms;
+  --motion-reduced-transform: none;
+  --motion-reduced-continuous-motion: false;
+  --motion-reduced-graph-mode: 2d-or-list;
+  --layout-breakpoint-320: 320px;
+  --layout-breakpoint-390: 390px;
+  --layout-breakpoint-768: 768px;
+  --layout-breakpoint-1024: 1024px;
+  --layout-breakpoint-1280: 1280px;
+  --layout-breakpoint-1440: 1440px;
+  --layout-columns-compact: 4;
+  --layout-columns-tablet: 8;
+  --layout-columns-desktop: 12;
   --layout-page: 1280px;
   --layout-prose: 62ch;
   --layout-narrow: 42ch;
@@ -119,7 +144,40 @@ html[data-theme='dark'] {
   --color-danger: #ef6b68;
 }
 
+/* This fallback only applies before the early theme bootstrap runs. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    color-scheme: dark;
+    --color-canvas: #071225;
+    --color-surface: #0b1630;
+    --color-surface-muted: #122343;
+    --color-ink: #f7f3ea;
+    --color-ink-secondary: #b8c5cc;
+    --color-ink-tertiary: #8797a0;
+    --color-inverse: #071225;
+    --color-brand: #16b8a6;
+    --color-brand-hover: #42d1c2;
+    --color-brand-soft: #103b40;
+    --color-signature: #c89b3c;
+    --color-signature-soft: #332b1c;
+    --color-research: #8b75dc;
+    --color-research-soft: #272341;
+    --color-context: #42a98c;
+    --color-context-soft: #17372f;
+    --color-border-subtle: #263955;
+    --color-border-strong: #405476;
+    --color-control-border: #71839e;
+    --color-focus: #6be6d9;
+    --color-danger: #ef6b68;
+  }
+}
+
 html[lang='fa'] {
   --font-display: var(--font-display-fa);
   --font-body: var(--font-body-fa);
+}
+
+html[lang='en'] {
+  --font-display: var(--font-display-en);
+  --font-body: var(--font-body-en);
 }
