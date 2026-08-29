@@ -7,7 +7,8 @@
 3. `../../Docs/00-governance/AUTHORITY-ORDER.md`
 4. `../../Docs/03-contracts/`
 5. `../../Docs/04-design/`
-6. `TASK-LIST.md`
+6. `../../Docs/references/frontend-design-authority/README.md`
+7. `TASK-LIST.md`
 
 ## Scope
 
@@ -17,6 +18,9 @@ This repository owns the public browsing experience only. It may consume publish
 
 - Treat the new frontend as greenfield. Do not copy code or CSS from `D:\Project\Taha-personal-platform\apps\web`.
 - Reference assets are evidence, not permission to invent copy or change their meaning.
+- Use `../../Docs/references/frontend-design-authority/` only; never treat the ignored `../Assets` local input as routine implementation authority.
+- Treat `concepts/` as UI/UX authority and `concepts/page-families/` as required visual detail. Do not reproduce text embedded in concepts as public content.
+- Do not adopt a runtime image until its central Asset Promotion Ledger row is approved.
 - Never invent API fields, endpoints, profile data, links, publication records, or translation status.
 - Keep locale in the URL and set `lang`, `dir`, canonical, and alternate links from one route contract.
 - Build every data surface with loading, empty, error, unavailable, and ready states.

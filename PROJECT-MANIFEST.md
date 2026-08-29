@@ -8,8 +8,8 @@
 | Status | Documentation baseline; Astro runtime scaffold pending implementation |
 | Primary upstream | Backend public API |
 | Canonical shared docs | `D:\Project\tahamohammadi-platform\Docs` |
-| Reference evidence | `Docs\references\site-redesign` at workspace root |
-| Legacy source policy | Inspectable for migration evidence; code reuse prohibited |
+| Design authority | `D:\Project\tahamohammadi-platform\Docs\references\frontend-design-authority` |
+| Local intake policy | `..\Assets` is ignored input only; imports and implementation decisions are prohibited |
 | Accepted stack | Astro, TypeScript, Tailwind CSS, bounded React islands |
 
 ## Owned outcomes
