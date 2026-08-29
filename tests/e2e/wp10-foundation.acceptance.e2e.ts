@@ -54,7 +54,7 @@ test.describe('WP-10 foundation acceptance', () => {
     await expect(controls).toHaveCount(1);
     await expect(controls.first()).toHaveAttribute('data-theme-mode', 'system');
     await expect(controls.first()).toHaveAccessibleName('Toggle color theme');
-    await expect(controls.first()).toHaveAttribute('aria-pressed', 'false');
+    await expect(controls.first()).toHaveAttribute('aria-pressed', 'mixed');
     await expect(page.locator('.theme-toggle__mode')).toHaveCount(0);
     await expect(page.locator('html')).toHaveAttribute('data-theme-requested', 'system');
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
@@ -68,7 +68,7 @@ test.describe('WP-10 foundation acceptance', () => {
     await clonedControl.click({ force: true });
     await expect(page.locator('html')).toHaveAttribute('data-theme-requested', 'light');
     await expect(clonedControl).toHaveAttribute('data-theme-mode', 'light');
-    await expect(clonedControl).toHaveAttribute('aria-pressed', 'true');
+    await expect(clonedControl).toHaveAttribute('aria-pressed', 'false');
     await expect.poll(() => page.evaluate(() => window.__tmThemeEvents)).toEqual([
       { requested: 'system', resolved: 'dark' },
       { requested: 'light', resolved: 'light' },
@@ -76,14 +76,18 @@ test.describe('WP-10 foundation acceptance', () => {
     await expect.poll(() => page.evaluate(() => localStorage.getItem('tm-theme'))).toBe('light');
     await controls.first().click();
     await expect(page.locator('html')).toHaveAttribute('data-theme-requested', 'dark');
+    await expect(controls.first()).toHaveAttribute('aria-pressed', 'true');
     await controls.first().click();
     await expect(page.locator('html')).toHaveAttribute('data-theme-requested', 'system');
+    await expect(controls.first()).toHaveAttribute('aria-pressed', 'mixed');
     await page.emulateMedia({ colorScheme: 'light' });
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+    await expect(controls.first()).toHaveAttribute('aria-pressed', 'mixed');
     await expect.poll(() => page.evaluate(() => window.__tmThemeEvents.at(-1))).toEqual({ requested: 'system', resolved: 'light' });
     await page.reload();
     await expect(page.locator('html')).toHaveAttribute('data-theme-requested', 'system');
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+    await expect(controls.first()).toHaveAttribute('aria-pressed', 'mixed');
   });
 
   test('persists an explicit requested mode and emits one resolution event after reload @wp10-foundation', async ({ page }) => {
@@ -106,6 +110,7 @@ test.describe('WP-10 foundation acceptance', () => {
     await page.reload();
     await expect(page.locator('html')).toHaveAttribute('data-theme-requested', 'light');
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+    await expect(toggle).toHaveAttribute('aria-pressed', 'false');
     await expect.poll(() => page.evaluate(() => window.__tmThemeEvents)).toEqual([
       { requested: 'light', resolved: 'light' },
     ]);

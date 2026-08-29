@@ -78,7 +78,9 @@ const { title, lang, dir, gateway = false, canonical, alternates } = Astro.props
         /**
          * Stable theme interface: `tm-themechange` is dispatched once after
          * each resolution with `{ requested: 'system'|'light'|'dark',
-         * resolved: 'light'|'dark' }` in `event.detail`.
+         * resolved: 'light'|'dark' }` in `event.detail`. The requested mode
+         * is also exposed as `aria-pressed="mixed"` for system,
+         * `aria-pressed="false"` for light, or `aria-pressed="true"` for dark.
          */
         function systemTheme() {
           return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
@@ -87,7 +89,8 @@ const { title, lang, dir, gateway = false, canonical, alternates } = Astro.props
         function updateControls(requested) {
           document.querySelectorAll('[data-theme-toggle]').forEach((control) => {
             control.setAttribute('data-theme-mode', requested);
-            control.setAttribute('aria-pressed', requested === 'system' ? 'false' : 'true');
+            const pressed = requested === 'system' ? 'mixed' : requested === 'light' ? 'false' : 'true';
+            control.setAttribute('aria-pressed', pressed);
           });
         }
 
