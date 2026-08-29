@@ -7,13 +7,15 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "generate:api-types": "node scripts/generate-api-types.mjs"
   },
   "dependencies": {
     "astro": "^7.2.9"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.1.18",
+    "openapi-typescript": "^7.13.0",
     "tailwindcss": "^4.1.18",
     "typescript": "~5.9.3"
   }
