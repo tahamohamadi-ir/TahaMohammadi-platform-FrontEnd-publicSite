@@ -27,9 +27,9 @@ Status: `[x]` done, `[ ]` open, `[~]` in progress.
 
 - [x] PS-05 OpenAPI accepted; client generation unblocked.
 - [x] **PUBLIC-090** Generate types from accepted public OpenAPI hash.
-- [~] **PUBLIC-100** Typed client; enforce published-only gate on reads.
-- [ ] **PUBLIC-110** Route helpers, canonical URLs, hreflang, alternates.
-- [ ] **PUBLIC-120** Env schema + dev proxy to backend (`LOCAL-DEVELOPMENT.md`).
+- [x] **PUBLIC-100** Typed client; enforce published-only gate on reads.
+- [x] **PUBLIC-110** Route helpers, canonical URLs, hreflang, alternates.
+- [x] **PUBLIC-120** Env schema + dev proxy to backend (`LOCAL-DEVELOPMENT.md`).
 
 ## PUB-3 — Design system and atlas
 
