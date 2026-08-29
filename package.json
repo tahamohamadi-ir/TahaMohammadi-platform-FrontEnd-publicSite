@@ -8,6 +8,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "generate:api-types": "node scripts/generate-api-types.mjs"
   },
   "dependencies": {
@@ -17,6 +19,7 @@
     "@tailwindcss/vite": "^4.1.18",
     "openapi-typescript": "^7.13.0",
     "tailwindcss": "^4.1.18",
-    "typescript": "~5.9.3"
+    "typescript": "~5.9.3",
+    "vitest": "^3.2.4"
   }
 }

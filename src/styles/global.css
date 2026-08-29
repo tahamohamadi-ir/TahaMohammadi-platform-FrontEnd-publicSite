@@ -971,3 +971,212 @@ html[data-theme='dark'] .theme-toggle--shell {
     display: none;
   }
 }
+
+/* Home research statement + constellation — PF-01 */
+.home-research {
+  padding: 0 1.5rem 2.5rem;
+}
+
+.home-research__inner {
+  display: grid;
+  gap: 2rem;
+  max-width: var(--max-width-page);
+  margin-inline: auto;
+  padding: 2rem;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--color-surface-muted) 55%, transparent);
+}
+
+@media (min-width: 900px) {
+  .home-research__inner {
+    grid-template-columns: minmax(0, 1.1fr) minmax(12rem, 0.9fr);
+    align-items: center;
+  }
+}
+
+.home-research__eyebrow {
+  margin: 0 0 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-research);
+}
+
+.home-research__title {
+  margin: 0 0 0.75rem;
+  font-family: var(--font-display);
+  font-size: clamp(1.35rem, 2.8vw, 1.85rem);
+  line-height: 1.25;
+  color: var(--color-ink);
+}
+
+.home-research__lead {
+  margin: 0 0 1.25rem;
+  max-width: var(--max-width-prose);
+  color: var(--color-ink-secondary);
+  line-height: 1.65;
+}
+
+.home-research__cta {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid color-mix(in srgb, var(--color-research) 55%, transparent);
+  color: var(--color-research);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.home-research__cta:hover {
+  background: color-mix(in srgb, var(--color-research-soft) 70%, transparent);
+}
+
+.home-constellation {
+  position: relative;
+  width: min(100%, 18rem);
+  aspect-ratio: 1;
+  margin-inline: auto;
+}
+
+.home-constellation__node {
+  position: absolute;
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  background: var(--color-brand);
+  box-shadow: 0 0 0.75rem color-mix(in srgb, var(--color-brand) 55%, transparent);
+}
+
+.home-constellation__node--a {
+  top: 18%;
+  left: 22%;
+}
+
+.home-constellation__node--b {
+  top: 34%;
+  right: 18%;
+}
+
+.home-constellation__node--c {
+  bottom: 28%;
+  left: 38%;
+}
+
+.home-constellation__node--d {
+  bottom: 16%;
+  right: 30%;
+}
+
+.home-constellation__line {
+  position: absolute;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--color-brand) 45%, transparent),
+    transparent
+  );
+  transform-origin: left center;
+}
+
+.home-constellation__line--ab {
+  top: 22%;
+  left: 24%;
+  width: 52%;
+  transform: rotate(12deg);
+}
+
+.home-constellation__line--bc {
+  top: 42%;
+  left: 30%;
+  width: 46%;
+  transform: rotate(38deg);
+}
+
+.home-constellation__line--cd {
+  bottom: 24%;
+  left: 40%;
+  width: 34%;
+  transform: rotate(-18deg);
+}
+
+/* Home featured projects */
+.home-featured {
+  padding: 0 1.5rem 3.5rem;
+}
+
+.home-featured__inner {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  max-width: var(--max-width-page);
+  margin-inline: auto;
+}
+
+.home-featured__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  color: var(--color-ink);
+}
+
+.home-featured__note {
+  margin: 0.35rem 0 0;
+  font-size: 0.85rem;
+  color: var(--color-ink-tertiary);
+}
+
+.home-featured__grid {
+  display: grid;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 768px) {
+  .home-featured__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.home-featured__card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  height: 100%;
+  padding: 1.25rem;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.home-featured__card-title {
+  margin: 0;
+  font-size: 1.05rem;
+  color: var(--color-ink);
+}
+
+.home-featured__card-excerpt {
+  margin: 0;
+  flex: 1;
+  color: var(--color-ink-secondary);
+  line-height: 1.55;
+}
+
+.home-featured__card-status {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--color-signature);
+}
+
+.home-featured__view-all {
+  align-self: flex-start;
+  color: var(--color-brand);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}

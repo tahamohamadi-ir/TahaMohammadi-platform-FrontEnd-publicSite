@@ -1,0 +1,39 @@
+---
+import { localePath, type Locale } from '../../lib/navigation';
+import { getHomeFeaturedContent } from '../../lib/home-content';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const content = getHomeFeaturedContent(locale);
+const projectsHref = localePath(locale, 'projects');
+---
+
+<section class="home-featured" aria-labelledby="home-featured-title">
+  <div class="home-featured__inner">
+    <header class="home-featured__header">
+      <h2 id="home-featured-title" class="home-featured__title">{content.title}</h2>
+      <p class="home-featured__note">{content.draftNote}</p>
+    </header>
+
+    <ul class="home-featured__grid">
+      {
+        content.projects.map((project) => (
+          <li>
+            <article class="home-featured__card">
+              <h3 class="home-featured__card-title">{project.title}</h3>
+              <p class="home-featured__card-excerpt">{project.excerpt}</p>
+              <p class="home-featured__card-status">{project.statusLabel}</p>
+            </article>
+          </li>
+        ))
+      }
+    </ul>
+
+    <a href={projectsHref} class="home-featured__view-all">
+      {content.viewAll}
+    </a>
+  </div>
+</section>

@@ -1,0 +1,38 @@
+---
+import { localePath, type Locale } from '../../lib/navigation';
+import { getHomeResearchContent } from '../../lib/home-content';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const content = getHomeResearchContent(locale);
+const researchHref = localePath(locale, 'research');
+---
+
+<section class="home-research" aria-labelledby="home-research-title">
+  <div class="home-research__inner">
+    <div class="home-research__copy">
+      <p class="home-research__eyebrow">{content.title}</p>
+      <h2 id="home-research-title" class="home-research__title">
+        {content.excerpt}
+      </h2>
+      <p class="home-research__lead">{content.lead}</p>
+      <a href={researchHref} class="home-research__cta">
+        {content.cta}
+      </a>
+    </div>
+    <div class="home-research__visual" aria-hidden="true">
+      <div class="home-constellation">
+        <span class="home-constellation__node home-constellation__node--a"></span>
+        <span class="home-constellation__node home-constellation__node--b"></span>
+        <span class="home-constellation__node home-constellation__node--c"></span>
+        <span class="home-constellation__node home-constellation__node--d"></span>
+        <span class="home-constellation__line home-constellation__line--ab"></span>
+        <span class="home-constellation__line home-constellation__line--bc"></span>
+        <span class="home-constellation__line home-constellation__line--cd"></span>
+      </div>
+    </div>
+  </div>
+</section>

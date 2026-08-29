@@ -43,6 +43,83 @@ const focusAreasLabel: Record<Locale, string> = {
   fa: 'حوزه‌های تمرکز',
 };
 
+/** research.statement.{locale}.title */
+const researchTitle: Record<Locale, string> = {
+  en: 'Research Statement',
+  fa: 'بیانیه پژوهشی',
+};
+
+/** research.statement.{locale}.excerpt */
+const researchExcerpt: Record<Locale, string> = {
+  en: 'How can intelligent systems extend human capability without obscuring evidence, uncertainty, or control?',
+  fa: 'سامانه‌های هوشمند چگونه می‌توانند توانایی انسان را افزایش دهند، بدون آن‌که شواهد، عدم‌قطعیت یا کنترل را پنهان کنند؟',
+};
+
+/** research.statement.{locale}.body_markdown — first paragraph only for home. */
+const researchLead: Record<Locale, string> = {
+  en: 'My research interest is centered on a practical question: how can intelligent systems extend human capability without obscuring evidence, uncertainty, or control?',
+  fa: 'محور اصلی علاقه پژوهشی من یک پرسش عملی است: سامانه‌های هوشمند چگونه می‌توانند توانایی انسان را افزایش دهند، بدون آن‌که شواهد، عدم‌قطعیت یا امکان کنترل را پنهان کنند؟',
+};
+
+const researchCta: Record<Locale, string> = {
+  en: 'Read research profile',
+  fa: 'مشاهدهٔ پروژه‌های پژوهشی',
+};
+
+const featuredTitle: Record<Locale, string> = {
+  en: 'Featured projects',
+  fa: 'پروژه‌های برجسته',
+};
+
+const featuredDraftNote: Record<Locale, string> = {
+  en: 'Draft preview from owner seed — not yet published via API.',
+  fa: 'پیش‌نمایش پیش‌نویس از seed مالک — هنوز از API منتشر نشده است.',
+};
+
+const viewAllProjects: Record<Locale, string> = {
+  en: 'View all projects',
+  fa: 'همهٔ پروژه‌ها',
+};
+
+export interface FeaturedProjectCard {
+  slug: string;
+  title: string;
+  excerpt: string;
+  statusLabel: string;
+}
+
+/** Public draft-safe featured projects from seed v1.1 (not API-backed). */
+const featuredProjects: Record<Locale, FeaturedProjectCard[]> = {
+  en: [
+    {
+      slug: 'pars-sql-vtd-edge',
+      title: 'PARS-SQL / VTD-Edge',
+      excerpt: 'Reliable Persian natural-language interaction with structured data.',
+      statusLabel: 'Ongoing research and engineering project',
+    },
+    {
+      slug: 'organizational-dashboard-research',
+      title: 'Organizational Dashboard Research & Design',
+      excerpt: 'Research and design across nine organizational dashboard suites.',
+      statusLabel: '2022–2025',
+    },
+  ],
+  fa: [
+    {
+      slug: 'pars-sql-vtd-edge',
+      title: 'PARS-SQL / VTD-Edge',
+      excerpt: 'تعامل قابل‌اعتماد زبان طبیعی فارسی با داده‌های ساختاریافته.',
+      statusLabel: 'پروژه پژوهشی و مهندسی در حال توسعه',
+    },
+    {
+      slug: 'organizational-dashboard-research',
+      title: 'پژوهش و طراحی داشبوردهای سازمانی',
+      excerpt: 'پژوهش و طراحی در نه مجموعه داشبورد سازمانی.',
+      statusLabel: '۱۴۰۱–۱۴۰۴',
+    },
+  ],
+};
+
 export interface HomeHeroContent {
   name: string;
   namePrimary: string;
@@ -77,5 +154,37 @@ export function getHomeHeroContent(locale: Locale): HomeHeroContent {
     focusChips: [],
     focusAreasLabel: focusAreasLabel.fa,
     ctas: ctaLabels.fa,
+  };
+}
+
+export interface HomeResearchContent {
+  title: string;
+  excerpt: string;
+  lead: string;
+  cta: string;
+}
+
+export interface HomeFeaturedContent {
+  title: string;
+  draftNote: string;
+  viewAll: string;
+  projects: FeaturedProjectCard[];
+}
+
+export function getHomeResearchContent(locale: Locale): HomeResearchContent {
+  return {
+    title: researchTitle[locale],
+    excerpt: researchExcerpt[locale],
+    lead: researchLead[locale],
+    cta: researchCta[locale],
+  };
+}
+
+export function getHomeFeaturedContent(locale: Locale): HomeFeaturedContent {
+  return {
+    title: featuredTitle[locale],
+    draftNote: featuredDraftNote[locale],
+    viewAll: viewAllProjects[locale],
+    projects: featuredProjects[locale],
   };
 }
