@@ -12,20 +12,24 @@ const content = getHomeExploreContent(locale);
 
 <section class="home-explore" aria-labelledby="home-explore-title">
   <div class="home-explore__inner">
-    <h2 id="home-explore-title" class="home-explore__title">{content.title}</h2>
+    <h2 id="home-explore-title" class="home-section__eyebrow">{content.title}</h2>
     <ul class="home-explore__grid">
       {
-        content.rails.map((rail) => (
-          <li>
-            <article class="home-explore__card">
-              <h3 class="home-explore__card-title">{rail.title}</h3>
-              <p class="home-explore__card-excerpt">{rail.excerpt}</p>
-              <a href={localePath(locale, rail.pathSegment)} class="home-explore__card-link">
-                {rail.viewLabel} →
+        content.rails.map((rail) => {
+          const railHref = localePath(locale, rail.pathSegment);
+          return (
+            <li>
+              <a href={railHref} class="home-explore__card home-card-interactive">
+                <h3 class="home-explore__card-title">{rail.title}</h3>
+                <p class="home-explore__card-excerpt home-prose-justify">{rail.excerpt}</p>
+                <div class="home-explore__card-footer">
+                  <span class="home-explore__card-link">{rail.viewLabel}</span>
+                  <span class="home-explore__card-go" aria-hidden="true">→</span>
+                </div>
               </a>
-            </article>
-          </li>
-        ))
+            </li>
+          );
+        })
       }
     </ul>
   </div>

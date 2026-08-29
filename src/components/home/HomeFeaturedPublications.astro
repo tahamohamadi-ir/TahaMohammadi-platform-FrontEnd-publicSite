@@ -15,7 +15,7 @@ const researchHref = localePath(locale, 'research');
   <div class="home-publications__inner">
     <header class="home-publications__header">
       <div class="home-section-heading">
-        <h2 id="home-publications-title" class="home-publications__title">
+        <h2 id="home-publications-title" class="home-section__eyebrow">
           {content.title}
         </h2>
         <a href={researchHref} class="home-section-heading__link">
@@ -27,18 +27,27 @@ const researchHref = localePath(locale, 'research');
 
     <ul class="home-publications__grid">
       {
-        content.items.map((item) => (
-          <li>
-            <article class="home-publications__card">
-              <p class="home-publications__card-type">{content.manuscriptLabel}</p>
-              <h3 class="home-publications__card-title" lang={locale === 'fa' ? 'en' : undefined}>
-                {item.title}
-              </h3>
-              <p class="home-publications__card-excerpt">{item.excerpt}</p>
-              <p class="home-publications__card-status">{item.statusLabel}</p>
-            </article>
-          </li>
-        ))
+        content.items.map((item) => {
+          const publicationHref = localePath(locale, `writing/${item.slug}`);
+          return (
+            <li>
+              <a href={publicationHref} class="home-publications__card home-card-interactive">
+                <div class="home-publications__card-icon" aria-hidden="true">
+                  <span class="home-publications__card-mark">✎</span>
+                </div>
+                <p class="home-publications__card-type">{content.manuscriptLabel}</p>
+                <h3 class="home-publications__card-title" lang={locale === 'fa' ? 'en' : undefined}>
+                  {item.title}
+                </h3>
+                <p class="home-publications__card-excerpt home-prose-justify">{item.excerpt}</p>
+                <div class="home-publications__card-footer">
+                  <p class="home-publications__card-status">{item.statusLabel}</p>
+                  <span class="home-publications__card-go" aria-hidden="true">→</span>
+                </div>
+              </a>
+            </li>
+          );
+        })
       }
     </ul>
   </div>

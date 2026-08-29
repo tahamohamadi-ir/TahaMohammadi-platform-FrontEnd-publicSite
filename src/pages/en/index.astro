@@ -10,13 +10,15 @@ import HomeExploreRails from '../../components/home/HomeExploreRails.astro';
 import HomeCollaborationCta from '../../components/home/HomeCollaborationCta.astro';
 ---
 
-<SiteLayout title="Taha Mohammadi — Home" locale="en" dir="ltr">
-  <HomeHero locale="en" />
-  <HomeResearchStatement locale="en" />
-  <HomeResearchInterests locale="en" />
-  <HomeJourney locale="en" />
-  <HomeFeaturedProjects locale="en" />
-  <HomeFeaturedPublications locale="en" />
-  <HomeExploreRails locale="en" />
-  <HomeCollaborationCta locale="en" />
+<SiteLayout title="Taha Mohammadi — Home" locale="en" dir="ltr" hideFooterPromo>
+  <div class="home-page">
+    <HomeHero locale="en" />
+    <HomeResearchStatement locale="en" />
+    <HomeResearchInterests locale="en" />
+    <HomeJourney locale="en" />
+    <HomeFeaturedProjects locale="en" />
+    <HomeFeaturedPublications locale="en" />
+    <HomeExploreRails locale="en" />
+    <HomeCollaborationCta locale="en" />
+  </div>
 </SiteLayout>

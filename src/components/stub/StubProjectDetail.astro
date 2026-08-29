@@ -1,0 +1,57 @@
+---
+import { localePath, type Locale } from '../../lib/navigation';
+import type { FeaturedProjectCard } from '../../lib/home-content';
+import { getStubProjectDraftNote, getStubBackToProjectsLabel } from '../../lib/stub-detail-content';
+
+interface Props {
+  locale: Locale;
+  project: FeaturedProjectCard;
+}
+
+const { locale, project } = Astro.props;
+const projectsIndexHref = localePath(locale, 'projects');
+const draftNote = getStubProjectDraftNote(locale);
+const backLabel = getStubBackToProjectsLabel(locale);
+---
+
+<article class="page-shell">
+  <header class="page-shell__header">
+    <p class="page-shell__eyebrow">{draftNote}</p>
+    <h1 class="page-shell__title">{project.title}</h1>
+    <p class="page-shell__status">{project.statusLabel}</p>
+  </header>
+
+  {
+    project.imageSrc && (
+      <figure class="page-shell__media">
+        <img
+          src={project.imageSrc}
+          alt=""
+          width="960"
+          height="540"
+          loading="lazy"
+          decoding="async"
+          class="page-shell__image"
+        />
+      </figure>
+    )
+  }
+
+  <p class="page-shell__lead home-prose-justify">{project.excerpt}</p>
+
+  {
+    project.tags.length > 0 && (
+      <ul class="page-shell__tags">
+        {project.tags.map((tag) => (
+          <li>
+            <span class="page-shell__tag">{tag}</span>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+
+  <p class="page-shell__back">
+    <a href={projectsIndexHref} class="page-shell__back-link">← {backLabel}</a>
+  </p>
+</article>

@@ -1,0 +1,37 @@
+---
+import { localePath, type Locale } from '../../lib/navigation';
+import type { PublicationCard } from '../../lib/home-content';
+import {
+  getStubPublicationDraftNote,
+  getStubBackToWritingLabel,
+} from '../../lib/stub-detail-content';
+import { getHomePublicationsContent } from '../../lib/home-content';
+
+interface Props {
+  locale: Locale;
+  publication: PublicationCard;
+}
+
+const { locale, publication } = Astro.props;
+const writingIndexHref = localePath(locale, 'writing');
+const draftNote = getStubPublicationDraftNote(locale);
+const backLabel = getStubBackToWritingLabel(locale);
+const manuscriptLabel = getHomePublicationsContent(locale).manuscriptLabel;
+---
+
+<article class="page-shell">
+  <header class="page-shell__header">
+    <p class="page-shell__eyebrow">{manuscriptLabel}</p>
+    <h1 class="page-shell__title" lang={locale === 'fa' ? 'en' : undefined}>
+      {publication.title}
+    </h1>
+    <p class="page-shell__status">{publication.statusLabel}</p>
+  </header>
+
+  <p class="page-shell__note">{draftNote}</p>
+  <p class="page-shell__lead home-prose-justify">{publication.excerpt}</p>
+
+  <p class="page-shell__back">
+    <a href={writingIndexHref} class="page-shell__back-link">← {backLabel}</a>
+  </p>
+</article>

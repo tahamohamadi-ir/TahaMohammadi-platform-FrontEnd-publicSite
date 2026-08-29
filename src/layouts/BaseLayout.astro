@@ -32,12 +32,43 @@ const { title, lang, dir, gateway = false, canonical, alternates } = Astro.props
       ))
     }
     <link rel="icon" href="/favicon.png" type="image/png" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Newsreader:opsz,wght@8..72,500;8..72,600&display=swap"
-      rel="stylesheet"
-    />
+    {
+      lang === 'en' ? (
+        <>
+          <link
+            rel="preload"
+            href="/fonts/inter/InterVariable.woff2"
+            as="font"
+            type="font/woff2"
+            crossorigin
+          />
+          <link
+            rel="preload"
+            href="/fonts/newsreader/Newsreader-Variable.woff2"
+            as="font"
+            type="font/woff2"
+            crossorigin
+          />
+        </>
+      ) : (
+        <>
+          <link
+            rel="preload"
+            href="/fonts/vazirmatn/Vazirmatn-Variable.woff2"
+            as="font"
+            type="font/woff2"
+            crossorigin
+          />
+          <link
+            rel="preload"
+            href="/fonts/estedad/Estedad-Variable.woff2"
+            as="font"
+            type="font/woff2"
+            crossorigin
+          />
+        </>
+      )
+    }
     <script is:inline>
       (function () {
         const storageKey = 'tm-theme';

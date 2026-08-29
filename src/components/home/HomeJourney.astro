@@ -14,7 +14,7 @@ const aboutHref = localePath(locale, 'about');
 <section class="home-journey" aria-labelledby="home-journey-title">
   <div class="home-journey__inner">
     <header class="home-journey__header">
-      <p class="home-journey__eyebrow">{content.title}</p>
+      <p class="home-section__eyebrow">{content.title}</p>
       <h2 id="home-journey-title" class="home-journey__headline">
         {content.headline}
       </h2>
@@ -33,7 +33,7 @@ const aboutHref = localePath(locale, 'about');
       }
     </ol>
 
-    <p class="home-journey__summary">{content.summary}</p>
+    <p class="home-journey__summary home-prose-justify">{content.summary}</p>
     <a href={aboutHref} class="home-journey__link">
       {locale === 'fa' ? 'درباره' : 'About'} →
     </a>

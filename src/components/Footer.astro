@@ -3,26 +3,31 @@ import { localePath, primaryNav, shellCopy, type Locale } from '../lib/navigatio
 
 interface Props {
   locale: Locale;
+  hidePromo?: boolean;
 }
 
-const { locale } = Astro.props;
+const { locale, hidePromo = false } = Astro.props;
 const homeHref = localePath(locale);
 const contactHref = localePath(locale, 'contact');
 const cvHref = localePath(locale, 'cv');
 ---
 
 <footer class="site-footer">
-  <div class="site-footer__cta">
-    <p class="site-footer__cta-text">{shellCopy.footerCta[locale]}</p>
-    <div class="site-footer__cta-actions">
-      <a href={contactHref} class="site-footer__button site-footer__button--primary">
-        {shellCopy.contact[locale]}
-      </a>
-      <a href={cvHref} class="site-footer__button site-footer__button--ghost">
-        {shellCopy.cv[locale]}
-      </a>
-    </div>
-  </div>
+  {
+    !hidePromo && (
+      <div class="site-footer__cta">
+        <p class="site-footer__cta-text">{shellCopy.footerCta[locale]}</p>
+        <div class="site-footer__cta-actions">
+          <a href={contactHref} class="site-footer__button site-footer__button--primary">
+            {shellCopy.contact[locale]}
+          </a>
+          <a href={cvHref} class="site-footer__button site-footer__button--ghost">
+            {shellCopy.cv[locale]}
+          </a>
+        </div>
+      </div>
+    )
+  }
 
   <div class="site-footer__grid">
     <div class="site-footer__brand">

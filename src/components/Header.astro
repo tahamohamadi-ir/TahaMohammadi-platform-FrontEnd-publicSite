@@ -2,6 +2,7 @@
 import ThemeToggle from './ThemeToggle.astro';
 import {
   alternateLocale,
+  GATEWAY_ROLE_LINE,
   localePath,
   primaryNav,
   shellCopy,
@@ -17,6 +18,8 @@ interface Props {
 const { locale, currentPath } = Astro.props;
 const otherLocale = alternateLocale(locale);
 const homeHref = localePath(locale);
+const brandNameDisplay =
+  locale === 'en' ? shellCopy.brandName.en.toUpperCase() : shellCopy.brandName.fa;
 ---
 
 <header class="site-header">
@@ -29,6 +32,10 @@ const homeHref = localePath(locale);
         height="40"
         class="site-header__mark"
       />
+      <span class="site-header__brand-text">
+        <span class="site-header__brand-name">{brandNameDisplay}</span>
+        <span class="site-header__brand-role">{GATEWAY_ROLE_LINE}</span>
+      </span>
     </a>
 
     <nav class="site-header__nav site-header__nav--desktop" aria-label={shellCopy.mainMenu[locale]}>

@@ -1,0 +1,13 @@
+---
+import SiteLayout from '../../../layouts/SiteLayout.astro';
+import StubWritingIndex from '../../../components/stub/StubWritingIndex.astro';
+import { getHomePublicationsContent } from '../../../lib/home-content';
+---
+
+<SiteLayout
+  title={`${getHomePublicationsContent('en').title} — Taha Mohammadi`}
+  locale="en"
+  pathSegment="writing"
+>
+  <StubWritingIndex locale="en" />
+</SiteLayout>

@@ -1,0 +1,13 @@
+---
+import SiteLayout from '../../../layouts/SiteLayout.astro';
+import StubProjectsIndex from '../../../components/stub/StubProjectsIndex.astro';
+import { getHomeFeaturedContent } from '../../../lib/home-content';
+---
+
+<SiteLayout
+  title={`${getHomeFeaturedContent('en').title} — Taha Mohammadi`}
+  locale="en"
+  pathSegment="projects"
+>
+  <StubProjectsIndex locale="en" />
+</SiteLayout>

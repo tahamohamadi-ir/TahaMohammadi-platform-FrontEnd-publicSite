@@ -15,7 +15,7 @@ const projectsHref = localePath(locale, 'projects');
   <div class="home-featured__inner">
     <header class="home-featured__header">
       <div class="home-section-heading">
-        <h2 id="home-featured-title" class="home-featured__title">{content.title}</h2>
+        <h2 id="home-featured-title" class="home-section__eyebrow">{content.title}</h2>
         <a href={projectsHref} class="home-section-heading__link">
           {content.viewAll} →
         </a>
@@ -25,32 +25,47 @@ const projectsHref = localePath(locale, 'projects');
 
     <div class="home-featured__scroller">
       <ul class="home-featured__grid">
-      {
-        content.projects.map((project) => (
-          <li>
-            <article class="home-featured__card">
-              <div class="home-featured__card-media" aria-hidden="true"></div>
-              <div class="home-featured__card-body">
-                <h3 class="home-featured__card-title">{project.title}</h3>
-                <p class="home-featured__card-excerpt">{project.excerpt}</p>
-                {
-                  project.tags.length > 0 && (
-                    <ul class="home-featured__tags">
-                      {project.tags.map((tag) => (
-                        <li>
-                          <span class="home-featured__tag">{tag}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  )
-                }
-                <p class="home-featured__card-status">{project.statusLabel}</p>
-              </div>
-            </article>
-          </li>
-        ))
-      }
-    </ul>
+        {
+          content.projects.map((project) => {
+            const projectHref = localePath(locale, `projects/${project.slug}`);
+            return (
+              <li>
+                <a href={projectHref} class="home-featured__card home-card-interactive">
+                  <div class="home-featured__card-media">
+                    <img
+                      src={project.imageSrc}
+                      alt=""
+                      width="480"
+                      height="300"
+                      loading="lazy"
+                      decoding="async"
+                      class="home-featured__card-image"
+                    />
+                  </div>
+                  <div class="home-featured__card-body">
+                    <h3 class="home-featured__card-title">{project.title}</h3>
+                    <p class="home-featured__card-status">{project.statusLabel}</p>
+                    <div class="home-featured__card-footer">
+                      {
+                        project.tags.length > 0 && (
+                          <ul class="home-featured__tags">
+                            {project.tags.slice(0, 3).map((tag) => (
+                              <li>
+                                <span class="home-featured__tag">{tag}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        )
+                      }
+                      <span class="home-featured__card-go" aria-hidden="true">→</span>
+                    </div>
+                  </div>
+                </a>
+              </li>
+            );
+          })
+        }
+      </ul>
     </div>
   </div>
 </section>

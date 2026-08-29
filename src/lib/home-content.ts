@@ -93,12 +93,23 @@ const viewAllProjects: Record<Locale, string> = {
   fa: 'همهٔ پروژه‌ها',
 };
 
+const viewProjectLabel: Record<Locale, string> = {
+  en: 'View project',
+  fa: 'مشاهدهٔ پروژه',
+};
+
+const viewPublicationLabel: Record<Locale, string> = {
+  en: 'Read manuscript',
+  fa: 'مشاهدهٔ پیش‌نویس',
+};
+
 export interface FeaturedProjectCard {
   slug: string;
   title: string;
   excerpt: string;
   statusLabel: string;
   tags: readonly string[];
+  imageSrc: string;
 }
 
 /** Public draft-safe featured projects from seed v1.1 (not API-backed). */
@@ -110,6 +121,7 @@ const featuredProjects: Record<Locale, FeaturedProjectCard[]> = {
       excerpt: 'Reliable Persian natural-language interaction with structured data.',
       statusLabel: 'Ongoing research and engineering project',
       tags: ['human-centered-ai', 'nlp-to-sql', 'trustworthy-ai', 'local-ai'],
+      imageSrc: '/media/art/project-data-architecture.png',
     },
     {
       slug: 'organizational-dashboard-research',
@@ -117,6 +129,7 @@ const featuredProjects: Record<Locale, FeaturedProjectCard[]> = {
       excerpt: 'Research and design across nine organizational dashboard suites.',
       statusLabel: '2022–2025',
       tags: ['visual-analytics', 'dashboard-design', 'information-visualization'],
+      imageSrc: '/media/art/project-dashboard-systems.png',
     },
   ],
   fa: [
@@ -126,6 +139,7 @@ const featuredProjects: Record<Locale, FeaturedProjectCard[]> = {
       excerpt: 'تعامل قابل‌اعتماد زبان طبیعی فارسی با داده‌های ساختاریافته.',
       statusLabel: 'پروژه پژوهشی و مهندسی در حال توسعه',
       tags: ['human-centered-ai', 'nlp-to-sql', 'trustworthy-ai', 'local-ai'],
+      imageSrc: '/media/art/project-data-architecture.png',
     },
     {
       slug: 'organizational-dashboard-research',
@@ -133,6 +147,7 @@ const featuredProjects: Record<Locale, FeaturedProjectCard[]> = {
       excerpt: 'پژوهش و طراحی در نه مجموعه داشبورد سازمانی.',
       statusLabel: '۱۴۰۱–۱۴۰۴',
       tags: ['visual-analytics', 'dashboard-design', 'information-visualization'],
+      imageSrc: '/media/art/project-dashboard-systems.png',
     },
   ],
 };
@@ -185,6 +200,7 @@ export interface HomeFeaturedContent {
   title: string;
   draftNote: string;
   viewAll: string;
+  viewProject: string;
   projects: FeaturedProjectCard[];
 }
 
@@ -202,8 +218,46 @@ export function getHomeFeaturedContent(locale: Locale): HomeFeaturedContent {
     title: featuredTitle[locale],
     draftNote: featuredDraftNote[locale],
     viewAll: viewAllProjects[locale],
+    viewProject: viewProjectLabel[locale],
     projects: featuredProjects[locale],
   };
+}
+
+const constellationSectionLabel: Record<Locale, string> = researchTitle;
+
+const constellationCenterLabel: Record<Locale, string> = {
+  en: focusChipsEn[0],
+  fa: focusChipsFa[0],
+};
+
+type ConstellationAccent = 'brand' | 'signature' | 'research' | 'context' | 'ink';
+
+const constellationAccents: ConstellationAccent[] = [
+  'brand',
+  'research',
+  'signature',
+  'context',
+  'ink',
+];
+
+const constellationPositions: ConstellationNode['position'][] = ['a', 'b', 'c', 'd', 'e'];
+
+export interface ConstellationNode {
+  slug: string;
+  label: string;
+  accent: ConstellationAccent;
+  position: 'a' | 'b' | 'c' | 'd' | 'e';
+}
+
+function buildConstellationNodes(
+  cards: readonly { slug: string; title: string }[],
+): ConstellationNode[] {
+  return cards.map((card, index) => ({
+    slug: card.slug,
+    label: card.title,
+    accent: constellationAccents[index] ?? 'brand',
+    position: constellationPositions[index] ?? 'a',
+  }));
 }
 
 const constellationHeading: Record<Locale, string> = {
@@ -217,8 +271,8 @@ const interestsSectionTitle: Record<Locale, string> = {
 };
 
 const interestsSectionLead: Record<Locale, string> = {
-  en: researchExcerpt.en,
-  fa: researchExcerpt.fa,
+  en: 'Five interconnected areas where research questions, system design, and real-world constraints meet.',
+  fa: 'پنج حوزهٔ به‌هم‌پیوسته که پرسش‌های پژوهشی، طراحی سامانه و محدودیت‌های دنیای واقعی در آن‌ها تلاقی می‌کنند.',
 };
 
 const exploreLabel: Record<Locale, string> = {
@@ -445,8 +499,11 @@ const exploreRails: Record<
 };
 
 export interface HomeConstellationContent {
+  sectionLabel: string;
   heading: string;
+  centerLabel: string;
   research: HomeResearchContent;
+  nodes: ConstellationNode[];
 }
 
 export interface ResearchInterestCard {
@@ -482,6 +539,7 @@ export interface HomePublicationsContent {
   title: string;
   draftNote: string;
   viewAll: string;
+  viewPublication: string;
   manuscriptLabel: string;
   items: readonly PublicationCard[];
 }
@@ -500,8 +558,11 @@ export interface HomeExploreContent {
 
 export function getHomeConstellationContent(locale: Locale): HomeConstellationContent {
   return {
+    sectionLabel: constellationSectionLabel[locale],
     heading: constellationHeading[locale],
+    centerLabel: constellationCenterLabel[locale],
     research: getHomeResearchContent(locale),
+    nodes: buildConstellationNodes(locale === 'en' ? researchInterestsEn : researchInterestsFa),
   };
 }
 
@@ -530,6 +591,7 @@ export function getHomePublicationsContent(locale: Locale): HomePublicationsCont
     title: publicationsTitle[locale],
     draftNote: publicationsDraftNote[locale],
     viewAll: viewAllPublications[locale],
+    viewPublication: viewPublicationLabel[locale],
     manuscriptLabel: manuscriptLabel[locale],
     items: featuredPublications[locale],
   };

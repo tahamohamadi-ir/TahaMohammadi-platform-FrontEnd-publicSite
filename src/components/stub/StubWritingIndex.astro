@@ -1,0 +1,49 @@
+---
+import { localePath, type Locale } from '../../lib/navigation';
+import { getHomePublicationsContent } from '../../lib/home-content';
+import {
+  getStubBackToHomeLabel,
+  getStubPublicationDraftNote,
+} from '../../lib/stub-detail-content';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const content = getHomePublicationsContent(locale);
+const homeHref = localePath(locale);
+const draftNote = getStubPublicationDraftNote(locale);
+const homeLabel = getStubBackToHomeLabel(locale);
+---
+
+<article class="page-shell">
+  <header class="page-shell__header">
+    <p class="page-shell__eyebrow">{content.manuscriptLabel}</p>
+    <h1 class="page-shell__title">{content.title}</h1>
+    <p class="page-shell__note home-prose-justify">{draftNote}</p>
+  </header>
+
+  <ul class="page-shell__list">
+    {
+      content.items.map((item) => (
+        <li>
+          <a
+            href={localePath(locale, `writing/${item.slug}`)}
+            class="page-shell__list-link home-card-interactive"
+          >
+            <span class="page-shell__list-title" lang={locale === 'fa' ? 'en' : undefined}>
+              {item.title}
+            </span>
+            <span class="page-shell__list-excerpt home-prose-justify">{item.excerpt}</span>
+            <span class="page-shell__list-meta">{item.statusLabel} →</span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+
+  <p class="page-shell__back">
+    <a href={homeHref} class="page-shell__back-link">← {homeLabel}</a>
+  </p>
+</article>
