@@ -23,9 +23,23 @@ const projectsHref = localePath(locale, 'projects');
         content.projects.map((project) => (
           <li>
             <article class="home-featured__card">
-              <h3 class="home-featured__card-title">{project.title}</h3>
-              <p class="home-featured__card-excerpt">{project.excerpt}</p>
-              <p class="home-featured__card-status">{project.statusLabel}</p>
+              <div class="home-featured__card-media" aria-hidden="true"></div>
+              <div class="home-featured__card-body">
+                <h3 class="home-featured__card-title">{project.title}</h3>
+                <p class="home-featured__card-excerpt">{project.excerpt}</p>
+                {
+                  project.tags.length > 0 && (
+                    <ul class="home-featured__tags">
+                      {project.tags.map((tag) => (
+                        <li>
+                          <span class="home-featured__tag">{tag}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )
+                }
+                <p class="home-featured__card-status">{project.statusLabel}</p>
+              </div>
             </article>
           </li>
         ))

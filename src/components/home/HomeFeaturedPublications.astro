@@ -1,0 +1,44 @@
+---
+import { localePath, type Locale } from '../../lib/navigation';
+import { getHomePublicationsContent } from '../../lib/home-content';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const content = getHomePublicationsContent(locale);
+const researchHref = localePath(locale, 'research');
+---
+
+<section class="home-publications" aria-labelledby="home-publications-title">
+  <div class="home-publications__inner">
+    <header class="home-publications__header">
+      <h2 id="home-publications-title" class="home-publications__title">
+        {content.title}
+      </h2>
+      <p class="home-publications__note">{content.draftNote}</p>
+    </header>
+
+    <ul class="home-publications__grid">
+      {
+        content.items.map((item) => (
+          <li>
+            <article class="home-publications__card">
+              <p class="home-publications__card-type">{content.manuscriptLabel}</p>
+              <h3 class="home-publications__card-title" lang={locale === 'fa' ? 'en' : undefined}>
+                {item.title}
+              </h3>
+              <p class="home-publications__card-excerpt">{item.excerpt}</p>
+              <p class="home-publications__card-status">{item.statusLabel}</p>
+            </article>
+          </li>
+        ))
+      }
+    </ul>
+
+    <a href={researchHref} class="home-publications__view-all">
+      {content.viewAll}
+    </a>
+  </div>
+</section>

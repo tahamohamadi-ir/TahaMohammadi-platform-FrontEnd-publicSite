@@ -1,0 +1,32 @@
+---
+import { localePath, type Locale } from '../../lib/navigation';
+import { getHomeExploreContent } from '../../lib/home-content';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const content = getHomeExploreContent(locale);
+---
+
+<section class="home-explore" aria-labelledby="home-explore-title">
+  <div class="home-explore__inner">
+    <h2 id="home-explore-title" class="home-explore__title">{content.title}</h2>
+    <ul class="home-explore__grid">
+      {
+        content.rails.map((rail) => (
+          <li>
+            <article class="home-explore__card">
+              <h3 class="home-explore__card-title">{rail.title}</h3>
+              <p class="home-explore__card-excerpt">{rail.excerpt}</p>
+              <a href={localePath(locale, rail.pathSegment)} class="home-explore__card-link">
+                {rail.viewLabel} →
+              </a>
+            </article>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>

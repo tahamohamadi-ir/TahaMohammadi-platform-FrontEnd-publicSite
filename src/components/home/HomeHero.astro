@@ -16,48 +16,71 @@ const contactHref = localePath(locale, 'contact');
 
 <section class="home-hero" aria-labelledby="home-hero-name">
   <div class="home-hero__inner">
-    <header class="home-hero__header">
-      <h1 id="home-hero-name" class="home-hero__name">
-        {
-          locale === 'en' ? (
-            <>
-              <span class="home-hero__name-primary">{content.namePrimary}</span>
-              <span class="home-hero__name-accent">{content.nameAccent}</span>
-            </>
-          ) : (
-            content.name
-          )
-        }
-      </h1>
-      <p class="home-hero__role">{GATEWAY_ROLE_LINE}</p>
-      <p class="home-hero__intro">{content.intro}</p>
-    </header>
+    <div class="home-hero__copy">
+      <header class="home-hero__header">
+        <h1 id="home-hero-name" class="home-hero__name">
+          {
+            locale === 'en' ? (
+              <>
+                <span class="home-hero__name-primary">{content.namePrimary}</span>
+                <span class="home-hero__name-accent">{content.nameAccent}</span>
+              </>
+            ) : (
+              content.name
+            )
+          }
+        </h1>
+        <p class="home-hero__role">{GATEWAY_ROLE_LINE}</p>
+        <p class="home-hero__intro">{content.intro}</p>
+      </header>
 
-    <div class="home-hero__actions">
-      <a href={researchHref} class="home-hero__cta home-hero__cta--primary">
-        {content.ctas.research}
-      </a>
-      <a href={cvHref} class="home-hero__cta home-hero__cta--secondary">
-        {content.ctas.cv}
-      </a>
-      <a href={contactHref} class="home-hero__cta home-hero__cta--quiet">
-        {content.ctas.contact}
-      </a>
+      <div class="home-hero__actions">
+        <a href={researchHref} class="home-hero__cta home-hero__cta--primary">
+          {content.ctas.research}
+        </a>
+        <a href={cvHref} class="home-hero__cta home-hero__cta--secondary">
+          {content.ctas.cv}
+        </a>
+        <a href={contactHref} class="home-hero__cta home-hero__cta--quiet">
+          {content.ctas.contact}
+        </a>
+      </div>
+
+      {
+        content.focusChips.length > 0 && (
+          <div class="home-hero__focus">
+            <p class="home-hero__focus-label">{content.focusAreasLabel}</p>
+            <ul class="home-hero__focus-list">
+              {content.focusChips.map((chip) => (
+                <li>
+                  <span class="home-hero__chip">{chip}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )
+      }
     </div>
 
-    {
-      content.focusChips.length > 0 && (
-        <div class="home-hero__focus">
-          <p class="home-hero__focus-label">{content.focusAreasLabel}</p>
-          <ul class="home-hero__focus-list">
-            {content.focusChips.map((chip) => (
-              <li>
-                <span class="home-hero__chip">{chip}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )
-    }
+    <div class="home-hero__visual" aria-hidden="true">
+      <div class="home-hero__portal-frame">
+        <img
+          class="home-hero__portal home-hero__portal--dark"
+          src="/media/art/portal-centered-dark.png"
+          alt=""
+          width="1672"
+          height="941"
+          decoding="async"
+        />
+        <img
+          class="home-hero__portal home-hero__portal--light"
+          src="/media/art/portal-centered-light.png"
+          alt=""
+          width="1672"
+          height="941"
+          decoding="async"
+        />
+      </div>
+    </div>
   </div>
 </section>

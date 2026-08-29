@@ -22,6 +22,17 @@ const focusChipsEn = [
   'Human-Centered AI',
   'Trustworthy & Controllable AI',
   'Visual Analytics & Decision Support',
+  'Behavioral Data & Personalization',
+  'Digital Health & Wearable AI',
+] as const;
+
+/** research.statement.fa.data.focus_areas */
+const focusChipsFa = [
+  'هوش مصنوعی انسان‌محور و تعامل انسان و هوش مصنوعی',
+  'سامانه‌های هوشمند قابل‌اعتماد، کنترل‌پذیر و عامل‌محور',
+  'تحلیل بصری و پشتیبانی از تصمیم با کمک هوش مصنوعی',
+  'سامانه‌های داده رفتاری و شخصی‌سازی توضیح‌پذیر',
+  'هوش مصنوعی محلی و لبه با ملاحظات حریم خصوصی',
 ] as const;
 
 /** Hero CTA labels — structural navigation; EN matches home concept, FA from route_copy titles. */
@@ -86,6 +97,7 @@ export interface FeaturedProjectCard {
   title: string;
   excerpt: string;
   statusLabel: string;
+  tags: readonly string[];
 }
 
 /** Public draft-safe featured projects from seed v1.1 (not API-backed). */
@@ -96,12 +108,14 @@ const featuredProjects: Record<Locale, FeaturedProjectCard[]> = {
       title: 'PARS-SQL / VTD-Edge',
       excerpt: 'Reliable Persian natural-language interaction with structured data.',
       statusLabel: 'Ongoing research and engineering project',
+      tags: ['human-centered-ai', 'nlp-to-sql', 'trustworthy-ai', 'local-ai'],
     },
     {
       slug: 'organizational-dashboard-research',
       title: 'Organizational Dashboard Research & Design',
       excerpt: 'Research and design across nine organizational dashboard suites.',
       statusLabel: '2022–2025',
+      tags: ['visual-analytics', 'dashboard-design', 'information-visualization'],
     },
   ],
   fa: [
@@ -110,12 +124,14 @@ const featuredProjects: Record<Locale, FeaturedProjectCard[]> = {
       title: 'PARS-SQL / VTD-Edge',
       excerpt: 'تعامل قابل‌اعتماد زبان طبیعی فارسی با داده‌های ساختاریافته.',
       statusLabel: 'پروژه پژوهشی و مهندسی در حال توسعه',
+      tags: ['human-centered-ai', 'nlp-to-sql', 'trustworthy-ai', 'local-ai'],
     },
     {
       slug: 'organizational-dashboard-research',
       title: 'پژوهش و طراحی داشبوردهای سازمانی',
       excerpt: 'پژوهش و طراحی در نه مجموعه داشبورد سازمانی.',
       statusLabel: '۱۴۰۱–۱۴۰۴',
+      tags: ['visual-analytics', 'dashboard-design', 'information-visualization'],
     },
   ],
 };
@@ -151,7 +167,7 @@ export function getHomeHeroContent(locale: Locale): HomeHeroContent {
     namePrimary: name,
     nameAccent: '',
     intro: introCopy.fa,
-    focusChips: [],
+    focusChips: focusChipsFa,
     focusAreasLabel: focusAreasLabel.fa,
     ctas: ctaLabels.fa,
   };
@@ -186,5 +202,341 @@ export function getHomeFeaturedContent(locale: Locale): HomeFeaturedContent {
     draftNote: featuredDraftNote[locale],
     viewAll: viewAllProjects[locale],
     projects: featuredProjects[locale],
+  };
+}
+
+const constellationHeading: Record<Locale, string> = {
+  en: researchExcerpt.en,
+  fa: researchExcerpt.fa,
+};
+
+const interestsSectionTitle: Record<Locale, string> = {
+  en: 'Research interests & fit',
+  fa: 'علاقه‌مندی‌ها و تناسب پژوهشی',
+};
+
+const interestsSectionLead: Record<Locale, string> = {
+  en: researchExcerpt.en,
+  fa: researchExcerpt.fa,
+};
+
+const exploreLabel: Record<Locale, string> = {
+  en: 'Explore',
+  fa: 'کاوش',
+};
+
+/** research.focus.*.en — EN-only seed records. */
+const researchInterestsEn = [
+  {
+    slug: 'human-centered-ai',
+    title: 'Human-Centered AI',
+    excerpt:
+      'Designing AI systems around human goals, interpretation, agency, and real-world use—not only model capability.',
+  },
+  {
+    slug: 'trustworthy-controllable-ai',
+    title: 'Trustworthy & Controllable AI',
+    excerpt:
+      'Clarification, validation, provenance, abstention, human approval, and failure-aware system behavior.',
+  },
+  {
+    slug: 'visual-analytics-decision-support',
+    title: 'Visual Analytics & Decision Support',
+    excerpt:
+      'Turning complex data into inspectable, interactive evidence for strategic, tactical, and operational decisions.',
+  },
+  {
+    slug: 'behavioral-data-personalization',
+    title: 'Behavioral Data & Personalization',
+    excerpt:
+      'Building event and data models that separate observed evidence from inferred user state and preserve traceability.',
+  },
+  {
+    slug: 'digital-health-wearable-ai',
+    title: 'Digital Health & Wearable AI',
+    excerpt:
+      'A developing research direction focused on responsible use of health, behavioral, and multimodal human data.',
+  },
+] as const;
+
+/** research.statement.fa.data.focus_areas */
+const researchInterestsFa = [
+  {
+    slug: 'human-centered-ai',
+    title: 'هوش مصنوعی انسان‌محور و تعامل انسان و هوش مصنوعی',
+    excerpt:
+      'هوش مصنوعی انسان‌محور و تعامل انسان و هوش مصنوعی',
+  },
+  {
+    slug: 'trustworthy-ai',
+    title: 'سامانه‌های هوشمند قابل‌اعتماد، کنترل‌پذیر و عامل‌محور',
+    excerpt:
+      'سامانه‌های هوشمند قابل‌اعتماد، کنترل‌پذیر و عامل‌محور',
+  },
+  {
+    slug: 'visual-analytics',
+    title: 'تحلیل بصری و پشتیبانی از تصمیم با کمک هوش مصنوعی',
+    excerpt:
+      'تحلیل بصری و پشتیبانی از تصمیم با کمک هوش مصنوعی',
+  },
+  {
+    slug: 'behavioral-data',
+    title: 'سامانه‌های داده رفتاری و شخصی‌سازی توضیح‌پذیر',
+    excerpt: 'سامانه‌های داده رفتاری و شخصی‌سازی توضیح‌پذیر',
+  },
+  {
+    slug: 'edge-ai',
+    title: 'هوش مصنوعی محلی و لبه با ملاحظات حریم خصوصی',
+    excerpt: 'هوش مصنوعی محلی و لبه با ملاحظات حریم خصوصی',
+  },
+] as const;
+
+const researchFitTitle: Record<Locale, string> = {
+  en: 'Research fit',
+  fa: 'تناسب پژوهشی',
+};
+
+/** route.about.{locale}.body_markdown */
+const researchFitCopy: Record<Locale, string> = {
+  en: 'My path is intentionally interdisciplinary: from architecture and visual communication to production software, data systems, and applied AI. That combination shapes the questions I work on today.',
+  fa: 'مسیر حرفه‌ای و پژوهشی من عمداً میان‌رشته‌ای بوده است: از معماری و ارتباط تصویری تا توسعه نرم‌افزار، سامانه‌های داده و هوش مصنوعی کاربردی.',
+};
+
+const journeyTitle: Record<Locale, string> = {
+  en: 'My journey',
+  fa: 'مسیر من',
+};
+
+const journeyHeadline: Record<Locale, string> = {
+  en: 'Architecture → Visual Design → Software → Data → AI',
+  fa: 'معماری → طراحی بصری → نرم‌افزار → داده → هوش مصنوعی',
+};
+
+const journeyMilestones: Record<Locale, readonly { title: string }[]> = {
+  en: [
+    { title: 'Architecture' },
+    { title: 'Visual communication' },
+    { title: 'Production software' },
+    { title: 'Data systems' },
+    { title: 'Applied AI' },
+  ],
+  fa: [
+    { title: 'معماری' },
+    { title: 'ارتباط تصویری' },
+    { title: 'توسعه نرم‌افزار' },
+    { title: 'سامانه‌های داده' },
+    { title: 'هوش مصنوعی کاربردی' },
+  ],
+};
+
+const publicationsTitle: Record<Locale, string> = {
+  en: 'Selected publications',
+  fa: 'انتشارات منتخب',
+};
+
+const viewAllPublications: Record<Locale, string> = {
+  en: 'View all publications',
+  fa: 'همهٔ انتشارات',
+};
+
+const manuscriptLabel: Record<Locale, string> = {
+  en: 'Manuscript draft',
+  fa: 'پیش‌نویس پژوهشی',
+};
+
+const publicationsDraftNote: Record<Locale, string> = {
+  en: 'Manuscript records from seed — not peer-reviewed publications until approved.',
+  fa: 'رکوردهای پیش‌نویس انگلیسی از seed — ترجمه و انتشار هنوز تأیید نشده است.',
+};
+
+const featuredPublications: Record<
+  Locale,
+  readonly { slug: string; title: string; excerpt: string; statusLabel: string }[]
+> = {
+  en: [
+    {
+      slug: 'visual-discourse-elections',
+      title:
+        'A Comparative Analysis of Reformist and Principlist Visual Discourses in Presidential Elections (1997–2017)',
+      excerpt:
+        'Research manuscript extending M.A. work on visual communication and comparative visual discourse analysis.',
+      statusLabel: 'Manuscript in final revision',
+    },
+    {
+      slug: 'vtd-edge-manuscript',
+      title:
+        'VTD-Edge: Reliable, Privacy-Preserving Persian NLP-to-SQL on Resource-Constrained Devices',
+      excerpt:
+        'Technical manuscript in preparation on reliable Persian NLP-to-SQL.',
+      statusLabel: 'Manuscript in preparation',
+    },
+  ],
+  fa: [
+    {
+      slug: 'visual-discourse-elections',
+      title:
+        'A Comparative Analysis of Reformist and Principlist Visual Discourses in Presidential Elections (1997–2017)',
+      excerpt:
+        'Research manuscript extending M.A. work on visual communication and comparative visual discourse analysis.',
+      statusLabel: 'پیش‌نویس در مرحله بازبینی نهایی',
+    },
+    {
+      slug: 'vtd-edge-manuscript',
+      title:
+        'VTD-Edge: Reliable, Privacy-Preserving Persian NLP-to-SQL on Resource-Constrained Devices',
+      excerpt:
+        'Technical manuscript in preparation on reliable Persian NLP-to-SQL.',
+      statusLabel: 'پیش‌نویس در حال آماده‌سازی',
+    },
+  ],
+};
+
+const exploreRailsTitle: Record<Locale, string> = {
+  en: 'Explore more',
+  fa: 'کاوش بیشتر',
+};
+
+/** route_copy excerpts for secondary home rails. */
+const exploreRails: Record<
+  Locale,
+  readonly { pathSegment: string; title: string; excerpt: string; viewLabel: string }[]
+> = {
+  en: [
+    {
+      pathSegment: 'creative',
+      title: 'Creative Work',
+      excerpt: 'Selected visual and design work, published only with clear rights and credits.',
+      viewLabel: 'View gallery',
+    },
+    {
+      pathSegment: 'writing',
+      title: 'Writing',
+      excerpt: 'Long-form technical and research writing.',
+      viewLabel: 'View writing',
+    },
+    {
+      pathSegment: 'teaching',
+      title: 'Teaching',
+      excerpt: 'Selected structured learning and professional development.',
+      viewLabel: 'View teaching',
+    },
+  ],
+  fa: [
+    {
+      pathSegment: 'creative',
+      title: 'آثار خلاقه',
+      excerpt: 'آثار بصری و طراحی منتخب، فقط با حقوق و اعتبار روشن منتشر می‌شوند.',
+      viewLabel: 'مشاهده گالری',
+    },
+    {
+      pathSegment: 'writing',
+      title: 'نوشتار',
+      excerpt: 'نوشتارهای پژوهشی و فنی بلند.',
+      viewLabel: 'مشاهده نوشتار',
+    },
+    {
+      pathSegment: 'teaching',
+      title: 'تدریس',
+      excerpt: 'منتخبی از آموزش‌های ساختاریافته و توسعه حرفه‌ای که مستقیماً از مسیر پژوهشی و مهندسی من پشتیبانی می‌کنند.',
+      viewLabel: 'مشاهده تدریس',
+    },
+  ],
+};
+
+export interface HomeConstellationContent {
+  heading: string;
+  research: HomeResearchContent;
+}
+
+export interface ResearchInterestCard {
+  slug: string;
+  title: string;
+  excerpt: string;
+}
+
+export interface HomeInterestsContent {
+  sectionTitle: string;
+  sectionLead: string;
+  exploreLabel: string;
+  cards: readonly ResearchInterestCard[];
+  fitTitle: string;
+  fitCopy: string;
+}
+
+export interface HomeJourneyContent {
+  title: string;
+  headline: string;
+  summary: string;
+  milestones: readonly { title: string }[];
+}
+
+export interface PublicationCard {
+  slug: string;
+  title: string;
+  excerpt: string;
+  statusLabel: string;
+}
+
+export interface HomePublicationsContent {
+  title: string;
+  draftNote: string;
+  viewAll: string;
+  manuscriptLabel: string;
+  items: readonly PublicationCard[];
+}
+
+export interface ExploreRail {
+  pathSegment: string;
+  title: string;
+  excerpt: string;
+  viewLabel: string;
+}
+
+export interface HomeExploreContent {
+  title: string;
+  rails: readonly ExploreRail[];
+}
+
+export function getHomeConstellationContent(locale: Locale): HomeConstellationContent {
+  return {
+    heading: constellationHeading[locale],
+    research: getHomeResearchContent(locale),
+  };
+}
+
+export function getHomeInterestsContent(locale: Locale): HomeInterestsContent {
+  return {
+    sectionTitle: interestsSectionTitle[locale],
+    sectionLead: interestsSectionLead[locale],
+    exploreLabel: exploreLabel[locale],
+    cards: locale === 'en' ? researchInterestsEn : researchInterestsFa,
+    fitTitle: researchFitTitle[locale],
+    fitCopy: researchFitCopy[locale],
+  };
+}
+
+export function getHomeJourneyContent(locale: Locale): HomeJourneyContent {
+  return {
+    title: journeyTitle[locale],
+    headline: journeyHeadline[locale],
+    summary: researchFitCopy[locale],
+    milestones: journeyMilestones[locale],
+  };
+}
+
+export function getHomePublicationsContent(locale: Locale): HomePublicationsContent {
+  return {
+    title: publicationsTitle[locale],
+    draftNote: publicationsDraftNote[locale],
+    viewAll: viewAllPublications[locale],
+    manuscriptLabel: manuscriptLabel[locale],
+    items: featuredPublications[locale],
+  };
+}
+
+export function getHomeExploreContent(locale: Locale): HomeExploreContent {
+  return {
+    title: exploreRailsTitle[locale],
+    rails: exploreRails[locale],
   };
 }

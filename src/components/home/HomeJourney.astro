@@ -1,0 +1,41 @@
+---
+import { localePath, type Locale } from '../../lib/navigation';
+import { getHomeJourneyContent } from '../../lib/home-content';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const content = getHomeJourneyContent(locale);
+const aboutHref = localePath(locale, 'about');
+---
+
+<section class="home-journey" aria-labelledby="home-journey-title">
+  <div class="home-journey__inner">
+    <header class="home-journey__header">
+      <p class="home-journey__eyebrow">{content.title}</p>
+      <h2 id="home-journey-title" class="home-journey__headline">
+        {content.headline}
+      </h2>
+    </header>
+
+    <ol class="home-journey__timeline">
+      {
+        content.milestones.map((milestone, index) => (
+          <li class="home-journey__step">
+            <span class="home-journey__marker" aria-hidden="true">
+              {index + 1}
+            </span>
+            <p class="home-journey__step-title">{milestone.title}</p>
+          </li>
+        ))
+      }
+    </ol>
+
+    <p class="home-journey__summary">{content.summary}</p>
+    <a href={aboutHref} class="home-journey__link">
+      {locale === 'fa' ? 'درباره' : 'About'} →
+    </a>
+  </div>
+</section>

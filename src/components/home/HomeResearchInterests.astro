@@ -1,0 +1,46 @@
+---
+import { localePath, type Locale } from '../../lib/navigation';
+import { getHomeInterestsContent } from '../../lib/home-content';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const content = getHomeInterestsContent(locale);
+const researchHref = localePath(locale, 'research');
+---
+
+<section class="home-interests" aria-labelledby="home-interests-title">
+  <div class="home-interests__inner">
+    <header class="home-interests__header">
+      <p class="home-interests__eyebrow">{content.sectionTitle}</p>
+      <h2 id="home-interests-title" class="home-interests__title">
+        {content.sectionLead}
+      </h2>
+    </header>
+
+    <ul class="home-interests__grid">
+      {
+        content.cards.map((card) => (
+          <li>
+            <article class="home-interests__card">
+              <h3 class="home-interests__card-title">{card.title}</h3>
+              <p class="home-interests__card-excerpt">{card.excerpt}</p>
+              <a href={researchHref} class="home-interests__card-link">
+                {content.exploreLabel} →
+              </a>
+            </article>
+          </li>
+        ))
+      }
+    </ul>
+
+    <aside class="home-interests__fit" aria-labelledby="home-research-fit-title">
+      <h3 id="home-research-fit-title" class="home-interests__fit-title">
+        {content.fitTitle}
+      </h3>
+      <p class="home-interests__fit-copy">{content.fitCopy}</p>
+    </aside>
+  </div>
+</section>
