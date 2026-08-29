@@ -26,8 +26,8 @@ Status: `[x]` done, `[ ]` open, `[~]` in progress.
 ## PUB-2 — API and routes
 
 - [x] PS-05 OpenAPI accepted; client generation unblocked.
-- [ ] **PUBLIC-090** Generate types from accepted public OpenAPI hash.
-- [ ] **PUBLIC-100** Typed client; enforce published-only gate on reads.
+- [x] **PUBLIC-090** Generate types from accepted public OpenAPI hash.
+- [~] **PUBLIC-100** Typed client; enforce published-only gate on reads.
 - [ ] **PUBLIC-110** Route helpers, canonical URLs, hreflang, alternates.
 - [ ] **PUBLIC-120** Env schema + dev proxy to backend (`LOCAL-DEVELOPMENT.md`).
 
