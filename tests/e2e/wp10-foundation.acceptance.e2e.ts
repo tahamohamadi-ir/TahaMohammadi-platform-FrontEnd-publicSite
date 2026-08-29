@@ -49,23 +49,26 @@ test.describe('WP-10 foundation acceptance', () => {
       window.addEventListener('tm-themechange', (event) => window.__tmThemeEvents.push(event.detail));
     });
     await page.goto('/en/');
-    const controls = page.getByRole('button', { name: /theme/i });
+    const controls = page.locator('[data-theme-toggle]');
 
     await expect(controls).toHaveCount(1);
     await expect(controls.first()).toHaveAttribute('data-theme-mode', 'system');
-    await expect(controls.first()).toHaveAccessibleName(/system/i);
+    await expect(controls.first()).toHaveAccessibleName('Toggle color theme');
+    await expect(controls.first()).toHaveAttribute('aria-pressed', 'false');
+    await expect(page.locator('.theme-toggle__mode')).toHaveCount(0);
     await expect(page.locator('html')).toHaveAttribute('data-theme-requested', 'system');
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
     await expect.poll(() => page.evaluate(() => window.__tmThemeEvents)).toEqual([{ requested: 'system', resolved: 'dark' }]);
     await page.evaluate(() => {
       const clone = document.querySelector('[data-theme-toggle]')?.cloneNode(true);
-      clone?.setAttribute('aria-label', 'Theme clone');
       document.body.append(clone);
     });
-    const clonedControl = page.getByRole('button', { name: 'Theme clone' });
-    await expect(clonedControl).toHaveCount(1);
+    const clonedControl = controls.nth(1);
+    await expect(controls).toHaveCount(2);
     await clonedControl.click({ force: true });
     await expect(page.locator('html')).toHaveAttribute('data-theme-requested', 'light');
+    await expect(clonedControl).toHaveAttribute('data-theme-mode', 'light');
+    await expect(clonedControl).toHaveAttribute('aria-pressed', 'true');
     await expect.poll(() => page.evaluate(() => window.__tmThemeEvents)).toEqual([
       { requested: 'system', resolved: 'dark' },
       { requested: 'light', resolved: 'light' },
@@ -89,7 +92,7 @@ test.describe('WP-10 foundation acceptance', () => {
       window.addEventListener('tm-themechange', (event) => window.__tmThemeEvents.push(event.detail));
     });
     await page.goto('/en/');
-    const toggle = page.getByRole('button', { name: /system/i });
+    const toggle = page.locator('[data-theme-toggle]');
     await toggle.click();
     await expect(page.locator('html')).toHaveAttribute('data-theme-requested', 'light');
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');

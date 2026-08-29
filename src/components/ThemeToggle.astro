@@ -1,5 +1,5 @@
 ---
-import type { Locale } from '../lib/navigation';
+import { shellCopy, type Locale } from '../lib/navigation';
 import { Monitor, Moon, Sun } from 'lucide-astro';
 
 interface Props {
@@ -7,22 +7,19 @@ interface Props {
 }
 
 const { locale = 'en' } = Astro.props;
-const modeLabels = locale === 'fa'
-  ? { system: 'پوستهٔ سیستم', light: 'پوستهٔ روشن', dark: 'پوستهٔ تاریک' }
-  : { system: 'System theme', light: 'Light theme', dark: 'Dark theme' };
+const themeLabel = shellCopy.themeToggle[locale];
 ---
 
 <button
   type="button"
   class="theme-toggle theme-toggle--shell"
   data-theme-toggle
-  data-theme-locale={locale}
   data-theme-mode="system"
-  aria-label={modeLabels.system}
-  title={modeLabels.system}
+  aria-label={themeLabel}
+  aria-pressed="false"
+  title={themeLabel}
 >
   <span class="theme-toggle__icon theme-toggle__icon--system" aria-hidden="true"><Monitor size={18} /></span>
   <span class="theme-toggle__icon theme-toggle__icon--light" aria-hidden="true"><Sun size={18} /></span>
   <span class="theme-toggle__icon theme-toggle__icon--dark" aria-hidden="true"><Moon size={18} /></span>
-  <span class="theme-toggle__mode" data-theme-mode-label>{modeLabels.system}</span>
 </button>

@@ -152,13 +152,10 @@ html[data-theme='light'] .gateway__atmosphere-img--light {
 }
 
 .theme-toggle {
-  display: inline-flex;
+  display: grid;
   place-items: center;
-  justify-content: center;
-  gap: 0.4rem;
-  min-width: 2.75rem;
+  width: 2.75rem;
   height: 2.75rem;
-  padding-inline: 0.75rem;
   border-radius: 999px;
   border: 1px solid color-mix(in srgb, var(--color-signature) 55%, transparent);
   background: color-mix(in srgb, var(--color-surface) 35%, transparent);
@@ -177,11 +174,6 @@ button[data-theme-mode='system'] .theme-toggle__icon--system,
 button[data-theme-mode='light'] .theme-toggle__icon--light,
 button[data-theme-mode='dark'] .theme-toggle__icon--dark {
   display: inline;
-}
-
-.theme-toggle__mode {
-  font-size: 0.75rem;
-  line-height: 1;
 }
 
 .gateway__hero {

@@ -80,23 +80,14 @@ const { title, lang, dir, gateway = false, canonical, alternates } = Astro.props
          * each resolution with `{ requested: 'system'|'light'|'dark',
          * resolved: 'light'|'dark' }` in `event.detail`.
          */
-        const labels = {
-          en: { system: 'System theme', light: 'Light theme', dark: 'Dark theme' },
-          fa: { system: 'پوستهٔ سیستم', light: 'پوستهٔ روشن', dark: 'پوستهٔ تاریک' },
-        };
-
         function systemTheme() {
           return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
         }
 
         function updateControls(requested) {
           document.querySelectorAll('[data-theme-toggle]').forEach((control) => {
-            const locale = control.getAttribute('data-theme-locale') === 'fa' ? 'fa' : 'en';
-            const label = labels[locale][requested];
             control.setAttribute('data-theme-mode', requested);
-            control.setAttribute('aria-label', label);
-            control.setAttribute('title', label);
-            control.querySelector('[data-theme-mode-label]')?.replaceChildren(label);
+            control.setAttribute('aria-pressed', requested === 'system' ? 'false' : 'true');
           });
         }
 
