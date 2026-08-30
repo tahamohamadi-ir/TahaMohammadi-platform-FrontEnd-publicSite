@@ -1,0 +1,130 @@
+---
+interface Props {
+  typeLabel?: string;
+  title: string;
+  excerpt?: string;
+  href?: string;
+  actionLabel?: string;
+  statusLabel?: string;
+  unavailable?: boolean;
+  class?: string;
+}
+
+const {
+  typeLabel,
+  title,
+  excerpt,
+  href,
+  actionLabel,
+  statusLabel,
+  unavailable = false,
+  class: className = '',
+} = Astro.props;
+---
+
+<article
+  class={['ui-content-row', unavailable && 'ui-content-row--unavailable', className].filter(Boolean).join(' ')}
+  data-visual-id="ContentRow"
+>
+  <div class="ui-content-row__main">
+    {typeLabel ? <p class="ui-content-row__type">{typeLabel}</p> : null}
+    <h3 class="ui-content-row__title">
+      {href ? <a href={href}>{title}</a> : title}
+    </h3>
+    {excerpt ? <p class="ui-content-row__excerpt">{excerpt}</p> : null}
+    <div class="ui-content-row__meta">
+      <slot name="metadata" />
+    </div>
+    <div class="ui-content-row__tags">
+      <slot name="tags" />
+    </div>
+  </div>
+  <div class="ui-content-row__aside">
+    {statusLabel ? <span class="ui-content-row__status">{statusLabel}</span> : null}
+    {href && actionLabel ? (
+      <a href={href} class="ui-content-row__action">
+        {actionLabel}
+      </a>
+    ) : null}
+  </div>
+</article>
+
+<style>
+  .ui-content-row {
+    display: grid;
+    gap: var(--space-4);
+    padding-block: var(--space-4);
+    border-block-end: 1px solid var(--color-border-subtle);
+  }
+
+  @media (min-width: 768px) {
+    .ui-content-row {
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: start;
+    }
+  }
+
+  .ui-content-row--unavailable {
+    opacity: 0.72;
+  }
+
+  .ui-content-row__type {
+    margin: 0;
+    color: var(--color-brand);
+    font-size: var(--font-size-xs);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .ui-content-row__title {
+    margin: 0;
+    font-size: var(--font-size-lg);
+    line-height: 1.35;
+  }
+
+  .ui-content-row__title a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .ui-content-row__title a:hover {
+    color: var(--color-brand);
+  }
+
+  .ui-content-row__excerpt {
+    margin: 0;
+    color: var(--color-ink-secondary);
+    line-height: 1.6;
+  }
+
+  .ui-content-row__meta,
+  .ui-content-row__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    color: var(--color-ink-tertiary);
+    font-size: var(--font-size-sm);
+  }
+
+  .ui-content-row__aside {
+    display: grid;
+    gap: var(--space-2);
+    justify-items: start;
+  }
+
+  .ui-content-row__status {
+    color: var(--color-ink-secondary);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+  }
+
+  .ui-content-row__action {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--layout-touch-target-min);
+    color: var(--color-brand);
+    font-weight: 600;
+    text-decoration: none;
+  }
+</style>

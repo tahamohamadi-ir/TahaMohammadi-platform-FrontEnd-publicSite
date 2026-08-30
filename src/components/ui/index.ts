@@ -1,0 +1,25 @@
+export const uiComponentNames = [
+  'Button',
+  'IconButton',
+  'Link',
+  'Chip',
+  'Badge',
+  'Breadcrumbs',
+  'LocalTabs',
+  'FilterBar',
+  'Pagination',
+  'SectionLead',
+  'Card',
+  'FeaturedRecord',
+  'ContentRow',
+  'PublicationRow',
+  'MetadataGroup',
+  'TimelineNode',
+  'MediaTile',
+  'TOCItem',
+  'ContactCTA',
+  'Input',
+  'Textarea',
+] as const;
+
+export type UiComponentName = (typeof uiComponentNames)[number];

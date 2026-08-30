@@ -1,0 +1,151 @@
+---
+interface Props {
+  action: string;
+  queryLabel: string;
+  queryName?: string;
+  queryValue?: string;
+  sortLabel?: string;
+  clearLabel?: string;
+  resultSummary?: string;
+  variant?: 'expanded' | 'disclosure';
+  empty?: boolean;
+  noResults?: boolean;
+  class?: string;
+}
+
+const {
+  action,
+  queryLabel,
+  queryName = 'q',
+  queryValue = '',
+  sortLabel,
+  clearLabel,
+  resultSummary,
+  variant = 'expanded',
+  empty = false,
+  noResults = false,
+  class: className = '',
+} = Astro.props;
+---
+
+<form
+  class={['ui-filter-bar', `ui-filter-bar--${variant}`, className].filter(Boolean).join(' ')}
+  data-visual-id="FilterBar"
+  method="get"
+  action={action}
+  role="search"
+>
+  <div class="ui-filter-bar__row">
+    <label class="ui-filter-bar__field">
+      <span class="ui-filter-bar__label">{queryLabel}</span>
+      <input
+        class="ui-filter-bar__input"
+        type="search"
+        name={queryName}
+        value={queryValue}
+        autocomplete="off"
+      />
+    </label>
+    {sortLabel ? (
+      <label class="ui-filter-bar__field">
+        <span class="ui-filter-bar__label">{sortLabel}</span>
+        <select class="ui-filter-bar__select" name="sort">
+          <slot name="sort-options" />
+        </select>
+      </label>
+    ) : null}
+    <div class="ui-filter-bar__facets">
+      <slot name="facets" />
+    </div>
+    {clearLabel ? (
+      <a class="ui-filter-bar__clear" href={action}>
+        {clearLabel}
+      </a>
+    ) : null}
+  </div>
+  {
+    resultSummary ? (
+      <p
+        class:list={[
+          'ui-filter-bar__summary',
+          empty && 'ui-filter-bar__summary--empty',
+          noResults && 'ui-filter-bar__summary--no-results',
+        ]}
+        role="status"
+      >
+        {resultSummary}
+      </p>
+    ) : null
+  }
+</form>
+
+<style>
+  .ui-filter-bar {
+    display: grid;
+    gap: var(--space-4);
+    padding: var(--space-4);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+  }
+
+  .ui-filter-bar__row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    align-items: end;
+  }
+
+  .ui-filter-bar__field {
+    display: grid;
+    gap: var(--space-2);
+    min-inline-size: min(100%, 16rem);
+  }
+
+  .ui-filter-bar__label {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--color-ink);
+  }
+
+  .ui-filter-bar__input,
+  .ui-filter-bar__select {
+    min-height: var(--layout-touch-target-min);
+    padding-inline: var(--space-3);
+    border: 1px solid var(--control-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+    color: var(--color-ink);
+    font: inherit;
+  }
+
+  .ui-filter-bar__facets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    align-items: center;
+  }
+
+  .ui-filter-bar__clear {
+    min-height: var(--layout-touch-target-min);
+    display: inline-flex;
+    align-items: center;
+    padding-inline: var(--space-3);
+    color: var(--color-brand);
+    text-decoration: none;
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+  }
+
+  .ui-filter-bar__summary {
+    margin: 0;
+    color: var(--color-ink-secondary);
+    font-size: var(--font-size-sm);
+  }
+
+  .ui-filter-bar__summary--empty,
+  .ui-filter-bar__summary--no-results {
+    color: var(--color-ink);
+    font-weight: 600;
+  }
+</style>

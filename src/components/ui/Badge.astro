@@ -1,0 +1,67 @@
+---
+interface Props {
+  label: string;
+  variant?: 'status' | 'type';
+  tone?: 'neutral' | 'brand' | 'research' | 'context' | 'danger';
+  class?: string;
+}
+
+const { label, variant = 'status', tone = 'neutral', class: className = '' } = Astro.props;
+---
+
+<span
+  class={['ui-badge', `ui-badge--${variant}`, `ui-badge--${tone}`, className].filter(Boolean).join(' ')}
+  data-visual-id="Badge"
+>
+  <span class="ui-badge__shape" aria-hidden="true" />
+  <span class="ui-badge__label">{label}</span>
+</span>
+
+<style>
+  .ui-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: var(--space-6);
+    padding-inline: var(--space-3);
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--color-border-subtle);
+    background: var(--color-surface-muted);
+    color: var(--color-ink);
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .ui-badge__shape {
+    inline-size: var(--space-2);
+    block-size: var(--space-2);
+    border-radius: var(--radius-pill);
+    background: currentColor;
+  }
+
+  .ui-badge--brand {
+    background: var(--color-brand-soft);
+    border-color: var(--color-brand);
+    color: var(--color-brand);
+  }
+
+  .ui-badge--research {
+    background: var(--color-research-soft);
+    border-color: var(--color-research);
+    color: var(--color-research);
+  }
+
+  .ui-badge--context {
+    background: var(--color-context-soft);
+    border-color: var(--color-context);
+    color: var(--color-context);
+  }
+
+  .ui-badge--danger {
+    background: color-mix(in srgb, var(--color-danger) 12%, var(--color-surface));
+    border-color: var(--color-danger);
+    color: var(--color-danger);
+  }
+</style>

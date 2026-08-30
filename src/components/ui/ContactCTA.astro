@@ -1,0 +1,77 @@
+---
+interface Props {
+  statement: string;
+  primaryHref: string;
+  primaryLabel: string;
+  cvHref?: string;
+  cvLabel?: string;
+  class?: string;
+}
+
+const { statement, primaryHref, primaryLabel, cvHref, cvLabel, class: className = '' } = Astro.props;
+---
+
+<section class={['ui-contact-cta', className].filter(Boolean).join(' ')} data-visual-id="ContactCTA">
+  <p class="ui-contact-cta__statement">{statement}</p>
+  <div class="ui-contact-cta__actions">
+    <a href={primaryHref} class="ui-contact-cta__primary">
+      {primaryLabel}
+    </a>
+    {
+      cvHref && cvLabel ? (
+        <a href={cvHref} class="ui-contact-cta__secondary">
+          {cvLabel}
+        </a>
+      ) : null
+    }
+  </div>
+</section>
+
+<style>
+  .ui-contact-cta {
+    display: grid;
+    gap: var(--space-4);
+    padding: var(--layout-card-padding-min);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-xl);
+    background: var(--color-surface-muted);
+  }
+
+  .ui-contact-cta__statement {
+    margin: 0;
+    max-inline-size: var(--layout-prose);
+    color: var(--color-ink);
+    font-size: var(--font-size-lg);
+    line-height: 1.6;
+  }
+
+  .ui-contact-cta__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  .ui-contact-cta__primary,
+  .ui-contact-cta__secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: var(--layout-touch-target-min);
+    padding-inline: var(--space-5);
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+  }
+
+  .ui-contact-cta__primary {
+    background: var(--button-background);
+    color: var(--button-foreground);
+  }
+
+  .ui-contact-cta__secondary {
+    border: 1px solid var(--control-border);
+    color: var(--color-ink);
+    background: var(--color-surface);
+  }
+</style>

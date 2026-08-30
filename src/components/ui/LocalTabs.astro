@@ -1,0 +1,96 @@
+---
+export interface LocalTabItem {
+  id: string;
+  label: string;
+  href: string;
+}
+
+interface Props {
+  items: LocalTabItem[];
+  activeId: string;
+  ariaLabel: string;
+  variant?: 'inline' | 'overflow';
+  class?: string;
+}
+
+const { items, activeId, ariaLabel, variant = 'inline', class: className = '' } = Astro.props;
+---
+
+<nav
+  class={['ui-local-tabs', `ui-local-tabs--${variant}`, className].filter(Boolean).join(' ')}
+  data-visual-id="LocalTabs"
+  aria-label={ariaLabel}
+>
+  <ul class="ui-local-tabs__list">
+    {
+      items.map((item) => {
+        const active = item.id === activeId;
+        return (
+          <li class="ui-local-tabs__item">
+            <a
+              href={item.href}
+              class:list={['ui-local-tabs__tab', active && 'ui-local-tabs__tab--active']}
+              aria-current={active ? 'page' : undefined}
+            >
+              {item.label}
+              {active ? <span class="ui-local-tabs__marker" aria-hidden="true" /> : null}
+            </a>
+          </li>
+        );
+      })
+    }
+  </ul>
+</nav>
+
+<style>
+  .ui-local-tabs__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .ui-local-tabs--overflow .ui-local-tabs__list {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-block-end: var(--space-1);
+  }
+
+  .ui-local-tabs__tab {
+    position: relative;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: var(--layout-touch-target-min);
+    padding-inline: var(--space-4);
+    border-radius: var(--radius-sm);
+    color: var(--color-ink-secondary);
+    text-decoration: none;
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    transition:
+      color var(--motion-base) var(--motion-ease-out),
+      background-color var(--motion-base) var(--motion-ease-out);
+  }
+
+  .ui-local-tabs__tab:hover {
+    color: var(--color-brand);
+    background: var(--color-brand-soft);
+  }
+
+  .ui-local-tabs__tab--active {
+    color: var(--color-ink);
+  }
+
+  .ui-local-tabs__marker {
+    position: absolute;
+    inset-inline: var(--space-3);
+    inset-block-end: var(--space-1);
+    block-size: 2px;
+    background: var(--color-signature);
+    border-radius: var(--radius-pill);
+  }
+</style>
