@@ -1,0 +1,26 @@
+---
+import '../styles/shell.css';
+import './atlas.css';
+import ComponentGallery from './sections/ComponentGallery.astro';
+import FoundationsSection from './sections/FoundationsSection.astro';
+import LocaleThemeSection from './sections/LocaleThemeSection.astro';
+import PageFamilySpecimens from './sections/PageFamilySpecimens.astro';
+import StateSheetSection from './sections/StateSheetSection.astro';
+import TemplateGallery from './sections/TemplateGallery.astro';
+---
+
+<main id="main-content" class="atlas-page" data-visual-id="VisualAtlas">
+  <header class="atlas-section">
+    <h1 class="atlas-section__title">Visual Atlas</h1>
+    <p class="atlas-section__summary">
+      Local-only inventory for foundations, components, templates, page-family specimens, locale/theme parity, and shared states.
+    </p>
+  </header>
+
+  <FoundationsSection />
+  <ComponentGallery />
+  <TemplateGallery />
+  <PageFamilySpecimens />
+  <LocaleThemeSection />
+  <StateSheetSection />
+</main>

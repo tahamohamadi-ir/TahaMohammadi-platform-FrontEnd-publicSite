@@ -1,0 +1,53 @@
+---
+import Footer from '../../components/Footer.astro';
+import SkipLink from '../../components/SkipLink.astro';
+---
+
+<section class="atlas-section" id="atlas-page-families" data-visual-id="AtlasPageFamilySection">
+  <h2 class="atlas-section__title">Home and Gateway specimens</h2>
+  <p class="atlas-section__summary">
+    Read-only structural specimens using existing page-family surfaces. Production Home and Gateway implementations remain unchanged.
+  </p>
+
+  <div class="atlas-gateway-specimen" data-visual-id="AtlasGatewaySpecimen">
+    <div class="gateway-body">
+      <div class="gateway">
+        <header class="gateway__toolbar">
+          <span>Theme control region</span>
+        </header>
+        <section class="gateway__hero" aria-labelledby="atlas-gateway-name">
+          <h1 id="atlas-gateway-name" class="gateway__title">
+            <span class="gateway__title-primary">Gateway</span><span class="gateway__title-accent"> specimen</span>
+          </h1>
+          <p class="gateway__roles">Language gateway surface</p>
+        </section>
+        <footer class="gateway__footer">
+          <p class="gateway__prompt">Choose your language</p>
+          <nav aria-label="Language selection" class="gateway__nav">
+            <a href="#" class="gateway__locale" lang="en">English</a>
+            <a href="#" class="gateway__locale" lang="fa">فارسی</a>
+          </nav>
+        </footer>
+      </div>
+    </div>
+  </div>
+
+  <div class="atlas-home-specimen" data-visual-id="AtlasHomeSpecimen">
+    <SkipLink locale="en" />
+    <div class="home-page">
+      <section class="home-hero" aria-labelledby="atlas-home-hero">
+        <div class="home-hero__inner">
+          <div class="home-hero__copy">
+            <header class="home-hero__header">
+              <h1 id="atlas-home-hero" class="home-hero__name">
+                <span class="home-hero__name-primary">Home</span><span class="home-hero__name-accent"> specimen</span>
+              </h1>
+              <p class="home-hero__role">Structural preview band</p>
+            </header>
+          </div>
+        </div>
+      </section>
+    </div>
+    <Footer locale="en" hidePromo />
+  </div>
+</section>

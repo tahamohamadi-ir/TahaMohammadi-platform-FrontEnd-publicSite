@@ -111,7 +111,7 @@ describe('PUBLIC-160 — templates', () => {
   });
 });
 
-describe.skip('PUBLIC-170 — Visual Atlas', () => {
+describe('PUBLIC-170 — Visual Atlas', () => {
   it('registers the Visual Atlas outside src/pages when DESIGN_ATLAS=1', () => {
     expect(existsSync(path.join(repositoryRoot, 'src', 'integrations', 'design-atlas.mjs'))).toBe(true);
     expect(existsSync(path.join(repositoryRoot, 'src', 'atlas', 'AtlasRoute.astro'))).toBe(true);
