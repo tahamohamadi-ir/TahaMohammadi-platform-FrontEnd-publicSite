@@ -1,5 +1,5 @@
 import crypto from 'node:crypto';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
@@ -131,5 +131,14 @@ describe('WP-30 promoted media registry', () => {
     expect(source).toContain('isDeferredAssetId(id)');
     expect(source).toContain('Deferred asset');
     expect(source).toContain('assertSourceHash');
+  });
+
+  it('keeps deferred authority masters out of the runtime asset tree', () => {
+    for (const id of [
+      'project-visual-communication-network',
+      'project-placeholder-ivory-stairs',
+    ] as const) {
+      expect(existsSync(path.join(mediaRoot, 'art', `${id}.png`))).toBe(false);
+    }
   });
 });
