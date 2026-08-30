@@ -82,7 +82,7 @@ describe('PUBLIC-140 — UI primitives', () => {
   });
 });
 
-describe.skip('PUBLIC-150 — shell', () => {
+describe('PUBLIC-150 — shell', () => {
   it('refactors Header, LanguageToggle, and Footer while keeping SkipLink behavior focused', () => {
     for (const name of ['Header', 'LanguageToggle', 'Footer'] as const) {
       expect(existsSync(path.join(repositoryRoot, 'src', 'components', `${name}.astro`))).toBe(true);

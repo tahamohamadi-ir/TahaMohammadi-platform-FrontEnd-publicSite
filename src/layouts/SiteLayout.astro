@@ -1,9 +1,10 @@
 ---
+import '../styles/shell.css';
 import BaseLayout from './BaseLayout.astro';
 import SkipLink from '../components/SkipLink.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import type { Locale } from '../lib/navigation';
+import { buildLanguageToggleHref, type Locale } from '../lib/navigation';
 import { stripLocalePrefix } from '../lib/routes';
 import { buildPageSeo, getDir } from '../lib/seo';
 
@@ -25,11 +26,17 @@ const dir = getDir(locale);
 const segment = pathSegment ?? stripLocalePrefix(currentPath);
 const siteOrigin = Astro.site?.href ?? Astro.url.origin;
 const { canonical, alternates } = buildPageSeo(siteOrigin, locale, segment, alternateAvailable);
+const alternateHref = buildLanguageToggleHref(locale, segment, alternateAvailable);
 ---
 
 <BaseLayout title={title} lang={locale} dir={dir} canonical={canonical} alternates={alternates}>
   <SkipLink locale={locale} />
-  <Header locale={locale} currentPath={currentPath} />
+  <Header
+    locale={locale}
+    currentPath={currentPath}
+    alternateHref={alternateHref}
+    alternateAvailable={alternateAvailable}
+  />
   <main id="main-content" class="site-main" tabindex="-1">
     <slot />
   </main>
