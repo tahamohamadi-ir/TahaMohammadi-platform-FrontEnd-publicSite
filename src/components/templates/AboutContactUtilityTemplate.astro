@@ -1,0 +1,31 @@
+---
+import './template-base.css';
+
+interface Props {
+  class?: string;
+}
+
+const { class: className = '' } = Astro.props;
+---
+
+<div
+  class={['tm-template tm-about-contact-utility-template', className].filter(Boolean).join(' ')}
+  data-visual-id="AboutContactUtilityTemplate"
+>
+  <slot name="header" />
+
+  <div class="tm-template__main">
+    <div class="tm-template__toolbar">
+      <slot name="breadcrumbs" />
+      <div class="tm-about-contact-utility-template__h1-region">
+        <slot name="lead" />
+      </div>
+    </div>
+
+    <div class="tm-template__records">
+      <slot name="records" />
+    </div>
+  </div>
+
+  <slot name="footer" />
+</div>

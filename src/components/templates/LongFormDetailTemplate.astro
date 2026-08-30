@@ -1,0 +1,48 @@
+---
+import './template-base.css';
+
+interface Props {
+  class?: string;
+}
+
+const { class: className = '' } = Astro.props;
+---
+
+<div
+  class={['tm-template tm-long-form-detail-template', className].filter(Boolean).join(' ')}
+  data-visual-id="LongFormDetailTemplate"
+>
+  <slot name="header" />
+
+  <article class="tm-template__main">
+    <slot name="breadcrumbs" />
+    <header class="tm-long-form-detail-template__h1-region">
+      <slot name="lead" />
+    </header>
+
+    <div class="tm-template__detail-grid">
+      {
+        Astro.slots.has('toc') ? (
+          <aside class="tm-template__section tm-template__section--optional" aria-label="Table of contents">
+            <slot name="toc" />
+          </aside>
+        ) : null
+      }
+      <div class="tm-long-form-detail-template__body">
+        <slot name="body" />
+      </div>
+    </div>
+
+    {
+      Astro.slots.has('related') ? (
+        <section class="tm-template__section tm-template__section--optional" aria-labelledby="long-form-related-region">
+          <div id="long-form-related-region">
+            <slot name="related" />
+          </div>
+        </section>
+      ) : null
+    }
+  </article>
+
+  <slot name="footer" />
+</div>

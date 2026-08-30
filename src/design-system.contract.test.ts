@@ -100,7 +100,7 @@ describe('PUBLIC-150 — shell', () => {
   });
 });
 
-describe.skip('PUBLIC-160 — templates', () => {
+describe('PUBLIC-160 — templates', () => {
   it('implements the six slot-based templates from the pinned authority', () => {
     for (const filename of requiredTemplates) {
       expect(
