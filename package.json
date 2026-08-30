@@ -12,6 +12,7 @@
     "test:watch": "vitest",
     "generate:api-types": "node scripts/generate-api-types.mjs",
     "validate:design": "node scripts/validate-design-authority.mjs",
+    "test:foundation": "playwright test --grep @foundation",
     "test:visual": "playwright test --grep @visual",
     "test:a11y": "playwright test --grep @a11y",
     "build:atlas": "set \"DESIGN_ATLAS=1\"&& astro build"

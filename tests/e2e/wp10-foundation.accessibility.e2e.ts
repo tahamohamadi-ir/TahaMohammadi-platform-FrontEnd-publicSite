@@ -2,6 +2,22 @@ import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 
 test.describe('WP-10 focus and motion accessibility', () => {
+  test('moves keyboard focus from the SkipLink to main content while preserving visible focus @a11y', async ({ page }) => {
+    await page.goto('/en/');
+
+    const skipLink = page.locator('.skip-link');
+    for (let attempt = 0; attempt < 10 && !(await skipLink.evaluate((element) => element === document.activeElement)); attempt += 1) {
+      await page.keyboard.press('Tab');
+    }
+
+    await expect(skipLink).toBeFocused();
+    await expect(skipLink).toHaveCSS('outline-style', 'solid');
+    await expect(skipLink).toBeInViewport();
+
+    await page.keyboard.press('Enter');
+    await expect(page.locator('#main-content')).toBeFocused();
+  });
+
   test('retains a visible keyboard focus treatment and reduces motion @a11y', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto('/');

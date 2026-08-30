@@ -79,7 +79,7 @@ test.describe('WP-10 foundation acceptance', () => {
     }
   });
 
-  test('keeps multiple theme controls independent and cycles system light dark @wp10-foundation', async ({ page }) => {
+  test('keeps multiple theme controls independent and cycles system light dark @foundation', async ({ page }) => {
     await page.emulateMedia({ colorScheme: 'dark' });
     await page.addInitScript(() => {
       localStorage.setItem('tm-theme', 'system');
@@ -128,7 +128,7 @@ test.describe('WP-10 foundation acceptance', () => {
     await expect(controls.first()).toHaveAttribute('aria-pressed', 'mixed');
   });
 
-  test('persists an explicit requested mode and emits one resolution event after reload @wp10-foundation', async ({ page }) => {
+  test('persists an explicit requested mode and emits one resolution event after reload @foundation', async ({ page }) => {
     await page.addInitScript(() => {
       window.__tmThemeEvents = [];
       window.addEventListener('tm-themechange', (event) => window.__tmThemeEvents.push(event.detail));

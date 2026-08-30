@@ -30,7 +30,7 @@ const { canonical, alternates } = buildPageSeo(siteOrigin, locale, segment, alte
 <BaseLayout title={title} lang={locale} dir={dir} canonical={canonical} alternates={alternates}>
   <SkipLink locale={locale} />
   <Header locale={locale} currentPath={currentPath} />
-  <main id="main-content" class="site-main">
+  <main id="main-content" class="site-main" tabindex="-1">
     <slot />
   </main>
   <Footer locale={locale} hidePromo={hideFooterPromo} />

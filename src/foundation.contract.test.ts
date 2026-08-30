@@ -81,6 +81,7 @@ describe('WP-10 foundation contracts', () => {
     expect(packageManifest.dependencies['lucide-astro']).toBeTruthy();
     expect(packageManifest.dependencies['@playwright/test']).toBeUndefined();
     expect(packageManifest.dependencies['@axe-core/playwright']).toBeUndefined();
+    expect(packageManifest.scripts['test:foundation']).toBe('playwright test --grep @foundation');
     expect(packageManifest.scripts['test:visual']).toBe('playwright test --grep @visual');
     expect(packageManifest.scripts['test:a11y']).toBe('playwright test --grep @a11y');
   });
