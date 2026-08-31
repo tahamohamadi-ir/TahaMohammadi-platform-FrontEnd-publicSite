@@ -1,5 +1,25 @@
 /* Site shell — header, skip link, main, footer, and shell theme control surfaces. */
 
+html[data-theme='light'] {
+  --shell-ink-muted: var(--color-ink-secondary);
+}
+
+html[data-theme='dark'] {
+  --shell-ink-muted: var(--color-ink-tertiary);
+}
+
+@media (prefers-color-scheme: light) {
+  html:not([data-theme]) {
+    --shell-ink-muted: var(--color-ink-secondary);
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme]) {
+    --shell-ink-muted: var(--color-ink-tertiary);
+  }
+}
+
 .site-body {
   display: flex;
   flex-direction: column;
@@ -116,7 +136,7 @@ html[data-theme='dark'] .site-header {
   font-size: 0.62rem;
   font-weight: 500;
   letter-spacing: 0.04em;
-  color: var(--color-ink-tertiary);
+  color: var(--shell-ink-muted);
   white-space: nowrap;
 }
 
@@ -340,7 +360,7 @@ html[data-theme='dark'] .site-footer {
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--color-ink-tertiary);
+  color: var(--shell-ink-muted);
 }
 
 .site-footer__nav-list {
