@@ -1,5 +1,6 @@
 import type { Server } from 'node:http';
-import { readFileSync } from 'node:fs';
+import { execSync } from 'node:child_process';
+import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { expect, test } from '@playwright/test';
@@ -31,7 +32,14 @@ test.describe('PUBLIC-170 visual atlas', () => {
   let atlasServer: Server;
 
   test.beforeAll(async () => {
-    const started = await startDistStaticServer(path.join(repositoryRoot, 'dist'));
+    const distRoot = path.join(repositoryRoot, 'dist');
+    // The default Playwright harness rebuilds a production dist without the
+    // atlas route, so the atlas suite rebuilds its fixture whenever the
+    // DESIGN_ATLAS=1 output is absent instead of failing on a stale dist.
+    if (!existsSync(path.join(distRoot, '_design', 'index.html'))) {
+      execSync('npm.cmd run build:atlas --silent', { cwd: repositoryRoot, stdio: 'inherit' });
+    }
+    const started = await startDistStaticServer(distRoot);
     atlasBaseUrl = started.baseUrl;
     atlasServer = started.server;
   });
