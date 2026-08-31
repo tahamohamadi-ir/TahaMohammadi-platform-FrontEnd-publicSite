@@ -1,0 +1,47 @@
+---
+import ThemePicture from '../media/ThemePicture.astro';
+import { getHomeConstellationContent } from '../../lib/home-content';
+import { HOME_GRAPH_BACKPLATE_ASSETS } from '../../lib/media/promoted-media';
+import type { Locale } from '../../lib/navigation';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const content = getHomeConstellationContent(locale);
+---
+
+<section class="hm-graph">
+  <div class="hm-graph__copy">
+    <p class="hm-eyebrow">{content.sectionLabel}</p>
+    <h2 id="hm-graph-heading" class="hm-graph__heading">
+      {content.heading}
+    </h2>
+    <p class="hm-graph__lead">{content.research.lead}</p>
+  </div>
+
+  <div class="hm-graph__diagram">
+    <div class="hm-graph__canvas">
+      <div class="hm-graph__backplate" aria-hidden="true">
+        <ThemePicture
+          lightAssetId={HOME_GRAPH_BACKPLATE_ASSETS.light}
+          darkAssetId={HOME_GRAPH_BACKPLATE_ASSETS.dark}
+          mediaSlot="home.graph.backplate"
+          imgClass="hm-graph__backplate-img"
+        />
+      </div>
+
+      <ul class="hm-graph__nodes" aria-label={content.sectionLabel}>
+        {
+          content.nodes.map((node) => (
+            <li class:list={['hm-graph__node', `hm-graph__node--${node.position}`]}>
+              <span class="hm-graph__node-dot" data-accent={node.accent} aria-hidden="true" />
+              <span class="hm-graph__node-label">{node.label}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+</section>

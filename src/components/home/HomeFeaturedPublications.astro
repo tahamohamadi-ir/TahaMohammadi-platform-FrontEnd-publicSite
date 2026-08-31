@@ -1,6 +1,8 @@
 ---
-import { localePath, type Locale } from '../../lib/navigation';
+import PublicationRow from '../ui/PublicationRow.astro';
+import Link from '../ui/Link.astro';
 import { getHomePublicationsContent } from '../../lib/home-content';
+import { localePath, type Locale } from '../../lib/navigation';
 
 interface Props {
   locale: Locale;
@@ -8,47 +10,36 @@ interface Props {
 
 const { locale } = Astro.props;
 const content = getHomePublicationsContent(locale);
-const researchHref = localePath(locale, 'research');
+const writingHref = localePath(locale, 'writing');
 ---
 
-<section class="home-publications" aria-labelledby="home-publications-title">
-  <div class="home-publications__inner">
-    <header class="home-publications__header">
-      <div class="home-section-heading">
-        <h2 id="home-publications-title" class="home-section__eyebrow">
-          {content.title}
-        </h2>
-        <a href={researchHref} class="home-section-heading__link">
-          {content.viewAll} →
-        </a>
-      </div>
-      <p class="home-publications__note">{content.draftNote}</p>
-    </header>
+{
+  content.items.length === 0 ? null : (
+    <section class="hm-publications">
+      <div class="hm-publications__inner">
+        <header class="hm-publications__header">
+          <div class="hm-section-heading">
+            <h2 id="hm-publications-title" class="hm-eyebrow hm-publications__title">
+              {content.title}
+            </h2>
+            <Link href={writingHref} label={content.viewAll} variant="standalone" showIcon />
+          </div>
+          <p class="hm-publications__note">{content.draftNote}</p>
+        </header>
 
-    <ul class="home-publications__grid">
-      {
-        content.items.map((item) => {
-          const publicationHref = localePath(locale, `writing/${item.slug}`);
-          return (
+        <ul class="hm-publications__list">
+          {content.items.map((item) => (
             <li>
-              <a href={publicationHref} class="home-publications__card home-card-interactive">
-                <div class="home-publications__card-icon" aria-hidden="true">
-                  <span class="home-publications__card-mark">✎</span>
-                </div>
-                <p class="home-publications__card-type">{content.manuscriptLabel}</p>
-                <h3 class="home-publications__card-title" lang={locale === 'fa' ? 'en' : undefined}>
-                  {item.title}
-                </h3>
-                <p class="home-publications__card-excerpt home-prose-justify">{item.excerpt}</p>
-                <div class="home-publications__card-footer">
-                  <p class="home-publications__card-status">{item.statusLabel}</p>
-                  <span class="home-publications__card-go" aria-hidden="true">→</span>
-                </div>
-              </a>
+              <PublicationRow
+                typeLabel={content.manuscriptLabel}
+                statusLabel={item.statusLabel}
+                title={item.title}
+                href={localePath(locale, `writing/${item.slug}`)}
+              />
             </li>
-          );
-        })
-      }
-    </ul>
-  </div>
-</section>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )
+}

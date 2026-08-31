@@ -31,10 +31,12 @@ describe('stub detail content', () => {
     ]);
   });
 
-  it('resolves stub publications for en and fa', () => {
+  it('resolves EN-only stub publications only for their exact locale', () => {
     for (const slug of stubPublicationSlugs) {
       expect(getStubPublication('en', slug)?.slug).toBe(slug);
-      expect(getStubPublication('fa', slug)?.slug).toBe(slug);
+      // writing.visual-discourse.en / writing.vtd-edge.en are EN-only seed
+      // records; FA fallback detail routes violated the seed contract.
+      expect(getStubPublication('fa', slug)).toBeUndefined();
     }
   });
 
@@ -43,8 +45,8 @@ describe('stub detail content', () => {
     expect(listStubProjects('fa').map((p) => p.slug)).toEqual([...stubProjectSlugs]);
   });
 
-  it('lists stub publications for index pages', () => {
+  it('lists stub publications for index pages per exact-locale records', () => {
     expect(listStubPublications('en').map((p) => p.slug)).toEqual([...stubPublicationSlugs]);
-    expect(listStubPublications('fa').map((p) => p.slug)).toEqual([...stubPublicationSlugs]);
+    expect(listStubPublications('fa')).toEqual([]);
   });
 });

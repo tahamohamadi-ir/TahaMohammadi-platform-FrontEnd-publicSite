@@ -1,6 +1,9 @@
 ---
-import { localePath, type Locale } from '../../lib/navigation';
+import MediaTile from '../ui/MediaTile.astro';
+import Link from '../ui/Link.astro';
+import PromotedPicture from '../media/PromotedPicture.astro';
 import { getHomeExploreContent } from '../../lib/home-content';
+import { localePath, type Locale } from '../../lib/navigation';
 
 interface Props {
   locale: Locale;
@@ -10,26 +13,42 @@ const { locale } = Astro.props;
 const content = getHomeExploreContent(locale);
 ---
 
-<section class="home-explore" aria-labelledby="home-explore-title">
-  <div class="home-explore__inner">
-    <h2 id="home-explore-title" class="home-section__eyebrow">{content.title}</h2>
-    <ul class="home-explore__grid">
+<section class="hm-explore">
+  <div class="hm-explore__inner">
+    <h2 id="hm-explore-title" class="hm-eyebrow hm-explore__title">
+      {content.title}
+    </h2>
+
+    <ul class="hm-explore__grid">
       {
-        content.rails.map((rail) => {
-          const railHref = localePath(locale, rail.pathSegment);
-          return (
-            <li>
-              <a href={railHref} class="home-explore__card home-card-interactive">
-                <h3 class="home-explore__card-title">{rail.title}</h3>
-                <p class="home-explore__card-excerpt home-prose-justify">{rail.excerpt}</p>
-                <div class="home-explore__card-footer">
-                  <span class="home-explore__card-link">{rail.viewLabel}</span>
-                  <span class="home-explore__card-go" aria-hidden="true">→</span>
-                </div>
-              </a>
-            </li>
-          );
-        })
+        content.rails.map((rail) => (
+          <li>
+            <article class="hm-explore__card">
+              <MediaTile variant="grid" aspectRatio="3 / 2" class="hm-explore__tile">
+                <PromotedPicture
+                  slot="media"
+                  assetId={rail.assetId}
+                  mediaSlot="home.rail.preview"
+                  imgClass="hm-explore__image"
+                />
+              </MediaTile>
+              <h3 class="hm-explore__card-title">{rail.title}</h3>
+              <p class="hm-explore__card-excerpt">{rail.excerpt}</p>
+              {rail.unavailableStatus ? (
+                <p class="hm-explore__status">{rail.unavailableStatus}</p>
+              ) : (
+                rail.viewLabel && (
+                  <Link
+                    href={localePath(locale, rail.pathSegment)}
+                    label={rail.viewLabel}
+                    variant="standalone"
+                    showIcon
+                  />
+                )
+              )}
+            </article>
+          </li>
+        ))
       }
     </ul>
   </div>

@@ -1,0 +1,583 @@
+/* Home (PF-01) — WP-40 reconstruction.
+   Composition only: every value consumes pinned tokens; primitives own their
+   own internals. Class prefix `hm-` keeps this module disjoint from legacy
+   global.css home rules, which stay untouched for other consumers. */
+
+/* Shared section rhythm */
+.hm-eyebrow {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-body);
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-brand);
+}
+
+.hm-section-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3) var(--space-4);
+}
+
+/* Hero — orbit atmosphere panel with identity lead */
+.hm-hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--color-border-subtle);
+  min-height: clamp(26rem, 52vh, 34rem);
+  display: flex;
+  align-items: center;
+  padding: clamp(var(--space-8), 6vw, var(--space-16));
+}
+
+.hm-hero__atmosphere {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.hm-hero__atmosphere .theme-picture__mount,
+.hm-hero__atmosphere .theme-picture__picture,
+.hm-hero__atmosphere noscript .theme-picture__picture,
+.hm-hero__atmosphere .hm-hero__atmosphere-img {
+  inline-size: 100%;
+  block-size: 100%;
+}
+
+.hm-hero__atmosphere .hm-hero__atmosphere-img {
+  object-fit: cover;
+  object-position: 62% 44%;
+}
+
+[dir='rtl'] .hm-hero__atmosphere .hm-hero__atmosphere-img {
+  object-position: 38% 44%;
+}
+
+/* Tokenized scrim: solid toward the copy side, transparent toward the art. */
+.hm-hero__scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--color-canvas) 88%, transparent) 0%,
+    color-mix(in srgb, var(--color-canvas) 72%, transparent) 34%,
+    color-mix(in srgb, var(--color-canvas) 30%, transparent) 62%,
+    transparent 82%
+  );
+}
+
+[dir='rtl'] .hm-hero__scrim {
+  background: linear-gradient(
+    270deg,
+    color-mix(in srgb, var(--color-canvas) 88%, transparent) 0%,
+    color-mix(in srgb, var(--color-canvas) 72%, transparent) 34%,
+    color-mix(in srgb, var(--color-canvas) 30%, transparent) 62%,
+    transparent 82%
+  );
+}
+
+.hm-hero__inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  inline-size: min(100%, 38rem);
+}
+
+.hm-hero__focus {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.hm-hero__focus-label {
+  margin: 0;
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-ink-tertiary);
+}
+
+.hm-hero__focus-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Research statement + semantic graph */
+.hm-graph__copy {
+  display: grid;
+  gap: var(--space-4);
+  max-inline-size: var(--layout-prose);
+}
+
+.hm-graph__heading {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.45rem, 3vw, 2rem);
+  line-height: 1.22;
+  color: var(--color-ink);
+  max-inline-size: 24ch;
+}
+
+.hm-graph__lead {
+  margin: 0;
+  color: var(--color-ink-secondary);
+  line-height: 1.7;
+}
+
+.hm-graph__diagram {
+  display: flex;
+  justify-content: center;
+}
+
+.hm-graph__canvas {
+  position: relative;
+  inline-size: min(100%, 30rem);
+}
+
+.hm-graph__backplate {
+  position: relative;
+  aspect-ratio: 1;
+}
+
+.hm-graph__backplate .theme-picture__mount,
+.hm-graph__backplate .theme-picture__picture,
+.hm-graph__backplate noscript .theme-picture__picture,
+.hm-graph__backplate .hm-graph__backplate-img {
+  inline-size: 100%;
+  block-size: 100%;
+}
+
+.hm-graph__backplate .hm-graph__backplate-img {
+  object-fit: cover;
+}
+
+/* Semantic node list: normal flow by default (no-JS / no-image safe),
+   overlaid on the backplate landing zones from the 1024px breakpoint. */
+.hm-graph__nodes {
+  position: relative;
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+  padding: var(--space-6);
+  list-style: none;
+}
+
+.hm-graph__node {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  max-inline-size: 11rem;
+}
+
+.hm-graph__node-dot {
+  flex-shrink: 0;
+  inline-size: 0.6rem;
+  block-size: 0.6rem;
+  margin-block-start: 0.35rem;
+  border-radius: var(--radius-pill);
+  background: var(--color-brand);
+}
+
+.hm-graph__node-dot[data-accent='signature'] {
+  background: var(--color-signature);
+}
+
+.hm-graph__node-dot[data-accent='research'] {
+  background: var(--color-research);
+}
+
+.hm-graph__node-dot[data-accent='context'] {
+  background: var(--color-context);
+}
+
+.hm-graph__node-dot[data-accent='ink'] {
+  background: var(--color-ink-tertiary);
+}
+
+.hm-graph__node-label {
+  font-size: var(--font-size-sm);
+  line-height: 1.45;
+  color: var(--color-ink);
+  background: color-mix(in srgb, var(--color-canvas) 82%, transparent);
+  padding: 0.15rem 0.4rem;
+  border-radius: var(--radius-xs);
+}
+
+@media (min-width: 1024px) {
+  .hm-graph__nodes {
+    position: absolute;
+    inset: 0;
+    padding: 0;
+  }
+
+  .hm-graph__node {
+    position: absolute;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2);
+    transform: translate(-50%, -50%);
+  }
+
+  .hm-graph__node-dot {
+    margin-block-start: 0;
+  }
+
+  .hm-graph__node-label {
+    text-align: center;
+    font-size: var(--font-size-xs);
+    max-inline-size: 9rem;
+  }
+
+  .hm-graph__node--a {
+    inset-block-start: 12%;
+    inset-inline-start: 50%;
+  }
+
+  .hm-graph__node--b {
+    inset-block-start: 32%;
+    inset-inline-start: 84%;
+  }
+
+  .hm-graph__node--c {
+    inset-block-start: 76%;
+    inset-inline-start: 72%;
+  }
+
+  .hm-graph__node--d {
+    inset-block-start: 76%;
+    inset-inline-start: 28%;
+  }
+
+  .hm-graph__node--e {
+    inset-block-start: 32%;
+    inset-inline-start: 16%;
+  }
+}
+
+/* Research interests — five columns desktop, two tablet, one mobile */
+.hm-interests__inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.hm-interests__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.25rem, 2.5vw, 1.65rem);
+  line-height: 1.3;
+  color: var(--color-ink);
+  max-inline-size: var(--layout-prose);
+}
+
+.hm-interests__grid {
+  display: grid;
+  gap: var(--space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 768px) {
+  .hm-interests__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1280px) {
+  .hm-interests__grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+.hm-interests__fit {
+  padding: var(--space-6);
+  border: 1px solid color-mix(in srgb, var(--color-signature) 45%, transparent);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--color-signature-soft) 35%, transparent);
+  max-inline-size: var(--layout-prose);
+}
+
+.hm-interests__fit-title {
+  margin: 0 0 var(--space-2);
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-ink);
+}
+
+.hm-interests__fit-copy {
+  margin: 0;
+  line-height: 1.6;
+  color: var(--color-ink-secondary);
+}
+
+/* Journey — ordered timeline */
+.hm-journey__inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  padding-block: var(--space-6);
+  border-block: 1px solid var(--color-border-subtle);
+}
+
+.hm-journey__icon {
+  display: inline-flex;
+  color: var(--color-brand);
+}
+
+.hm-journey__headline {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.1rem, 2.2vw, 1.45rem);
+  line-height: 1.35;
+  color: var(--color-ink);
+}
+
+.hm-journey__timeline {
+  display: grid;
+  gap: var(--space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 768px) {
+  .hm-journey__timeline {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: var(--space-4);
+  }
+}
+
+/* Featured projects — intentional two-column feature grid */
+.hm-projects__inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.hm-projects__title {
+  font-family: var(--font-display);
+  font-size: clamp(1.35rem, 3vw, 1.9rem);
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--color-ink);
+}
+
+.hm-projects__note {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-ink-secondary);
+}
+
+.hm-projects__grid {
+  display: grid;
+  gap: var(--space-6);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 768px) {
+  .hm-projects__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.hm-projects__image {
+  inline-size: 100%;
+  block-size: auto;
+  object-fit: cover;
+}
+
+/* Long display names must wrap inside the frozen FeaturedRecord anatomy. */
+.hm-projects__card .ui-featured-record__title,
+.hm-projects__card .ui-featured-record__summary {
+  overflow-wrap: anywhere;
+}
+
+.hm-projects__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.hm-projects__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Manuscript rail */
+.hm-publications__inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.hm-publications__title {
+  font-family: var(--font-display);
+  font-size: clamp(1.35rem, 3vw, 1.9rem);
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--color-ink);
+}
+
+.hm-publications__note {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-ink-secondary);
+}
+
+.hm-publications__list {
+  display: grid;
+  gap: var(--space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 768px) {
+  .hm-publications__list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Explore rails — three previews; unavailable rails render no anchor */
+.hm-explore__inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.hm-explore__title {
+  font-family: var(--font-display);
+  font-size: clamp(1.35rem, 3vw, 1.9rem);
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--color-ink);
+}
+
+.hm-explore__grid {
+  display: grid;
+  gap: var(--space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 768px) {
+  .hm-explore__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.hm-explore__card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+  block-size: 100%;
+}
+
+.hm-explore__tile {
+  inline-size: 100%;
+}
+
+.hm-explore__card-title {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  color: var(--color-ink);
+}
+
+.hm-explore__card-excerpt {
+  margin: 0;
+  flex: 1;
+  font-size: var(--font-size-sm);
+  line-height: 1.6;
+  color: var(--color-ink-secondary);
+}
+
+.hm-explore__status {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+  color: var(--color-ink-secondary);
+}
+
+/* Collaboration band — unavailable Contact/CV render as disabled controls */
+.hm-collab__inner {
+  display: grid;
+  gap: var(--space-6);
+  padding: var(--space-8);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--color-brand-soft) 35%, var(--color-surface));
+}
+
+@media (min-width: 768px) {
+  .hm-collab__inner {
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+  }
+}
+
+.hm-collab__mark {
+  display: grid;
+  place-items: center;
+  inline-size: 4.5rem;
+  block-size: 4.5rem;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--color-border-subtle);
+  background: var(--color-surface);
+}
+
+.hm-collab__logo {
+  inline-size: 2rem;
+  block-size: 2rem;
+  object-fit: contain;
+}
+
+.hm-collab__copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-4);
+}
+
+.hm-collab__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.15rem, 2.4vw, 1.5rem);
+  font-weight: 500;
+  line-height: 1.45;
+  color: var(--color-ink);
+  max-inline-size: var(--layout-prose);
+}
+
+.hm-collab__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}

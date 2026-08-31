@@ -1,15 +1,27 @@
 /**
  * Scaffold copy from content-records.v1.1-seed.json (draft — not published API).
  * Do not treat as live CMS data until owner approval and publication gate pass.
+ * Locale rule: exact-locale records only; no fallback content.
  */
 
 import type { Locale } from './navigation';
 import { shellCopy } from './navigation';
+import type { RuntimeAssetId } from './media/authority-checksums';
+import {
+  HOME_PROJECT_ASSET_BY_SLUG,
+  HOME_RAIL_ASSET_BY_PATH,
+} from './media/project-mappings';
 
 /** profile.identity.{locale}.data.name */
 const displayName: Record<Locale, string> = {
   en: 'Taha Mohammadi',
   fa: 'طه محمدی',
+};
+
+/** profile.identity.{locale}.data.professional_title */
+const professionalRole: Record<Locale, string> = {
+  en: 'Software Engineer & Researcher in Human-Centered AI, Data Systems, and Visual Analytics',
+  fa: 'مهندس نرم‌افزار و پژوهشگر در حوزه هوش مصنوعی انسان‌محور، سامانه‌های داده و تحلیل بصری',
 };
 
 /** route.home.{locale}.body_markdown */
@@ -36,20 +48,6 @@ const focusChipsFa = [
   'هوش مصنوعی محلی و لبه با ملاحظات حریم خصوصی',
 ] as const;
 
-/** Hero CTA labels — structural navigation; EN matches home concept, FA from route_copy titles. */
-const ctaLabels: Record<Locale, { research: string; cv: string; contact: string }> = {
-  en: {
-    research: 'Research Profile',
-    cv: 'Academic CV',
-    contact: 'Contact',
-  },
-  fa: {
-    research: 'پژوهش',
-    cv: 'رزومه',
-    contact: 'تماس',
-  },
-};
-
 const focusAreasLabel: Record<Locale, string> = {
   en: 'Focus areas',
   fa: 'حوزه‌های تمرکز',
@@ -73,11 +71,6 @@ const researchLead: Record<Locale, string> = {
   fa: 'محور اصلی علاقه پژوهشی من یک پرسش عملی است: سامانه‌های هوشمند چگونه می‌توانند توانایی انسان را افزایش دهند، بدون آن‌که شواهد، عدم‌قطعیت یا امکان کنترل را پنهان کنند؟',
 };
 
-const researchCta: Record<Locale, string> = {
-  en: 'Read research profile',
-  fa: 'مشاهدهٔ پروژه‌های پژوهشی',
-};
-
 const featuredTitle: Record<Locale, string> = {
   en: 'Featured projects',
   fa: 'پروژه‌های برجسته',
@@ -98,18 +91,13 @@ const viewProjectLabel: Record<Locale, string> = {
   fa: 'مشاهدهٔ پروژه',
 };
 
-const viewPublicationLabel: Record<Locale, string> = {
-  en: 'Read manuscript',
-  fa: 'مشاهدهٔ پیش‌نویس',
-};
-
 export interface FeaturedProjectCard {
   slug: string;
   title: string;
   excerpt: string;
   statusLabel: string;
   tags: readonly string[];
-  imageSrc: string;
+  assetId: RuntimeAssetId;
 }
 
 /** Public draft-safe featured projects from seed v1.1 (not API-backed). */
@@ -121,7 +109,7 @@ const featuredProjects: Record<Locale, FeaturedProjectCard[]> = {
       excerpt: 'Reliable Persian natural-language interaction with structured data.',
       statusLabel: 'Ongoing research and engineering project',
       tags: ['human-centered-ai', 'nlp-to-sql', 'trustworthy-ai', 'local-ai'],
-      imageSrc: '/media/art/project-data-architecture.png',
+      assetId: HOME_PROJECT_ASSET_BY_SLUG['pars-sql-vtd-edge'],
     },
     {
       slug: 'organizational-dashboard-research',
@@ -129,7 +117,7 @@ const featuredProjects: Record<Locale, FeaturedProjectCard[]> = {
       excerpt: 'Research and design across nine organizational dashboard suites.',
       statusLabel: '2022–2025',
       tags: ['visual-analytics', 'dashboard-design', 'information-visualization'],
-      imageSrc: '/media/art/project-dashboard-systems.png',
+      assetId: HOME_PROJECT_ASSET_BY_SLUG['organizational-dashboard-research'],
     },
   ],
   fa: [
@@ -139,7 +127,7 @@ const featuredProjects: Record<Locale, FeaturedProjectCard[]> = {
       excerpt: 'تعامل قابل‌اعتماد زبان طبیعی فارسی با داده‌های ساختاریافته.',
       statusLabel: 'پروژه پژوهشی و مهندسی در حال توسعه',
       tags: ['human-centered-ai', 'nlp-to-sql', 'trustworthy-ai', 'local-ai'],
-      imageSrc: '/media/art/project-data-architecture.png',
+      assetId: HOME_PROJECT_ASSET_BY_SLUG['pars-sql-vtd-edge'],
     },
     {
       slug: 'organizational-dashboard-research',
@@ -147,7 +135,7 @@ const featuredProjects: Record<Locale, FeaturedProjectCard[]> = {
       excerpt: 'پژوهش و طراحی در نه مجموعه داشبورد سازمانی.',
       statusLabel: '۱۴۰۱–۱۴۰۴',
       tags: ['visual-analytics', 'dashboard-design', 'information-visualization'],
-      imageSrc: '/media/art/project-dashboard-systems.png',
+      assetId: HOME_PROJECT_ASSET_BY_SLUG['organizational-dashboard-research'],
     },
   ],
 };
@@ -156,10 +144,10 @@ export interface HomeHeroContent {
   name: string;
   namePrimary: string;
   nameAccent: string;
+  role: string;
   intro: string;
   focusChips: readonly string[];
   focusAreasLabel: string;
-  ctas: { research: string; cv: string; contact: string };
 }
 
 export function getHomeHeroContent(locale: Locale): HomeHeroContent {
@@ -171,10 +159,10 @@ export function getHomeHeroContent(locale: Locale): HomeHeroContent {
       name,
       namePrimary: given,
       nameAccent: rest.length > 0 ? ` ${rest.join(' ')}` : '',
+      role: professionalRole.en,
       intro: introCopy.en,
       focusChips: focusChipsEn,
       focusAreasLabel: focusAreasLabel.en,
-      ctas: ctaLabels.en,
     };
   }
 
@@ -182,10 +170,10 @@ export function getHomeHeroContent(locale: Locale): HomeHeroContent {
     name,
     namePrimary: name,
     nameAccent: '',
+    role: professionalRole.fa,
     intro: introCopy.fa,
     focusChips: focusChipsFa,
     focusAreasLabel: focusAreasLabel.fa,
-    ctas: ctaLabels.fa,
   };
 }
 
@@ -193,7 +181,6 @@ export interface HomeResearchContent {
   title: string;
   excerpt: string;
   lead: string;
-  cta: string;
 }
 
 export interface HomeFeaturedContent {
@@ -209,7 +196,6 @@ export function getHomeResearchContent(locale: Locale): HomeResearchContent {
     title: researchTitle[locale],
     excerpt: researchExcerpt[locale],
     lead: researchLead[locale],
-    cta: researchCta[locale],
   };
 }
 
@@ -222,13 +208,6 @@ export function getHomeFeaturedContent(locale: Locale): HomeFeaturedContent {
     projects: featuredProjects[locale],
   };
 }
-
-const constellationSectionLabel: Record<Locale, string> = researchTitle;
-
-const constellationCenterLabel: Record<Locale, string> = {
-  en: focusChipsEn[0],
-  fa: focusChipsFa[0],
-};
 
 type ConstellationAccent = 'brand' | 'signature' | 'research' | 'context' | 'ink';
 
@@ -260,11 +239,6 @@ function buildConstellationNodes(
   }));
 }
 
-const constellationHeading: Record<Locale, string> = {
-  en: researchExcerpt.en,
-  fa: researchExcerpt.fa,
-};
-
 const interestsSectionTitle: Record<Locale, string> = {
   en: 'Research interests & fit',
   fa: 'علاقه‌مندی‌ها و تناسب پژوهشی',
@@ -273,11 +247,6 @@ const interestsSectionTitle: Record<Locale, string> = {
 const interestsSectionLead: Record<Locale, string> = {
   en: 'Five interconnected areas where research questions, system design, and real-world constraints meet.',
   fa: 'پنج حوزهٔ به‌هم‌پیوسته که پرسش‌های پژوهشی، طراحی سامانه و محدودیت‌های دنیای واقعی در آن‌ها تلاقی می‌کنند.',
-};
-
-const exploreLabel: Record<Locale, string> = {
-  en: 'Explore',
-  fa: 'کاوش',
 };
 
 /** research.focus.*.en — EN-only seed records. */
@@ -311,38 +280,6 @@ const researchInterestsEn = [
     title: 'Digital Health & Wearable AI',
     excerpt:
       'A developing research direction focused on responsible use of health, behavioral, and multimodal human data.',
-  },
-] as const;
-
-/** research.statement.fa.data.focus_areas */
-const researchInterestsFa = [
-  {
-    slug: 'human-centered-ai',
-    title: 'هوش مصنوعی انسان‌محور و تعامل انسان و هوش مصنوعی',
-    excerpt:
-      'هوش مصنوعی انسان‌محور و تعامل انسان و هوش مصنوعی',
-  },
-  {
-    slug: 'trustworthy-ai',
-    title: 'سامانه‌های هوشمند قابل‌اعتماد، کنترل‌پذیر و عامل‌محور',
-    excerpt:
-      'سامانه‌های هوشمند قابل‌اعتماد، کنترل‌پذیر و عامل‌محور',
-  },
-  {
-    slug: 'visual-analytics',
-    title: 'تحلیل بصری و پشتیبانی از تصمیم با کمک هوش مصنوعی',
-    excerpt:
-      'تحلیل بصری و پشتیبانی از تصمیم با کمک هوش مصنوعی',
-  },
-  {
-    slug: 'behavioral-data',
-    title: 'سامانه‌های داده رفتاری و شخصی‌سازی توضیح‌پذیر',
-    excerpt: 'سامانه‌های داده رفتاری و شخصی‌سازی توضیح‌پذیر',
-  },
-  {
-    slug: 'edge-ai',
-    title: 'هوش مصنوعی محلی و لبه با ملاحظات حریم خصوصی',
-    excerpt: 'هوش مصنوعی محلی و لبه با ملاحظات حریم خصوصی',
   },
 ] as const;
 
@@ -404,57 +341,55 @@ const publicationsDraftNote: Record<Locale, string> = {
   fa: 'رکوردهای پیش‌نویس انگلیسی از seed — ترجمه و انتشار هنوز تأیید نشده است.',
 };
 
-const featuredPublications: Record<
-  Locale,
-  readonly { slug: string; title: string; excerpt: string; statusLabel: string }[]
-> = {
-  en: [
-    {
-      slug: 'visual-discourse-elections',
-      title:
-        'A Comparative Analysis of Reformist and Principlist Visual Discourses in Presidential Elections (1997–2017)',
-      excerpt:
-        'Research manuscript extending M.A. work on visual communication and comparative visual discourse analysis.',
-      statusLabel: 'Manuscript in final revision',
-    },
-    {
-      slug: 'vtd-edge-manuscript',
-      title:
-        'VTD-Edge: Reliable, Privacy-Preserving Persian NLP-to-SQL on Resource-Constrained Devices',
-      excerpt:
-        'Technical manuscript in preparation on reliable Persian NLP-to-SQL.',
-      statusLabel: 'Manuscript in preparation',
-    },
-  ],
-  fa: [
-    {
-      slug: 'visual-discourse-elections',
-      title:
-        'A Comparative Analysis of Reformist and Principlist Visual Discourses in Presidential Elections (1997–2017)',
-      excerpt:
-        'Research manuscript extending M.A. work on visual communication and comparative visual discourse analysis.',
-      statusLabel: 'پیش‌نویس در مرحله بازبینی نهایی',
-    },
-    {
-      slug: 'vtd-edge-manuscript',
-      title:
-        'VTD-Edge: Reliable, Privacy-Preserving Persian NLP-to-SQL on Resource-Constrained Devices',
-      excerpt:
-        'Technical manuscript in preparation on reliable Persian NLP-to-SQL.',
-      statusLabel: 'پیش‌نویس در حال آماده‌سازی',
-    },
-  ],
-};
+/** writing.visual-discourse.en / writing.vtd-edge.en — EN-only manuscript records. */
+const featuredPublicationsEn: readonly {
+  slug: string;
+  title: string;
+  excerpt: string;
+  statusLabel: string;
+}[] = [
+  {
+    slug: 'visual-discourse-elections',
+    title:
+      'A Comparative Analysis of Reformist and Principlist Visual Discourses in Presidential Elections (1997–2017)',
+    excerpt:
+      'Research manuscript extending M.A. work on visual communication and comparative visual discourse analysis.',
+    statusLabel: 'Manuscript in final revision',
+  },
+  {
+    slug: 'vtd-edge-manuscript',
+    title:
+      'VTD-Edge: Reliable, Privacy-Preserving Persian NLP-to-SQL on Resource-Constrained Devices',
+    excerpt:
+      'Technical manuscript in preparation on reliable Persian NLP-to-SQL.',
+    statusLabel: 'Manuscript in preparation',
+  },
+];
 
 const exploreRailsTitle: Record<Locale, string> = {
   en: 'Explore more',
   fa: 'کاوش بیشتر',
 };
 
+/** seed.empty.teaching.{locale} / seed.empty.creative.{locale} — seed-backed unavailable states. */
+const seedEmptyStates: Record<
+  'teaching' | 'creative',
+  Record<Locale, string>
+> = {
+  teaching: {
+    en: 'No public teaching record is available yet.',
+    fa: 'هنوز رکورد عمومی تأییدشده‌ای برای تدریس در دسترس نیست.',
+  },
+  creative: {
+    en: 'Selected visual and design work will be added after authorship, credits, and publication rights are confirmed.',
+    fa: 'آثار منتخب بصری و طراحی پس از تأیید مالکیت، اعتباردهی و حقوق انتشار اضافه می‌شوند.',
+  },
+};
+
 /** route_copy excerpts for secondary home rails. */
 const exploreRails: Record<
   Locale,
-  readonly { pathSegment: string; title: string; excerpt: string; viewLabel: string }[]
+  readonly { pathSegment: 'creative' | 'writing' | 'teaching'; title: string; excerpt: string; viewLabel: string }[]
 > = {
   en: [
     {
@@ -501,7 +436,6 @@ const exploreRails: Record<
 export interface HomeConstellationContent {
   sectionLabel: string;
   heading: string;
-  centerLabel: string;
   research: HomeResearchContent;
   nodes: ConstellationNode[];
 }
@@ -515,7 +449,6 @@ export interface ResearchInterestCard {
 export interface HomeInterestsContent {
   sectionTitle: string;
   sectionLead: string;
-  exploreLabel: string;
   cards: readonly ResearchInterestCard[];
   fitTitle: string;
   fitCopy: string;
@@ -524,7 +457,6 @@ export interface HomeInterestsContent {
 export interface HomeJourneyContent {
   title: string;
   headline: string;
-  summary: string;
   milestones: readonly { title: string }[];
 }
 
@@ -539,16 +471,18 @@ export interface HomePublicationsContent {
   title: string;
   draftNote: string;
   viewAll: string;
-  viewPublication: string;
   manuscriptLabel: string;
   items: readonly PublicationCard[];
 }
 
 export interface ExploreRail {
-  pathSegment: string;
+  pathSegment: 'creative' | 'writing' | 'teaching';
   title: string;
   excerpt: string;
-  viewLabel: string;
+  viewLabel?: string;
+  /** seed-backed empty-state text; set only when the route is unavailable. */
+  unavailableStatus?: string;
+  assetId: RuntimeAssetId;
 }
 
 export interface HomeExploreContent {
@@ -558,11 +492,13 @@ export interface HomeExploreContent {
 
 export function getHomeConstellationContent(locale: Locale): HomeConstellationContent {
   return {
-    sectionLabel: constellationSectionLabel[locale],
-    heading: constellationHeading[locale],
-    centerLabel: constellationCenterLabel[locale],
+    sectionLabel: researchTitle[locale],
+    heading: researchExcerpt[locale],
     research: getHomeResearchContent(locale),
-    nodes: buildConstellationNodes(locale === 'en' ? researchInterestsEn : researchInterestsFa),
+    nodes: buildConstellationNodes(locale === 'en' ? researchInterestsEn : focusChipsFa.map((label, index) => ({
+      slug: researchInterestsEn[index]?.slug ?? `focus-${index}`,
+      title: label,
+    }))),
   };
 }
 
@@ -570,8 +506,7 @@ export function getHomeInterestsContent(locale: Locale): HomeInterestsContent {
   return {
     sectionTitle: interestsSectionTitle[locale],
     sectionLead: interestsSectionLead[locale],
-    exploreLabel: exploreLabel[locale],
-    cards: locale === 'en' ? researchInterestsEn : researchInterestsFa,
+    cards: locale === 'en' ? researchInterestsEn : [],
     fitTitle: researchFitTitle[locale],
     fitCopy: researchFitCopy[locale],
   };
@@ -581,7 +516,6 @@ export function getHomeJourneyContent(locale: Locale): HomeJourneyContent {
   return {
     title: journeyTitle[locale],
     headline: journeyHeadline[locale],
-    summary: researchFitCopy[locale],
     milestones: journeyMilestones[locale],
   };
 }
@@ -591,16 +525,24 @@ export function getHomePublicationsContent(locale: Locale): HomePublicationsCont
     title: publicationsTitle[locale],
     draftNote: publicationsDraftNote[locale],
     viewAll: viewAllPublications[locale],
-    viewPublication: viewPublicationLabel[locale],
     manuscriptLabel: manuscriptLabel[locale],
-    items: featuredPublications[locale],
+    items: locale === 'en' ? featuredPublicationsEn : [],
   };
 }
 
 export function getHomeExploreContent(locale: Locale): HomeExploreContent {
   return {
     title: exploreRailsTitle[locale],
-    rails: exploreRails[locale],
+    rails: exploreRails[locale].map((rail) => {
+      if (rail.pathSegment === 'writing') {
+        return { ...rail, assetId: HOME_RAIL_ASSET_BY_PATH.writing };
+      }
+      return {
+        ...rail,
+        assetId: HOME_RAIL_ASSET_BY_PATH[rail.pathSegment],
+        unavailableStatus: seedEmptyStates[rail.pathSegment][locale],
+      };
+    }),
   };
 }
 

@@ -1,24 +1,26 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
+import HomeTemplate from '../../components/templates/HomeTemplate.astro';
 import HomeHero from '../../components/home/HomeHero.astro';
-import HomeResearchStatement from '../../components/home/HomeResearchStatement.astro';
+import HomeResearchGraph from '../../components/home/HomeResearchGraph.astro';
 import HomeResearchInterests from '../../components/home/HomeResearchInterests.astro';
 import HomeJourney from '../../components/home/HomeJourney.astro';
 import HomeFeaturedProjects from '../../components/home/HomeFeaturedProjects.astro';
 import HomeFeaturedPublications from '../../components/home/HomeFeaturedPublications.astro';
 import HomeExploreRails from '../../components/home/HomeExploreRails.astro';
 import HomeCollaborationCta from '../../components/home/HomeCollaborationCta.astro';
+import '../../styles/home.css';
 ---
 
-<SiteLayout title="Taha Mohammadi — Home" locale="en" dir="ltr" hideFooterPromo>
-  <div class="home-page">
-    <HomeHero locale="en" />
-    <HomeResearchStatement locale="en" />
-    <HomeResearchInterests locale="en" />
-    <HomeJourney locale="en" />
-    <HomeFeaturedProjects locale="en" />
-    <HomeFeaturedPublications locale="en" />
-    <HomeExploreRails locale="en" />
-    <HomeCollaborationCta locale="en" />
-  </div>
+<SiteLayout title="Taha Mohammadi — Home" locale="en" alternateAvailable hideFooterPromo>
+  <HomeTemplate>
+    <HomeHero slot="identity-lead" locale="en" />
+    <HomeResearchGraph slot="relationship-graph" locale="en" />
+    <HomeResearchInterests slot="research-fit" locale="en" />
+    <HomeJourney slot="journey-timeline" locale="en" />
+    <HomeFeaturedProjects slot="selected-projects" locale="en" />
+    <HomeFeaturedPublications slot="selected-publications" locale="en" />
+    <HomeExploreRails slot="gallery-writing-learning-previews" locale="en" />
+    <HomeCollaborationCta slot="collaboration-cv-contact" locale="en" />
+  </HomeTemplate>
 </SiteLayout>

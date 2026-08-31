@@ -1,6 +1,11 @@
 ---
-import { localePath, type Locale } from '../../lib/navigation';
+import FeaturedRecord from '../ui/FeaturedRecord.astro';
+import Badge from '../ui/Badge.astro';
+import Chip from '../ui/Chip.astro';
+import Link from '../ui/Link.astro';
+import PromotedPicture from '../media/PromotedPicture.astro';
 import { getHomeFeaturedContent } from '../../lib/home-content';
+import { localePath, type Locale } from '../../lib/navigation';
 
 interface Props {
   locale: Locale;
@@ -11,61 +16,53 @@ const content = getHomeFeaturedContent(locale);
 const projectsHref = localePath(locale, 'projects');
 ---
 
-<section class="home-featured" aria-labelledby="home-featured-title">
-  <div class="home-featured__inner">
-    <header class="home-featured__header">
-      <div class="home-section-heading">
-        <h2 id="home-featured-title" class="home-section__eyebrow">{content.title}</h2>
-        <a href={projectsHref} class="home-section-heading__link">
-          {content.viewAll} →
-        </a>
+<section class="hm-projects">
+  <div class="hm-projects__inner">
+    <header class="hm-projects__header">
+      <div class="hm-section-heading">
+        <h2 id="hm-projects-title" class="hm-eyebrow hm-projects__title">
+          {content.title}
+        </h2>
+        <Link href={projectsHref} label={content.viewAll} variant="standalone" showIcon />
       </div>
-      <p class="home-featured__note">{content.draftNote}</p>
+      <p class="hm-projects__note">{content.draftNote}</p>
     </header>
 
-    <div class="home-featured__scroller">
-      <ul class="home-featured__grid">
-        {
-          content.projects.map((project) => {
-            const projectHref = localePath(locale, `projects/${project.slug}`);
-            return (
-              <li>
-                <a href={projectHref} class="home-featured__card home-card-interactive">
-                  <div class="home-featured__card-media">
-                    <img
-                      src={project.imageSrc}
-                      alt=""
-                      width="480"
-                      height="300"
-                      loading="lazy"
-                      decoding="async"
-                      class="home-featured__card-image"
-                    />
-                  </div>
-                  <div class="home-featured__card-body">
-                    <h3 class="home-featured__card-title">{project.title}</h3>
-                    <p class="home-featured__card-status">{project.statusLabel}</p>
-                    <div class="home-featured__card-footer">
-                      {
-                        project.tags.length > 0 && (
-                          <ul class="home-featured__tags">
-                            {project.tags.slice(0, 3).map((tag) => (
-                              <li>
-                                <span class="home-featured__tag">{tag}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        )
-                      }
-                      <span class="home-featured__card-go" aria-hidden="true">→</span>
-                    </div>
-                  </div>
-                </a>
-              </li>
-            );
-          })
-        }
-      </ul>
-    </div>
+    <ul class="hm-projects__grid">
+      {
+        content.projects.map((project) => (
+          <li>
+            <FeaturedRecord
+              title={project.title}
+              summary={project.excerpt}
+              href={localePath(locale, `projects/${project.slug}`)}
+              actionLabel={content.viewProject}
+              class="hm-projects__card"
+            >
+              <PromotedPicture
+                slot="media"
+                assetId={project.assetId}
+                mediaSlot="home.project.preview"
+                locale={locale}
+                alt={project.title}
+                imgClass="hm-projects__image"
+              />
+              <div slot="metadata" class="hm-projects__meta">
+                <Badge label={project.statusLabel} tone="brand" />
+                {project.tags.length > 0 && (
+                  <ul class="hm-projects__tags">
+                    {project.tags.slice(0, 3).map((tag) => (
+                      <li>
+                        <Chip label={tag} />
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </FeaturedRecord>
+          </li>
+        ))
+      }
+    </ul>
   </div>
 </section>

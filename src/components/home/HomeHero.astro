@@ -1,6 +1,10 @@
 ---
-import { GATEWAY_ROLE_LINE, localePath, type Locale } from '../../lib/navigation';
+import SectionLead from '../ui/SectionLead.astro';
+import Chip from '../ui/Chip.astro';
+import ThemePicture from '../media/ThemePicture.astro';
 import { getHomeHeroContent } from '../../lib/home-content';
+import { HOME_HERO_ATMOSPHERE_ASSETS } from '../../lib/media/promoted-media';
+import type { Locale } from '../../lib/navigation';
 
 interface Props {
   locale: Locale;
@@ -8,79 +12,40 @@ interface Props {
 
 const { locale } = Astro.props;
 const content = getHomeHeroContent(locale);
-
-const researchHref = localePath(locale, 'research');
-const cvHref = localePath(locale, 'cv');
-const contactHref = localePath(locale, 'contact');
 ---
 
-<section class="home-hero" aria-labelledby="home-hero-name">
-  <div class="home-hero__atmosphere" aria-hidden="true">
-    <img
-      class="home-hero__atmosphere-img home-hero__atmosphere-img--dark"
-      src="/media/art/portal-centered-dark.png"
-      alt=""
-      width="1920"
-      height="1080"
-      decoding="async"
-      fetchpriority="high"
+<section class="hm-hero">
+  <div class="hm-hero__atmosphere" aria-hidden="true">
+    <ThemePicture
+      lightAssetId={HOME_HERO_ATMOSPHERE_ASSETS.light}
+      darkAssetId={HOME_HERO_ATMOSPHERE_ASSETS.dark}
+      mediaSlot="home.hero.atmosphere"
+      imgClass="hm-hero__atmosphere-img"
     />
-    <img
-      class="home-hero__atmosphere-img home-hero__atmosphere-img--light"
-      src="/media/art/portal-centered-light.png"
-      alt=""
-      width="1920"
-      height="1080"
-      decoding="async"
-    />
-    <div class="home-hero__scrim"></div>
+    <div class="hm-hero__scrim"></div>
   </div>
 
-  <div class="home-hero__inner">
-    <div class="home-hero__copy">
-      <header class="home-hero__header">
-        <h1 id="home-hero-name" class="home-hero__name">
-          {
-            locale === 'en' ? (
-              <>
-                <span class="home-hero__name-primary">{content.namePrimary}</span>
-                <span class="home-hero__name-accent">{content.nameAccent}</span>
-              </>
-            ) : (
-              content.name
-            )
-          }
-        </h1>
-        <p class="home-hero__role">{GATEWAY_ROLE_LINE}</p>
-        <p class="home-hero__intro">{content.intro}</p>
-      </header>
+  <div class="hm-hero__inner">
+    <SectionLead
+      eyebrow={content.role}
+      title={content.name}
+      summary={content.intro}
+      class="hm-hero__lead"
+    />
 
-      <div class="home-hero__actions">
-        <a href={researchHref} class="home-hero__cta home-hero__cta--primary">
-          {content.ctas.research} →
-        </a>
-        <a href={cvHref} class="home-hero__cta home-hero__cta--secondary">
-          {content.ctas.cv}
-        </a>
-        <a href={contactHref} class="home-hero__cta home-hero__cta--secondary">
-          {content.ctas.contact}
-        </a>
-      </div>
-
-      {
-        content.focusChips.length > 0 && (
-          <div class="home-hero__focus">
-            <p class="home-hero__focus-label">{content.focusAreasLabel}</p>
-            <ul class="home-hero__focus-list">
-              {content.focusChips.map((chip) => (
-                <li>
-                  <span class="home-hero__chip">{chip}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )
-      }
-    </div>
+    {
+      content.focusChips.length > 0 && (
+        <div class="hm-hero__focus">
+          <p class="hm-hero__focus-label">{content.focusAreasLabel}</p>
+          <ul class="hm-hero__focus-list">
+            {content.focusChips.map((chip) => (
+              <li>
+                <Chip label={chip} />
+              </li>
+            ))}
+          </ul>
+        </div>
+      )
+    }
   </div>
 </section>
