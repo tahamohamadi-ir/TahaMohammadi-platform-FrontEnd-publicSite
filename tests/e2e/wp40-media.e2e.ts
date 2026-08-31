@@ -72,6 +72,49 @@ test.describe('WP-40 theme media selection', () => {
     });
   }
 
+  test('WP-40 FA mobile selects one theme variant per slot with AVIF at mobile widths and visible focus', async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem('tm-theme', 'dark'));
+    await page.setViewportSize({ width: 390, height: 844 });
+
+    const requested: string[] = [];
+    page.on('request', (request) => requested.push(request.url()));
+
+    await page.goto('/fa/');
+    await expect(page.locator('.hm-hero__atmosphere-img')).toBeVisible();
+
+    // RTL keyboard parity first: from a fresh page, Tab reaches the skip link
+    // with a visible outline. (Scrolling first would move the browser's
+    // sequential-focus starting point and defeat the check.)
+    await page.keyboard.press('Tab');
+    await expect(page.locator('.skip-link')).toBeFocused();
+    await expect(page.locator('.skip-link')).toHaveCSS('outline-style', 'solid');
+    await page.keyboard.press('Enter');
+    await expect(page.locator('#main-content')).toBeFocused();
+
+    for (const [slot, variants] of [
+      ['hero atmosphere', ['portal-orbit-light', 'portal-orbit-dark']],
+      ['graph backplate', ['home-graph-backplate-light', 'home-graph-backplate-dark']],
+    ] as const) {
+      for (const variant of variants) {
+        expect(
+          requested.filter((url) => url.includes(variant)).length,
+          `${slot} ${variant} download count`,
+        ).toBeLessThanOrEqual(1);
+      }
+      const resolved = variants.find((variant) => variant.endsWith('-dark'));
+      expect(requested.some((url) => url.includes(resolved!)), `${slot} dark variant requested`).toBe(true);
+    }
+
+    const hero = await loadedSelection(page.locator('.hm-hero__atmosphere-img'));
+    expect(hero.format).toBe('avif');
+    expect(ATMOSPHERE_WIDTHS).toContain(hero.width);
+    expect(hero.width ?? 0).toBeLessThanOrEqual(768);
+
+    const backplate = await loadedSelection(page.locator('.hm-graph__backplate-img'));
+    expect(backplate.format).toBe('avif');
+    expect(GRAPH_WIDTHS).toContain(backplate.width);
+  });
+
   test('WP-40 project previews use mapped assets at preview widths and no raw /media/ art is fetched', async ({ page }) => {
     const mediaRequests: string[] = [];
     page.on('request', (request) => {

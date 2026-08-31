@@ -114,27 +114,56 @@ test.describe('WP-40 home structure acceptance', () => {
     });
     const zoomPage = await zoomContext.newPage();
 
+    const expectNoOverflow = () =>
+      expect
+        .poll(() => zoomPage.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth))
+        .toBe(true);
+
     await zoomPage.goto('/en/');
     await settleLazyMedia(zoomPage);
+    await expectNoOverflow();
     await zoomPage.screenshot({ path: 'test-results/visual/wp40-home-en-200pct-light.png', fullPage: true });
 
     await zoomPage.evaluate(() => window.__tmApplyTheme('dark'));
     await expect(zoomPage.locator('html')).toHaveAttribute('data-theme', 'dark');
     await settleLazyMedia(zoomPage);
+    await expectNoOverflow();
     await zoomPage.screenshot({ path: 'test-results/visual/wp40-home-en-200pct-dark.png', fullPage: true });
 
     await zoomPage.goto('/fa/');
     await settleLazyMedia(zoomPage);
+    await expectNoOverflow();
     await zoomPage.screenshot({ path: 'test-results/visual/wp40-home-fa-200pct-light.png', fullPage: true });
+
+    await zoomPage.evaluate(() => window.__tmApplyTheme('dark'));
+    await expect(zoomPage.locator('html')).toHaveAttribute('data-theme', 'dark');
+    await settleLazyMedia(zoomPage);
+    await expectNoOverflow();
+    await zoomPage.screenshot({ path: 'test-results/visual/wp40-home-fa-200pct-dark.png', fullPage: true });
 
     await zoomPage.goto('/');
     await settleLazyMedia(zoomPage);
+    await expectNoOverflow();
     await zoomPage.screenshot({ path: 'test-results/visual/wp40-gateway-200pct-light.png', fullPage: true });
 
-    await expect
-      .poll(() => zoomPage.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth))
-      .toBe(true);
     await zoomContext.close();
+  });
+
+  test('WP-40 FA mobile keeps the 320 authority reflow floor clear in both themes', async ({ page }) => {
+    test.setTimeout(120_000);
+    for (const width of [320, 390]) {
+      for (const theme of ['light', 'dark'] as const) {
+        await page.setViewportSize({ width, height: 900 });
+        await page.addInitScript((requested) => localStorage.setItem('tm-theme', requested), theme);
+        await page.goto('/fa/');
+
+        await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
+        await expect
+          .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth))
+          .toBe(true);
+        await expect(page.getByRole('heading', { level: 1 })).toHaveCount(1);
+      }
+    }
   });
 
   test('WP-40 home captures 768 reflow evidence for both locales and themes', async ({ page }) => {
