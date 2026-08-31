@@ -45,6 +45,7 @@
   pointer-events: none;
 }
 
+.hm-hero__atmosphere .theme-picture,
 .hm-hero__atmosphere .theme-picture__mount,
 .hm-hero__atmosphere .theme-picture__picture,
 .hm-hero__atmosphere noscript .theme-picture__picture,
@@ -119,6 +120,15 @@
 }
 
 /* Research statement + semantic graph */
+@media (min-width: 1024px) {
+  .hm-graph {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--space-10);
+    align-items: center;
+  }
+}
+
 .hm-graph__copy {
   display: grid;
   gap: var(--space-4);
@@ -155,6 +165,7 @@
   aspect-ratio: 1;
 }
 
+.hm-graph__backplate .theme-picture,
 .hm-graph__backplate .theme-picture__mount,
 .hm-graph__backplate .theme-picture__picture,
 .hm-graph__backplate noscript .theme-picture__picture,
@@ -456,12 +467,6 @@
   margin: 0;
   padding: 0;
   list-style: none;
-}
-
-@media (min-width: 768px) {
-  .hm-publications__list {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
 }
 
 /* Explore rails — three previews; unavailable rails render no anchor */

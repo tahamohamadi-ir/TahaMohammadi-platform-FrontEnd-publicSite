@@ -10,13 +10,14 @@ import '../styles/gateway.css';
 
 <BaseLayout title="Taha Mohammadi — Language gateway" lang="en" dir="ltr" gateway>
   <div class="gw">
-    <ThemePicture
-      lightAssetId={GATEWAY_ATMOSPHERE_ASSETS.light}
-      darkAssetId={GATEWAY_ATMOSPHERE_ASSETS.dark}
-      mediaSlot="gateway.atmosphere"
-      class="gw__atmosphere"
-      imgClass="gw__atmosphere-img"
-    />
+    <div class="gw__atmosphere" aria-hidden="true">
+      <ThemePicture
+        lightAssetId={GATEWAY_ATMOSPHERE_ASSETS.light}
+        darkAssetId={GATEWAY_ATMOSPHERE_ASSETS.dark}
+        mediaSlot="gateway.atmosphere"
+        imgClass="gw__atmosphere-img"
+      />
+    </div>
     <div class="gw__scrim" aria-hidden="true"></div>
 
     <header class="gw__toolbar">
