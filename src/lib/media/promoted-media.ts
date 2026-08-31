@@ -39,21 +39,15 @@ export {
   BRAND_FAVICON_ASSET_ID,
 } from './project-mappings';
 
-/**
- * Resolve the promoted media source root. In SSR/dev the module runs from
- * `src/lib/media`, but compiled prerender chunks live under `dist/.prerender`,
- * where the import.meta-relative anchor no longer points at the sources. The
- * Astro project root (cwd) is the build-stable anchor in that case.
- */
-function resolveMediaRoot(): string {
-  const candidates = [
-    path.resolve(process.cwd(), 'src/assets/media'),
-    path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../assets/media'),
-  ];
-  for (const candidate of candidates) {
-    if (existsSync(candidate)) return candidate;
+export function resolveMediaRoot(
+  cwd: string = process.cwd(),
+  metaUrl: string = import.meta.url,
+): string {
+  const cwdMediaRoot = path.resolve(cwd, 'src/assets/media');
+  if (existsSync(cwdMediaRoot)) {
+    return cwdMediaRoot;
   }
-  return candidates[0];
+  return path.resolve(path.dirname(fileURLToPath(metaUrl)), '../../assets/media');
 }
 
 const mediaRoot = resolveMediaRoot();
