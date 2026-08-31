@@ -20,8 +20,16 @@ const toKebabCase = (value: string) =>
   value
     .replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`)
     .replace(/([a-z])([0-9])/g, '$1-$2');
+const normalizeComputedCssHex = (value: string) =>
+  value.replace(/^#([\da-f])([\da-f])([\da-f])$/i, (_match, red, green, blue) =>
+    `#${red}${red}${green}${green}${blue}${blue}`.toLowerCase(),
+  );
 
 test.describe('WP-10 foundation acceptance', () => {
+  test('canonicalizes minified three-digit computed hex without changing the authority token @foundation', () => {
+    expect(normalizeComputedCssHex('#fff')).toBe('#ffffff');
+  });
+
   const matrix = [
     { id: 'gateway-1440-light', name: 'Gateway desktop light', path: '/', theme: 'light', width: 1440 },
     { id: 'gateway-1440-dark', name: 'Gateway desktop dark', path: '/', theme: 'dark', width: 1440 },
@@ -68,10 +76,12 @@ test.describe('WP-10 foundation acceptance', () => {
         if (role === 'status') continue;
         const property = `--color-${toKebabCase(role)}`;
         await expect
-          .poll(() =>
-            page.evaluate(
-              ({ propertyName }) => getComputedStyle(document.documentElement).getPropertyValue(propertyName).trim(),
-              { propertyName: property },
+          .poll(async () =>
+            normalizeComputedCssHex(
+              await page.evaluate(
+                ({ propertyName }) => getComputedStyle(document.documentElement).getPropertyValue(propertyName).trim(),
+                { propertyName: property },
+              ),
             ),
           )
           .toBe(expectedValue);
