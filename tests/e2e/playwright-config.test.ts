@@ -21,12 +21,21 @@ describe('Playwright harness self-containment', () => {
     expect(commandPort).toBe(urlPort);
   });
 
-  it('boots its own dev server instead of reusing a foreign one', () => {
-    expect(config.webServer?.command).toMatch(/dev/);
+  it('builds the normal static site, then serves it with the Playwright-owned server', () => {
+    expect(config.webServer?.command).toMatch(/run build/);
+    expect(config.webServer?.command).toMatch(/serve-dist\.mjs --port \d+/);
+  });
+
+  it('never spawns a detached dev server', () => {
+    expect(config.webServer?.command).not.toMatch(/run dev/);
+    expect(configSource).not.toMatch(/astro dev/);
+  });
+
+  it('never reuses or attaches to a foreign server', () => {
     expect(config.webServer?.reuseExistingServer).toBe(false);
   });
 
-  it('allows a cold Astro start with an explicit webServer timeout', () => {
-    expect(config.webServer?.timeout).toBeGreaterThanOrEqual(120_000);
+  it('allows a cold build plus serve start with an explicit webServer timeout', () => {
+    expect(config.webServer?.timeout).toBeGreaterThanOrEqual(240_000);
   });
 });

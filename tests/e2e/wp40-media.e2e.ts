@@ -1,8 +1,42 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Locator } from '@playwright/test';
 
 const ATMOSPHERE_WIDTHS = [320, 390, 768, 1024, 1280, 1440, 1672];
 const GRAPH_WIDTHS = [320, 480, 640, 768, 1024];
 const PREVIEW_WIDTHS = [320, 480, 640, 800, 1024];
+
+async function loadedSelection(locator: Locator) {
+  await locator.evaluate((element: HTMLImageElement) => element.scrollIntoView({ block: 'center' }));
+  await expect
+    .poll(() => locator.evaluate((element: HTMLImageElement) => element.currentSrc))
+    .not.toBe('');
+  return locator.evaluate((element: HTMLImageElement) => {
+    const image = element;
+    // The selected candidate can come from any <source> in the <picture>;
+    // collect width descriptors from the img and every source srcset.
+    const picture = image.closest('picture');
+    const sets = [image.getAttribute('srcset') ?? ''];
+    if (picture) {
+      for (const source of picture.querySelectorAll('source')) {
+        sets.push(source.getAttribute('srcset') ?? '');
+      }
+    }
+    const widthByCandidate = new Map<string, number>();
+    for (const set of sets) {
+      for (const entry of set.split(',')) {
+        const parts = entry.trim().split(/\s+/);
+        if (parts.length >= 2 && parts[1].endsWith('w') && parts[0]) {
+          widthByCandidate.set(new URL(parts[0], location.href).href, Number(parts[1].replace('w', '')));
+        }
+      }
+    }
+    const width = widthByCandidate.get(image.currentSrc) ?? null;
+    const format =
+      image.currentSrc.includes('f=avif') || image.currentSrc.endsWith('.avif')
+        ? 'avif'
+        : (image.currentSrc.split('.').pop() ?? '');
+    return { currentSrc: image.currentSrc, width, format };
+  });
+}
 
 test.describe('WP-40 theme media selection', () => {
   for (const theme of ['light', 'dark'] as const) {
@@ -28,25 +62,17 @@ test.describe('WP-40 theme media selection', () => {
         expect(requested.some((url) => url.includes(resolved!)), `${slot} ${theme} variant requested`).toBe(true);
       }
 
-      const heroImage = page.locator('.hm-hero__atmosphere-img');
-      const heroSrc = await heroImage.evaluate((element) => (element as HTMLImageElement).currentSrc);
-      expect(heroSrc).toMatch(/f=avif/);
-      const heroWidth = Number(new URL(heroSrc).searchParams.get('w'));
-      expect(ATMOSPHERE_WIDTHS).toContain(heroWidth);
+      const hero = await loadedSelection(page.locator('.hm-hero__atmosphere-img'));
+      expect(hero.format).toBe('avif');
+      expect(ATMOSPHERE_WIDTHS).toContain(hero.width);
 
-      const backplateImage = page.locator('.hm-graph__backplate-img');
-      await backplateImage.evaluate((element) => element.scrollIntoView({ block: 'center' }));
-      await expect
-        .poll(() => backplateImage.evaluate((element) => (element as HTMLImageElement).currentSrc))
-        .not.toBe('');
-      const backplateSrc = await backplateImage.evaluate((element) => (element as HTMLImageElement).currentSrc);
-      expect(backplateSrc).toMatch(/f=avif/);
-      const backplateWidth = Number(new URL(backplateSrc).searchParams.get('w'));
-      expect(GRAPH_WIDTHS).toContain(backplateWidth);
+      const backplate = await loadedSelection(page.locator('.hm-graph__backplate-img'));
+      expect(backplate.format).toBe('avif');
+      expect(GRAPH_WIDTHS).toContain(backplate.width);
     });
   }
 
-  test('WP-40 project previews use mapped assets at preview widths and no raw /media/ URLs are fetched', async ({ page }) => {
+  test('WP-40 project previews use mapped assets at preview widths and no raw /media/ art is fetched', async ({ page }) => {
     const mediaRequests: string[] = [];
     page.on('request', (request) => {
       if (/\/media\/(art|brand|icons)\//.test(new URL(request.url()).pathname)) {
@@ -58,18 +84,14 @@ test.describe('WP-40 theme media selection', () => {
     await expect(page.locator('.hm-projects__image')).toHaveCount(2);
 
     const previewLocators = await page.locator('.hm-projects__image').all();
-    const previewSrcs: string[] = [];
+    const previews: Awaited<ReturnType<typeof loadedSelection>>[] = [];
     for (const preview of previewLocators) {
-      await preview.evaluate((element) => element.scrollIntoView({ block: 'center' }));
-      await expect
-        .poll(() => preview.evaluate((element) => (element as HTMLImageElement).currentSrc))
-        .not.toBe('');
-      previewSrcs.push(await preview.evaluate((element) => (element as HTMLImageElement).currentSrc));
+      previews.push(await loadedSelection(preview));
     }
-    expect(previewSrcs.length).toBe(2);
-    for (const src of previewSrcs) {
-      expect(src).toMatch(/f=avif/);
-      expect(PREVIEW_WIDTHS).toContain(Number(new URL(src).searchParams.get('w')));
+    expect(previews.length).toBe(2);
+    for (const preview of previews) {
+      expect(preview.format).toBe('avif');
+      expect(PREVIEW_WIDTHS).toContain(preview.width);
     }
 
     for (const asset of ['project-data-architecture', 'project-dashboard-systems', 'blog-coral-stairs', 'learning-sage-library', 'gallery-ivory-forms']) {

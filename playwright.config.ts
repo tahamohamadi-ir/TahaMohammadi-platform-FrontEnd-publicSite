@@ -44,9 +44,9 @@ export default defineConfig({
     browserName: 'chromium',
   },
   webServer: {
-    command: `npm.cmd run dev -- --host 127.0.0.1 --port ${port}`,
+    command: `npm.cmd run build --silent && node scripts/serve-dist.mjs --port ${port} --root dist`,
     url: baseURL,
     reuseExistingServer: false,
-    timeout: 180_000,
+    timeout: 300_000,
   },
 });
