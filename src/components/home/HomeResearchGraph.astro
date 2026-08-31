@@ -32,10 +32,13 @@ const content = getHomeConstellationContent(locale);
         />
       </div>
 
-      <ul class="hm-graph__nodes" aria-label={content.sectionLabel}>
+      <ul class="hm-graph__nodes" aria-label={content.sectionLabel} data-graph-state="unavailable-route">
         {
           content.nodes.map((node) => (
-            <li class:list={['hm-graph__node', `hm-graph__node--${node.position}`]}>
+            <li
+              class:list={['hm-graph__node', `hm-graph__node--${node.position}`]}
+              data-graph-node-state="unavailable"
+            >
               <span class="hm-graph__node-dot" data-accent={node.accent} aria-hidden="true" />
               <span class="hm-graph__node-label">{node.label}</span>
             </li>

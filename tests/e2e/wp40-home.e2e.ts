@@ -66,9 +66,22 @@ test.describe('WP-40 home structure acceptance', () => {
     await expect(languageToggle).toHaveCSS('outline-style', 'solid');
   });
 
+  test('WP-40 graph nodes carry the explicit non-interactive unavailable contract', async ({ page }) => {
+    for (const path of ['/en/', '/fa/']) {
+      await page.goto(path);
+      const list = page.locator('[data-graph-state="unavailable-route"]');
+      await expect(list).toHaveCount(1);
+      await expect(list.locator('a')).toHaveCount(0);
+      await expect(list.locator('[data-graph-node-state="unavailable"]')).toHaveCount(5);
+      await expect(list.locator('[tabindex]')).toHaveCount(0);
+      await expect(list.locator('.hm-graph__node-label').first()).toBeVisible();
+    }
+  });
+
   test('WP-40 home stays readable with images unavailable', async ({ page }) => {
-    await page.route('**/_image*', (route) => route.abort());
-    await page.route(/\/media\//, (route) => route.abort());
+    await page.route('**/*', (route) =>
+      route.request().resourceType() === 'image' ? route.abort() : route.continue(),
+    );
     await page.goto('/en/');
 
     const nodes = page.locator('.hm-graph__node-label');

@@ -75,6 +75,23 @@ describe('WP-40 research graph', () => {
     expect(html).toContain('هوش مصنوعی انسان‌محور و تعامل انسان و هوش مصنوعی');
     expect(html).not.toContain('Human-Centered AI');
   });
+
+  it('declares graph nodes explicitly non-interactive while no target route exists', async () => {
+    for (const locale of ['en', 'fa'] as const) {
+      const html = await render(HomeResearchGraph, { locale });
+      const list = html.match(/<ul class="hm-graph__nodes[\s\S]*?<\/ul>/)?.[0] ?? '';
+      expect(list, 'node list must carry the explicit unavailable-route contract').toMatch(
+        /data-graph-state="unavailable-route"/,
+      );
+      expect(
+        list.match(/data-graph-node-state="unavailable"/g)?.length,
+        'every node must declare the unavailable state',
+      ).toBe(5);
+      expect(list, 'no invented anchors while routes are unavailable').not.toMatch(/<a[\s>]/);
+      expect(list, 'nodes must not be forced into the tab order').not.toMatch(/tabindex/i);
+      expect(list, 'nodes must not fake a disabled affordance').not.toMatch(/aria-disabled/i);
+    }
+  });
 });
 
 describe('WP-40 interest cards', () => {
