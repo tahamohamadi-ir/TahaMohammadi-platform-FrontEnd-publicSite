@@ -1,0 +1,102 @@
+---
+interface Props {
+  label?: string;
+  title: string;
+  summary?: string;
+  href?: string;
+  actionLabel?: string;
+  inactive?: boolean;
+  class?: string;
+}
+
+const {
+  label,
+  title,
+  summary,
+  href,
+  actionLabel,
+  inactive = false,
+  class: className = '',
+} = Astro.props;
+---
+
+{
+  !inactive ? (
+    <article class={['ui-featured-record', className].filter(Boolean).join(' ')} data-visual-id="FeaturedRecord">
+      <div class="ui-featured-record__media">
+        <slot name="media" />
+      </div>
+      <div class="ui-featured-record__content">
+        {label ? <p class="ui-featured-record__label">{label}</p> : null}
+        <h2 class="ui-featured-record__title">{title}</h2>
+        {summary ? <p class="ui-featured-record__summary">{summary}</p> : null}
+        <div class="ui-featured-record__meta">
+          <slot name="metadata" />
+        </div>
+        {href && actionLabel ? (
+          <a href={href} class="ui-featured-record__action">
+            {actionLabel}
+          </a>
+        ) : null}
+      </div>
+    </article>
+  ) : null
+}
+
+<style>
+  .ui-featured-record {
+    display: grid;
+    gap: var(--space-5);
+    grid-template-columns: minmax(0, 1fr);
+    padding: var(--layout-card-padding-min);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-xl);
+    background: var(--card-background);
+  }
+
+  @media (min-width: 768px) {
+    .ui-featured-record {
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+      align-items: center;
+    }
+  }
+
+  .ui-featured-record__label {
+    margin: 0;
+    color: var(--color-brand);
+    font-size: var(--font-size-xs);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .ui-featured-record__title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--font-size-3xl);
+    line-height: 1.2;
+  }
+
+  .ui-featured-record__summary {
+    margin: 0;
+    color: var(--color-ink-secondary);
+    line-height: 1.6;
+  }
+
+  .ui-featured-record__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    color: var(--color-ink-tertiary);
+    font-size: var(--font-size-sm);
+  }
+
+  .ui-featured-record__action {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--layout-touch-target-min);
+    color: var(--color-brand);
+    font-weight: 600;
+    text-decoration: none;
+  }
+</style>

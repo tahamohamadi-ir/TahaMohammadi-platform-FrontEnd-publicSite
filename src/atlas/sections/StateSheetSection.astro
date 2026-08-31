@@ -1,0 +1,58 @@
+---
+import Button from '../../components/ui/Button.astro';
+import ContentRow from '../../components/ui/ContentRow.astro';
+import FeaturedRecord from '../../components/ui/FeaturedRecord.astro';
+---
+
+<section class="atlas-section" id="atlas-state-sheet" data-visual-id="AtlasStateSheetSection">
+  <h2 class="atlas-section__title">State sheet</h2>
+  <p class="atlas-section__summary">
+    Shared state model for interactive and record surfaces, including reduced-motion-safe transitions.
+  </p>
+
+  <div class="atlas-specimen" data-visual-id="AtlasStateSheet-Interactive">
+    <p class="atlas-specimen__label">Interactive states</p>
+    <div class="atlas-state-row">
+      <Button label="Rest" />
+      <Button label="Disabled" disabled />
+      <Button label="Loading" loading />
+    </div>
+  </div>
+
+  <div class="atlas-specimen" data-visual-id="AtlasStateSheet-Records">
+    <p class="atlas-specimen__label">Record states</p>
+    <FeaturedRecord label="Ready" title="Ready record" summary="Ready state." href="#" actionLabel="Open" />
+    <FeaturedRecord label="Inactive" title="Inactive record" inactive />
+    <ContentRow typeLabel="Row" title="Unavailable row" unavailable />
+  </div>
+
+  <div class="atlas-specimen" data-visual-id="AtlasReducedMotionSpecimen">
+    <p class="atlas-specimen__label">Reduced motion</p>
+    <p class="atlas-section__summary">
+      The motion probe below inherits the global reduced-motion contract through tokenized transition durations.
+    </p>
+    <button type="button" class="atlas-motion-probe" data-visual-id="AtlasReducedMotionProbe">
+      Motion probe
+    </button>
+  </div>
+</section>
+
+<style>
+  .atlas-motion-probe {
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--control-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+    color: var(--color-ink);
+    cursor: pointer;
+    transition:
+      transform var(--motion-base) var(--motion-ease-out),
+      background-color var(--motion-base) var(--motion-ease-out);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .atlas-motion-probe {
+      transition-duration: var(--motion-reduced-duration) !important;
+    }
+  }
+</style>

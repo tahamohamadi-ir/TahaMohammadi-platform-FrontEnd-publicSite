@@ -1,0 +1,78 @@
+---
+export interface BreadcrumbItem {
+  label: string;
+  href?: string;
+}
+
+interface Props {
+  items: BreadcrumbItem[];
+  currentLabel: string;
+  ariaLabel: string;
+  class?: string;
+}
+
+const { items, currentLabel, ariaLabel, class: className = '' } = Astro.props;
+---
+
+<nav class={['ui-breadcrumbs', className].filter(Boolean).join(' ')} data-visual-id="Breadcrumbs" aria-label={ariaLabel}>
+  <ol class="ui-breadcrumbs__list">
+    {
+      items.map((item) => (
+        <li class="ui-breadcrumbs__item">
+          {item.href ? (
+            <a href={item.href} class="ui-breadcrumbs__link">
+              {item.label}
+            </a>
+          ) : (
+            <span class="ui-breadcrumbs__text">{item.label}</span>
+          )}
+        </li>
+      ))
+    }
+    <li class="ui-breadcrumbs__item ui-breadcrumbs__item--current" aria-current="page">
+      <span class="ui-breadcrumbs__current">{currentLabel}</span>
+    </li>
+  </ol>
+</nav>
+
+<style>
+  .ui-breadcrumbs__list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .ui-breadcrumbs__item {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--color-ink-secondary);
+    font-size: var(--font-size-sm);
+  }
+
+  .ui-breadcrumbs__item:not(:last-child)::after {
+    content: '/';
+    color: var(--color-ink-tertiary);
+  }
+
+  .ui-breadcrumbs__link {
+    min-height: var(--layout-touch-target-min);
+    display: inline-flex;
+    align-items: center;
+    color: var(--color-brand);
+    text-decoration: none;
+  }
+
+  .ui-breadcrumbs__link:hover {
+    text-decoration: underline;
+  }
+
+  .ui-breadcrumbs__current {
+    color: var(--color-ink);
+    font-weight: 600;
+  }
+</style>

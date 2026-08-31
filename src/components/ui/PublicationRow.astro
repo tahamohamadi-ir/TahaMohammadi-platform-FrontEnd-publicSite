@@ -1,0 +1,112 @@
+---
+interface Props {
+  typeLabel?: string;
+  statusLabel?: string;
+  title: string;
+  authors?: string;
+  venue?: string;
+  date?: string;
+  identifier?: string;
+  href?: string;
+  class?: string;
+}
+
+const {
+  typeLabel,
+  statusLabel,
+  title,
+  authors,
+  venue,
+  date,
+  identifier,
+  href,
+  class: className = '',
+} = Astro.props;
+---
+
+<article class={['ui-publication-row', className].filter(Boolean).join(' ')} data-visual-id="PublicationRow">
+  <div class="ui-publication-row__labels">
+    {typeLabel ? <span class="ui-publication-row__type">{typeLabel}</span> : null}
+    {statusLabel ? <span class="ui-publication-row__status">{statusLabel}</span> : null}
+  </div>
+  <div class="ui-publication-row__citation">
+    <h3 class="ui-publication-row__title">
+      {href ? <a href={href}>{title}</a> : title}
+    </h3>
+    {authors ? <p class="ui-publication-row__authors">{authors}</p> : null}
+    <p class="ui-publication-row__meta">
+      {[venue, date, identifier].filter(Boolean).join(' · ')}
+    </p>
+  </div>
+  <div class="ui-publication-row__files">
+    <slot name="files" />
+  </div>
+</article>
+
+<style>
+  .ui-publication-row {
+    display: grid;
+    gap: var(--space-3);
+    padding-block: var(--space-4);
+    border-block-end: 1px solid var(--color-border-subtle);
+  }
+
+  @media (min-width: 768px) {
+    .ui-publication-row {
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: start;
+    }
+  }
+
+  .ui-publication-row__labels {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .ui-publication-row__type,
+  .ui-publication-row__status {
+    font-size: var(--font-size-xs);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-brand);
+  }
+
+  .ui-publication-row__title {
+    margin: 0;
+    font-size: var(--font-size-lg);
+    line-height: 1.45;
+  }
+
+  .ui-publication-row__title a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .ui-publication-row__authors,
+  .ui-publication-row__meta {
+    margin: 0;
+    color: var(--color-ink-secondary);
+    line-height: 1.6;
+  }
+
+  .ui-publication-row__files {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .ui-publication-row__files :global(a) {
+    min-height: var(--layout-touch-target-min);
+    display: inline-flex;
+    align-items: center;
+    padding-inline: var(--space-3);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--control-border);
+    color: var(--color-brand);
+    text-decoration: none;
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+  }
+</style>

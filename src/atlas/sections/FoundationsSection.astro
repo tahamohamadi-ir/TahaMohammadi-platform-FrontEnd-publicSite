@@ -1,0 +1,37 @@
+---
+const tokens = [
+  { name: 'canvas', variable: '--color-canvas' },
+  { name: 'surface', variable: '--color-surface' },
+  { name: 'ink', variable: '--color-ink' },
+  { name: 'brand', variable: '--color-brand' },
+  { name: 'signature', variable: '--color-signature' },
+  { name: 'research', variable: '--color-research' },
+  { name: 'focus', variable: '--color-focus' },
+];
+---
+
+<section class="atlas-section" id="atlas-foundations" data-visual-id="AtlasFoundationsSection">
+  <h2 class="atlas-section__title">Foundations</h2>
+  <p class="atlas-section__summary">
+    Token-backed canvas, semantic colors, typography, spacing rhythm, and motion aliases used by the public design system.
+  </p>
+
+  <div class="atlas-grid atlas-grid--tokens">
+    {
+      tokens.map((token) => (
+        <div class="atlas-token" data-visual-id={`AtlasToken-${token.name}`}>
+          <div class="atlas-token__swatch" style={`background: var(${token.variable});`} />
+          <p class="atlas-token__name">{token.variable}</p>
+        </div>
+      ))
+    }
+  </div>
+
+  <div class="atlas-specimen" data-visual-id="AtlasTypographySpecimen">
+    <p class="atlas-specimen__label">Typography</p>
+    <p style="font-family: var(--font-display); font-size: var(--font-size-2xl); margin: 0;">Display sample</p>
+    <p style="font-family: var(--font-body); font-size: var(--font-size-base); margin: 0; color: var(--color-ink-secondary);">
+      Body sample with line-height rhythm.
+    </p>
+  </div>
+</section>

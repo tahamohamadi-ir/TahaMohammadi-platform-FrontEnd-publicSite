@@ -1,0 +1,97 @@
+---
+interface Props {
+  caption?: string;
+  href?: string;
+  variant?: 'grid' | 'lead' | 'failed';
+  aspectRatio?: string;
+  class?: string;
+}
+
+const {
+  caption,
+  href,
+  variant = 'grid',
+  aspectRatio = '4 / 3',
+  class: className = '',
+} = Astro.props;
+---
+
+<figure
+  class={['ui-media-tile', `ui-media-tile--${variant}`, className].filter(Boolean).join(' ')}
+  data-visual-id="MediaTile"
+  style={`--ui-media-tile-aspect: ${aspectRatio};`}
+>
+  <div class="ui-media-tile__frame">
+    {
+      variant === 'failed' ? (
+        <div class="ui-media-tile__failed" role="img" aria-label={caption}>
+          <span class="ui-media-tile__failed-mark" aria-hidden="true" />
+        </div>
+      ) : (
+        <slot name="media" />
+      )
+    }
+  </div>
+  {
+    caption ? (
+      <figcaption class="ui-media-tile__caption">
+        {href ? <a href={href}>{caption}</a> : caption}
+      </figcaption>
+    ) : null
+  }
+</figure>
+
+<style>
+  .ui-media-tile {
+    display: grid;
+    gap: var(--space-3);
+    margin: 0;
+  }
+
+  .ui-media-tile__frame {
+    aspect-ratio: var(--ui-media-tile-aspect);
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border-subtle);
+    background: var(--color-surface-muted);
+  }
+
+  .ui-media-tile__frame :global(img),
+  .ui-media-tile__frame :global(picture) {
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .ui-media-tile--lead .ui-media-tile__frame {
+    border-radius: var(--radius-xl);
+  }
+
+  .ui-media-tile__failed {
+    display: grid;
+    place-items: center;
+    inline-size: 100%;
+    block-size: 100%;
+    background: var(--color-surface-muted);
+  }
+
+  .ui-media-tile__failed-mark {
+    inline-size: var(--space-10);
+    block-size: var(--space-10);
+    border-radius: var(--radius-md);
+    border: 2px dashed var(--color-border-strong);
+  }
+
+  .ui-media-tile__caption {
+    color: var(--color-ink-secondary);
+    font-size: var(--font-size-sm);
+    line-height: 1.5;
+  }
+
+  .ui-media-tile__caption a {
+    color: var(--color-brand);
+    text-decoration: none;
+    font-weight: 600;
+  }
+</style>

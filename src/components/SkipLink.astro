@@ -9,4 +9,4 @@ interface Props {
 const { locale, target = '#main-content' } = Astro.props;
 ---
 
-<a href={target} class="skip-link">{shellCopy.skipLink[locale]}</a>
+<a href={target} class="skip-link" data-visual-id="SkipLink">{shellCopy.skipLink[locale]}</a>

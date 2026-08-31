@@ -29,6 +29,19 @@ export function alternateLocale(locale: Locale): Locale {
   return locale === 'en' ? 'fa' : 'en';
 }
 
+export function localeDisplayCode(locale: Locale): 'EN' | 'FA' {
+  return locale === 'en' ? 'EN' : 'FA';
+}
+
+export function buildLanguageToggleHref(
+  currentLocale: Locale,
+  pathSegment: string,
+  alternateAvailable: boolean,
+): string | undefined {
+  if (!alternateAvailable) return undefined;
+  return localePath(alternateLocale(currentLocale), pathSegment);
+}
+
 export function isNavActive(pathname: string, locale: Locale, pathSegment: string): boolean {
   const base = localePath(locale, pathSegment);
   return pathname === base || pathname.startsWith(`${base}`);
@@ -42,7 +55,11 @@ export const shellCopy = {
   },
   mainMenu: { en: 'Main menu', fa: 'منوی اصلی' },
   menuToggle: { en: 'Menu', fa: 'منو' },
-  localeSwitch: { en: 'فارسی', fa: 'English' },
+  localeSwitch: { en: 'Language', fa: 'زبان' },
+  localeUnavailable: {
+    en: 'Persian version not available for this page',
+    fa: 'نسخهٔ انگلیسی برای این صفحه در دسترس نیست',
+  },
   footerCta: {
     en: 'Open to funded PhD and research opportunities for 2027 in Human-Centered AI, Human-AI Interaction, trustworthy AI, visual analytics, intelligent data systems, and digital health.',
     fa: 'برای فرصت‌های پژوهشی و دکترای دارای تأمین مالی در سال ۲۰۲۷ در حوزه‌های هوش مصنوعی انسان‌محور، تعامل انسان و هوش مصنوعی، هوش مصنوعی قابل‌اعتماد، تحلیل بصری، سامانه‌های هوشمند داده و سلامت دیجیتال آماده گفت‌وگو و همکاری هستم.',

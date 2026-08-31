@@ -1,7 +1,7 @@
 ---
 import ThemeToggle from './ThemeToggle.astro';
+import LanguageToggle from './LanguageToggle.astro';
 import {
-  alternateLocale,
   GATEWAY_ROLE_LINE,
   localePath,
   primaryNav,
@@ -13,16 +13,22 @@ import {
 interface Props {
   locale: Locale;
   currentPath: string;
+  alternateHref?: string;
+  alternateAvailable?: boolean;
 }
 
-const { locale, currentPath } = Astro.props;
-const otherLocale = alternateLocale(locale);
+const {
+  locale,
+  currentPath,
+  alternateHref,
+  alternateAvailable = false,
+} = Astro.props;
 const homeHref = localePath(locale);
 const brandNameDisplay =
   locale === 'en' ? shellCopy.brandName.en.toUpperCase() : shellCopy.brandName.fa;
 ---
 
-<header class="site-header">
+<header class="site-header" data-visual-id="Header">
   <div class="site-header__inner">
     <a href={homeHref} class="site-header__brand" aria-label={shellCopy.brandName[locale]}>
       <img
@@ -61,45 +67,11 @@ const brandNameDisplay =
     </nav>
 
     <div class="site-header__utilities">
-      <div class="site-header__locale-group" role="group" aria-label={shellCopy.localeSwitch[locale]}>
-        {
-          locale === 'en' ? (
-            <>
-              <span class="site-header__locale site-header__locale--current" aria-current="true">
-                EN
-              </span>
-              <span class="site-header__locale-sep" aria-hidden="true">
-                /
-              </span>
-              <a
-                href={localePath(otherLocale)}
-                class="site-header__locale site-header__locale--link"
-                lang={otherLocale}
-                hreflang={otherLocale}
-              >
-                FA
-              </a>
-            </>
-          ) : (
-            <>
-              <a
-                href={localePath(otherLocale)}
-                class="site-header__locale site-header__locale--link"
-                lang={otherLocale}
-                hreflang={otherLocale}
-              >
-                EN
-              </a>
-              <span class="site-header__locale-sep" aria-hidden="true">
-                /
-              </span>
-              <span class="site-header__locale site-header__locale--current" aria-current="true">
-                FA
-              </span>
-            </>
-          )
-        }
-      </div>
+      <LanguageToggle
+        currentLocale={locale}
+        alternateHref={alternateHref}
+        available={alternateAvailable}
+      />
       <ThemeToggle locale={locale} />
       <details class="site-header__drawer">
         <summary class="site-header__menu-trigger">{shellCopy.menuToggle[locale]}</summary>

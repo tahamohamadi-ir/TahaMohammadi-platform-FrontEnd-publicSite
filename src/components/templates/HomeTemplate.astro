@@ -1,0 +1,96 @@
+---
+import './template-base.css';
+
+interface Props {
+  class?: string;
+}
+
+const { class: className = '' } = Astro.props;
+---
+
+<div class={['tm-template tm-home-template', className].filter(Boolean).join(' ')} data-visual-id="HomeTemplate">
+  <slot name="header" />
+
+  <div class="tm-template__main tm-home-template__main">
+    <section class="tm-template__section" aria-labelledby="home-identity-region">
+      <div id="home-identity-region" class="tm-home-template__h1-region">
+        <slot name="identity-lead" />
+      </div>
+    </section>
+
+    {
+      Astro.slots.has('relationship-graph') ? (
+        <section class="tm-template__section tm-template__section--optional" aria-labelledby="home-graph-region">
+          <div id="home-graph-region">
+            <slot name="relationship-graph" />
+          </div>
+        </section>
+      ) : null
+    }
+
+    {
+      Astro.slots.has('research-fit') ? (
+        <section class="tm-template__section tm-template__section--optional" aria-labelledby="home-research-fit-region">
+          <div id="home-research-fit-region">
+            <slot name="research-fit" />
+          </div>
+        </section>
+      ) : null
+    }
+
+    {
+      Astro.slots.has('journey-timeline') ? (
+        <section class="tm-template__section tm-template__section--optional" aria-labelledby="home-journey-region">
+          <div id="home-journey-region">
+            <slot name="journey-timeline" />
+          </div>
+        </section>
+      ) : null
+    }
+
+    {
+      Astro.slots.has('selected-projects') ? (
+        <section class="tm-template__section tm-template__section--optional" aria-labelledby="home-projects-region">
+          <div id="home-projects-region">
+            <slot name="selected-projects" />
+          </div>
+        </section>
+      ) : null
+    }
+
+    {
+      Astro.slots.has('selected-publications') ? (
+        <section class="tm-template__section tm-template__section--optional" aria-labelledby="home-publications-region">
+          <div id="home-publications-region">
+            <slot name="selected-publications" />
+          </div>
+        </section>
+      ) : null
+    }
+
+    {
+      Astro.slots.has('gallery-writing-learning-previews') ? (
+        <section
+          class="tm-template__section tm-template__section--optional"
+          aria-labelledby="home-previews-region"
+        >
+          <div id="home-previews-region">
+            <slot name="gallery-writing-learning-previews" />
+          </div>
+        </section>
+      ) : null
+    }
+
+    {
+      Astro.slots.has('collaboration-cv-contact') ? (
+        <section class="tm-template__section tm-template__section--optional" aria-labelledby="home-collaboration-region">
+          <div id="home-collaboration-region">
+            <slot name="collaboration-cv-contact" />
+          </div>
+        </section>
+      ) : null
+    }
+  </div>
+
+  <slot name="footer" />
+</div>

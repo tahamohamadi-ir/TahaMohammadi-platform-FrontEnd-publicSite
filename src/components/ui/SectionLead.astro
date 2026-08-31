@@ -1,0 +1,98 @@
+---
+interface Props {
+  eyebrow?: string;
+  title: string;
+  summary?: string;
+  primaryAction?: { href: string; label: string };
+  secondaryAction?: { href: string; label: string };
+  class?: string;
+}
+
+const { eyebrow, title, summary, primaryAction, secondaryAction, class: className = '' } = Astro.props;
+---
+
+<header class={['ui-section-lead', className].filter(Boolean).join(' ')} data-visual-id="SectionLead">
+  {eyebrow ? <p class="ui-section-lead__eyebrow">{eyebrow}</p> : null}
+  <h1 class="ui-section-lead__title">{title}</h1>
+  {summary ? <p class="ui-section-lead__summary">{summary}</p> : null}
+  <div class="ui-section-lead__media">
+    <slot name="media" />
+  </div>
+  {
+    primaryAction || secondaryAction ? (
+      <div class="ui-section-lead__actions">
+        {primaryAction ? (
+          <a href={primaryAction.href} class="ui-section-lead__action ui-section-lead__action--primary">
+            {primaryAction.label}
+          </a>
+        ) : null}
+        {secondaryAction ? (
+          <a href={secondaryAction.href} class="ui-section-lead__action ui-section-lead__action--secondary">
+            {secondaryAction.label}
+          </a>
+        ) : null}
+      </div>
+    ) : null
+  }
+</header>
+
+<style>
+  .ui-section-lead {
+    display: grid;
+    gap: var(--space-4);
+    max-inline-size: var(--layout-prose);
+  }
+
+  .ui-section-lead__eyebrow {
+    margin: 0;
+    color: var(--color-brand);
+    font-size: var(--font-size-xs);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .ui-section-lead__title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: clamp(var(--font-size-display-min), 4vw, var(--font-size-display-max));
+    line-height: 1.15;
+    color: var(--color-ink);
+  }
+
+  .ui-section-lead__summary {
+    margin: 0;
+    color: var(--color-ink-secondary);
+    font-size: var(--font-size-lg);
+    line-height: 1.6;
+  }
+
+  .ui-section-lead__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  .ui-section-lead__action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: var(--layout-touch-target-min);
+    padding-inline: var(--space-5);
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+  }
+
+  .ui-section-lead__action--primary {
+    background: var(--button-background);
+    color: var(--button-foreground);
+  }
+
+  .ui-section-lead__action--secondary {
+    border: 1px solid var(--control-border);
+    color: var(--color-ink);
+    background: var(--color-surface);
+  }
+</style>

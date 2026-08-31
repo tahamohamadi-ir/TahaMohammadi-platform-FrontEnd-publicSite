@@ -1,0 +1,107 @@
+---
+interface Props {
+  id: string;
+  label: string;
+  name: string;
+  value?: string;
+  hint?: string;
+  error?: string;
+  disabled?: boolean;
+  type?: 'text' | 'email' | 'search' | 'url' | 'tel';
+  autocomplete?: string;
+  class?: string;
+}
+
+const {
+  id,
+  label,
+  name,
+  value = '',
+  hint,
+  error,
+  disabled = false,
+  type = 'text',
+  autocomplete,
+  class: className = '',
+} = Astro.props;
+---
+
+<div class={['ui-input', error && 'ui-input--error', className].filter(Boolean).join(' ')} data-visual-id="Input">
+  <label class="ui-input__label" for={id}>
+    {label}
+  </label>
+  <input
+    class="ui-input__control"
+    id={id}
+    name={name}
+    type={type}
+    value={value}
+    disabled={disabled}
+    autocomplete={autocomplete}
+    aria-invalid={error ? 'true' : undefined}
+    aria-describedby={[hint ? `${id}-hint` : undefined, error ? `${id}-error` : undefined]
+      .filter(Boolean)
+      .join(' ') || undefined}
+  />
+  {hint ? (
+    <p class="ui-input__hint" id={`${id}-hint`}>
+      {hint}
+    </p>
+  ) : null}
+  {error ? (
+    <p class="ui-input__error" id={`${id}-error`} role="alert">
+      {error}
+    </p>
+  ) : null}
+</div>
+
+<style>
+  .ui-input {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .ui-input__label {
+    color: var(--color-ink);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+  }
+
+  .ui-input__control {
+    min-height: var(--layout-touch-target-min);
+    padding-inline: var(--space-3);
+    border: 1px solid var(--control-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+    color: var(--color-ink);
+    font: inherit;
+  }
+
+  .ui-input__control:focus-visible {
+    border-color: var(--control-focus);
+    outline: 2px solid var(--control-focus);
+    outline-offset: 2px;
+  }
+
+  .ui-input__control:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  .ui-input__hint {
+    margin: 0;
+    color: var(--color-ink-secondary);
+    font-size: var(--font-size-sm);
+  }
+
+  .ui-input__error {
+    margin: 0;
+    color: var(--color-danger);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+  }
+
+  .ui-input--error .ui-input__control {
+    border-color: var(--color-danger);
+  }
+</style>

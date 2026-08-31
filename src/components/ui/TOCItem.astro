@@ -1,0 +1,67 @@
+---
+interface Props {
+  href: string;
+  label: string;
+  level?: 1 | 2;
+  current?: boolean;
+  class?: string;
+}
+
+const { href, label, level = 1, current = false, class: className = '' } = Astro.props;
+---
+
+<li
+  class={['ui-toc-item', `ui-toc-item--level${level}`, current && 'ui-toc-item--current', className]
+    .filter(Boolean)
+    .join(' ')}
+  data-visual-id="TOCItem"
+>
+  <a href={href} class="ui-toc-item__link" aria-current={current ? 'location' : undefined}>
+    {label}
+    {current ? <span class="ui-toc-item__marker" aria-hidden="true" /> : null}
+  </a>
+</li>
+
+<style>
+  .ui-toc-item {
+    list-style: none;
+  }
+
+  .ui-toc-item--level2 {
+    padding-inline-start: var(--space-4);
+  }
+
+  .ui-toc-item__link {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    min-height: var(--layout-touch-target-min);
+    padding-inline: var(--space-3);
+    border-radius: var(--radius-sm);
+    color: var(--color-ink-secondary);
+    text-decoration: none;
+    font-size: var(--font-size-sm);
+    transition:
+      color var(--motion-base) var(--motion-ease-out),
+      background-color var(--motion-base) var(--motion-ease-out);
+  }
+
+  .ui-toc-item__link:hover {
+    color: var(--color-brand);
+    background: var(--color-brand-soft);
+  }
+
+  .ui-toc-item--current .ui-toc-item__link {
+    color: var(--color-ink);
+    font-weight: 600;
+  }
+
+  .ui-toc-item__marker {
+    inline-size: var(--space-2);
+    block-size: var(--space-2);
+    border-radius: var(--radius-pill);
+    background: var(--color-signature);
+  }
+</style>

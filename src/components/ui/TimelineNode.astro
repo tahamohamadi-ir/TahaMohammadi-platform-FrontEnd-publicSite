@@ -1,0 +1,84 @@
+---
+interface Props {
+  typeLabel?: string;
+  label: string;
+  period?: string;
+  summary?: string;
+  href?: string;
+  detailLabel?: string;
+  class?: string;
+}
+
+const { typeLabel, label, period, summary, href, detailLabel, class: className = '' } = Astro.props;
+---
+
+<li class={['ui-timeline-node', className].filter(Boolean).join(' ')} data-visual-id="TimelineNode">
+  <div class="ui-timeline-node__marker" aria-hidden="true" />
+  <div class="ui-timeline-node__content">
+    {typeLabel ? <p class="ui-timeline-node__type">{typeLabel}</p> : null}
+    <h3 class="ui-timeline-node__label">{label}</h3>
+    {period ? <p class="ui-timeline-node__period">{period}</p> : null}
+    {summary ? <p class="ui-timeline-node__summary">{summary}</p> : null}
+    {href && detailLabel ? (
+      <a href={href} class="ui-timeline-node__link">
+        {detailLabel}
+      </a>
+    ) : null}
+  </div>
+</li>
+
+<style>
+  .ui-timeline-node {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: var(--space-4);
+    position: relative;
+    padding-block-end: var(--space-6);
+  }
+
+  .ui-timeline-node__marker {
+    inline-size: var(--space-3);
+    block-size: var(--space-3);
+    margin-block-start: var(--space-2);
+    border-radius: var(--radius-pill);
+    background: var(--color-brand);
+    box-shadow: 0 0 0 4px var(--color-brand-soft);
+  }
+
+  .ui-timeline-node__type {
+    margin: 0;
+    color: var(--color-brand);
+    font-size: var(--font-size-xs);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .ui-timeline-node__label {
+    margin: 0;
+    font-size: var(--font-size-lg);
+    line-height: 1.35;
+  }
+
+  .ui-timeline-node__period {
+    margin: 0;
+    color: var(--color-ink-secondary);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+  }
+
+  .ui-timeline-node__summary {
+    margin: 0;
+    color: var(--color-ink-secondary);
+    line-height: 1.6;
+  }
+
+  .ui-timeline-node__link {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--layout-touch-target-min);
+    color: var(--color-brand);
+    font-weight: 600;
+    text-decoration: none;
+  }
+</style>

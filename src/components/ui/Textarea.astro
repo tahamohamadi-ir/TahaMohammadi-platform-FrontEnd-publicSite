@@ -1,0 +1,124 @@
+---
+interface Props {
+  id: string;
+  label: string;
+  name: string;
+  value?: string;
+  hint?: string;
+  error?: string;
+  disabled?: boolean;
+  rows?: number;
+  maxlength?: number;
+  counterLabel?: string;
+  class?: string;
+}
+
+const {
+  id,
+  label,
+  name,
+  value = '',
+  hint,
+  error,
+  disabled = false,
+  rows = 4,
+  maxlength,
+  counterLabel,
+  class: className = '',
+} = Astro.props;
+---
+
+<div class={['ui-textarea', error && 'ui-textarea--error', className].filter(Boolean).join(' ')} data-visual-id="Textarea">
+  <label class="ui-textarea__label" for={id}>
+    {label}
+  </label>
+  <textarea
+    class="ui-textarea__control"
+    id={id}
+    name={name}
+    rows={rows}
+    disabled={disabled}
+    maxlength={maxlength}
+    aria-invalid={error ? 'true' : undefined}
+    aria-describedby={[hint ? `${id}-hint` : undefined, error ? `${id}-error` : undefined, counterLabel ? `${id}-counter` : undefined]
+      .filter(Boolean)
+      .join(' ') || undefined}
+  >{value}</textarea>
+  <div class="ui-textarea__meta">
+    {hint ? (
+      <p class="ui-textarea__hint" id={`${id}-hint`}>
+        {hint}
+      </p>
+    ) : null}
+    {counterLabel ? (
+      <p class="ui-textarea__counter" id={`${id}-counter`}>
+        {counterLabel}
+      </p>
+    ) : null}
+  </div>
+  {error ? (
+    <p class="ui-textarea__error" id={`${id}-error`} role="alert">
+      {error}
+    </p>
+  ) : null}
+</div>
+
+<style>
+  .ui-textarea {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .ui-textarea__label {
+    color: var(--color-ink);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+  }
+
+  .ui-textarea__control {
+    min-block-size: calc(var(--layout-touch-target-min) * 2);
+    padding: var(--space-3);
+    border: 1px solid var(--control-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+    color: var(--color-ink);
+    font: inherit;
+    resize: vertical;
+  }
+
+  .ui-textarea__control:focus-visible {
+    border-color: var(--control-focus);
+    outline: 2px solid var(--control-focus);
+    outline-offset: 2px;
+  }
+
+  .ui-textarea__control:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  .ui-textarea__meta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-2);
+  }
+
+  .ui-textarea__hint,
+  .ui-textarea__counter {
+    margin: 0;
+    color: var(--color-ink-secondary);
+    font-size: var(--font-size-sm);
+  }
+
+  .ui-textarea__error {
+    margin: 0;
+    color: var(--color-danger);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+  }
+
+  .ui-textarea--error .ui-textarea__control {
+    border-color: var(--color-danger);
+  }
+</style>

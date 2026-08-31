@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 
 import { defineConfig, envField } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
+import designAtlasIntegration from './src/integrations/design-atlas.mjs';
 
 const projectRoot = path.dirname(fileURLToPath(import.meta.url));
 const publicMediaRoot = path.join(projectRoot, 'public', 'media');
@@ -28,6 +29,7 @@ const apiProxyTarget =
 // https://astro.build/config
 export default defineConfig({
   site,
+  integrations: designAtlasEnabled ? [designAtlasIntegration()] : [],
   i18n: {
     defaultLocale: 'fa',
     locales: ['fa', 'en'],

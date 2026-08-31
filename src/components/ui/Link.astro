@@ -1,0 +1,58 @@
+---
+import { ArrowRight } from 'lucide-astro';
+
+interface Props {
+  href: string;
+  label: string;
+  variant?: 'inline' | 'standalone';
+  showIcon?: boolean;
+  class?: string;
+}
+
+const { href, label, variant = 'inline', showIcon = false, class: className = '' } = Astro.props;
+---
+
+<a
+  href={href}
+  class={['ui-link', `ui-link--${variant}`, className].filter(Boolean).join(' ')}
+  data-visual-id="Link"
+>
+  <span class="ui-link__label">{label}</span>
+  {showIcon ? (
+    <span class="ui-link__icon" aria-hidden="true">
+      <ArrowRight size={16} />
+    </span>
+  ) : null}
+</a>
+
+<style>
+  .ui-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--color-brand);
+    text-decoration: underline;
+    text-underline-offset: 0.18em;
+    min-height: var(--layout-touch-target-min);
+  }
+
+  .ui-link--standalone {
+    font-weight: 600;
+    text-decoration: none;
+    padding-inline: var(--space-2);
+    border-radius: var(--radius-sm);
+  }
+
+  .ui-link--standalone:hover {
+    background: var(--color-brand-soft);
+  }
+
+  .ui-link__icon {
+    display: inline-flex;
+    transition: transform var(--motion-base) var(--motion-ease-out);
+  }
+
+  :global([dir='rtl']) .ui-link__icon {
+    transform: scaleX(-1);
+  }
+</style>

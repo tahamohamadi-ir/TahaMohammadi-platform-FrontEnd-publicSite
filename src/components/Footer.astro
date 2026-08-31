@@ -1,4 +1,6 @@
 ---
+import ContactCTA from './ui/ContactCTA.astro';
+import Link from './ui/Link.astro';
 import { localePath, primaryNav, shellCopy, type Locale } from '../lib/navigation';
 
 interface Props {
@@ -12,21 +14,18 @@ const contactHref = localePath(locale, 'contact');
 const cvHref = localePath(locale, 'cv');
 ---
 
-<footer class="site-footer">
+<footer class="site-footer" data-visual-id="Footer">
   {
-    !hidePromo && (
-      <div class="site-footer__cta">
-        <p class="site-footer__cta-text">{shellCopy.footerCta[locale]}</p>
-        <div class="site-footer__cta-actions">
-          <a href={contactHref} class="site-footer__button site-footer__button--primary">
-            {shellCopy.contact[locale]}
-          </a>
-          <a href={cvHref} class="site-footer__button site-footer__button--ghost">
-            {shellCopy.cv[locale]}
-          </a>
-        </div>
-      </div>
-    )
+    !hidePromo ? (
+      <ContactCTA
+        class="site-footer__promo"
+        statement={shellCopy.footerCta[locale]}
+        primaryHref={contactHref}
+        primaryLabel={shellCopy.contact[locale]}
+        cvHref={cvHref}
+        cvLabel={shellCopy.cv[locale]}
+      />
+    ) : null
   }
 
   <div class="site-footer__grid">
@@ -49,7 +48,11 @@ const cvHref = localePath(locale, 'cv');
         {
           primaryNav.map((item) => (
             <li>
-              <a href={localePath(locale, item.pathSegment)}>{item.label[locale]}</a>
+              <Link
+                href={localePath(locale, item.pathSegment)}
+                label={item.label[locale]}
+                variant="inline"
+              />
             </li>
           ))
         }
@@ -60,10 +63,10 @@ const cvHref = localePath(locale, 'cv');
       <p class="site-footer__nav-title">{shellCopy.footerConnect[locale]}</p>
       <ul class="site-footer__nav-list">
         <li>
-          <a href={contactHref}>{shellCopy.contact[locale]}</a>
+          <Link href={contactHref} label={shellCopy.contact[locale]} variant="inline" />
         </li>
         <li>
-          <a href={cvHref}>{shellCopy.cv[locale]}</a>
+          <Link href={cvHref} label={shellCopy.cv[locale]} variant="inline" />
         </li>
       </ul>
     </nav>
