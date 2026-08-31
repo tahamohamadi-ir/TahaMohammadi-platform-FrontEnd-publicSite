@@ -16,7 +16,8 @@ export type MediaSlot =
 
 export type AltPolicy =
   | { kind: 'decorative'; alt: '' }
-  | { kind: 'content'; altByLocale: Readonly<Record<Locale, string>> };
+  | { kind: 'content'; altByLocale: Readonly<Record<Locale, string>> }
+  | { kind: 'consumer-content' };
 
 export interface PromotedAssetRecord {
   id: RuntimeAssetId;
@@ -46,13 +47,7 @@ const ledger = (id: RuntimeAssetId) => id;
 
 const decorative = { kind: 'decorative' as const, alt: '' as const };
 
-const projectAlt: AltPolicy = {
-  kind: 'content',
-  altByLocale: {
-    en: 'Project preview image',
-    fa: 'تصویر پیش‌نمایش پروژه',
-  },
-};
+const consumerContentAlt: AltPolicy = { kind: 'consumer-content' };
 
 export const PROMOTED_ASSET_REGISTRY: Record<RuntimeAssetId, PromotedAssetRecord> = {
   'portal-centered-dark': {
@@ -178,7 +173,7 @@ export const PROMOTED_ASSET_REGISTRY: Record<RuntimeAssetId, PromotedAssetRecord
       decision: 'owner-mapping-organizational-dashboard',
       decisionDate: '2026-08-29',
     },
-    semantics: projectAlt,
+    semantics: consumerContentAlt,
     placement: { slot: 'home.project.preview', theme: 'both', locales: ['fa', 'en'] },
     transform: {
       ...getTransformRecipe('home.project.preview'),
@@ -200,7 +195,7 @@ export const PROMOTED_ASSET_REGISTRY: Record<RuntimeAssetId, PromotedAssetRecord
       decision: 'owner-mapping-pars-sql',
       decisionDate: '2026-08-29',
     },
-    semantics: projectAlt,
+    semantics: consumerContentAlt,
     placement: { slot: 'home.project.preview', theme: 'both', locales: ['fa', 'en'] },
     transform: {
       ...getTransformRecipe('home.project.preview'),
@@ -294,6 +289,11 @@ export function getPromotedAssetRecord(id: string, expectedSlot: MediaSlot): Pro
 export function altForLocale(record: PromotedAssetRecord, locale: Locale): string {
   if (record.semantics.kind === 'decorative') {
     return record.semantics.alt;
+  }
+  if (record.semantics.kind === 'consumer-content') {
+    throw new Error(
+      `Asset ${record.id} requires consumer-supplied localized alt; registry alt is not permitted`,
+    );
   }
   const alt = record.semantics.altByLocale[locale];
   if (!alt) {

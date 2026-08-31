@@ -17,6 +17,7 @@ import {
   HOME_RAIL_ASSET_BY_PATH,
 } from './project-mappings';
 import { getPromotedAssetRecord, PROMOTED_ASSET_REGISTRY, altForLocale } from './promoted-media-registry';
+import { resolvePromotedMediaAlt } from './promoted-media';
 import { ATMOSPHERE_WIDTHS, PREVIEW_WIDTHS, PROMOTED_FORMATS } from './transform-recipes';
 
 const repositoryRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
@@ -65,20 +66,30 @@ describe('WP-30 promoted media registry', () => {
     }
   });
 
-  it('uses localized content alt for brand mark and project previews', () => {
+  it('uses localized content alt for brand mark', () => {
     const brand = PROMOTED_ASSET_REGISTRY['brand-primary'];
     expect(brand.semantics.kind).toBe('content');
     if (brand.semantics.kind === 'content') {
       expect(altForLocale(brand, 'en')).toBe('Taha Mohammadi');
       expect(altForLocale(brand, 'fa')).toBe('طه محمدی');
     }
+  });
 
+  it('requires consumer-supplied localized alt for project previews', () => {
     const project = PROMOTED_ASSET_REGISTRY['project-data-architecture'];
-    expect(project.semantics.kind).toBe('content');
-    if (project.semantics.kind === 'content') {
-      expect(altForLocale(project, 'en')).toBeTruthy();
-      expect(altForLocale(project, 'fa')).toBeTruthy();
-    }
+    expect(project.semantics).toEqual({ kind: 'consumer-content' });
+    expect(() => altForLocale(project, 'en')).toThrow(/consumer-supplied localized alt/);
+    expect(() =>
+      resolvePromotedMediaAlt('project-data-architecture', 'home.project.preview', 'en'),
+    ).toThrow(/requires consumer-supplied localized alt/);
+    expect(
+      resolvePromotedMediaAlt(
+        'project-data-architecture',
+        'home.project.preview',
+        'en',
+        'Organizational dashboard preview',
+      ),
+    ).toBe('Organizational dashboard preview');
   });
 
   it('pins correct intrinsic dimensions for atmosphere and preview groups', () => {

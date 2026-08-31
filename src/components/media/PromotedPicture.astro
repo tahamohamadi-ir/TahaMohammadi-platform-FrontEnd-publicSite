@@ -1,14 +1,15 @@
+---
 import { Picture } from 'astro:assets';
-import type { HTMLAttributes } from 'astro/types';
 
 import type { Locale } from '../../lib/media/promoted-media';
-import { getPromotedMedia, getPromotedMediaAlt } from '../../lib/media/promoted-media';
+import { getPromotedMedia, resolvePromotedMediaAlt } from '../../lib/media/promoted-media';
 import type { MediaSlot } from '../../lib/media/promoted-media-registry';
 
-interface Props extends HTMLAttributes<'picture'> {
+interface Props {
   assetId: string;
-  slot: MediaSlot;
+  mediaSlot: MediaSlot;
   locale?: Locale;
+  alt?: string;
   class?: string;
   imgClass?: string;
   loading?: 'lazy' | 'eager';
@@ -17,24 +18,22 @@ interface Props extends HTMLAttributes<'picture'> {
 
 const {
   assetId,
-  slot,
+  mediaSlot,
   locale = 'en',
+  alt: consumerAlt,
   class: pictureClass,
   imgClass,
   loading,
   fetchPriority,
-  ...rest
 } = Astro.props;
 
-const media = getPromotedMedia(assetId, slot);
-const alt = getPromotedMediaAlt(assetId, slot, locale);
+const media = getPromotedMedia(assetId, mediaSlot);
+const alt = resolvePromotedMediaAlt(assetId, mediaSlot, locale, consumerAlt);
 const resolvedLoading = loading ?? media.transform.loading;
 const resolvedFetchPriority = fetchPriority ?? media.transform.fetchPriority;
 ---
 
 <Picture
-  {...rest}
-  class={pictureClass}
   src={media.source}
   alt={alt}
   widths={[...media.transform.widths]}
@@ -43,6 +42,6 @@ const resolvedFetchPriority = fetchPriority ?? media.transform.fetchPriority;
   fit={media.transform.fit}
   loading={resolvedLoading}
   fetchpriority={resolvedFetchPriority}
-  pictureAttributes={{ class: pictureClass }}
-  imgAttributes={{ class: imgClass, decoding: 'async' }}
+  class={imgClass}
+  pictureAttributes={pictureClass ? { class: pictureClass } : undefined}
 />

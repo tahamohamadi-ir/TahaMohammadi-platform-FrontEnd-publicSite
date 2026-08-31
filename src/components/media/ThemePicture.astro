@@ -1,15 +1,14 @@
 ---
+import { Picture } from 'astro:assets';
 import type { HTMLAttributes } from 'astro/types';
 
-import type { Locale } from '../../lib/media/promoted-media';
-import { getPromotedMedia, getPromotedMediaAlt } from '../../lib/media/promoted-media';
+import { getPromotedMedia } from '../../lib/media/promoted-media';
 import type { MediaSlot } from '../../lib/media/promoted-media-registry';
 
 interface Props extends HTMLAttributes<'div'> {
   lightAssetId: string;
   darkAssetId: string;
-  slot: MediaSlot;
-  locale?: Locale;
+  mediaSlot: MediaSlot;
   class?: string;
   imgClass?: string;
   decorative?: boolean;
@@ -18,46 +17,47 @@ interface Props extends HTMLAttributes<'div'> {
 const {
   lightAssetId,
   darkAssetId,
-  slot,
-  locale = 'en',
+  mediaSlot,
   class: wrapperClass,
   imgClass,
   decorative = true,
   ...rest
 } = Astro.props;
 
-const light = getPromotedMedia(lightAssetId, slot);
-const dark = getPromotedMedia(darkAssetId, slot);
-const alt = decorative ? '' : getPromotedMediaAlt(lightAssetId, slot, locale);
+const light = getPromotedMedia(lightAssetId, mediaSlot);
+const dark = getPromotedMedia(darkAssetId, mediaSlot);
+const alt = decorative ? '' : '';
 
-const lightSrc = typeof light.source.src === 'string' ? light.source.src : light.source.src.src;
-const darkSrc = typeof dark.source.src === 'string' ? dark.source.src : dark.source.src.src;
+const pictureProps = (media: typeof light) => ({
+  src: media.source,
+  alt,
+  widths: [...media.transform.widths],
+  formats: [...media.transform.formats],
+  sizes: media.transform.sizes,
+  fit: media.transform.fit,
+  loading: media.transform.loading,
+  fetchpriority: media.transform.fetchPriority,
+  class: imgClass,
+  pictureAttributes: { class: 'theme-picture__picture' },
+});
 ---
 
 <div
   {...rest}
   class:list={['theme-picture', wrapperClass]}
   data-theme-picture
-  data-light-src={lightSrc}
-  data-dark-src={darkSrc}
-  data-light-width={light.intrinsic.width}
-  data-light-height={light.intrinsic.height}
-  data-dark-width={dark.intrinsic.width}
-  data-dark-height={dark.intrinsic.height}
-  data-loading={light.transform.loading}
-  data-fetch-priority={light.transform.fetchPriority}
   aria-hidden={decorative ? 'true' : undefined}
 >
-  <img
-    class:list={['theme-picture__img', imgClass]}
-    data-theme-picture-target
-    alt={alt}
-    width={light.intrinsic.width}
-    height={light.intrinsic.height}
-    decoding="async"
-    fetchpriority={light.transform.fetchPriority}
-    loading={light.transform.loading}
-  />
+  <noscript>
+    <Picture {...pictureProps(light)} />
+  </noscript>
+  <div data-theme-picture-mount class="theme-picture__mount"></div>
+  <template data-theme-picture-template="light">
+    <Picture {...pictureProps(light)} />
+  </template>
+  <template data-theme-picture-template="dark">
+    <Picture {...pictureProps(dark)} />
+  </template>
 </div>
 
 <script is:inline>
@@ -68,27 +68,24 @@ const darkSrc = typeof dark.source.src === 'string' ? dark.source.src : dark.sou
       return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
     };
 
-    const applyThemeToPicture = (root) => {
-      const theme = resolveTheme();
-      const src = theme === 'dark' ? root.dataset.darkSrc : root.dataset.lightSrc;
-      const width = theme === 'dark' ? root.dataset.darkWidth : root.dataset.lightWidth;
-      const height = theme === 'dark' ? root.dataset.darkHeight : root.dataset.lightHeight;
-      const img = root.querySelector('[data-theme-picture-target]');
-      if (!img || !src) return;
-      if (img.getAttribute('src') !== src) {
-        img.setAttribute('src', src);
-        img.setAttribute('width', width);
-        img.setAttribute('height', height);
-      }
+    const mountVariant = (root, theme) => {
+      const mount = root.querySelector('[data-theme-picture-mount]');
+      const template = root.querySelector('[data-theme-picture-template="' + theme + '"]');
+      if (!mount || !template) return;
+      mount.replaceChildren(template.content.cloneNode(true));
+      root.dataset.activeTheme = theme;
     };
 
     for (const root of document.querySelectorAll('[data-theme-picture]')) {
-      applyThemeToPicture(root);
+      mountVariant(root, resolveTheme());
     }
 
     window.addEventListener('tm-themechange', () => {
+      const theme = resolveTheme();
       for (const root of document.querySelectorAll('[data-theme-picture]')) {
-        applyThemeToPicture(root);
+        if (root.dataset.activeTheme !== theme) {
+          mountVariant(root, theme);
+        }
       }
     });
   })();
@@ -100,7 +97,10 @@ const darkSrc = typeof dark.source.src === 'string' ? dark.source.src : dark.sou
     position: relative;
   }
 
-  .theme-picture__img {
+  .theme-picture__mount :global(.theme-picture__picture),
+  .theme-picture__mount :global(img),
+  .theme-picture :global(noscript .theme-picture__picture),
+  .theme-picture :global(noscript img) {
     display: block;
     width: 100%;
     height: auto;

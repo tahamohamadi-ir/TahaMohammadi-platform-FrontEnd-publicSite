@@ -96,6 +96,28 @@ export function getPromotedMediaAlt(id: string, expectedSlot: MediaSlot, locale:
   return altForLocale(getPromotedAssetRecord(id, expectedSlot), locale);
 }
 
+export function resolvePromotedMediaAlt(
+  id: string,
+  expectedSlot: MediaSlot,
+  locale: Locale,
+  consumerAlt?: string,
+): string {
+  const record = getPromotedAssetRecord(id, expectedSlot);
+  if (record.semantics.kind === 'decorative') {
+    return record.semantics.alt;
+  }
+  if (record.semantics.kind === 'consumer-content') {
+    const trimmed = consumerAlt?.trim();
+    if (!trimmed) {
+      throw new Error(
+        `Asset ${id} requires consumer-supplied localized alt for locale ${locale}`,
+      );
+    }
+    return trimmed;
+  }
+  return altForLocale(record, locale);
+}
+
 export function listPromotedMediaBySlot(slot: MediaSlot): PromotedMedia[] {
   return Object.values(PROMOTED_ASSET_REGISTRY)
     .filter((record) => record.placement.slot === slot)
