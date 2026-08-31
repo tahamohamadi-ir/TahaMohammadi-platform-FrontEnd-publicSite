@@ -1,0 +1,110 @@
+---
+import { Picture } from 'astro:assets';
+import type { HTMLAttributes } from 'astro/types';
+
+import { getPromotedMedia } from '../../lib/media/promoted-media';
+import type { MediaSlot } from '../../lib/media/promoted-media-registry';
+
+interface Props extends HTMLAttributes<'div'> {
+  lightAssetId: string;
+  darkAssetId: string;
+  mediaSlot: MediaSlot;
+  class?: string;
+  imgClass?: string;
+}
+
+const { lightAssetId, darkAssetId, mediaSlot, class: wrapperClass, imgClass, ...rest } = Astro.props;
+
+const light = getPromotedMedia(lightAssetId, mediaSlot);
+const dark = getPromotedMedia(darkAssetId, mediaSlot);
+
+if (light.placement.theme !== 'light') {
+  throw new Error(
+    `ThemePicture lightAssetId ${lightAssetId} is registered for theme ${light.placement.theme}, not light`,
+  );
+}
+
+if (dark.placement.theme !== 'dark') {
+  throw new Error(
+    `ThemePicture darkAssetId ${darkAssetId} is registered for theme ${dark.placement.theme}, not dark`,
+  );
+}
+
+const pictureProps = (media: typeof light) => ({
+  src: media.source,
+  alt: '',
+  widths: [...media.transform.widths],
+  formats: [...media.transform.formats],
+  sizes: media.transform.sizes,
+  fit: media.transform.fit,
+  loading: media.transform.loading,
+  fetchpriority: media.transform.fetchPriority,
+  class: imgClass,
+  pictureAttributes: { class: 'theme-picture__picture' },
+});
+---
+
+<div
+  {...rest}
+  class:list={['theme-picture', wrapperClass]}
+  data-theme-picture
+  aria-hidden="true"
+>
+  <noscript>
+    <Picture {...pictureProps(light)} />
+  </noscript>
+  <div data-theme-picture-mount class="theme-picture__mount"></div>
+  <template data-theme-picture-template="light">
+    <Picture {...pictureProps(light)} />
+  </template>
+  <template data-theme-picture-template="dark">
+    <Picture {...pictureProps(dark)} />
+  </template>
+</div>
+
+<script is:inline>
+  (function mountThemePicture() {
+    const resolveTheme = () => {
+      const requested = document.documentElement.dataset.theme;
+      if (requested === 'light' || requested === 'dark') return requested;
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+
+    const mountVariant = (root, theme) => {
+      const mount = root.querySelector('[data-theme-picture-mount]');
+      const template = root.querySelector('[data-theme-picture-template="' + theme + '"]');
+      if (!mount || !template) return;
+      mount.replaceChildren(template.content.cloneNode(true));
+      root.dataset.activeTheme = theme;
+    };
+
+    for (const root of document.querySelectorAll('[data-theme-picture]')) {
+      mountVariant(root, resolveTheme());
+    }
+
+    window.addEventListener('tm-themechange', () => {
+      const theme = resolveTheme();
+      for (const root of document.querySelectorAll('[data-theme-picture]')) {
+        if (root.dataset.activeTheme !== theme) {
+          mountVariant(root, theme);
+        }
+      }
+    });
+  })();
+</script>
+
+<style>
+  .theme-picture {
+    display: block;
+    position: relative;
+  }
+
+  .theme-picture__mount :global(.theme-picture__picture),
+  .theme-picture__mount :global(img),
+  .theme-picture :global(noscript .theme-picture__picture),
+  .theme-picture :global(noscript img) {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+</style>
