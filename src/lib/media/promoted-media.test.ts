@@ -114,6 +114,15 @@ describe('WP-30 promoted media registry', () => {
     });
   });
 
+  it('records WP-25 Master Chat acceptance date on graph backplate approvals', () => {
+    for (const id of ['home-graph-backplate-light', 'home-graph-backplate-dark'] as const) {
+      expect(PROMOTED_ASSET_REGISTRY[id].approval).toMatchObject({
+        decision: 'wp25-master-chat-accept',
+        decisionDate: '2026-08-30',
+      });
+    }
+  });
+
   it('assigns atmosphere, preview, and graph backplate transform width sets', () => {
     expect(PROMOTED_ASSET_REGISTRY['portal-centered-dark'].transform.widths).toEqual(ATMOSPHERE_WIDTHS);
     expect(PROMOTED_ASSET_REGISTRY['project-data-architecture'].transform.widths).toEqual(PREVIEW_WIDTHS);

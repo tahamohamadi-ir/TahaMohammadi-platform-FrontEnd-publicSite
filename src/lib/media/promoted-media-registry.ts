@@ -24,7 +24,7 @@ export interface PromotedAssetRecord {
   authorityPath: string;
   sourceSha256: string;
   intrinsic: { width: number; height: number };
-  approval: { ledgerId: string; decision: string; decisionDate: '2026-08-29' };
+  approval: { ledgerId: string; decision: string; decisionDate: '2026-08-29' | '2026-08-30' };
   semantics: AltPolicy;
   placement: {
     slot: MediaSlot;
@@ -281,7 +281,7 @@ export const PROMOTED_ASSET_REGISTRY: Record<RuntimeAssetId, PromotedAssetRecord
     approval: {
       ledgerId: ledger('home-graph-backplate-light'),
       decision: 'wp25-master-chat-accept',
-      decisionDate: '2026-08-29',
+      decisionDate: '2026-08-30',
     },
     semantics: decorative,
     placement: { slot: 'home.graph.backplate', theme: 'light', locales: ['fa', 'en'] },
@@ -303,7 +303,7 @@ export const PROMOTED_ASSET_REGISTRY: Record<RuntimeAssetId, PromotedAssetRecord
     approval: {
       ledgerId: ledger('home-graph-backplate-dark'),
       decision: 'wp25-master-chat-accept',
-      decisionDate: '2026-08-29',
+      decisionDate: '2026-08-30',
     },
     semantics: decorative,
     placement: { slot: 'home.graph.backplate', theme: 'dark', locales: ['fa', 'en'] },
