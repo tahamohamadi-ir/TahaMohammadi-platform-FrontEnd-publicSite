@@ -169,6 +169,7 @@ describe('WP-40 explore rails', () => {
     expect(html).toMatch(/href="\/en\/writing\/"/);
     expect(html).not.toMatch(/href="\/en\/(teaching|creative)\/"/);
     expect(html).toContain('No public teaching record is available yet.');
+    expect(html.match(/data-content-state="unavailable"/g)?.length).toBe(2);
   });
 
   it('renders seed-backed FA unavailable states without anchors', async () => {
@@ -176,6 +177,17 @@ describe('WP-40 explore rails', () => {
     expect(html).toMatch(/href="\/fa\/writing\/"/);
     expect(html).not.toMatch(/href="\/fa\/(teaching|creative)\/"/);
     expect(html).toContain('هنوز رکورد عمومی تأییدشده‌ای برای تدریس در دسترس نیست.');
+    expect(html.match(/data-content-state="unavailable"/g)?.length).toBe(2);
+  });
+
+  it('passes the approved seed state copy into the shared state interface', async () => {
+    const html = await render(HomeExploreRails, { locale: 'en' });
+    const states = html.match(/<section[^>]*data-content-state="unavailable"[\s\S]*?<\/section>/g) ?? [];
+
+    expect(states).toHaveLength(2);
+    expect(states[0]).toMatch(/<h4[^>]*>Selected visual and design work will be added/);
+    expect(states[1]).toMatch(/<h4[^>]*>No public teaching record is available yet\.<\/h4>/);
+    expect(states.join('')).not.toMatch(/<(?:a|button)\b/);
   });
 });
 

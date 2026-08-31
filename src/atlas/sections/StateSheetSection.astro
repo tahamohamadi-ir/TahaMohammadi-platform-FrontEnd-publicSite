@@ -2,6 +2,7 @@
 import Button from '../../components/ui/Button.astro';
 import ContentRow from '../../components/ui/ContentRow.astro';
 import FeaturedRecord from '../../components/ui/FeaturedRecord.astro';
+import ContentState from '../../components/state/ContentState.astro';
 ---
 
 <section class="atlas-section" id="atlas-state-sheet" data-visual-id="AtlasStateSheetSection">
@@ -26,6 +27,24 @@ import FeaturedRecord from '../../components/ui/FeaturedRecord.astro';
     <ContentRow typeLabel="Row" title="Unavailable row" unavailable />
   </div>
 
+  <div class="atlas-specimen" data-visual-id="AtlasStateSheet-ContentStates">
+    <p class="atlas-specimen__label">Content states</p>
+    <div class="atlas-content-state-grid">
+      <ContentState id="atlas-state-loading" state="loading" title="Loading records" />
+      <ContentState id="atlas-state-empty" state="empty" title="No published records" />
+      <ContentState id="atlas-state-unavailable" state="unavailable" title="Content unavailable" />
+      <ContentState
+        id="atlas-state-error"
+        state="error"
+        title="Records could not be loaded"
+        actionLabel="Try again"
+        actionHref="#atlas-state-sheet"
+      />
+      <ContentState id="atlas-state-untranslated" state="untranslated" title="Translation unavailable" />
+      <ContentState id="atlas-state-no-results" state="no-results" title="No matching results" />
+    </div>
+  </div>
+
   <div class="atlas-specimen" data-visual-id="AtlasReducedMotionSpecimen">
     <p class="atlas-specimen__label">Reduced motion</p>
     <p class="atlas-section__summary">
@@ -38,6 +57,17 @@ import FeaturedRecord from '../../components/ui/FeaturedRecord.astro';
 </section>
 
 <style>
+  .atlas-content-state-grid {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  @media (min-width: 1024px) {
+    .atlas-content-state-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
   .atlas-motion-probe {
     padding: var(--space-3) var(--space-4);
     border: 1px solid var(--control-border);

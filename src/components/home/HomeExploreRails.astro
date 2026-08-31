@@ -1,6 +1,7 @@
 ---
 import MediaTile from '../ui/MediaTile.astro';
 import Link from '../ui/Link.astro';
+import ContentState from '../state/ContentState.astro';
 import PromotedPicture from '../media/PromotedPicture.astro';
 import { getHomeExploreContent } from '../../lib/home-content';
 import { localePath, type Locale } from '../../lib/navigation';
@@ -35,7 +36,13 @@ const content = getHomeExploreContent(locale);
               <h3 class="hm-explore__card-title">{rail.title}</h3>
               <p class="hm-explore__card-excerpt">{rail.excerpt}</p>
               {rail.unavailableStatus ? (
-                <p class="hm-explore__status">{rail.unavailableStatus}</p>
+                <ContentState
+                  id={`home-${locale}-${rail.pathSegment}-state`}
+                  class="hm-explore__state"
+                  state="unavailable"
+                  title={rail.unavailableStatus}
+                  headingLevel={4}
+                />
               ) : (
                 rail.viewLabel && (
                   <Link

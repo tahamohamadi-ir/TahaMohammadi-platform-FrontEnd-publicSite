@@ -1,0 +1,121 @@
+---
+import Link from '../ui/Link.astro'
+
+export type ContentStateKind =
+  | 'loading'
+  | 'empty'
+  | 'unavailable'
+  | 'error'
+  | 'untranslated'
+  | 'no-results'
+
+interface Props {
+  id: string
+  state: ContentStateKind
+  title: string
+  description?: string
+  actionLabel?: string
+  actionHref?: string
+  headingLevel?: 2 | 3 | 4
+  class?: string
+}
+
+const {
+  id,
+  state,
+  title,
+  description,
+  actionLabel,
+  actionHref,
+  headingLevel = 3,
+  class: className = '',
+} = Astro.props
+
+const isLoading = state === 'loading'
+const isError = state === 'error'
+const role = isLoading ? 'status' : isError ? 'alert' : undefined
+const ariaLive = isLoading ? 'polite' : isError ? 'assertive' : undefined
+const titleId = `${id}-title`
+---
+
+<section
+  id={id}
+  class={['content-state', className].filter(Boolean).join(' ')}
+  data-content-state={state}
+  data-visual-id="ContentState"
+  aria-labelledby={titleId}
+  role={role}
+  aria-live={ariaLive}
+  aria-busy={isLoading ? 'true' : undefined}
+>
+  <div class="content-state__copy">
+    {headingLevel === 2 ? (
+      <h2 id={titleId} class="content-state__title">{title}</h2>
+    ) : headingLevel === 4 ? (
+      <h4 id={titleId} class="content-state__title">{title}</h4>
+    ) : (
+      <h3 id={titleId} class="content-state__title">{title}</h3>
+    )}
+    {description ? <p class="content-state__description">{description}</p> : null}
+  </div>
+
+  {actionLabel && actionHref ? (
+    <Link
+      class="content-state__action"
+      href={actionHref}
+      label={actionLabel}
+      variant="standalone"
+      showIcon
+    />
+  ) : null}
+</section>
+
+<style>
+  .content-state {
+    display: grid;
+    gap: var(--space-4);
+    padding-block: var(--space-5);
+    padding-inline: var(--space-5);
+    border: 1px solid var(--color-border-subtle);
+    border-inline-start: 3px solid var(--color-brand);
+    border-radius: var(--radius-md);
+    background: var(--color-surface-muted);
+  }
+
+  .content-state[data-content-state='error'] {
+    border-inline-start-color: var(--color-danger);
+  }
+
+  .content-state__copy {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .content-state__title,
+  .content-state__description {
+    margin: 0;
+  }
+
+  .content-state__title {
+    color: var(--color-ink);
+    font-family: var(--font-display);
+    font-size: var(--font-size-lg);
+    line-height: 1.4;
+  }
+
+  .content-state__description {
+    max-inline-size: var(--layout-prose);
+    color: var(--color-ink-secondary);
+  }
+
+  .content-state__action {
+    justify-self: start;
+  }
+
+  @media (min-width: 768px) {
+    .content-state:has(.content-state__action) {
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+    }
+  }
+</style>
