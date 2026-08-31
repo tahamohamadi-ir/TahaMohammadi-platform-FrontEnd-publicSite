@@ -13,6 +13,8 @@ import projectDataArchitecture from '../../assets/media/art/project-data-archite
 import blogCoralStairs from '../../assets/media/art/blog-coral-stairs.png';
 import learningSageLibrary from '../../assets/media/art/learning-sage-library.png';
 import galleryIvoryForms from '../../assets/media/art/gallery-ivory-forms.png';
+import homeGraphBackplateLight from '../../assets/media/art/home-graph-backplate-light.png';
+import homeGraphBackplateDark from '../../assets/media/art/home-graph-backplate-dark.png';
 import brandPrimary from '../../assets/media/brand/taha-mark-primary.png';
 import brandFavicon from '../../assets/media/brand/taha-mark-favicon.png';
 
@@ -32,6 +34,7 @@ export {
   HOME_RAIL_ASSET_BY_PATH,
   GATEWAY_ATMOSPHERE_ASSETS,
   HOME_HERO_ATMOSPHERE_ASSETS,
+  HOME_GRAPH_BACKPLATE_ASSETS,
   BRAND_MARK_ASSET_ID,
   BRAND_FAVICON_ASSET_ID,
 } from './project-mappings';
@@ -48,6 +51,8 @@ const SOURCE_IMPORTS: Record<string, ImageMetadata> = {
   'blog-coral-stairs': blogCoralStairs,
   'learning-sage-library': learningSageLibrary,
   'gallery-ivory-forms': galleryIvoryForms,
+  'home-graph-backplate-light': homeGraphBackplateLight,
+  'home-graph-backplate-dark': homeGraphBackplateDark,
   'brand-primary': brandPrimary,
   'brand-favicon': brandFavicon,
 };

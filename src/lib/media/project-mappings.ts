@@ -25,6 +25,12 @@ export const HOME_HERO_ATMOSPHERE_ASSETS = {
   dark: 'portal-orbit-dark',
 } as const satisfies Record<'light' | 'dark', RuntimeAssetId>;
 
+/** Home research graph decorative backplate variants (theme-specific). */
+export const HOME_GRAPH_BACKPLATE_ASSETS = {
+  light: 'home-graph-backplate-light',
+  dark: 'home-graph-backplate-dark',
+} as const satisfies Record<'light' | 'dark', RuntimeAssetId>;
+
 /** Brand mark and favicon source IDs. */
 export const BRAND_MARK_ASSET_ID = 'brand-primary' as const;
 export const BRAND_FAVICON_ASSET_ID = 'brand-favicon' as const;

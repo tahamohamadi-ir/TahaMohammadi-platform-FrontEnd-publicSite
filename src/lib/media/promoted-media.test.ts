@@ -12,13 +12,14 @@ import {
 import { DERIVATIVE_MANIFEST, DEFERRED_DERIVATIVE_ENTRIES } from './derivative-manifest';
 import {
   GATEWAY_ATMOSPHERE_ASSETS,
+  HOME_GRAPH_BACKPLATE_ASSETS,
   HOME_HERO_ATMOSPHERE_ASSETS,
   HOME_PROJECT_ASSET_BY_SLUG,
   HOME_RAIL_ASSET_BY_PATH,
 } from './project-mappings';
 import { getPromotedAssetRecord, PROMOTED_ASSET_REGISTRY, altForLocale } from './promoted-media-registry';
 import { resolvePromotedMediaAlt } from './promoted-media';
-import { ATMOSPHERE_WIDTHS, PREVIEW_WIDTHS, PROMOTED_FORMATS } from './transform-recipes';
+import { ATMOSPHERE_WIDTHS, GRAPH_BACKPLATE_WIDTHS, PREVIEW_WIDTHS, PROMOTED_FORMATS } from './transform-recipes';
 
 const repositoryRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 const mediaRoot = path.join(repositoryRoot, 'src/assets/media');
@@ -53,13 +54,15 @@ describe('WP-30 promoted media registry', () => {
     );
   });
 
-  it('uses decorative alt="" for atmosphere, rails, and brand favicon', () => {
+  it('uses decorative alt="" for atmosphere, rails, graph backplates, and brand favicon', () => {
     for (const id of [
       'portal-centered-light',
       'portal-orbit-dark',
       'blog-coral-stairs',
       'learning-sage-library',
       'gallery-ivory-forms',
+      'home-graph-backplate-light',
+      'home-graph-backplate-dark',
       'brand-favicon',
     ] as const) {
       expect(PROMOTED_ASSET_REGISTRY[id].semantics).toEqual({ kind: 'decorative', alt: '' });
@@ -101,12 +104,24 @@ describe('WP-30 promoted media registry', () => {
     }
     expect(PROMOTED_ASSET_REGISTRY['brand-primary'].intrinsic).toEqual({ width: 256, height: 233 });
     expect(PROMOTED_ASSET_REGISTRY['brand-favicon'].intrinsic).toEqual({ width: 64, height: 64 });
+    expect(PROMOTED_ASSET_REGISTRY['home-graph-backplate-light'].intrinsic).toEqual({
+      width: 1254,
+      height: 1254,
+    });
+    expect(PROMOTED_ASSET_REGISTRY['home-graph-backplate-dark'].intrinsic).toEqual({
+      width: 1254,
+      height: 1254,
+    });
   });
 
-  it('assigns atmosphere and preview transform width sets', () => {
+  it('assigns atmosphere, preview, and graph backplate transform width sets', () => {
     expect(PROMOTED_ASSET_REGISTRY['portal-centered-dark'].transform.widths).toEqual(ATMOSPHERE_WIDTHS);
     expect(PROMOTED_ASSET_REGISTRY['project-data-architecture'].transform.widths).toEqual(PREVIEW_WIDTHS);
+    expect(PROMOTED_ASSET_REGISTRY['home-graph-backplate-light'].transform.widths).toEqual(
+      GRAPH_BACKPLATE_WIDTHS,
+    );
     expect(PROMOTED_ASSET_REGISTRY['blog-coral-stairs'].transform.formats).toEqual(PROMOTED_FORMATS);
+    expect(PROMOTED_ASSET_REGISTRY['home-graph-backplate-dark'].transform.widths).not.toContain(1254);
   });
 
   it('maps projects and rails to definitive runtime asset ids', () => {
@@ -119,19 +134,21 @@ describe('WP-30 promoted media registry', () => {
     expect(HOME_RAIL_ASSET_BY_PATH.creative).toBe('gallery-ivory-forms');
     expect(GATEWAY_ATMOSPHERE_ASSETS.light).toBe('portal-centered-light');
     expect(HOME_HERO_ATMOSPHERE_ASSETS.dark).toBe('portal-orbit-dark');
+    expect(HOME_GRAPH_BACKPLATE_ASSETS.light).toBe('home-graph-backplate-light');
+    expect(HOME_GRAPH_BACKPLATE_ASSETS.dark).toBe('home-graph-backplate-dark');
   });
 
-  it('documents active and deferred derivative manifest entries', () => {
+  it('documents active derivative manifest entries for all runtime assets', () => {
     expect(DERIVATIVE_MANIFEST).toHaveLength(RUNTIME_ASSET_IDS.length);
     expect(DERIVATIVE_MANIFEST.every((entry) => entry.status === 'active')).toBe(true);
-    expect(DEFERRED_DERIVATIVE_ENTRIES.every((entry) => entry.status === 'deferred')).toBe(true);
-    expect(DEFERRED_DERIVATIVE_ENTRIES.map((entry) => entry.assetId)).toEqual([
-      'home-graph-backplate-light',
-      'home-graph-backplate-dark',
-    ]);
+    expect(DEFERRED_DERIVATIVE_ENTRIES).toHaveLength(0);
+
+    const graphLight = DERIVATIVE_MANIFEST.find((entry) => entry.assetId === 'home-graph-backplate-light');
+    expect(graphLight?.widths).toEqual(GRAPH_BACKPLATE_WIDTHS);
+    expect(graphLight?.intrinsic).toEqual({ width: 1254, height: 1254 });
   });
 
-  it('throws for deferred ids at the registry boundary', () => {
+  it('throws for owner-deferred ids at the registry boundary', () => {
     for (const id of DEFERRED_ASSET_IDS) {
       expect(() => getPromotedAssetRecord(id, 'home.graph.backplate')).toThrow();
     }
@@ -144,12 +161,17 @@ describe('WP-30 promoted media registry', () => {
     expect(source).toContain('assertSourceHash');
   });
 
-  it('keeps deferred authority masters out of the runtime asset tree', () => {
-    for (const id of [
-      'project-visual-communication-network',
-      'project-placeholder-ivory-stairs',
-    ] as const) {
+  it('keeps owner-deferred authority masters out of the runtime asset tree', () => {
+    for (const id of DEFERRED_ASSET_IDS) {
       expect(existsSync(path.join(mediaRoot, 'art', `${id}.png`))).toBe(false);
+    }
+  });
+
+  it('includes exact-hash graph backplate masters in the runtime asset tree', () => {
+    for (const id of ['home-graph-backplate-light', 'home-graph-backplate-dark'] as const) {
+      const relativePath = PROMOTED_ASSET_REGISTRY[id].assetFile;
+      expect(existsSync(path.join(mediaRoot, relativePath))).toBe(true);
+      expect(sha256File(relativePath)).toBe(AUTHORITY_CHECKSUMS[id]);
     }
   });
 });

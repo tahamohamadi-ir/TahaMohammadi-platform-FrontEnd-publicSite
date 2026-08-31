@@ -4,7 +4,7 @@ export const ATMOSPHERE_WIDTHS = [320, 390, 768, 1024, 1280, 1440, 1672] as cons
 /** Responsive derivative widths approved for project and rail preview slots. */
 export const PREVIEW_WIDTHS = [320, 480, 640, 800, 1024] as const;
 
-/** Deferred graph backplate widths — active only after WP-25 Master Chat ACCEPT. */
+/** Graph backplate responsive derivative widths (canonical source 1254×1254; no 1254px runtime width). */
 export const GRAPH_BACKPLATE_WIDTHS = [320, 480, 640, 768, 1024] as const;
 
 export const PROMOTED_FORMATS = ['avif', 'webp'] as const;

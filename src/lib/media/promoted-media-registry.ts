@@ -273,6 +273,50 @@ export const PROMOTED_ASSET_REGISTRY: Record<RuntimeAssetId, PromotedAssetRecord
     },
     assetFile: 'art/gallery-ivory-forms.png',
   },
+  'home-graph-backplate-light': {
+    id: 'home-graph-backplate-light',
+    authorityPath: 'art/home-graph-backplate-light.png',
+    sourceSha256: AUTHORITY_CHECKSUMS['home-graph-backplate-light'],
+    intrinsic: { width: 1254, height: 1254 },
+    approval: {
+      ledgerId: ledger('home-graph-backplate-light'),
+      decision: 'wp25-master-chat-accept',
+      decisionDate: '2026-08-29',
+    },
+    semantics: decorative,
+    placement: { slot: 'home.graph.backplate', theme: 'light', locales: ['fa', 'en'] },
+    transform: {
+      ...getTransformRecipe('home.graph.backplate'),
+      formats: ['avif', 'webp'],
+      fit: 'cover',
+      focalByLocale: {},
+      loading: 'lazy',
+      fetchPriority: 'auto',
+    },
+    assetFile: 'art/home-graph-backplate-light.png',
+  },
+  'home-graph-backplate-dark': {
+    id: 'home-graph-backplate-dark',
+    authorityPath: 'art/home-graph-backplate-dark.png',
+    sourceSha256: AUTHORITY_CHECKSUMS['home-graph-backplate-dark'],
+    intrinsic: { width: 1254, height: 1254 },
+    approval: {
+      ledgerId: ledger('home-graph-backplate-dark'),
+      decision: 'wp25-master-chat-accept',
+      decisionDate: '2026-08-29',
+    },
+    semantics: decorative,
+    placement: { slot: 'home.graph.backplate', theme: 'dark', locales: ['fa', 'en'] },
+    transform: {
+      ...getTransformRecipe('home.graph.backplate'),
+      formats: ['avif', 'webp'],
+      fit: 'cover',
+      focalByLocale: {},
+      loading: 'lazy',
+      fetchPriority: 'auto',
+    },
+    assetFile: 'art/home-graph-backplate-dark.png',
+  },
 };
 
 export function getPromotedAssetRecord(id: string, expectedSlot: MediaSlot): PromotedAssetRecord {

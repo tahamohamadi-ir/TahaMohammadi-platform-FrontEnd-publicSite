@@ -14,6 +14,10 @@ export const AUTHORITY_CHECKSUMS = {
   'blog-coral-stairs': '908e890360742228f27fabbd21569588eb0302cb656f9889a545f42749d04720',
   'learning-sage-library': '21ef859df5e6e2177538eb5a71d0f44d8615d32fa53f1586d8b8d3d5461e1418',
   'gallery-ivory-forms': '855296e8dd1541f173c529c30293f3848ef3d45eb3b07d92e64ffb89a4140d4e',
+  'home-graph-backplate-light':
+    '22d8faf5f2848a79028f44dad2509806970d97f8ec557296c12e9b594f63df18',
+  'home-graph-backplate-dark':
+    '6687d39e8ec8bab477e1d05436e5c5d221bb98afbcf5a0ff419703f658842d23',
   'project-visual-communication-network':
     'fbceedb903700246442f201f113cfc9b59df18f5f4a5681c379ca8cd61b9db33',
   'project-placeholder-ivory-stairs':
@@ -25,8 +29,6 @@ export type AuthorityAssetId = keyof typeof AUTHORITY_CHECKSUMS;
 export const DEFERRED_ASSET_IDS = [
   'project-visual-communication-network',
   'project-placeholder-ivory-stairs',
-  'home-graph-backplate-light',
-  'home-graph-backplate-dark',
 ] as const;
 
 export type DeferredAssetId = (typeof DEFERRED_ASSET_IDS)[number];
@@ -43,6 +45,8 @@ export const RUNTIME_ASSET_IDS = [
   'blog-coral-stairs',
   'learning-sage-library',
   'gallery-ivory-forms',
+  'home-graph-backplate-light',
+  'home-graph-backplate-dark',
 ] as const satisfies readonly AuthorityAssetId[];
 
 export type RuntimeAssetId = (typeof RUNTIME_ASSET_IDS)[number];

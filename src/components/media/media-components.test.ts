@@ -6,7 +6,8 @@ import { describe, expect, it } from 'vitest';
 
 import PromotedPicture from './PromotedPicture.astro';
 import ThemePicture from './ThemePicture.astro';
-import { ATMOSPHERE_WIDTHS, PREVIEW_WIDTHS } from '../../lib/media/transform-recipes';
+import { ATMOSPHERE_WIDTHS, GRAPH_BACKPLATE_WIDTHS, PREVIEW_WIDTHS } from '../../lib/media/transform-recipes';
+import { HOME_GRAPH_BACKPLATE_ASSETS } from '../../lib/media/project-mappings';
 import { getPromotedAssetRecord } from '../../lib/media/promoted-media-registry';
 import { resolvePromotedMediaAlt } from '../../lib/media/promoted-media';
 
@@ -149,7 +150,51 @@ describe('WP-30A media components', () => {
     ).toBe('نمای پیش‌نمایش پروژه');
   });
 
-  it('enforces slot placement and rejects deferred asset ids at render boundaries', async () => {
+  it('renders graph backplate ThemePicture with graph width sets and decorative semantics', async () => {
+    const html = await renderComponent(ThemePicture, {
+      lightAssetId: HOME_GRAPH_BACKPLATE_ASSETS.light,
+      darkAssetId: HOME_GRAPH_BACKPLATE_ASSETS.dark,
+      mediaSlot: 'home.graph.backplate',
+      imgClass: 'home-graph__backplate-img',
+    });
+
+    const record = getPromotedAssetRecord('home-graph-backplate-light', 'home.graph.backplate');
+    const { img } = expectResponsivePicture(html, record.transform.widths);
+    expect(record.transform.widths).toEqual(GRAPH_BACKPLATE_WIDTHS);
+    expect(img).toMatch(/\balt(?:="")?(?:\s|>)/);
+    expect(html).toMatch(/aria-hidden="true"/);
+    expect(html).not.toMatch(/decorative=\{false\}/);
+  });
+
+  it('rejects reversed or mismatched ThemePicture light and dark asset ids', async () => {
+    await expect(
+      renderComponent(ThemePicture, {
+        lightAssetId: HOME_GRAPH_BACKPLATE_ASSETS.dark,
+        darkAssetId: HOME_GRAPH_BACKPLATE_ASSETS.light,
+        mediaSlot: 'home.graph.backplate',
+      }),
+    ).rejects.toThrow(/lightAssetId home-graph-backplate-dark is registered for theme dark, not light/);
+
+    await expect(
+      renderComponent(ThemePicture, {
+        lightAssetId: 'portal-orbit-dark',
+        darkAssetId: 'portal-orbit-light',
+        mediaSlot: 'home.hero.atmosphere',
+      }),
+    ).rejects.toThrow(/lightAssetId portal-orbit-dark is registered for theme dark, not light/);
+  });
+
+  it('renders PromotedPicture graph backplate with registered graph widths', async () => {
+    const html = await renderComponent(PromotedPicture, {
+      assetId: HOME_GRAPH_BACKPLATE_ASSETS.light,
+      mediaSlot: 'home.graph.backplate',
+    });
+
+    const { img } = expectResponsivePicture(html, GRAPH_BACKPLATE_WIDTHS);
+    expect(img).toMatch(/\balt(?:="")?(?:\s|>)/);
+  });
+
+  it('enforces slot placement and rejects owner-deferred asset ids at render boundaries', async () => {
     await expect(
       renderComponent(PromotedPicture, {
         assetId: 'portal-orbit-light',
@@ -160,9 +205,9 @@ describe('WP-30A media components', () => {
 
     await expect(
       renderComponent(PromotedPicture, {
-        assetId: 'home-graph-backplate-light',
-        mediaSlot: 'home.graph.backplate',
-        alt: 'Graph backplate',
+        assetId: 'project-visual-communication-network',
+        mediaSlot: 'home.project.preview',
+        alt: 'Deferred project preview',
       }),
     ).rejects.toThrow(/Deferred asset/);
   });

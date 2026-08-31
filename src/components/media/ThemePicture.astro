@@ -11,26 +11,28 @@ interface Props extends HTMLAttributes<'div'> {
   mediaSlot: MediaSlot;
   class?: string;
   imgClass?: string;
-  decorative?: boolean;
 }
 
-const {
-  lightAssetId,
-  darkAssetId,
-  mediaSlot,
-  class: wrapperClass,
-  imgClass,
-  decorative = true,
-  ...rest
-} = Astro.props;
+const { lightAssetId, darkAssetId, mediaSlot, class: wrapperClass, imgClass, ...rest } = Astro.props;
 
 const light = getPromotedMedia(lightAssetId, mediaSlot);
 const dark = getPromotedMedia(darkAssetId, mediaSlot);
-const alt = decorative ? '' : '';
+
+if (light.placement.theme !== 'light') {
+  throw new Error(
+    `ThemePicture lightAssetId ${lightAssetId} is registered for theme ${light.placement.theme}, not light`,
+  );
+}
+
+if (dark.placement.theme !== 'dark') {
+  throw new Error(
+    `ThemePicture darkAssetId ${darkAssetId} is registered for theme ${dark.placement.theme}, not dark`,
+  );
+}
 
 const pictureProps = (media: typeof light) => ({
   src: media.source,
-  alt,
+  alt: '',
   widths: [...media.transform.widths],
   formats: [...media.transform.formats],
   sizes: media.transform.sizes,
@@ -46,7 +48,7 @@ const pictureProps = (media: typeof light) => ({
   {...rest}
   class:list={['theme-picture', wrapperClass]}
   data-theme-picture
-  aria-hidden={decorative ? 'true' : undefined}
+  aria-hidden="true"
 >
   <noscript>
     <Picture {...pictureProps(light)} />

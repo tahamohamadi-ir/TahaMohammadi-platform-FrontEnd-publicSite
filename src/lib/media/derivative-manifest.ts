@@ -35,31 +35,8 @@ export const DERIVATIVE_MANIFEST: readonly DerivativeEntry[] = Object.values(PRO
   }),
 );
 
-/** Deferred entries documented for WP-25 graph backplate promotion. */
-export const DEFERRED_DERIVATIVE_ENTRIES: readonly DerivativeEntry[] = [
-  {
-    assetId: 'home-graph-backplate-light' as RuntimeAssetId,
-    authorityPath: 'art/home-graph-backplate-light.png',
-    sourceSha256: 'pending-wp25-accept',
-    intrinsic: { width: 1024, height: 1024 },
-    formats: PROMOTED_FORMATS,
-    widths: GRAPH_BACKPLATE_WIDTHS,
-    sizes: '(min-width: 768px) 640px, (min-width: 480px) 480px, 320px',
-    fit: 'cover',
-    status: 'deferred',
-  },
-  {
-    assetId: 'home-graph-backplate-dark' as RuntimeAssetId,
-    authorityPath: 'art/home-graph-backplate-dark.png',
-    sourceSha256: 'pending-wp25-accept',
-    intrinsic: { width: 1024, height: 1024 },
-    formats: PROMOTED_FORMATS,
-    widths: GRAPH_BACKPLATE_WIDTHS,
-    sizes: '(min-width: 768px) 640px, (min-width: 480px) 480px, 320px',
-    fit: 'cover',
-    status: 'deferred',
-  },
-];
+/** Deferred entries for assets not yet promoted into runtime. */
+export const DEFERRED_DERIVATIVE_ENTRIES: readonly DerivativeEntry[] = [];
 
 export function getDerivativePlan(assetId: string): DerivativeEntry | undefined {
   return DERIVATIVE_MANIFEST.find((entry) => entry.assetId === assetId);
