@@ -69,4 +69,13 @@ test.describe('WP-40 gateway reconstruction', () => {
     await page.getByRole('link', { name: 'English' }).focus();
     await expect(page.getByRole('link', { name: 'English' })).toHaveCSS('outline-style', 'solid');
   });
+
+  test('WP-40 gateway: preserves the portal atmosphere across the mobile viewport', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/');
+
+    const atmosphere = await page.locator('.gw__atmosphere-img').boundingBox();
+    expect(atmosphere).not.toBeNull();
+    expect(atmosphere?.height ?? 0).toBeGreaterThanOrEqual(844);
+  });
 });

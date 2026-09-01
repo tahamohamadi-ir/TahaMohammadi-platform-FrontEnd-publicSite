@@ -106,47 +106,55 @@ test.describe('WP-40 home structure acceptance', () => {
     await context.close();
   });
 
-  test('WP-40 home and gateway capture 200% zoom composition evidence', async ({ page, browser }) => {
+  test('WP-40 home and gateway capture 200% effective-width reflow evidence', async ({ page, browser }) => {
     test.setTimeout(120_000);
-    const zoomContext = await browser.newContext({
+    // A 720 CSS-pixel viewport exercises the layout width produced by a
+    // 1440px viewport at 200% browser zoom. This is automated reflow evidence,
+    // not a substitute for the manual real-browser zoom acceptance check.
+    const reflowContext = await browser.newContext({
       viewport: { width: 720, height: 810 },
-      deviceScaleFactor: 2,
     });
-    const zoomPage = await zoomContext.newPage();
+    const reflowPage = await reflowContext.newPage();
 
     const expectNoOverflow = () =>
       expect
-        .poll(() => zoomPage.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth))
+        .poll(() => reflowPage.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth))
         .toBe(true);
 
-    await zoomPage.goto('/en/');
-    await settleLazyMedia(zoomPage);
+    await reflowPage.goto('/en/');
+    await settleLazyMedia(reflowPage);
     await expectNoOverflow();
-    await zoomPage.screenshot({ path: 'test-results/visual/wp40-home-en-200pct-light.png', fullPage: true });
+    await reflowPage.screenshot({ path: 'test-results/visual/wp40-home-en-200pct-light.png', fullPage: true });
 
-    await zoomPage.evaluate(() => window.__tmApplyTheme('dark'));
-    await expect(zoomPage.locator('html')).toHaveAttribute('data-theme', 'dark');
-    await settleLazyMedia(zoomPage);
+    await reflowPage.evaluate(() => window.__tmApplyTheme('dark'));
+    await expect(reflowPage.locator('html')).toHaveAttribute('data-theme', 'dark');
+    await settleLazyMedia(reflowPage);
     await expectNoOverflow();
-    await zoomPage.screenshot({ path: 'test-results/visual/wp40-home-en-200pct-dark.png', fullPage: true });
+    await reflowPage.screenshot({ path: 'test-results/visual/wp40-home-en-200pct-dark.png', fullPage: true });
 
-    await zoomPage.goto('/fa/');
-    await settleLazyMedia(zoomPage);
+    await reflowPage.goto('/fa/');
+    await settleLazyMedia(reflowPage);
     await expectNoOverflow();
-    await zoomPage.screenshot({ path: 'test-results/visual/wp40-home-fa-200pct-light.png', fullPage: true });
+    await reflowPage.screenshot({ path: 'test-results/visual/wp40-home-fa-200pct-light.png', fullPage: true });
 
-    await zoomPage.evaluate(() => window.__tmApplyTheme('dark'));
-    await expect(zoomPage.locator('html')).toHaveAttribute('data-theme', 'dark');
-    await settleLazyMedia(zoomPage);
+    await reflowPage.evaluate(() => window.__tmApplyTheme('dark'));
+    await expect(reflowPage.locator('html')).toHaveAttribute('data-theme', 'dark');
+    await settleLazyMedia(reflowPage);
     await expectNoOverflow();
-    await zoomPage.screenshot({ path: 'test-results/visual/wp40-home-fa-200pct-dark.png', fullPage: true });
+    await reflowPage.screenshot({ path: 'test-results/visual/wp40-home-fa-200pct-dark.png', fullPage: true });
 
-    await zoomPage.goto('/');
-    await settleLazyMedia(zoomPage);
+    await reflowPage.goto('/');
+    await settleLazyMedia(reflowPage);
     await expectNoOverflow();
-    await zoomPage.screenshot({ path: 'test-results/visual/wp40-gateway-200pct-light.png', fullPage: true });
+    await reflowPage.screenshot({ path: 'test-results/visual/wp40-gateway-200pct-light.png', fullPage: true });
 
-    await zoomContext.close();
+    await reflowPage.evaluate(() => window.__tmApplyTheme('dark'));
+    await expect(reflowPage.locator('html')).toHaveAttribute('data-theme', 'dark');
+    await settleLazyMedia(reflowPage);
+    await expectNoOverflow();
+    await reflowPage.screenshot({ path: 'test-results/visual/wp40-gateway-200pct-dark.png', fullPage: true });
+
+    await reflowContext.close();
   });
 
   test('WP-40 FA mobile keeps the 320 authority reflow floor clear in both themes', async ({ page }) => {
@@ -180,5 +188,46 @@ test.describe('WP-40 home structure acceptance', () => {
     await page.screenshot({ path: 'test-results/visual/wp40-home-fa-768-light.png', fullPage: true });
     await page.evaluate(() => window.__tmApplyTheme('dark'));
     await page.screenshot({ path: 'test-results/visual/wp40-home-fa-768-dark.png', fullPage: true });
+  });
+
+  test('WP-40 home keeps project and publication content readable at 768', async ({ page }) => {
+    await page.setViewportSize({ width: 768, height: 1024 });
+    await page.goto('/en/');
+
+    const hero = await page.locator('.hm-hero').boundingBox();
+    const heroImage = await page.locator('.hm-hero__atmosphere-img').boundingBox();
+    expect(hero).not.toBeNull();
+    expect(heroImage).not.toBeNull();
+    expect(heroImage?.height ?? 0).toBeGreaterThanOrEqual((hero?.height ?? 0) - 2);
+
+    const projectTitles = await page.locator('.hm-projects__card .ui-featured-record__title').evaluateAll(
+      (titles) => titles.map((title) => {
+        const rect = title.getBoundingClientRect();
+        return { width: rect.width, height: rect.height };
+      }),
+    );
+    expect(projectTitles).toHaveLength(2);
+    for (const title of projectTitles) {
+      expect(title.width).toBeGreaterThanOrEqual(240);
+      expect(title.height).toBeLessThanOrEqual(120);
+    }
+
+    const publicationRows = await page.locator('.hm-publications__row').evaluateAll((rows) =>
+      rows.map((row) => {
+        const labels = row.querySelector('.ui-publication-row__labels')?.getBoundingClientRect();
+        const citation = row.querySelector('.ui-publication-row__citation')?.getBoundingClientRect();
+        return {
+          labelsWidth: labels?.width ?? 0,
+          separated: Boolean(labels && citation && (
+            citation.top >= labels.bottom || citation.left >= labels.right
+          )),
+        };
+      }),
+    );
+    expect(publicationRows).toHaveLength(2);
+    for (const row of publicationRows) {
+      expect(row.labelsWidth).toBeGreaterThan(0);
+      expect(row.separated).toBe(true);
+    }
   });
 });

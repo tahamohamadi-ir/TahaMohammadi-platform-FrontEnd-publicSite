@@ -9,11 +9,20 @@ interface Props extends HTMLAttributes<'div'> {
   lightAssetId: string;
   darkAssetId: string;
   mediaSlot: MediaSlot;
+  fill?: boolean;
   class?: string;
   imgClass?: string;
 }
 
-const { lightAssetId, darkAssetId, mediaSlot, class: wrapperClass, imgClass, ...rest } = Astro.props;
+const {
+  lightAssetId,
+  darkAssetId,
+  mediaSlot,
+  fill = false,
+  class: wrapperClass,
+  imgClass,
+  ...rest
+} = Astro.props;
 
 const light = getPromotedMedia(lightAssetId, mediaSlot);
 const dark = getPromotedMedia(darkAssetId, mediaSlot);
@@ -46,7 +55,7 @@ const pictureProps = (media: typeof light) => ({
 
 <div
   {...rest}
-  class:list={['theme-picture', wrapperClass]}
+  class:list={['theme-picture', fill && 'theme-picture--fill', wrapperClass]}
   data-theme-picture
   aria-hidden="true"
 >
@@ -106,5 +115,13 @@ const pictureProps = (media: typeof light) => ({
     display: block;
     width: 100%;
     height: auto;
+  }
+
+  .theme-picture--fill,
+  .theme-picture--fill .theme-picture__mount,
+  .theme-picture--fill :global(.theme-picture__picture),
+  .theme-picture--fill :global(img) {
+    width: 100%;
+    height: 100%;
   }
 </style>

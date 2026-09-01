@@ -51,6 +51,16 @@ async function expectNoHorizontalOverflow(page: import('@playwright/test').Page)
     .toBe(true);
 }
 
+async function resetCaptureToTop(page: import('@playwright/test').Page) {
+  await page.evaluate(() => {
+    window.scrollTo(0, 0);
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+  });
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
+}
+
 async function selectedPictureSource(
   page: import('@playwright/test').Page,
   selector: string,
@@ -149,6 +159,7 @@ test.describe('WP-40 release evidence', () => {
           const backplate = await selectedPictureSource(page, '.hm-graph__backplate-img');
           expect(backplate.format).toBe('avif');
           expect(GRAPH_WIDTHS).toContain(backplate.width);
+          await resetCaptureToTop(page);
 
           await page.screenshot({
             path: `test-results/visual/wp40-home-en-1440-${theme}.png`,
@@ -185,6 +196,7 @@ test.describe('WP-40 release evidence', () => {
           const backplate = await selectedPictureSource(page, '.hm-graph__backplate-img');
           expect(backplate.format).toBe('avif');
           expect(GRAPH_WIDTHS).toContain(backplate.width);
+          await resetCaptureToTop(page);
 
           await page.screenshot({
             path: `test-results/visual/wp40-home-fa-390-${theme}.png`,

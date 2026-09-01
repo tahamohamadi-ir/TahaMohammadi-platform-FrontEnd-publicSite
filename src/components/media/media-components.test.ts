@@ -101,6 +101,17 @@ describe('WP-30A media components', () => {
     expect(html).not.toMatch(/data-dark-src=/);
   });
 
+  it('lets atmospheric consumers request a container-filling theme picture', async () => {
+    const html = await renderComponent(ThemePicture, {
+      lightAssetId: 'portal-orbit-light',
+      darkAssetId: 'portal-orbit-dark',
+      mediaSlot: 'home.hero.atmosphere',
+      fill: true,
+    });
+
+    expect(html).toMatch(/class="[^"]*theme-picture--fill/);
+  });
+
   it('keeps only one active theme mount target on initial load', async () => {
     const html = await renderComponent(ThemePicture, {
       lightAssetId: 'portal-centered-light',

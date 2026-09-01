@@ -31,6 +31,7 @@ const writingHref = localePath(locale, 'writing');
           {content.items.map((item) => (
             <li>
               <PublicationRow
+                class="hm-publications__row"
                 typeLabel={content.manuscriptLabel}
                 statusLabel={item.statusLabel}
                 title={item.title}

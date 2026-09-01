@@ -406,7 +406,7 @@
   list-style: none;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 1024px) {
   .hm-projects__grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -467,6 +467,12 @@
   margin: 0;
   padding: 0;
   list-style: none;
+}
+
+@media (max-width: 1023px) {
+  .hm-publications .hm-publications__list .hm-publications__row {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 /* Explore rails — three previews; unavailable rails render no anchor */
