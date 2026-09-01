@@ -66,7 +66,7 @@ Compare each implementation screenshot against the matching concept at the same 
 | -------------------------------------------------- | --------------------------------------------------------------------- |
 | `tests/e2e/public-270-page-families.visual.e2e.ts` | Playwright `@visual` capture stubs at 1440/390 for built index routes |
 | `src/public-270.page-family-visual.test.ts`        | Vitest guard: checklist exists and PF route map matches contract      |
-| `scripts/page-family-visual-compare.mjs`           | Canonical capture → concept reference mapping (PF-01..PF-08 + home) |
+| `scripts/page-family-visual-compare.mjs`           | Canonical capture → concept reference mapping (PF-01..PF-08 + home)   |
 | `scripts/generate-visual-compare-report.mjs`       | HTML side-by-side owner compare report from existing PNGs             |
 | `src/test-harness/responsive-matrix-widths.ts`     | Shared width constants for PUBLIC-270/280                             |
 | `npm run test:visual -- --grep PUBLIC-270`         | Runs only PUBLIC-270 capture stubs                                    |
@@ -107,20 +107,20 @@ Compare each implementation screenshot against the matching concept at the same 
 
 **Mapping source of truth:** `scripts/page-family-visual-compare.mjs` (guarded by `src/public-270-visual-compare.test.ts`).
 
-| Capture pattern | Concept reference (under design authority) |
-| --------------- | ------------------------------------------ |
-| `public-270-pf01-*-light.png` | `concepts/page-families/creative-index-light.png` |
-| `public-270-pf03-*-light.png` | `concepts/page-families/writing-index-light.png` |
-| `public-270-pf04-*-dark.png` | `concepts/page-families/projects-index-dark.png` |
-| `public-270-pf05-research-*-light.png` | `concepts/page-families/research-publications-index-light.png` |
+| Capture pattern                            | Concept reference (under design authority)                     |
+| ------------------------------------------ | -------------------------------------------------------------- |
+| `public-270-pf01-*-light.png`              | `concepts/page-families/creative-index-light.png`              |
+| `public-270-pf03-*-light.png`              | `concepts/page-families/writing-index-light.png`               |
+| `public-270-pf04-*-dark.png`               | `concepts/page-families/projects-index-dark.png`               |
+| `public-270-pf05-research-*-light.png`     | `concepts/page-families/research-publications-index-light.png` |
 | `public-270-pf05-publications-*-light.png` | `concepts/page-families/research-publications-index-light.png` |
-| `public-270-pf06-*-dark.png` | `concepts/page-families/teaching-index-dark.png` |
-| `public-270-pf07-about-*-light.png` | `concepts/page-families/about-cv-light.png` |
-| `public-270-pf07-cv-*-light.png` | `concepts/page-families/about-cv-light.png` |
-| `public-270-pf08-*-dark.png` | `concepts/page-families/contact-dark.png` |
-| `wp40-home-en-768-light.png` | `concepts/home-light-concept-v3-final.png` |
-| `wp40-home-en-768-dark.png` | `concepts/home-dark-concept-v3-final.png` |
-| `wp40-home-fa-768-light.png` | `concepts/home-mobile-fa-light-concept-v1.png` |
+| `public-270-pf06-*-dark.png`               | `concepts/page-families/teaching-index-dark.png`               |
+| `public-270-pf07-about-*-light.png`        | `concepts/page-families/about-cv-light.png`                    |
+| `public-270-pf07-cv-*-light.png`           | `concepts/page-families/about-cv-light.png`                    |
+| `public-270-pf08-*-dark.png`               | `concepts/page-families/contact-dark.png`                      |
+| `wp40-home-en-768-light.png`               | `concepts/home-light-concept-v3-final.png`                     |
+| `wp40-home-en-768-dark.png`                | `concepts/home-dark-concept-v3-final.png`                      |
+| `wp40-home-fa-768-light.png`               | `concepts/home-mobile-fa-light-concept-v1.png`                 |
 
 Manual owner compare columns in the matrix above remain `[ ]` until explicit owner approval.
 

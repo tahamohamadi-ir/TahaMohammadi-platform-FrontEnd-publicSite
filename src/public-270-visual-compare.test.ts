@@ -45,9 +45,9 @@ describe('PUBLIC-270 visual compare owner assist', () => {
 
     const pf01 = rows.filter((row) => row.pf === 'PF-01')
     expect(pf01).toHaveLength(4)
-    expect(pf01.every((row) => row.conceptFile === 'creative-index-light.png')).toBe(
-      true,
-    )
+    expect(
+      pf01.every((row) => row.conceptFile === 'creative-index-light.png'),
+    ).toBe(true)
   })
 
   it('maps home WP-40 captures to concept references under concepts/', async () => {
@@ -59,9 +59,9 @@ describe('PUBLIC-270 visual compare owner assist', () => {
     expect(rows.length).toBeGreaterThanOrEqual(7)
 
     const withConcept = rows.filter((row) => row.conceptRelative)
-    expect(withConcept.every((row) => row.conceptRelative.startsWith('concepts/'))).toBe(
-      true,
-    )
+    expect(
+      withConcept.every((row) => row.conceptRelative.startsWith('concepts/')),
+    ).toBe(true)
 
     const gateway = rows.find((row) => row.captureFile.includes('gateway'))
     expect(gateway?.conceptRelative).toBeNull()

@@ -15,7 +15,6 @@
 import { createHash } from 'node:crypto'
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
-import { fileURLToPath } from 'node:url'
 import {
   buildHomeCompareRows,
   buildPublic270CompareRows,
@@ -24,7 +23,6 @@ import {
   repositoryRoot,
 } from './page-family-visual-compare.mjs'
 
-const scriptDir = path.dirname(fileURLToPath(import.meta.url))
 const defaultOutput = path.join(
   repositoryRoot,
   'test-results/visual/compare-report.html',
