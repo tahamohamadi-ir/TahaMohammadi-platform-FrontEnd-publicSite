@@ -66,5 +66,5 @@ Aligned with `Docs/03-contracts/ERROR-COMPATIBILITY-MATRIX.md`:
 
 | Task | Notes |
 |---|---|
-| PUBLIC-320 | integrated staging smoke with backend |
+| PUBLIC-320 | integrated staging smoke scaffold shipped; live probes skip until staging URL + `BACKEND-180` |
 | PUBLIC-190 | owner visual QA remains `REVISE` |

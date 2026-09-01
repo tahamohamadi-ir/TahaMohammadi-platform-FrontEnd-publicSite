@@ -18,6 +18,7 @@
     "test:a11y": "playwright test --grep @a11y",
     "test:performance": "playwright test --grep @performance",
     "test:nojs": "playwright test --grep @nojs",
+    "test:smoke": "playwright test --config playwright.staging.config.ts --grep @smoke",
     "build:atlas": "set \"DESIGN_ATLAS=1\"&& astro build"
   },
   "dependencies": {

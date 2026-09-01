@@ -65,7 +65,7 @@ Status: `[x]` done, `[ ]` open, `[~]` in progress.
 - [~] **PUBLIC-290** Performance budget (LCP, CLS, font preload, local INP probe). Evidence: `docs/quality/PUBLIC-290-PERFORMANCE-BUDGET.md`, `public-290.performance-budget.test.ts`, Playwright `@performance` probes on home + creative index + theme-toggle INP. Production 75th-percentile telemetry remains open.
 - [x] **PUBLIC-300** No-JS readability audit all route families. Evidence: `docs/quality/PUBLIC-300-NO-JS-AUDIT.md`, `public-300.no-js-audit.test.ts`, Playwright `@nojs` crawl of all 23 static routes with JS disabled. PF-02 detail excluded until published creative detail ships.
 - [x] **PUBLIC-310** Contract fixture tests in CI. Evidence: `docs/quality/PUBLIC-310-CONTRACT-FIXTURES.md`, `public-310.contract-fixtures.test.ts`, consumer fixtures under `tests/fixtures/contracts/`.
-- [ ] **PUBLIC-320** Integrated staging smoke with backend.
+- [~] **PUBLIC-320** Integrated staging smoke with backend. Evidence: `docs/quality/PUBLIC-320-STAGING-SMOKE.md`, `public-320.staging-smoke.test.ts`, Playwright `@smoke` probes via `npm run test:smoke` (skipped until `PUBLIC_STAGING_SITE_URL` + `BACKEND-180` staging).
 - [ ] **PUBLIC-350** Release evidence (`R4` + `R8` public).
 
 ---
