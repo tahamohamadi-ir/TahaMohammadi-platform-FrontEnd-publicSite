@@ -66,7 +66,7 @@ Status: `[x]` done, `[ ]` open, `[~]` in progress.
 - [x] **PUBLIC-300** No-JS readability audit all route families. Evidence: `docs/quality/PUBLIC-300-NO-JS-AUDIT.md`, `public-300.no-js-audit.test.ts`, Playwright `@nojs` crawl of all 23 static routes with JS disabled. PF-02 detail excluded until published creative detail ships.
 - [x] **PUBLIC-310** Contract fixture tests in CI. Evidence: `docs/quality/PUBLIC-310-CONTRACT-FIXTURES.md`, `public-310.contract-fixtures.test.ts`, consumer fixtures under `tests/fixtures/contracts/`.
 - [~] **PUBLIC-320** Integrated staging smoke with backend. Evidence: `docs/quality/PUBLIC-320-STAGING-SMOKE.md`, `public-320.staging-smoke.test.ts`, Playwright `@smoke` probes via `npm run test:smoke` (skipped until `PUBLIC_STAGING_SITE_URL` + `BACKEND-180` staging).
-- [ ] **PUBLIC-350** Release evidence (`R4` + `R8` public).
+- [~] **PUBLIC-350** Release evidence (`R4` + `R8` public). Evidence: `docs/quality/PUBLIC-350-RELEASE-EVIDENCE.md`, `public-350.release-evidence.test.ts`, `src/test-harness/release-evidence.ts`. Honest `ready: false` until owner acceptance, staging smoke, and frozen page-family routes close; does **not** mark `PUBLIC-190` PASS.
 
 ---
 
