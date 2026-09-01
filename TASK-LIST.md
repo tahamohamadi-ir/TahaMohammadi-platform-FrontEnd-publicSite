@@ -34,11 +34,11 @@ Status: `[x]` done, `[ ]` open, `[~]` in progress.
 ## PUB-3 — Design system and atlas
 
 - [x] **PUBLIC-130** Pin and validate semantic tokens from `agent-kit/tokens.json`; complete primitive/semantic/type/motion/layout/component projection and portable snapshot validate locally and against central authority.
-- [ ] **PUBLIC-140** Primitives per `components.json` (24 components).
-- [~] **PUBLIC-150** Header, Footer, shell, navigation (RTL/LTR).
-- [ ] **PUBLIC-160** Six templates per `templates.json`.
-- [ ] **PUBLIC-170** Visual Atlas `/_design/` local-only; excluded from production.
-- [ ] **PUBLIC-180** State components: loading, empty, unavailable, error, untranslated.
+- [x] **PUBLIC-140** Primitives per `components.json` (24 components). Evidence: Vitest `public-140`, design contract, Atlas gallery on `main`.
+- [x] **PUBLIC-150** Header, Footer, shell, navigation (RTL/LTR). Evidence: `public-150` Vitest + Playwright shell/a11y gates.
+- [x] **PUBLIC-160** Six templates per `templates.json`. Evidence: `public-160` Vitest + Atlas template gallery.
+- [x] **PUBLIC-170** Visual Atlas `/_design/` local-only; excluded from production. Evidence: `public-170` Vitest + atlas e2e gate.
+- [x] **PUBLIC-180** State components: loading, empty, unavailable, error, untranslated, no-results. Evidence: `public-180.behavior.test.ts` + Atlas state sheet specimens.
 
 ## PUB-4 — Page families (PF-01..PF-08)
 

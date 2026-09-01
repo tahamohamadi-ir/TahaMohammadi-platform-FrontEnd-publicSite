@@ -2,6 +2,7 @@
 import Button from '../../components/ui/Button.astro';
 import ContentRow from '../../components/ui/ContentRow.astro';
 import FeaturedRecord from '../../components/ui/FeaturedRecord.astro';
+import ContentState from '../../components/state/ContentState.astro';
 ---
 
 <section class="atlas-section" id="atlas-state-sheet" data-visual-id="AtlasStateSheetSection">
@@ -24,6 +25,28 @@ import FeaturedRecord from '../../components/ui/FeaturedRecord.astro';
     <FeaturedRecord label="Ready" title="Ready record" summary="Ready state." href="#" actionLabel="Open" />
     <FeaturedRecord label="Inactive" title="Inactive record" inactive />
     <ContentRow typeLabel="Row" title="Unavailable row" unavailable />
+  </div>
+
+  <div class="atlas-specimen" data-visual-id="AtlasStateSheet-ContentStates">
+    <p class="atlas-specimen__label">Content states (PUBLIC-180)</p>
+    <ContentState variant="loading" locale="en" title="Loading records" message="Atlas specimen only." />
+    <ContentState
+      variant="empty"
+      locale="en"
+      title="No records yet"
+      message="Honest empty copy from the caller."
+      actionLabel="Browse home"
+      actionHref="/en/"
+    />
+    <ContentState variant="unavailable" locale="en" title="Section unavailable" message="Route not published." />
+    <ContentState
+      variant="untranslated"
+      locale="en"
+      title="Translation unavailable"
+      message="Alternate locale is published."
+      alternateLabel="View Persian version"
+      alternateHref="/fa/"
+    />
   </div>
 
   <div class="atlas-specimen" data-visual-id="AtlasReducedMotionSpecimen">

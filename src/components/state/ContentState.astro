@@ -1,0 +1,153 @@
+---
+import Link from '../ui/Link.astro';
+import type { ContentStateLocale, ContentStateVariant } from './types';
+
+interface Props {
+  variant: ContentStateVariant;
+  locale: ContentStateLocale;
+  title: string;
+  message?: string;
+  actionLabel?: string;
+  actionHref?: string;
+  alternateLabel?: string;
+  alternateHref?: string;
+  class?: string;
+}
+
+const {
+  variant,
+  locale,
+  title,
+  message,
+  actionLabel,
+  actionHref,
+  alternateLabel,
+  alternateHref,
+  class: className = '',
+} = Astro.props;
+
+const role = variant === 'error' ? 'alert' : 'status';
+const live = variant === 'loading' ? 'polite' : undefined;
+const hasAction = Boolean(actionLabel && actionHref);
+const hasAlternate = variant === 'untranslated' && Boolean(alternateLabel && alternateHref);
+
+if (variant === 'untranslated' && !hasAlternate) {
+  throw new Error('ContentState untranslated requires alternateLabel and alternateHref');
+}
+---
+
+<section
+  class={['ui-content-state', `ui-content-state--${variant}`, className].filter(Boolean).join(' ')}
+  role={role}
+  aria-live={live}
+  aria-labelledby={`content-state-title-${variant}`}
+  data-visual-id="ContentState"
+  data-state-variant={variant}
+  lang={locale}
+>
+  <div class="ui-content-state__body">
+    {
+      variant === 'loading' ? (
+        <span class="ui-content-state__spinner" aria-hidden="true" />
+      ) : (
+        <span class="ui-content-state__icon" aria-hidden="true" />
+      )
+    }
+    <h2 id={`content-state-title-${variant}`} class="ui-content-state__title">
+      {title}
+    </h2>
+    {message ? <p class="ui-content-state__message">{message}</p> : null}
+  </div>
+
+  <div class="ui-content-state__actions">
+    {
+      hasAction ? (
+        <Link href={actionHref!} label={actionLabel!} variant="standalone" showIcon />
+      ) : null
+    }
+    {
+      hasAlternate ? (
+        <Link href={alternateHref!} label={alternateLabel!} variant="standalone" showIcon />
+      ) : null
+    }
+  </div>
+</section>
+
+<style>
+  .ui-content-state {
+    display: grid;
+    gap: var(--space-4);
+    padding: var(--space-6);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+    color: var(--color-ink);
+  }
+
+  .ui-content-state__body {
+    display: grid;
+    gap: var(--space-3);
+    justify-items: start;
+  }
+
+  .ui-content-state__icon,
+  .ui-content-state__spinner {
+    inline-size: 1.25rem;
+    block-size: 1.25rem;
+    flex-shrink: 0;
+  }
+
+  .ui-content-state__icon {
+    border-radius: var(--radius-pill);
+    background: var(--color-border-subtle);
+  }
+
+  .ui-content-state--error .ui-content-state__icon {
+    background: var(--color-status-error, var(--color-accent-coral));
+  }
+
+  .ui-content-state--empty .ui-content-state__icon,
+  .ui-content-state--no-results .ui-content-state__icon {
+    background: var(--color-border-strong, var(--color-border-subtle));
+  }
+
+  .ui-content-state__spinner {
+    border: 2px solid var(--color-border-subtle);
+    border-top-color: var(--color-accent-turquoise);
+    border-radius: 50%;
+    animation: ui-content-state-spin var(--motion-base) linear infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ui-content-state__spinner {
+      animation-duration: var(--motion-reduced-duration, 0.01ms) !important;
+      animation-iteration-count: 1 !important;
+    }
+  }
+
+  .ui-content-state__title {
+    margin: 0;
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    line-height: var(--line-height-snug, 1.3);
+  }
+
+  .ui-content-state__message {
+    margin: 0;
+    font-size: var(--font-size-sm);
+    color: var(--color-ink-muted);
+    max-width: 42rem;
+  }
+
+  .ui-content-state__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  @keyframes ui-content-state-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+</style>
