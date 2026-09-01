@@ -30,7 +30,7 @@ Extend the `PUBLIC-270` index route map across all six widths and both themes pe
 
 ## Blockers and notes
 
-- **320px overflow (PF-01):** EN creative index exceeds viewport width at 320 CSS px; capture runs for evidence; overflow gate applies from 390px upward until layout fix lands.
+- **320px overflow (PF-01):** cleared — EN creative index reflows within 320 CSS px after narrow shell utility tightening (`shell.css`); PUBLIC-280 overflow gate applies at all six widths.
 - **PUBLIC-270:** 1440/390 index captures must stay green before expanding width coverage.
 - **PUBLIC-190:** structure complete; visual acceptance open until independent QA `PASS` and explicit owner approval.
 - **PF-02 detail:** detail routes remain open until published creative detail pages exist in the static build.

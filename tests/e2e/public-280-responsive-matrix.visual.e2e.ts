@@ -33,12 +33,9 @@ test.describe('PUBLIC-280 responsive matrix scaffold', () => {
         await expect(page.locator('html')).toHaveAttribute('data-theme', target.theme);
         await expect(page.getByRole('heading', { level: 1 })).toHaveCount(1);
 
-        // 320px overflow on PF-01 is an open layout defect; capture for evidence without blocking scaffold.
-        if (width >= 390) {
-          await expect
-            .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth))
-            .toBe(true);
-        }
+        await expect
+          .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth))
+          .toBe(true);
 
         await page.screenshot({
           path: path.join(

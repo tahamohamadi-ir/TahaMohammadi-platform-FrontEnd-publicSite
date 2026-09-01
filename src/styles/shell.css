@@ -93,12 +93,23 @@ html[data-theme='dark'] .site-header {
 
 .site-header__inner {
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
   gap: var(--space-4);
   max-width: var(--layout-page);
   margin-inline: auto;
   padding: var(--space-3) var(--space-6);
+}
+
+@media (max-width: 390px) {
+  .site-header__inner {
+    gap: var(--space-2);
+    padding-inline: var(--space-4);
+  }
+
+  .site-header__utilities {
+    gap: var(--space-1);
+  }
 }
 
 .site-header__brand {
@@ -194,6 +205,7 @@ html[data-theme='dark'] .site-header {
   align-items: center;
   gap: var(--space-2);
   justify-self: end;
+  min-width: 0;
 }
 
 .site-header__search-link {
@@ -224,6 +236,7 @@ html[data-theme='dark'] .site-header {
 
 .site-header__drawer {
   position: relative;
+  flex-shrink: 0;
 }
 
 .site-header__menu-trigger {
