@@ -66,8 +66,63 @@ Compare each implementation screenshot against the matching concept at the same 
 | -------------------------------------------------- | --------------------------------------------------------------------- |
 | `tests/e2e/public-270-page-families.visual.e2e.ts` | Playwright `@visual` capture stubs at 1440/390 for built index routes |
 | `src/public-270.page-family-visual.test.ts`        | Vitest guard: checklist exists and PF route map matches contract      |
+| `scripts/page-family-visual-compare.mjs`           | Canonical capture → concept reference mapping (PF-01..PF-08 + home) |
+| `scripts/generate-visual-compare-report.mjs`       | HTML side-by-side owner compare report from existing PNGs             |
 | `src/test-harness/responsive-matrix-widths.ts`     | Shared width constants for PUBLIC-270/280                             |
 | `npm run test:visual -- --grep PUBLIC-270`         | Runs only PUBLIC-270 capture stubs                                    |
+| `npm run report:visual-compare`                    | Generates `test-results/visual/compare-report.html` (no new captures) |
+
+---
+
+## Owner visual compare workflow (does not close PUBLIC-190)
+
+1. Regenerate captures (if missing or stale):
+
+   ```powershell
+   cd Front-End/public-site
+   npm run build
+   npm run test:visual -- --grep PUBLIC-270
+   ```
+
+2. Optional home/gateway captures (WP-40):
+
+   ```powershell
+   npm run test:visual -- --grep "WP-40 home captures"
+   ```
+
+3. Generate side-by-side HTML report:
+
+   ```powershell
+   npm run report:visual-compare
+   ```
+
+   Open `test-results/visual/compare-report.html` in a browser. The report pairs each `public-270-*.png` capture with its concept reference under `Docs/references/frontend-design-authority/concepts/page-families/`, and WP-40 home captures with `concepts/home-*.png`. SHA-256 hashes are shown for owner sign-off in `Docs/10-tracking/PUBLIC-190-VISUAL-QA.md`.
+
+4. Override design authority root when not in the coordination workspace:
+
+   ```powershell
+   $env:DESIGN_AUTHORITY_ROOT = "D:\path\to\frontend-design-authority"
+   npm run report:visual-compare
+   ```
+
+**Mapping source of truth:** `scripts/page-family-visual-compare.mjs` (guarded by `src/public-270-visual-compare.test.ts`).
+
+| Capture pattern | Concept reference (under design authority) |
+| --------------- | ------------------------------------------ |
+| `public-270-pf01-*-light.png` | `concepts/page-families/creative-index-light.png` |
+| `public-270-pf03-*-light.png` | `concepts/page-families/writing-index-light.png` |
+| `public-270-pf04-*-dark.png` | `concepts/page-families/projects-index-dark.png` |
+| `public-270-pf05-research-*-light.png` | `concepts/page-families/research-publications-index-light.png` |
+| `public-270-pf05-publications-*-light.png` | `concepts/page-families/research-publications-index-light.png` |
+| `public-270-pf06-*-dark.png` | `concepts/page-families/teaching-index-dark.png` |
+| `public-270-pf07-about-*-light.png` | `concepts/page-families/about-cv-light.png` |
+| `public-270-pf07-cv-*-light.png` | `concepts/page-families/about-cv-light.png` |
+| `public-270-pf08-*-dark.png` | `concepts/page-families/contact-dark.png` |
+| `wp40-home-en-768-light.png` | `concepts/home-light-concept-v3-final.png` |
+| `wp40-home-en-768-dark.png` | `concepts/home-dark-concept-v3-final.png` |
+| `wp40-home-fa-768-light.png` | `concepts/home-mobile-fa-light-concept-v1.png` |
+
+Manual owner compare columns in the matrix above remain `[ ]` until explicit owner approval.
 
 ---
 

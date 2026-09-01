@@ -23,6 +23,7 @@
     "test:performance": "playwright test --grep @performance",
     "test:nojs": "playwright test --grep @nojs",
     "test:smoke": "playwright test --config playwright.staging.config.ts --grep @smoke",
+    "report:visual-compare": "node scripts/generate-visual-compare-report.mjs",
     "build:atlas": "set \"DESIGN_ATLAS=1\"&& astro build"
   },
   "dependencies": {

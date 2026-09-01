@@ -9,6 +9,7 @@ import {
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
+import { npmCommand } from '../test-harness/npm-command'
 
 const repositoryRoot = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -90,7 +91,7 @@ describe.sequential('PUBLIC-170 behavior', () => {
       rmSync(distRoot, { recursive: true, force: true })
     }
 
-    const atlasBuild = spawnSync('npm.cmd', ['run', 'build:atlas'], {
+    const atlasBuild = spawnSync(npmCommand(), ['run', 'build:atlas'], {
       cwd: repositoryRoot,
       encoding: 'utf8',
       shell: true,
@@ -116,7 +117,7 @@ describe.sequential('PUBLIC-170 behavior', () => {
       outputFiles.some((entry) => entry.includes(`${path.sep}_design`)),
     ).toBe(true)
 
-    const cleanup = spawnSync('npm.cmd', ['run', 'build'], {
+    const cleanup = spawnSync(npmCommand(), ['run', 'build'], {
       cwd: repositoryRoot,
       encoding: 'utf8',
       shell: true,

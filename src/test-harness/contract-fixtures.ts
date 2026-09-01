@@ -49,6 +49,15 @@ export const BACKEND_ERROR_FIXTURES_DIR = path.resolve(
   'Back-End/tests/fixtures/contracts/errors',
 )
 
+/** True when the coordination workspace exposes Back-End contract artifacts (local monorepo layout). */
+export function hasWorkspaceBackendContracts(): boolean {
+  return (
+    existsSync(PUBLIC_OPENAPI_PATH) &&
+    existsSync(BACKEND_PUBLIC_FIXTURES_DIR) &&
+    existsSync(BACKEND_ERROR_FIXTURES_DIR)
+  )
+}
+
 /** Observed profile detail shape (Gap A — no accepted OpenAPI component yet). */
 export const PROFILE_DETAIL_FIELDS = new Set([
   'locale',

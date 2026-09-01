@@ -12,6 +12,7 @@ import {
   CANONICAL_PUBLIC_OPENAPI_LF_SHA256,
   CONSUMER_ERRORS_DIR,
   CONSUMER_RESPONSES_DIR,
+  hasWorkspaceBackendContracts,
   hashOpenApiArtifactAccepted,
   hashOpenApiArtifactLf,
   PUBLIC_ERROR_FIXTURES,
@@ -42,56 +43,80 @@ const harnessPath = path.join(
 )
 
 describe('PUBLIC-310 contract fixture tests', () => {
-  it('pins the accepted public OpenAPI hash before validating fixtures', () => {
+  const workspaceBackend = hasWorkspaceBackendContracts()
+
+  it.skipIf(!workspaceBackend)(
+    'pins the accepted public OpenAPI hash before validating fixtures',
+    () => {
+      const pin = readOpenApiHashPin()
+      expect(pin).toBe(openapiHash.sha256)
+      expect(existsSync(PUBLIC_OPENAPI_PATH)).toBe(true)
+      expect(hashOpenApiArtifactLf()).toBe(CANONICAL_PUBLIC_OPENAPI_LF_SHA256)
+      expect(hashOpenApiArtifactAccepted()).toBe(pin)
+    },
+  )
+
+  it.skipIf(!workspaceBackend)(
+    'keeps consumer response fixtures byte-aligned with backend authoritative copies',
+    () => {
+      for (const spec of PUBLIC_RESPONSE_FIXTURES) {
+        assertMatchesBackendFixture(
+          CONSUMER_RESPONSES_DIR,
+          BACKEND_PUBLIC_FIXTURES_DIR,
+          spec.file,
+        )
+      }
+    },
+  )
+
+  it.skipIf(!workspaceBackend)(
+    'validates consumer response fixtures against accepted OpenAPI components',
+    () => {
+      const artifact = readOpenApiArtifact()
+
+      for (const spec of PUBLIC_RESPONSE_FIXTURES) {
+        const payload = readJsonFixture<Record<string, unknown>>(
+          CONSUMER_RESPONSES_DIR,
+          spec.file,
+        )
+
+        if (spec.profileFieldsOnly) {
+          assertProfileDetailShape(payload)
+          continue
+        }
+
+        if (!spec.component) {
+          throw new Error(`Missing OpenAPI component mapping for ${spec.file}`)
+        }
+
+        validateComponent(artifact, spec.component, payload, {
+          itemComponent: spec.itemComponent,
+        })
+      }
+    },
+  )
+
+  it.skipIf(!workspaceBackend)(
+    'keeps public error fixtures byte-aligned with backend matrix rows',
+    () => {
+      for (const spec of PUBLIC_ERROR_FIXTURES) {
+        assertMatchesBackendFixture(
+          CONSUMER_ERRORS_DIR,
+          BACKEND_ERROR_FIXTURES_DIR,
+          spec.file,
+        )
+        validateErrorFixture(spec)
+      }
+    },
+  )
+
+  it('ships consumer fixture directories and OpenAPI hash pin in standalone CI', () => {
+    expect(existsSync(CONSUMER_RESPONSES_DIR)).toBe(true)
+    expect(existsSync(CONSUMER_ERRORS_DIR)).toBe(true)
     const pin = readOpenApiHashPin()
     expect(pin).toBe(openapiHash.sha256)
-    expect(existsSync(PUBLIC_OPENAPI_PATH)).toBe(true)
-    expect(hashOpenApiArtifactLf()).toBe(CANONICAL_PUBLIC_OPENAPI_LF_SHA256)
-    expect(hashOpenApiArtifactAccepted()).toBe(pin)
-  })
-
-  it('keeps consumer response fixtures byte-aligned with backend authoritative copies', () => {
-    for (const spec of PUBLIC_RESPONSE_FIXTURES) {
-      assertMatchesBackendFixture(
-        CONSUMER_RESPONSES_DIR,
-        BACKEND_PUBLIC_FIXTURES_DIR,
-        spec.file,
-      )
-    }
-  })
-
-  it('validates consumer response fixtures against accepted OpenAPI components', () => {
-    const artifact = readOpenApiArtifact()
-
-    for (const spec of PUBLIC_RESPONSE_FIXTURES) {
-      const payload = readJsonFixture<Record<string, unknown>>(
-        CONSUMER_RESPONSES_DIR,
-        spec.file,
-      )
-
-      if (spec.profileFieldsOnly) {
-        assertProfileDetailShape(payload)
-        continue
-      }
-
-      if (!spec.component) {
-        throw new Error(`Missing OpenAPI component mapping for ${spec.file}`)
-      }
-
-      validateComponent(artifact, spec.component, payload, {
-        itemComponent: spec.itemComponent,
-      })
-    }
-  })
-
-  it('keeps public error fixtures byte-aligned with backend matrix rows', () => {
-    for (const spec of PUBLIC_ERROR_FIXTURES) {
-      assertMatchesBackendFixture(
-        CONSUMER_ERRORS_DIR,
-        BACKEND_ERROR_FIXTURES_DIR,
-        spec.file,
-      )
-      validateErrorFixture(spec)
+    if (!workspaceBackend) {
+      expect(existsSync(PUBLIC_OPENAPI_PATH)).toBe(false)
     }
   })
 

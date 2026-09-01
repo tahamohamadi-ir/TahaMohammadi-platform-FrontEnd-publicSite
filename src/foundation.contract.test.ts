@@ -14,6 +14,7 @@ import crypto from 'node:crypto'
 import os from 'node:os'
 import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
+import { npmCommand } from './test-harness/npm-command'
 
 const repositoryRoot = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -230,7 +231,7 @@ describe('WP-10 foundation contracts', () => {
       rmSync(distRoot, { recursive: true, force: true })
     }
 
-    const defaultBuild = spawnSync('npm.cmd', ['run', 'build'], {
+    const defaultBuild = spawnSync(npmCommand(), ['run', 'build'], {
       cwd: repositoryRoot,
       encoding: 'utf8',
       shell: true,
