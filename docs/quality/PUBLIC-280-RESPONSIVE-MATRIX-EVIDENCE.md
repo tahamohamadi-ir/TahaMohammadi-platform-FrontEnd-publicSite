@@ -3,8 +3,9 @@
 **Packet:** PUBLIC-280  
 **Public-site base:** follows `PUBLIC-270` index route map  
 **Widths:** 320, 390, 768, 1024, 1280, 1440 CSS pixels (`src/test-harness/responsive-matrix-widths.ts`)  
+**Themes:** light and dark (`src/test-harness/page-family-index-captures.ts`)  
 **Contract:** `Docs/04-design/VISUAL-QA-CONTRACT.md`, page-family visual atlas  
-**Status:** automated six-width index captures for PF-01 and PF-03..PF-08; PF-02 detail and dual-theme expansion remain open.
+**Status:** automated six-width dual-theme index captures for PF-01 and PF-03..PF-08; PF-02 detail remains open.
 
 This checklist does **not** close `PUBLIC-190`. Automated gates may pass while manual visual acceptance stays `REVISE`.
 
@@ -15,8 +16,8 @@ This checklist does **not** close `PUBLIC-190`. Automated gates may pass while m
 | Gate | Command | Result | Notes |
 |---|---|---|---|
 | Build | `npm run build` | PASS | 23 static pages |
-| Vitest scaffold | `npm test` (includes `public-280.responsive-matrix.test.ts`) | PASS | six-width + route map guard |
-| Visual capture | `npm run test:visual -- --grep PUBLIC-280` | **108 passed** | 18 routes × 6 widths; overflow gate at all widths |
+| Vitest scaffold | `npm test` (includes `public-280.responsive-matrix.test.ts`) | PASS | six-width + dual-theme + route map guard |
+| Visual capture | `npm run test:visual -- --grep PUBLIC-280` | **216 passed** | 36 locale-route-theme combos × 6 widths; overflow gate at all widths |
 | CI | `.github/workflows/ci.yml` | push/PR | unit + design + SEO + build (visual optional locally) |
 
 ---
@@ -25,21 +26,21 @@ This checklist does **not** close `PUBLIC-190`. Automated gates may pass while m
 
 Compare each implementation screenshot against the matching concept at the same viewport, locale, theme, and honest content state.
 
-| PF | Route(s) | Locales | Theme | Widths | Capture path | Automated gate | Manual owner compare |
+| PF | Route(s) | Locales | Themes | Widths | Capture path | Automated gate | Manual owner compare |
 |---|---|---|---|---|---|---|---|
-| PF-01 | `/{locale}/creative/` | EN, FA | Light | 320–1440 | `test-results/visual/public-280-pf01-{locale}-{width}-light.png` | PASS (12 captures) | [ ] |
-| PF-03 | `/{locale}/writing/` | EN, FA | Light | 320–1440 | `test-results/visual/public-280-pf03-{locale}-{width}-light.png` | PASS (12 captures) | [ ] |
-| PF-04 | `/{locale}/projects/` | EN, FA | Dark | 320–1440 | `test-results/visual/public-280-pf04-{locale}-{width}-dark.png` | PASS (12 captures) | [ ] |
-| PF-05 | `/{locale}/research/`, `/{locale}/publications/` | EN, FA | Light | 320–1440 | `public-280-pf05-research-{locale}-{width}-light.png`, `public-280-pf05-publications-{locale}-{width}-light.png` | PASS (24 captures) | [ ] |
-| PF-06 | `/{locale}/teaching/` | EN, FA | Dark | 320–1440 | `test-results/visual/public-280-pf06-{locale}-{width}-dark.png` | PASS (12 captures) | [ ] |
-| PF-07 | `/{locale}/about/`, `/{locale}/cv/` | EN, FA | Light | 320–1440 | `public-280-pf07-about-{locale}-{width}-light.png`, `public-280-pf07-cv-{locale}-{width}-light.png` | PASS (24 captures) | [ ] |
-| PF-08 | `/{locale}/contact/` | EN, FA | Dark | 320–1440 | `test-results/visual/public-280-pf08-{locale}-{width}-dark.png` | PASS (12 captures) | [ ] |
+| PF-01 | `/{locale}/creative/` | EN, FA | Light, Dark | 320–1440 | `test-results/visual/public-280-pf01-{locale}-{width}-{theme}.png` | PASS (24 captures) | [ ] |
+| PF-03 | `/{locale}/writing/` | EN, FA | Light, Dark | 320–1440 | `test-results/visual/public-280-pf03-{locale}-{width}-{theme}.png` | PASS (24 captures) | [ ] |
+| PF-04 | `/{locale}/projects/` | EN, FA | Light, Dark | 320–1440 | `test-results/visual/public-280-pf04-{locale}-{width}-{theme}.png` | PASS (24 captures) | [ ] |
+| PF-05 | `/{locale}/research/`, `/{locale}/publications/` | EN, FA | Light, Dark | 320–1440 | `public-280-pf05-research-{locale}-{width}-{theme}.png`, `public-280-pf05-publications-{locale}-{width}-{theme}.png` | PASS (48 captures) | [ ] |
+| PF-06 | `/{locale}/teaching/` | EN, FA | Light, Dark | 320–1440 | `test-results/visual/public-280-pf06-{locale}-{width}-{theme}.png` | PASS (24 captures) | [ ] |
+| PF-07 | `/{locale}/about/`, `/{locale}/cv/` | EN, FA | Light, Dark | 320–1440 | `public-280-pf07-about-{locale}-{width}-{theme}.png`, `public-280-pf07-cv-{locale}-{width}-{theme}.png` | PASS (48 captures) | [ ] |
+| PF-08 | `/{locale}/contact/` | EN, FA | Light, Dark | 320–1440 | `test-results/visual/public-280-pf08-{locale}-{width}-{theme}.png` | PASS (24 captures) | [ ] |
 
 **Stub output directory:** `test-results/visual/` (gitignored).
 
 **Runner:** `npm run test:visual -- --grep PUBLIC-280`
 
-**Coverage count:** 108 files (18 locale-routes × 6 widths). PF-02 creative detail excluded until a published detail route exists in the static build.
+**Coverage count:** 216 files (18 locale-routes × 2 themes × 6 widths). PF-02 creative detail excluded until a published detail route exists in the static build.
 
 **Capture path pattern:** `test-results/visual/public-280-{route-id}-{locale}-{width}-{theme}.png`
 
@@ -49,8 +50,7 @@ Compare each implementation screenshot against the matching concept at the same 
 
 | Item | Notes |
 |---|---|
-| PF-02 detail | `/{locale}/creative/{slug}/` dark captures when detail route ships |
-| Dual-theme matrix | contract theme per PF only; opposite-theme six-width pass remains open |
+| PF-02 detail | `/{locale}/creative/{slug}/` light/dark captures when detail route ships |
 | Manual owner compare | all PF rows above |
 | PUBLIC-290 | performance budget follows matrix evidence |
 
