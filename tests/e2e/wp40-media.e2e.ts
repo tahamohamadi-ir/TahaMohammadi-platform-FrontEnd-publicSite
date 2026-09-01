@@ -100,9 +100,8 @@ test.describe('WP-40 theme media selection', () => {
       ).toBeGreaterThanOrEqual(1);
     }
 
-    // Page-owned art must never be served from the legacy /media/ proxy.
-    // (Shared shell chrome may still fetch /media/brand until its own migration.)
-    expect(mediaRequests.filter((url) => /\/media\/art\//.test(url))).toEqual([]);
+    // Page-owned art and shell brand must never be served from the legacy /media/ proxy.
+    expect(mediaRequests.filter((url) => /\/media\/(art|brand)\//.test(url))).toEqual([]);
     const ownedRawMedia = await page.evaluate(() =>
       [...document.querySelectorAll('main img, [data-theme-picture] img')]
         .filter((img) => /\/media\//.test(img.getAttribute('src') ?? ''))

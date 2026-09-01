@@ -61,6 +61,19 @@ export const GROUP_A_DECORATIVE_ASSET_IDS = [
 
 export type GroupADecorativeAssetId = (typeof GROUP_A_DECORATIVE_ASSET_IDS)[number];
 
+/** Group B project previews, rail decorative assets, and brand shell (PUBLIC-261). */
+export const GROUP_B_ASSET_IDS = [
+  'brand-primary',
+  'brand-favicon',
+  'project-dashboard-systems',
+  'project-data-architecture',
+  'blog-coral-stairs',
+  'learning-sage-library',
+  'gallery-ivory-forms',
+] as const satisfies readonly RuntimeAssetId[];
+
+export type GroupBAssetId = (typeof GROUP_B_ASSET_IDS)[number];
+
 export function isDeferredAssetId(id: string): id is DeferredAssetId {
   return (DEFERRED_ASSET_IDS as readonly string[]).includes(id);
 }

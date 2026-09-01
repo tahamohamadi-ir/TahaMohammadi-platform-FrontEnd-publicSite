@@ -1,6 +1,7 @@
 ---
 import ThemeToggle from './ThemeToggle.astro';
 import LanguageToggle from './LanguageToggle.astro';
+import PromotedPicture from './media/PromotedPicture.astro';
 import {
   GATEWAY_ROLE_LINE,
   localePath,
@@ -9,6 +10,7 @@ import {
   isNavActive,
   type Locale,
 } from '../lib/navigation';
+import { BRAND_MARK_ASSET_ID } from '../lib/media/promoted-media';
 
 interface Props {
   locale: Locale;
@@ -30,13 +32,13 @@ const brandNameDisplay =
 
 <header class="site-header" data-visual-id="Header">
   <div class="site-header__inner">
-    <a href={homeHref} class="site-header__brand" aria-label={shellCopy.brandName[locale]}>
-      <img
-        src="/media/brand/taha-mark-primary.png"
-        alt=""
-        width="40"
-        height="40"
-        class="site-header__mark"
+    <a href={homeHref} class="site-header__brand">
+      <PromotedPicture
+        assetId={BRAND_MARK_ASSET_ID}
+        mediaSlot="brand.mark"
+        locale={locale}
+        imgClass="site-header__mark"
+        loading="eager"
       />
       <span class="site-header__brand-text">
         <span class="site-header__brand-name">{brandNameDisplay}</span>

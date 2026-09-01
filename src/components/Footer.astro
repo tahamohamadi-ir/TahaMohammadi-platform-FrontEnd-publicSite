@@ -1,7 +1,9 @@
 ---
 import ContactCTA from './ui/ContactCTA.astro';
 import Link from './ui/Link.astro';
+import PromotedPicture from './media/PromotedPicture.astro';
 import { localePath, primaryNav, shellCopy, type Locale } from '../lib/navigation';
+import { BRAND_MARK_ASSET_ID } from '../lib/media/promoted-media';
 
 interface Props {
   locale: Locale;
@@ -31,12 +33,11 @@ const cvHref = localePath(locale, 'cv');
   <div class="site-footer__grid">
     <div class="site-footer__brand">
       <a href={homeHref} class="site-footer__brand-link">
-        <img
-          src="/media/brand/taha-mark-primary.png"
-          alt=""
-          width="32"
-          height="32"
-          class="site-footer__mark"
+        <PromotedPicture
+          assetId={BRAND_MARK_ASSET_ID}
+          mediaSlot="brand.mark"
+          locale={locale}
+          imgClass="site-footer__mark"
         />
         <span>{shellCopy.brandName[locale]}</span>
       </a>
