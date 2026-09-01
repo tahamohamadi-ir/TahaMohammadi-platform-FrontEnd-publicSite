@@ -19,6 +19,7 @@ describe('PUBLIC-290 performance budget scaffold', () => {
   it('mirrors central LCP and CLS thresholds', () => {
     expect(PERFORMANCE_BUDGET.lcpMs).toBe(2500);
     expect(PERFORMANCE_BUDGET.cls).toBe(0.1);
+    expect(PERFORMANCE_BUDGET.inpMs).toBe(200);
     expect(existsSync(budgetHarnessPath)).toBe(true);
   });
 
@@ -49,6 +50,8 @@ describe('PUBLIC-290 performance budget scaffold', () => {
 
     expect(e2eSource).toContain('@performance');
     expect(e2eSource).toContain('PUBLIC-290');
+    expect(e2eSource).toContain('inpMs');
+    expect(e2eSource).toContain('data-theme-toggle');
     expect(checklist).toContain('PERFORMANCE-BUDGET.md');
     expect(checklist).toContain('local static preview');
     expect(checklist).toContain('does **not** close `PUBLIC-190`');

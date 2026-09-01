@@ -7,6 +7,8 @@ export const PERFORMANCE_BUDGET = {
   lcpMs: 2500,
   /** Cumulative Layout Shift target. */
   cls: 0.1,
+  /** Interaction to Next Paint target (milliseconds). */
+  inpMs: 200,
 } as const;
 
 /** Representative routes for local build/preview probes (not production telemetry). */

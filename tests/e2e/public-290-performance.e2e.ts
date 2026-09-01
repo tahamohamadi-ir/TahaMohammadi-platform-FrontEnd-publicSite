@@ -1,7 +1,7 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { expect, test } from '@playwright/test';
-import { installWebVitalsCollector, readWebVitals } from '../../src/test-harness/collect-web-vitals';
+import { installWebVitalsCollector, readWebVitals, waitForInteractionTiming } from '../../src/test-harness/collect-web-vitals';
 import {
   LOCALE_FONT_PRELOADS,
   PERFORMANCE_BUDGET,
@@ -80,6 +80,41 @@ test.describe('PUBLIC-290 performance budget', () => {
     await expect(page.locator('body')).toHaveCSS('font-family', /Inter Variable|system-ui/);
   });
 });
+
+
+
+  test('PUBLIC-290 home EN theme toggle INP within local budget @performance', async ({ page }) => {
+    test.setTimeout(120_000);
+    await installWebVitalsCollector(page);
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto('/en/');
+
+    const toggle = page.locator('[data-theme-toggle]');
+    await expect(toggle).toBeVisible();
+    await toggle.click();
+    await waitForInteractionTiming(page);
+
+    const vitals = await readWebVitals(page);
+
+    expect(vitals.inpMs, 'home-en theme toggle INP missing').not.toBeNull();
+    expect(vitals.inpMs!, 'home-en theme toggle INP').toBeLessThanOrEqual(PERFORMANCE_BUDGET.inpMs);
+
+    await test.info().attach('home-en-theme-toggle-inp.json', {
+      body: JSON.stringify(
+        {
+          route: '/en/',
+          interaction: 'theme-toggle',
+          inpMs: vitals.inpMs,
+          budgetInpMs: PERFORMANCE_BUDGET.inpMs,
+          environment: 'local static preview (Playwright build + serve-dist)',
+        },
+        null,
+        2,
+      ),
+      contentType: 'application/json',
+    });
+  });
+
 
 test.afterAll(() => {
   void evidenceOutputDir;

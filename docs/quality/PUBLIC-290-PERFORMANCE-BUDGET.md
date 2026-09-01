@@ -3,7 +3,7 @@
 **Packet:** PUBLIC-290  
 **Authority:** `Docs/06-quality/PERFORMANCE-BUDGET.md`, `Docs/04-design/FONT-ACQUISITION-PLAN.md` (PUBLIC-050 preload/CLS)  
 **Environment:** local static preview only — Playwright builds `dist/` and serves via `scripts/serve-dist.mjs`; **not** production 75th-percentile telemetry.  
-**Status:** automated LCP/CLS probes + font preload verification on representative routes; production field data and INP remain open.
+**Status:** automated LCP/CLS probes + font preload verification on representative routes; production field data remains open; local INP probe on theme toggle ships in this packet.
 
 This checklist does **not** close `PUBLIC-190`. Passing local probes does not claim production performance acceptance.
 
@@ -15,7 +15,7 @@ This checklist does **not** close `PUBLIC-190`. Passing local probes does not cl
 |---|---|---|
 | LCP | ≤ 2500 ms (75th percentile in production) | `Docs/06-quality/PERFORMANCE-BUDGET.md` |
 | CLS | ≤ 0.1 | `Docs/06-quality/PERFORMANCE-BUDGET.md` |
-| INP | ≤ 200 ms | deferred — no automated probe in this packet |
+| INP | ≤ 200 ms | Playwright `@performance` theme-toggle probe on `/en/` (local guardrail) |
 | Font preload | locale body + display WOFF2 only; `font-display: swap` | `BaseLayout.astro`, `src/styles/fonts.css`, PUBLIC-050 |
 
 Local Playwright probes apply the same numeric LCP/CLS caps as guardrails on the built static preview. Treat any pass here as **scaffold evidence**, not a production claim.
@@ -28,7 +28,7 @@ Local Playwright probes apply the same numeric LCP/CLS caps as guardrails on the
 |---|---|---|---|
 | Build | `npm run build` | PASS | 23 static pages |
 | Vitest scaffold | `npm test` (includes `public-290.performance-budget.test.ts`) | PASS | thresholds + wiring guard |
-| Performance probe | `npm run test:performance` | **5 passed** | home EN/FA + creative index EN + font preload/CSS |
+| Performance probe | `npm run test:performance` | **6 passed** | home EN/FA + creative index EN + font preload/CSS |
 | Design authority | `npm run validate:design` | PASS | semantic token contract |
 | SEO | `npm run validate:seo` | PASS | sitemap/hreflang/canonical |
 | CI | `.github/workflows/ci.yml` | push/PR | unit + design + SEO + build (performance optional locally) |
@@ -71,7 +71,7 @@ Bundled CSS retains `font-display: swap`; body computed `font-family` resolves t
 | Item | Notes |
 |---|---|
 | Production RUM / 75th-percentile LCP | requires deployed origin + field data |
-| INP budget | no representative interaction probe yet |
+| INP budget (production 75th) | requires deployed origin + field data; local theme-toggle probe only |
 | Full route-family matrix | only home + one index in this packet |
 | PUBLIC-280 dual-theme matrix | remains open on PUBLIC-280 |
 | PUBLIC-060 computed-style font QA | subset/coverage fixtures still open |
