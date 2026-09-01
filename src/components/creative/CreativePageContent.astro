@@ -2,10 +2,11 @@
 import CollectionIndexTemplate from '../templates/CollectionIndexTemplate.astro'
 import SectionLead from '../ui/SectionLead.astro'
 import ContentState from '../state/ContentState.astro'
+import Link from '../ui/Link.astro'
 import {
   formatCreativeCardMeta,
+  getCreativeEmptyCopy,
   getCreativeRouteTitle,
-  getCreativeUnavailableCopy,
   type CreativeIndexModel,
 } from '../../lib/creative-content'
 import { localePath, type Locale } from '../../lib/navigation'
@@ -16,22 +17,82 @@ interface Props {
 }
 
 const { locale, model } = Astro.props
-const homeHref = localePath(locale)
+const emptyCopy = getCreativeEmptyCopy(locale)
+const filterLabels =
+  locale === 'en'
+    ? {
+        region: 'Gallery filters',
+        allWork: 'All work',
+        medium: 'Medium',
+        year: 'Year',
+        role: 'Role',
+        contact: 'Contact',
+      }
+    : {
+        region: 'پالایش‌های گالری',
+        allWork: 'همه آثار',
+        medium: 'رسانه',
+        year: 'سال',
+        role: 'نقش',
+        contact: 'تماس',
+      }
 ---
 
 {
-  model.status === 'unavailable' ? (
-    <div class="creative-page creative-page--unavailable">
-      <ContentState
-        variant="unavailable"
-        locale={locale}
-        headingLevel="h1"
-        title={getCreativeUnavailableCopy(locale).title}
-        message={getCreativeUnavailableCopy(locale).message}
-        actionLabel={locale === 'en' ? 'Back to home' : 'بازگشت به صفحهٔ اصلی'}
-        actionHref={homeHref}
+  model.status === 'empty' ? (
+    <CollectionIndexTemplate class="creative-page creative-page--empty">
+      <SectionLead
+        slot="lead"
+        eyebrow={
+          locale === 'en' ? 'Visual & creative work' : 'آثار بصری و خلاقه'
+        }
+        title={getCreativeRouteTitle(locale)}
       />
-    </div>
+
+      <div
+        slot="filters"
+        class="creative-page__filters"
+        role="group"
+        aria-label={filterLabels.region}
+        aria-disabled="true"
+      >
+        <p class="creative-page__filters-active">{filterLabels.allWork}</p>
+        <div class="creative-page__filters-controls">
+          <button type="button" class="creative-page__filter-control" disabled>
+            {filterLabels.medium}
+          </button>
+          <button type="button" class="creative-page__filter-control" disabled>
+            {filterLabels.year}
+          </button>
+          <button type="button" class="creative-page__filter-control" disabled>
+            {filterLabels.role}
+          </button>
+        </div>
+        <Link
+          href={localePath(locale, 'contact')}
+          label={filterLabels.contact}
+          variant="standalone"
+        />
+      </div>
+
+      <div slot="records" class="creative-page__grid-shell">
+        <div class="creative-page__grid-placeholder" aria-hidden="true">
+          <span class="creative-page__grid-cell creative-page__grid-cell--tall" />
+          <span class="creative-page__grid-cell" />
+          <span class="creative-page__grid-cell creative-page__grid-cell--wide" />
+          <span class="creative-page__grid-cell" />
+          <span class="creative-page__grid-cell creative-page__grid-cell--tall" />
+          <span class="creative-page__grid-cell" />
+        </div>
+        <ContentState
+          variant="empty"
+          locale={locale}
+          headingLevel="h2"
+          title={emptyCopy.title}
+          message={emptyCopy.message}
+        />
+      </div>
+    </CollectionIndexTemplate>
   ) : (
     <CollectionIndexTemplate class="creative-page">
       <SectionLead

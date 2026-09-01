@@ -2,18 +2,20 @@ import { describe, expect, it } from 'vitest'
 
 import {
   formatCreativeCardMeta,
+  getCreativeEmptyCopy,
   getCreativeRouteTitle,
   getCreativeUnavailableCopy,
 } from './creative-content'
 
 describe('creative content helpers', () => {
-  it('returns localized route titles and unavailable copy', () => {
+  it('returns localized route titles and empty copy', () => {
     expect(getCreativeRouteTitle('en')).toBe('Creative')
     expect(getCreativeRouteTitle('fa')).toBe('آثار خلاقه')
-    expect(getCreativeUnavailableCopy('en').message).toContain(
-      'not available yet',
+    expect(getCreativeEmptyCopy('en').message).toContain('not available yet')
+    expect(getCreativeEmptyCopy('fa').title).toBe('آثار خلاقه')
+    expect(getCreativeUnavailableCopy('en').message).toBe(
+      getCreativeEmptyCopy('en').message,
     )
-    expect(getCreativeUnavailableCopy('fa').title).toBe('آثار خلاقه')
   })
 
   it('formats creative card metadata from API fields only', () => {

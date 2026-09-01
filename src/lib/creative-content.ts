@@ -18,7 +18,7 @@ export type CreativeWorkDetailOut =
   components['schemas']['CreativeWorkDetailOut']
 
 export type CreativeIndexModel =
-  { status: 'unavailable' } | { status: 'ready'; works: CreativeWorkListOut[] }
+  { status: 'empty' } | { status: 'ready'; works: CreativeWorkListOut[] }
 
 export type CreativeDetailModel =
   { status: 'unavailable' } | { status: 'ready'; work: CreativeWorkDetailOut }
@@ -40,6 +40,13 @@ async function fetchJson<T>(path: string): Promise<T> {
 }
 
 export function getCreativeUnavailableCopy(locale: Locale): {
+  title: string
+  message: string
+} {
+  return getCreativeEmptyCopy(locale)
+}
+
+export function getCreativeEmptyCopy(locale: Locale): {
   title: string
   message: string
 } {
@@ -98,12 +105,12 @@ export async function fetchCreativeIndex(
   locale: Locale,
 ): Promise<CreativeIndexModel> {
   if (!canFetchPublicApi()) {
-    return { status: 'unavailable' }
+    return { status: 'empty' }
   }
 
   const works = await listCreativeWorks(locale)
   if (!works.length) {
-    return { status: 'unavailable' }
+    return { status: 'empty' }
   }
 
   return { status: 'ready', works }

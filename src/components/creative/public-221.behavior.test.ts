@@ -17,14 +17,20 @@ async function render(
 }
 
 describe('PUBLIC-221 creative pages', () => {
-  it('renders unavailable ContentState on the creative index', async () => {
+  it('renders structural empty-state chrome on the creative index', async () => {
     const html = await render(CreativePageContent, {
       locale: 'en',
-      model: { status: 'unavailable' },
+      model: { status: 'empty' },
     })
-    expect(html).toMatch(/data-state-variant="unavailable"/)
+    expect(html).toMatch(/data-visual-id="CollectionIndexTemplate"/)
+    expect(html).toMatch(/data-state-variant="empty"/)
     expect(html).toContain('Creative')
     expect(html).toMatch(/<h1[\s>]/)
+    expect(html).toMatch(/creative-page__filters/)
+    expect(html).toMatch(/creative-page__grid-placeholder/)
+    expect(html).toContain('Published creative works are not available yet.')
+    expect(html).toContain('All work')
+    expect(html).toContain('Medium')
   })
 
   it('renders creative work cards when the index model is ready', async () => {
