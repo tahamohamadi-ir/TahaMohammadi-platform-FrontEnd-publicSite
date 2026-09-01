@@ -18,8 +18,8 @@ Status: `[x]` done, `[ ]` open, `[~]` in progress.
 - [x] **PUBLIC-020** Tailwind CSS 4 on semantic CSS variables from design authority.
 - [x] **PUBLIC-030** `astro:i18n` for `fa`/`en`; strict no-fallback policy.
 - [x] **PUBLIC-040** Language gateway `/` per `ROUTE-REGISTRY.md`.
-- [x] **PUBLIC-050** Self-host Newsreader, Inter, Estedad, Vazirmatn (OFL + license files). WOFF2 under `public/fonts/`; `@font-face` in `src/styles/fonts.css`; CDN removed from `BaseLayout.astro`; locale tokens wired per `FONT-ACQUISITION-PLAN.md`. **Remaining for PS-10:** subset/coverage fixtures, computed-style QA (PUBLIC-060), CLS/preload budget (PUBLIC-290).
-- [ ] **PUBLIC-060** `--font-display` / `--font-body` per locale; computed-style tests.
+- [x] **PUBLIC-050** Self-host Newsreader, Inter, Estedad, Vazirmatn (OFL + license files). WOFF2 under `public/fonts/`; `@font-face` in `src/styles/fonts.css`; CDN removed from `BaseLayout.astro`; locale tokens wired per `FONT-ACQUISITION-PLAN.md`. **Remaining for PS-10:** subset/coverage fixtures, CLS/preload budget (PUBLIC-290).
+- [x] **PUBLIC-060** `--font-display` / `--font-body` per locale; computed-style tests. Evidence: `docs/quality/PUBLIC-060-FONT-COMPUTED-EVIDENCE.md`, `public-060.font-tokens.test.ts`, Playwright `@foundation` probes on home EN/FA. Subset/coverage fixtures remain open per FONT-ACQUISITION-PLAN PS-10.
 - [x] **PUBLIC-070** Light / Dark / system theme foundation; resolved before paint, persisted, and multi-instance safe. Evidence: WP-10 focused Playwright acceptance covers requested/resolved state, preference changes, persistence, event detail/count, and multiple controls.
 - [x] **PUBLIC-080** Focus, skip link, reduced-motion baseline. Evidence: WP-10 keyboard-focus and reduced-motion acceptance.
 
