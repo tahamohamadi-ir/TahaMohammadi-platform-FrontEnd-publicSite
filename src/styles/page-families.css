@@ -265,3 +265,123 @@
 .projects-page__back {
   margin: var(--space-6) 0 0;
 }
+
+.writing-page--unavailable {
+  padding-block: var(--space-10);
+  max-width: var(--layout-content-max, 48rem);
+  margin-inline: auto;
+  padding-inline: var(--space-6);
+}
+
+.writing-page__sections {
+  display: grid;
+  gap: var(--space-10);
+}
+
+.writing-page__section-title {
+  margin: 0 0 var(--space-4);
+  font-size: var(--font-size-xl);
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.writing-page__prose {
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-relaxed, 1.65);
+  color: var(--color-ink-muted);
+}
+
+.writing-page__prose :is(p, ul, ol, blockquote, pre) {
+  margin: 0 0 var(--space-4);
+}
+
+.writing-page__prose :is(p, ul, ol, blockquote, pre):last-child {
+  margin-bottom: 0;
+}
+
+.writing-page__list {
+  display: grid;
+  gap: var(--space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.writing-page__card {
+  padding: var(--space-5);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+}
+
+.writing-page__card-title {
+  margin: 0 0 var(--space-2);
+  font-size: var(--font-size-lg);
+}
+
+.writing-page__card-link {
+  color: var(--color-ink);
+  text-decoration: none;
+}
+
+.writing-page__card-link:hover {
+  color: var(--color-brand);
+}
+
+.writing-page__card-summary,
+.writing-page__card-meta,
+.writing-page__card-isbn {
+  margin: 0;
+  color: var(--color-ink-muted);
+  font-size: var(--font-size-sm);
+}
+
+.writing-page__meta {
+  display: grid;
+  grid-template-columns: minmax(6rem, auto) 1fr;
+  gap: var(--space-2) var(--space-4);
+  margin: 0 0 var(--space-8);
+}
+
+.writing-page__meta dt {
+  font-weight: 600;
+  color: var(--color-ink-secondary);
+}
+
+.writing-page__meta dd {
+  margin: 0;
+  color: var(--color-ink-muted);
+}
+
+.writing-page__detail {
+  display: grid;
+  gap: var(--space-8);
+}
+
+.writing-page__figure img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--radius-md);
+}
+
+.writing-page__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.writing-page__tag {
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full, 999px);
+  background: var(--color-surface-muted, var(--color-surface));
+  color: var(--color-ink-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.writing-page__back {
+  margin: var(--space-6) 0 0;
+}

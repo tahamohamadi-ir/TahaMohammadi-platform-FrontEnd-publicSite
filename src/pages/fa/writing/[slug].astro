@@ -1,24 +1,35 @@
 ---
 import SiteLayout from '../../../layouts/SiteLayout.astro';
-import StubWritingDetail from '../../../components/stub/StubWritingDetail.astro';
-import { getStubPublication, stubPublicationSlugs } from '../../../lib/stub-detail-content';
+import WritingDetailContent from '../../../components/writing/WritingDetailContent.astro';
+import {
+  fetchArticleDetail,
+  listArticleSlugs,
+  resolveWritingAlternateAvailability,
+} from '../../../lib/writing-content';
+import '../../../styles/page-families.css';
 
-export function getStaticPaths() {
-  return stubPublicationSlugs.map((slug) => ({ params: { slug } }));
+export async function getStaticPaths() {
+  const slugs = await listArticleSlugs('fa');
+  return slugs.map((slug) => ({ params: { slug } }));
 }
 
+const locale = 'fa' as const;
 const slug = Astro.params.slug ?? '';
-const publication = getStubPublication('fa', slug);
+const model = await fetchArticleDetail(locale, slug);
 
-if (!publication) {
+if (model.status === 'unavailable') {
   return new Response(null, { status: 404, statusText: 'Not Found' });
 }
+
+const alternateAvailable = await resolveWritingAlternateAvailability(locale);
+const pageTitle = `${model.article.title} — طه محمدی`;
 ---
 
 <SiteLayout
-  title={`${publication.title} — طه محمدی`}
-  locale="fa"
+  title={pageTitle}
+  locale={locale}
   pathSegment={`writing/${slug}`}
+  alternateAvailable={alternateAvailable}
 >
-  <StubWritingDetail locale="fa" publication={publication} />
+  <WritingDetailContent locale={locale} model={model} />
 </SiteLayout>

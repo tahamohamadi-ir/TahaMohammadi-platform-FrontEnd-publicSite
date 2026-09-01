@@ -1,13 +1,24 @@
 ---
 import SiteLayout from '../../../layouts/SiteLayout.astro';
-import StubWritingIndex from '../../../components/stub/StubWritingIndex.astro';
-import { getHomePublicationsContent } from '../../../lib/home-content';
+import WritingPageContent from '../../../components/writing/WritingPageContent.astro';
+import {
+  fetchWritingIndex,
+  getWritingRouteTitle,
+  resolveWritingAlternateAvailability,
+} from '../../../lib/writing-content';
+import '../../../styles/page-families.css';
+
+const locale = 'fa' as const;
+const model = await fetchWritingIndex(locale);
+const alternateAvailable = await resolveWritingAlternateAvailability(locale);
+const pageTitle = `${getWritingRouteTitle(locale)} — طه محمدی`;
 ---
 
 <SiteLayout
-  title={`${getHomePublicationsContent('fa').title} — طه محمدی`}
-  locale="fa"
+  title={pageTitle}
+  locale={locale}
   pathSegment="writing"
+  alternateAvailable={alternateAvailable}
 >
-  <StubWritingIndex locale="fa" />
+  <WritingPageContent locale={locale} model={model} />
 </SiteLayout>
