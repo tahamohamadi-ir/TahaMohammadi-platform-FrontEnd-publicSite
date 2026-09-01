@@ -46,12 +46,12 @@ Status: `[x]` done, `[ ]` open, `[~]` in progress.
 
 - [~] **PUBLIC-190** Home `/{locale}/` — **structure complete; visual acceptance open**. No final acceptance claim; independent QA and owner approval remain required.
 - [x] **PUBLIC-200** About — profile sections; fetch only `/api/profiles/{locale}/about`. Unavailable ContentState when unpublished; anchor sections when API returns published profile.
-- [ ] **PUBLIC-201** Research + publications indexes and details.
-- [ ] **PUBLIC-210** Projects index + detail; sanitized media only.
-- [ ] **PUBLIC-211** Writing index + long-form detail.
-- [ ] **PUBLIC-212** Books, talks, downloads (honest unavailable until records exist).
-- [ ] **PUBLIC-220** Teaching + creative with **seed v1.1 empty states** (`seed.empty.teaching.*`, `seed.empty.creative.*`).
-- [ ] **PUBLIC-221** CV/resume with **seed.empty.cv.*** until owner files approved.
+- [~] **PUBLIC-201** Research + publications indexes and details — implemented; frozen pending visual acceptance. Evidence: `public-201.behavior.test.ts`, `public-201.content.test.ts`, routes `/{locale}/research/`, `/{locale}/publications/`.
+- [~] **PUBLIC-210** Projects index + detail; sanitized media only — implemented; frozen pending visual acceptance. Evidence: `public-210.behavior.test.ts`, `public-210.content.test.ts`, routes `/{locale}/projects/`.
+- [~] **PUBLIC-211** Writing index + long-form detail — implemented; frozen pending visual acceptance. Evidence: `public-211.behavior.test.ts`, `public-211.content.test.ts`, routes `/{locale}/writing/`.
+- [ ] **PUBLIC-212** Books, talks, downloads (honest unavailable until records exist). No routes shipped; remains open.
+- [~] **PUBLIC-220** Teaching + creative with **seed v1.1 empty states** (`seed.empty.teaching.*`, `seed.empty.creative.*`) — implemented; frozen pending visual acceptance. Evidence: `public-220.behavior.test.ts`, `public-221.behavior.test.ts` (creative), routes `/{locale}/teaching/`, `/{locale}/creative/`.
+- [~] **PUBLIC-221** CV/resume with **seed.empty.cv.*** until owner files approved — implemented; frozen pending visual acceptance. Evidence: `public-221.content.test.ts`, route `/{locale}/cv/`.
 - [x] **PUBLIC-230** Contact — form + JSON; handle 422 HTML per error matrix.
 - [x] **PUBLIC-240** Pagefind search per locale.
 
@@ -60,7 +60,7 @@ Status: `[x]` done, `[ ]` open, `[~]` in progress.
 - [x] **PUBLIC-250** sitemap, robots, canonical, hreflang validation. Evidence: `@astrojs/sitemap`, `public/robots.txt`, `npm run validate:seo`, `public-250.seo.test.ts`.
 - [x] **PUBLIC-260** Asset promotion group A (decorative) per `ASSET-PROMOTION-LEDGER.md`. Evidence: `public-260.asset-promotion.test.ts`, promoted atmosphere masters in `src/assets/media`, legacy `public/media/art/portal-*` removed, ThemePicture atmosphere pipeline.
 - [x] **PUBLIC-261** Asset promotion group B (previews, rails, brand shell) per `ASSET-PROMOTION-LEDGER.md`. Evidence: `public-261.asset-promotion.test.ts`, promoted preview/rail/brand masters in `src/assets/media`, legacy `public/media/art/project-*` and `public/media/brand/taha-mark-primary.png` removed, Header/Footer wired to PromotedPicture `brand.mark`.
-- [~] **PUBLIC-270** PF visual comparison vs `concepts/page-families/`. Evidence: `docs/quality/PUBLIC-270-PAGE-FAMILY-VISUAL-EVIDENCE.md`, `public-270.page-family-visual.test.ts`, Playwright `@visual` capture stubs at 1440/390 (36 passed, PF-02 skipped). Manual owner compare and `PUBLIC-190` acceptance remain open.
+- [~] **PUBLIC-270** PF visual comparison vs `concepts/page-families/`. Evidence: `docs/quality/PUBLIC-270-PAGE-FAMILY-VISUAL-EVIDENCE.md`, `public-270.page-family-visual.test.ts`, Playwright `@visual` capture stubs at 1440/390 (36 passed, 1 skipped @ `27fc859`). Manual owner compare and `PUBLIC-190` acceptance remain open.
 - [~] **PUBLIC-280** Responsive matrix: 6 widths × 2 locales × 2 themes. Evidence: `docs/quality/PUBLIC-280-RESPONSIVE-MATRIX-EVIDENCE.md`, `public-280.responsive-matrix.test.ts`, `page-family-index-captures.ts`, Playwright `@visual` dual-theme index captures (216 = 36 locale-route-theme combos × 6 widths; PF-02 detail open). Manual owner compare and `PUBLIC-190` acceptance remain open.
 - [~] **PUBLIC-290** Performance budget (LCP, CLS, font preload, local INP probe). Evidence: `docs/quality/PUBLIC-290-PERFORMANCE-BUDGET.md`, `public-290.performance-budget.test.ts`, Playwright `@performance` probes on home + creative index + theme-toggle INP. Production 75th-percentile telemetry remains open.
 - [x] **PUBLIC-300** No-JS readability audit all route families. Evidence: `docs/quality/PUBLIC-300-NO-JS-AUDIT.md`, `public-300.no-js-audit.test.ts`, Playwright `@nojs` crawl of all 23 static routes with JS disabled. PF-02 detail excluded until published creative detail ships.

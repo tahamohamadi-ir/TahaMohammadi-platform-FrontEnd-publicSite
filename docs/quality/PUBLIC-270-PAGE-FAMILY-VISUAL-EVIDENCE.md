@@ -1,7 +1,7 @@
 # PUBLIC-270 Page-Family Visual Evidence Checklist
 
 **Packet:** PUBLIC-270  
-**Public-site base:** `29db66e` (`main`; PUBLIC-270 scaffold + capture gate)  
+**Public-site base:** `27fc859` (`main`; PUBLIC-270 re-run 2026-09-01)  
 **Concept authority:** `Docs/references/frontend-design-authority/concepts/page-families/`  
 **Contract:** `Docs/04-design/PAGE-FAMILY-UI-UX-CONTRACT.md`, `Docs/04-design/VISUAL-QA-CONTRACT.md`  
 **Status:** automated 1440/390 index captures green; owner comparison and acceptance remain open.
@@ -10,13 +10,15 @@ This checklist does **not** close `PUBLIC-190`. Automated gates may pass while m
 
 ---
 
-## Automated gate (2026-09-01)
+## Automated gate (2026-09-01 @ `27fc859`)
 
 | Gate            | Command                                                       | Result                   | Notes                                            |
 | --------------- | ------------------------------------------------------------- | ------------------------ | ------------------------------------------------ |
 | Build           | `npm run build`                                               | PASS                     | 23 static pages                                  |
-| Vitest scaffold | `npm test` (includes `public-270.page-family-visual.test.ts`) | PASS                     | PF route map guard                               |
+| Vitest scaffold | `npm test` (includes `public-270.page-family-visual.test.ts`) | PASS                     | 214 tests; PF route map guard                    |
 | Visual capture  | `npm run test:visual -- --grep PUBLIC-270`                    | **36 passed, 1 skipped** | PF-02 detail skipped (no published detail route) |
+
+**Capture artifacts:** 36 PNG files under `test-results/visual/public-270-*.png` (gitignored; regenerate with command above).
 
 ---
 

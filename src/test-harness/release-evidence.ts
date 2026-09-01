@@ -6,11 +6,7 @@
 
 import { STAGING_ENV_KEYS } from './staging-smoke'
 
-export type ReleaseEvidenceStatus =
-  | 'complete'
-  | 'scaffold'
-  | 'blocked'
-  | 'open'
+export type ReleaseEvidenceStatus = 'complete' | 'scaffold' | 'blocked' | 'open'
 
 export type ReleaseEvidenceSlice = {
   id: string
