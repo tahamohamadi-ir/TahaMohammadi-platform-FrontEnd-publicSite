@@ -74,6 +74,25 @@ describe('PUBLIC-150 behavior', () => {
     expect(skipHtml).toMatch(/>رفتن به محتوای اصلی</);
   });
 
+  it('links only route families that exist in the current public build', async () => {
+    const headerHtml = await renderComponent(Header, {
+      locale: 'en',
+      currentPath: '/en/',
+      alternateHref: '/fa/',
+      alternateAvailable: true,
+    });
+    const footerHtml = await renderComponent(Footer, { locale: 'en' });
+
+    for (const html of [headerHtml, footerHtml]) {
+      expect(html).toMatch(/href="\/en\/projects\/"/);
+      expect(html).toMatch(/href="\/en\/writing\/"/);
+      expect(html).not.toMatch(/href="\/en\/(about|research|creative|teaching|contact|cv)\/"/);
+    }
+
+    expect(headerHtml.match(/aria-disabled="true"/g)?.length).toBeGreaterThanOrEqual(8);
+    expect(footerHtml.match(/aria-disabled="true"/g)?.length).toBeGreaterThanOrEqual(6);
+  });
+
   it('consumes ContactCTA and Link primitives in Footer without custom button markup', async () => {
     const footerSource = readRepositoryFile('src/components/Footer.astro');
     expect(footerSource).toContain("import ContactCTA from './ui/ContactCTA.astro'");

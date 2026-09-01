@@ -1,7 +1,7 @@
 ---
 interface Props {
   statement: string;
-  primaryHref: string;
+  primaryHref?: string;
   primaryLabel: string;
   cvHref?: string;
   cvLabel?: string;
@@ -14,14 +14,28 @@ const { statement, primaryHref, primaryLabel, cvHref, cvLabel, class: className 
 <section class={['ui-contact-cta', className].filter(Boolean).join(' ')} data-visual-id="ContactCTA">
   <p class="ui-contact-cta__statement">{statement}</p>
   <div class="ui-contact-cta__actions">
-    <a href={primaryHref} class="ui-contact-cta__primary">
-      {primaryLabel}
-    </a>
     {
-      cvHref && cvLabel ? (
-        <a href={cvHref} class="ui-contact-cta__secondary">
-          {cvLabel}
+      primaryHref ? (
+        <a href={primaryHref} class="ui-contact-cta__primary">
+          {primaryLabel}
         </a>
+      ) : (
+        <span class="ui-contact-cta__primary ui-contact-cta__action--unavailable" aria-disabled="true">
+          {primaryLabel}
+        </span>
+      )
+    }
+    {
+      cvLabel ? (
+        cvHref ? (
+          <a href={cvHref} class="ui-contact-cta__secondary">
+            {cvLabel}
+          </a>
+        ) : (
+          <span class="ui-contact-cta__secondary ui-contact-cta__action--unavailable" aria-disabled="true">
+            {cvLabel}
+          </span>
+        )
       ) : null
     }
   </div>
@@ -62,6 +76,11 @@ const { statement, primaryHref, primaryLabel, cvHref, cvLabel, class: className 
     text-decoration: none;
     font-size: var(--font-size-sm);
     font-weight: 600;
+  }
+
+  .ui-contact-cta__action--unavailable {
+    opacity: 0.62;
+    cursor: not-allowed;
   }
 
   .ui-contact-cta__primary {

@@ -189,6 +189,11 @@ html[data-theme='dark'] .site-header {
   border-bottom-color: var(--color-brand);
 }
 
+.site-header__nav-link--unavailable {
+  opacity: 0.58;
+  cursor: not-allowed;
+}
+
 .site-header__utilities {
   display: flex;
   align-items: center;

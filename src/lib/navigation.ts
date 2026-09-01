@@ -11,6 +11,9 @@ export interface NavItem {
   label: Record<Locale, string>;
 }
 
+/** Route families with generated pages in the current public build. */
+export const availableRouteSegments = new Set(['projects', 'writing']);
+
 export const primaryNav: NavItem[] = [
   { slug: 'about', pathSegment: 'about', label: { en: 'About', fa: 'درباره' } },
   { slug: 'research', pathSegment: 'research', label: { en: 'Research', fa: 'پژوهش' } },
@@ -23,6 +26,14 @@ export const primaryNav: NavItem[] = [
 export function localePath(locale: Locale, pathSegment = ''): string {
   if (!pathSegment) return `/${locale}/`;
   return `/${locale}/${pathSegment}/`;
+}
+
+export function availableLocalePath(locale: Locale, pathSegment: string): string | undefined {
+  return isRouteAvailable(pathSegment) ? localePath(locale, pathSegment) : undefined;
+}
+
+export function isRouteAvailable(pathSegment: string): boolean {
+  return availableRouteSegments.has(pathSegment);
 }
 
 export function alternateLocale(locale: Locale): Locale {

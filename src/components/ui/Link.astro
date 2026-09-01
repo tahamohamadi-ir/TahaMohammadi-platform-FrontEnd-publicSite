@@ -2,7 +2,7 @@
 import { ArrowRight } from 'lucide-astro';
 
 interface Props {
-  href: string;
+  href?: string;
   label: string;
   variant?: 'inline' | 'standalone';
   showIcon?: boolean;
@@ -12,18 +12,32 @@ interface Props {
 const { href, label, variant = 'inline', showIcon = false, class: className = '' } = Astro.props;
 ---
 
-<a
-  href={href}
-  class={['ui-link', `ui-link--${variant}`, className].filter(Boolean).join(' ')}
-  data-visual-id="Link"
->
-  <span class="ui-link__label">{label}</span>
-  {showIcon ? (
-    <span class="ui-link__icon" aria-hidden="true">
-      <ArrowRight size={16} />
+{
+  href ? (
+    <a
+      href={href}
+      class={['ui-link', `ui-link--${variant}`, className].filter(Boolean).join(' ')}
+      data-visual-id="Link"
+    >
+      <span class="ui-link__label">{label}</span>
+      {showIcon ? (
+        <span class="ui-link__icon" aria-hidden="true">
+          <ArrowRight size={16} />
+        </span>
+      ) : null}
+    </a>
+  ) : (
+    <span
+      class={['ui-link', `ui-link--${variant}`, 'ui-link--unavailable', className]
+        .filter(Boolean)
+        .join(' ')}
+      data-visual-id="Link"
+      aria-disabled="true"
+    >
+      <span class="ui-link__label">{label}</span>
     </span>
-  ) : null}
-</a>
+  )
+}
 
 <style>
   .ui-link {
@@ -45,6 +59,12 @@ const { href, label, variant = 'inline', showIcon = false, class: className = ''
 
   .ui-link--standalone:hover {
     background: var(--color-brand-soft);
+  }
+
+  .ui-link--unavailable {
+    color: var(--color-ink-muted);
+    text-decoration: none;
+    cursor: not-allowed;
   }
 
   .ui-link__icon {

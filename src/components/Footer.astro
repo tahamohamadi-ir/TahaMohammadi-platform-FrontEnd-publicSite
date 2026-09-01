@@ -1,7 +1,14 @@
 ---
 import ContactCTA from './ui/ContactCTA.astro';
 import Link from './ui/Link.astro';
-import { localePath, primaryNav, shellCopy, type Locale } from '../lib/navigation';
+import {
+  availableLocalePath,
+  isRouteAvailable,
+  localePath,
+  primaryNav,
+  shellCopy,
+  type Locale,
+} from '../lib/navigation';
 
 interface Props {
   locale: Locale;
@@ -10,8 +17,8 @@ interface Props {
 
 const { locale, hidePromo = false } = Astro.props;
 const homeHref = localePath(locale);
-const contactHref = localePath(locale, 'contact');
-const cvHref = localePath(locale, 'cv');
+const contactHref = availableLocalePath(locale, 'contact');
+const cvHref = availableLocalePath(locale, 'cv');
 ---
 
 <footer class="site-footer" data-visual-id="Footer">
@@ -49,7 +56,7 @@ const cvHref = localePath(locale, 'cv');
           primaryNav.map((item) => (
             <li>
               <Link
-                href={localePath(locale, item.pathSegment)}
+                href={isRouteAvailable(item.pathSegment) ? localePath(locale, item.pathSegment) : undefined}
                 label={item.label[locale]}
                 variant="inline"
               />

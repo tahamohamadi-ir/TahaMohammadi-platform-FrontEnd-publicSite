@@ -7,6 +7,7 @@ import {
   primaryNav,
   shellCopy,
   isNavActive,
+  isRouteAvailable,
   type Locale,
 } from '../lib/navigation';
 
@@ -50,7 +51,7 @@ const brandNameDisplay =
           primaryNav.map((item) => {
             const href = localePath(locale, item.pathSegment);
             const active = isNavActive(currentPath, locale, item.pathSegment);
-            return (
+            return isRouteAvailable(item.pathSegment) ? (
               <li>
                 <a
                   href={href}
@@ -59,6 +60,12 @@ const brandNameDisplay =
                 >
                   {item.label[locale]}
                 </a>
+              </li>
+            ) : (
+              <li>
+                <span class="site-header__nav-link site-header__nav-link--unavailable" aria-disabled="true">
+                  {item.label[locale]}
+                </span>
               </li>
             );
           })
@@ -81,7 +88,7 @@ const brandNameDisplay =
               primaryNav.map((item) => {
                 const href = localePath(locale, item.pathSegment);
                 const active = isNavActive(currentPath, locale, item.pathSegment);
-                return (
+                return isRouteAvailable(item.pathSegment) ? (
                   <li>
                     <a
                       href={href}
@@ -93,6 +100,12 @@ const brandNameDisplay =
                     >
                       {item.label[locale]}
                     </a>
+                  </li>
+                ) : (
+                  <li>
+                    <span class="site-header__nav-link site-header__nav-link--unavailable" aria-disabled="true">
+                      {item.label[locale]}
+                    </span>
                   </li>
                 );
               })
