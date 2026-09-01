@@ -1,0 +1,24 @@
+---
+import SiteLayout from '../../../layouts/SiteLayout.astro';
+import CvPageContent from '../../../components/cv/CvPageContent.astro';
+import {
+  fetchCvPageModel,
+  getCvRouteTitle,
+  resolveCvAlternateAvailability,
+} from '../../../lib/cv-content';
+import '../../../styles/page-families.css';
+
+const locale = 'en' as const;
+const model = await fetchCvPageModel();
+const alternateAvailable = resolveCvAlternateAvailability(model);
+const pageTitle = `${getCvRouteTitle(locale)} — Taha Mohammadi`;
+---
+
+<SiteLayout
+  title={pageTitle}
+  locale={locale}
+  pathSegment="cv"
+  alternateAvailable={alternateAvailable}
+>
+  <CvPageContent locale={locale} model={model} />
+</SiteLayout>

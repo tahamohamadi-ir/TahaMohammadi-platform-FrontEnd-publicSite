@@ -1,0 +1,74 @@
+---
+import AboutContactUtilityTemplate from '../templates/AboutContactUtilityTemplate.astro';
+import SectionLead from '../ui/SectionLead.astro';
+import ContentState from '../state/ContentState.astro';
+import Link from '../ui/Link.astro';
+import {
+  formatDownloadMeta,
+  getCvRouteTitle,
+  getCvUnavailableCopy,
+  type CvPageModel,
+} from '../../lib/cv-content';
+import { localePath, type Locale } from '../../lib/navigation';
+
+interface Props {
+  locale: Locale;
+  model: CvPageModel;
+}
+
+const { locale, model } = Astro.props;
+const homeHref = localePath(locale);
+---
+
+{
+  model.status === 'unavailable' ? (
+    <div class="cv-page cv-page--unavailable">
+      <ContentState
+        variant="unavailable"
+        locale={locale}
+        headingLevel="h1"
+        title={getCvUnavailableCopy(locale).title}
+        message={getCvUnavailableCopy(locale).message}
+        actionLabel={locale === 'en' ? 'Back to home' : 'بازگشت به صفحهٔ اصلی'}
+        actionHref={homeHref}
+      />
+    </div>
+  ) : (
+    <AboutContactUtilityTemplate class="cv-page">
+      <SectionLead
+        slot="lead"
+        eyebrow={locale === 'en' ? 'Documents' : 'اسناد'}
+        title={getCvRouteTitle(locale)}
+      />
+
+      <div slot="records" class="cv-page__sections">
+        <section class="cv-page__section" aria-labelledby="cv-downloads-title">
+          <h2 id="cv-downloads-title" class="cv-page__section-title">
+            {locale === 'en' ? 'Downloads' : 'دانلودها'}
+          </h2>
+          <ul class="cv-page__list">
+            {
+              model.downloads.map((download) => (
+                <li>
+                  <article class="cv-page__card">
+                    <h3 class="cv-page__card-title">{download.title}</h3>
+                    {download.note ? <p class="cv-page__card-note">{download.note}</p> : null}
+                    <p class="cv-page__card-meta">{formatDownloadMeta(download)}</p>
+                    <p class="cv-page__card-action">
+                      <Link
+                        href={download.href}
+                        label={locale === 'en' ? 'Download file' : 'دانلود فایل'}
+                        variant="standalone"
+                        showIcon
+                      />
+                    </p>
+                  </article>
+                </li>
+              ))
+            }
+          </ul>
+        </section>
+      </div>
+    </AboutContactUtilityTemplate>
+  )
+}

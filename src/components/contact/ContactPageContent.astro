@@ -1,0 +1,290 @@
+---
+import AboutContactUtilityTemplate from '../templates/AboutContactUtilityTemplate.astro';
+import SectionLead from '../ui/SectionLead.astro';
+import ContentState from '../state/ContentState.astro';
+import Input from '../ui/Input.astro';
+import Textarea from '../ui/Textarea.astro';
+import Button from '../ui/Button.astro';
+import {
+  contactFormCopy,
+  formatExternalLinkLabel,
+  getContactFormActionUrl,
+  getContactRouteTitle,
+  getContactUnavailableCopy,
+  parseContactFormState,
+  type ContactPageModel,
+} from '../../lib/contact-content';
+import { localePath, type Locale } from '../../lib/navigation';
+
+interface Props {
+  locale: Locale;
+  model: ContactPageModel;
+}
+
+const { locale, model } = Astro.props;
+const homeHref = localePath(locale);
+const formState = parseContactFormState(Astro.url.searchParams);
+const formAction = getContactFormActionUrl();
+const labels = contactFormCopy.detailLabels;
+---
+
+{
+  model.status === 'unavailable' ? (
+    <div class="contact-page contact-page--unavailable">
+      <ContentState
+        variant="unavailable"
+        locale={locale}
+        headingLevel="h1"
+        title={getContactUnavailableCopy(locale).title}
+        message={getContactUnavailableCopy(locale).message}
+        actionLabel={locale === 'en' ? 'Back to home' : 'بازگشت به صفحهٔ اصلی'}
+        actionHref={homeHref}
+      />
+    </div>
+  ) : (
+    <AboutContactUtilityTemplate class="contact-page">
+      <SectionLead
+        slot="lead"
+        eyebrow={locale === 'en' ? 'Connect' : 'ارتباط'}
+        title={getContactRouteTitle(locale)}
+      />
+
+      <div slot="records" class="contact-page__sections">
+        {
+          formState.sent ? (
+            <div class="contact-page__status contact-page__status--success" role="status">
+              <h2 class="contact-page__status-title">{contactFormCopy.sentHeading[locale]}</h2>
+            </div>
+          ) : null
+        }
+
+        {
+          formState.failed ? (
+            <div class="contact-page__status contact-page__status--error" role="alert">
+              <h2 class="contact-page__status-title">{contactFormCopy.errorHeading[locale]}</h2>
+            </div>
+          ) : null
+        }
+
+        {
+          model.contact.email ||
+          model.contact.linkedin ||
+          model.contact.orcid ||
+          model.contact.employer ||
+          model.contact.location ? (
+            <section class="contact-page__section" aria-labelledby="contact-details-title">
+              <h2 id="contact-details-title" class="contact-page__section-title">
+                {locale === 'en' ? 'Contact details' : 'اطلاعات تماس'}
+              </h2>
+              <dl class="contact-page__details">
+                {
+                  model.contact.email ? (
+                    <div class="contact-page__detail-row">
+                      <dt>{labels.email[locale]}</dt>
+                      <dd>
+                        <a href={`mailto:${model.contact.email}`} dir="ltr">
+                          {model.contact.email}
+                        </a>
+                      </dd>
+                    </div>
+                  ) : null
+                }
+                {
+                  model.contact.linkedin ? (
+                    <div class="contact-page__detail-row">
+                      <dt>{labels.linkedin[locale]}</dt>
+                      <dd>
+                        <a href={model.contact.linkedin} rel="noopener noreferrer" dir="ltr">
+                          {formatExternalLinkLabel(model.contact.linkedin)}
+                        </a>
+                      </dd>
+                    </div>
+                  ) : null
+                }
+                {
+                  model.contact.orcid ? (
+                    <div class="contact-page__detail-row">
+                      <dt>{labels.orcid[locale]}</dt>
+                      <dd>
+                        <a href={model.contact.orcid} rel="noopener noreferrer" dir="ltr">
+                          {formatExternalLinkLabel(model.contact.orcid)}
+                        </a>
+                      </dd>
+                    </div>
+                  ) : null
+                }
+                {
+                  model.contact.employer ? (
+                    <div class="contact-page__detail-row">
+                      <dt>{labels.employer[locale]}</dt>
+                      <dd>
+                        {
+                          model.contact.employerUrl ? (
+                            <a href={model.contact.employerUrl} rel="noopener noreferrer">
+                              {model.contact.employer}
+                            </a>
+                          ) : (
+                            model.contact.employer
+                          )
+                        }
+                      </dd>
+                    </div>
+                  ) : null
+                }
+                {
+                  model.contact.location ? (
+                    <div class="contact-page__detail-row">
+                      <dt>{labels.location[locale]}</dt>
+                      <dd>{model.contact.location}</dd>
+                    </div>
+                  ) : null
+                }
+              </dl>
+            </section>
+          ) : null
+        }
+
+        {
+          model.formEnabled ? (
+            <section class="contact-page__section" aria-labelledby="contact-form-title">
+              <h2 id="contact-form-title" class="contact-page__section-title">
+                {contactFormCopy.formIntro[locale]}
+              </h2>
+
+              <form
+                class="contact-page__form"
+                method="post"
+                action={formAction}
+                data-contact-form
+                novalidate
+              >
+                <input type="hidden" name="locale" value={locale} />
+                <div class="contact-page__honeypot" aria-hidden="true">
+                  <label for="contact-website">Website</label>
+                  <input id="contact-website" name="website" type="text" tabindex="-1" autocomplete="off" />
+                </div>
+
+                <Input
+                  id="contact-name"
+                  name="name"
+                  label={contactFormCopy.nameLabel[locale]}
+                  value={formState.values.name}
+                  autocomplete="name"
+                />
+                <Input
+                  id="contact-email"
+                  name="email"
+                  type="email"
+                  label={contactFormCopy.emailLabel[locale]}
+                  value={formState.values.email}
+                  autocomplete="email"
+                />
+                <Textarea
+                  id="contact-message"
+                  name="message"
+                  label={contactFormCopy.messageLabel[locale]}
+                  value={formState.values.message}
+                  rows={6}
+                  maxlength={4000}
+                />
+
+                <div class="contact-page__form-actions">
+                  <Button type="submit" label={contactFormCopy.sendLabel[locale]} />
+                </div>
+
+                <p class="contact-page__form-note" id="contact-form-status" hidden></p>
+              </form>
+            </section>
+          ) : null
+        }
+      </div>
+    </AboutContactUtilityTemplate>
+  )
+}
+
+<script>
+  import { mapContactSubmitResponse } from '../../lib/contact-form-adapter';
+
+  const form = document.querySelector<HTMLFormElement>('form[data-contact-form]');
+  if (!form) {
+    // No form on this page.
+  } else {
+    const statusEl = document.getElementById('contact-form-status');
+    const locale = (form.querySelector<HTMLInputElement>('input[name="locale"]')?.value ?? 'en') as
+      | 'en'
+      | 'fa';
+
+    form.addEventListener('submit', async (event) => {
+      if (!window.fetch) return;
+
+      event.preventDefault();
+
+      const submitButton = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+      submitButton?.setAttribute('disabled', 'true');
+      submitButton?.setAttribute('aria-busy', 'true');
+
+      const formData = new FormData(form);
+      const fields = {
+        name: String(formData.get('name') ?? ''),
+        email: String(formData.get('email') ?? ''),
+        message: String(formData.get('message') ?? ''),
+      };
+
+      try {
+        const response = await fetch(form.action, {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            name: fields.name,
+            email: fields.email,
+            message: fields.message,
+            locale,
+            website: String(formData.get('website') ?? ''),
+          }),
+        });
+
+        const bodyText = await response.text();
+        const outcome = mapContactSubmitResponse(
+          response.status,
+          response.headers.get('content-type'),
+          bodyText,
+          fields,
+        );
+
+        if (outcome.kind === 'success') {
+          form.reset();
+          if (statusEl) {
+            statusEl.hidden = false;
+            statusEl.setAttribute('role', 'status');
+            statusEl.textContent =
+              locale === 'en'
+                ? 'Your message was sent.'
+                : 'پیام شما ارسال شد.';
+          }
+        } else if (statusEl) {
+          statusEl.hidden = false;
+          statusEl.setAttribute('role', 'alert');
+          statusEl.textContent =
+            locale === 'en'
+              ? 'Your message could not be sent. Review the fields and try again.'
+              : 'پیام ارسال نشد. فیلدها را بررسی کنید و دوباره تلاش کنید.';
+        }
+      } catch {
+        if (statusEl) {
+          statusEl.hidden = false;
+          statusEl.setAttribute('role', 'alert');
+          statusEl.textContent =
+            locale === 'en'
+              ? 'Your message could not be sent. Review the fields and try again.'
+              : 'پیام ارسال نشد. فیلدها را بررسی کنید و دوباره تلاش کنید.';
+        }
+      } finally {
+        submitButton?.removeAttribute('disabled');
+        submitButton?.removeAttribute('aria-busy');
+      }
+    });
+  }
+</script>

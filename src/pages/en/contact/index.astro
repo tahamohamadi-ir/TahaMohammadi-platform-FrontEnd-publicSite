@@ -1,0 +1,24 @@
+---
+import SiteLayout from '../../../layouts/SiteLayout.astro';
+import ContactPageContent from '../../../components/contact/ContactPageContent.astro';
+import {
+  fetchContactPageModel,
+  getContactRouteTitle,
+  resolveContactAlternateAvailability,
+} from '../../../lib/contact-content';
+import '../../../styles/page-families.css';
+
+const locale = 'en' as const;
+const model = await fetchContactPageModel();
+const alternateAvailable = resolveContactAlternateAvailability(model);
+const pageTitle = `${getContactRouteTitle(locale)} — Taha Mohammadi`;
+---
+
+<SiteLayout
+  title={pageTitle}
+  locale={locale}
+  pathSegment="contact"
+  alternateAvailable={alternateAvailable}
+>
+  <ContactPageContent locale={locale} model={model} />
+</SiteLayout>
