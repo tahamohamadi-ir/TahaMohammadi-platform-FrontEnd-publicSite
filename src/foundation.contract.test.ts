@@ -151,19 +151,36 @@ describe('WP-10 foundation contracts', () => {
     expect(packageManifest.scripts['build:atlas']).toBeTruthy();
     expect(existsSync(path.join(repositoryRoot, 'src', 'pages', '_design'))).toBe(false);
 
+    const designDir = path.join(repositoryRoot, 'dist', '_design');
+    if (existsSync(designDir)) {
+      rmSync(designDir, { recursive: true, force: true });
+    }
+    const distRoot = path.join(repositoryRoot, 'dist');
+    if (existsSync(distRoot)) {
+      rmSync(distRoot, { recursive: true, force: true });
+    }
+
     const defaultBuild = spawnSync('npm.cmd', ['run', 'build'], {
       cwd: repositoryRoot,
       encoding: 'utf8',
       shell: true,
     });
     expect(defaultBuild.status, defaultBuild.stderr).toBe(0);
-    const distRoot = path.join(repositoryRoot, 'dist');
     expect(existsSync(path.join(distRoot, '_design'))).toBe(false);
     const outputFiles = readdirSync(distRoot, { recursive: true })
       .map((entry) => path.join(distRoot, String(entry)))
       .filter((entry) => statSync(entry).isFile());
     expect(outputFiles.some((entry) => entry.includes(`${path.sep}_design`))).toBe(false);
     expect(outputFiles.some((entry) => readFileSync(entry, 'utf8').includes('/_design'))).toBe(false);
+
+    const pagefindRoot = path.join(distRoot, 'pagefind');
+    expect(existsSync(pagefindRoot)).toBe(true);
+    for (const locale of ['en', 'fa']) {
+      const bundleRoot = path.join(pagefindRoot, locale);
+      expect(existsSync(bundleRoot)).toBe(true);
+      expect(existsSync(path.join(bundleRoot, 'pagefind.js'))).toBe(true);
+      expect(existsSync(path.join(bundleRoot, 'pagefind-entry.json'))).toBe(true);
+    }
 
   }, 120_000);
 

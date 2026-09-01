@@ -37,7 +37,7 @@ const alternateHref = buildLanguageToggleHref(locale, segment, alternateAvailabl
     alternateHref={alternateHref}
     alternateAvailable={alternateAvailable}
   />
-  <main id="main-content" class="site-main" tabindex="-1">
+  <main id="main-content" class="site-main" tabindex="-1" data-pagefind-body>
     <slot />
   </main>
   <Footer locale={locale} hidePromo={hideFooterPromo} />

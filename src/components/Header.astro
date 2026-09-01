@@ -67,6 +67,13 @@ const brandNameDisplay =
     </nav>
 
     <div class="site-header__utilities">
+      <a
+        href={localePath(locale, 'search')}
+        class="site-header__search-link"
+        aria-current={isNavActive(currentPath, locale, 'search') ? 'page' : undefined}
+      >
+        {locale === 'en' ? 'Search' : 'جستجو'}
+      </a>
       <LanguageToggle
         currentLocale={locale}
         alternateHref={alternateHref}

@@ -22,10 +22,11 @@
     "lucide-astro": "^0.556.0"
   },
   "devDependencies": {
-    "@tailwindcss/vite": "^4.1.18",
     "@axe-core/playwright": "^4.13.0",
     "@playwright/test": "^1.62.1",
+    "@tailwindcss/vite": "^4.1.18",
     "openapi-typescript": "^7.13.0",
+    "pagefind": "^1.5.2",
     "tailwindcss": "^4.1.18",
     "typescript": "~5.9.3",
     "vitest": "^3.2.4"

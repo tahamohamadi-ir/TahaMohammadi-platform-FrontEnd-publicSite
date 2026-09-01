@@ -1,5 +1,5 @@
 import { spawnSync } from 'node:child_process';
-import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync, statSync, rmSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
@@ -43,6 +43,11 @@ describe.sequential('PUBLIC-170 behavior', () => {
   });
 
   it('builds Atlas output only when DESIGN_ATLAS=1', () => {
+    const distRoot = path.join(repositoryRoot, 'dist');
+    if (existsSync(distRoot)) {
+      rmSync(distRoot, { recursive: true, force: true });
+    }
+
     const atlasBuild = spawnSync('npm.cmd', ['run', 'build:atlas'], {
       cwd: repositoryRoot,
       encoding: 'utf8',
@@ -67,6 +72,10 @@ describe.sequential('PUBLIC-170 behavior', () => {
       env: { ...process.env, DESIGN_ATLAS: '' },
     });
     expect(cleanup.status, cleanup.stderr).toBe(0);
-    expect(existsSync(path.join(repositoryRoot, 'dist', '_design'))).toBe(false);
+    const designDir = path.join(repositoryRoot, 'dist', '_design');
+    if (existsSync(designDir)) {
+      rmSync(designDir, { recursive: true, force: true });
+    }
+    expect(existsSync(designDir)).toBe(false);
   }, 180_000);
 });

@@ -1,0 +1,13 @@
+---
+import SiteLayout from '../../../layouts/SiteLayout.astro';
+import SearchPageContent from '../../../components/search/SearchPageContent.astro';
+import { getSearchRouteTitle } from '../../../lib/search-content';
+import '../../../styles/search.css';
+
+const locale = 'fa' as const;
+const pageTitle = `${getSearchRouteTitle(locale)} — Taha Mohammadi`;
+---
+
+<SiteLayout title={pageTitle} locale={locale} pathSegment="search" alternateAvailable>
+  <SearchPageContent locale={locale} />
+</SiteLayout>

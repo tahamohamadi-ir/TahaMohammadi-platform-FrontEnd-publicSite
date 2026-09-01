@@ -52,8 +52,8 @@ Status: `[x]` done, `[ ]` open, `[~]` in progress.
 - [ ] **PUBLIC-212** Books, talks, downloads (honest unavailable until records exist).
 - [ ] **PUBLIC-220** Teaching + creative with **seed v1.1 empty states** (`seed.empty.teaching.*`, `seed.empty.creative.*`).
 - [ ] **PUBLIC-221** CV/resume with **seed.empty.cv.*** until owner files approved.
-- [ ] **PUBLIC-230** Contact — form + JSON; handle 422 HTML per error matrix.
-- [ ] **PUBLIC-240** Pagefind search per locale.
+- [x] **PUBLIC-230** Contact — form + JSON; handle 422 HTML per error matrix.
+- [x] **PUBLIC-240** Pagefind search per locale.
 
 ## PUB-5 — SEO, assets, quality
 
