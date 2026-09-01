@@ -51,6 +51,16 @@ export const RUNTIME_ASSET_IDS = [
 
 export type RuntimeAssetId = (typeof RUNTIME_ASSET_IDS)[number];
 
+/** Group A decorative atmosphere assets promoted via PUBLIC-260. */
+export const GROUP_A_DECORATIVE_ASSET_IDS = [
+  'portal-centered-dark',
+  'portal-centered-light',
+  'portal-orbit-dark',
+  'portal-orbit-light',
+] as const satisfies readonly RuntimeAssetId[];
+
+export type GroupADecorativeAssetId = (typeof GROUP_A_DECORATIVE_ASSET_IDS)[number];
+
 export function isDeferredAssetId(id: string): id is DeferredAssetId {
   return (DEFERRED_ASSET_IDS as readonly string[]).includes(id);
 }
