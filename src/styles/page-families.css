@@ -1,0 +1,129 @@
+.research-page--unavailable,
+.publications-page--unavailable {
+  padding-block: var(--space-10);
+  max-width: var(--layout-content-max, 48rem);
+  margin-inline: auto;
+  padding-inline: var(--space-6);
+}
+
+.research-page__section-title,
+.publications-page__section-title {
+  margin: 0 0 var(--space-4);
+  font-size: var(--font-size-xl);
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.research-page__prose,
+.publications-page__prose {
+  display: grid;
+  gap: var(--space-4);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-relaxed, 1.65);
+  color: var(--color-ink-muted);
+}
+
+.research-page__prose p,
+.publications-page__prose p {
+  margin: 0;
+}
+
+.research-page__list,
+.publications-page__list {
+  display: grid;
+  gap: var(--space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.research-page__card,
+.publications-page__card {
+  padding: var(--space-5);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+}
+
+.research-page__card-title,
+.publications-page__card-title {
+  margin: 0 0 var(--space-2);
+  font-size: var(--font-size-lg);
+}
+
+.research-page__card-link,
+.publications-page__card-link {
+  color: var(--color-ink);
+  text-decoration: none;
+}
+
+.research-page__card-link:hover,
+.publications-page__card-link:hover {
+  color: var(--color-brand);
+}
+
+.research-page__card-summary,
+.publications-page__card-meta,
+.publications-page__card-type {
+  margin: 0;
+  color: var(--color-ink-muted);
+  font-size: var(--font-size-sm);
+}
+
+.research-page__detail-sections {
+  display: grid;
+  gap: var(--space-10);
+}
+
+.research-page__related {
+  display: grid;
+  gap: var(--space-6);
+}
+
+.research-page__related-list {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.research-page__back,
+.publications-page__back {
+  margin: var(--space-6) 0 0;
+}
+
+.publications-page__meta {
+  display: grid;
+  grid-template-columns: minmax(6rem, auto) 1fr;
+  gap: var(--space-2) var(--space-4);
+  margin: 0 0 var(--space-8);
+}
+
+.publications-page__meta dt {
+  font-weight: 600;
+  color: var(--color-ink-secondary);
+}
+
+.publications-page__meta dd {
+  margin: 0;
+  color: var(--color-ink-muted);
+}
+
+.publications-page__detail {
+  display: grid;
+  gap: var(--space-8);
+}
+
+.publications-page__citation-text {
+  margin: 0;
+  font-family: var(--font-mono, monospace);
+  font-size: var(--font-size-sm);
+  color: var(--color-ink-muted);
+}
+
+.publications-page__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}

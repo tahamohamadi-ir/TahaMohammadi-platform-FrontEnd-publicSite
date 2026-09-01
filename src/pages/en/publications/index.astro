@@ -1,0 +1,24 @@
+---
+import SiteLayout from '../../../layouts/SiteLayout.astro';
+import PublicationsPageContent from '../../../components/publications/PublicationsPageContent.astro';
+import {
+  fetchPublicationsIndex,
+  publicationsRouteTitle,
+  resolvePublicationsAlternateAvailability,
+} from '../../../lib/publications-content';
+import '../../../styles/page-families.css';
+
+const locale = 'en' as const;
+const model = await fetchPublicationsIndex(locale);
+const alternateAvailable = await resolvePublicationsAlternateAvailability(locale);
+const pageTitle = `${publicationsRouteTitle.en} — Taha Mohammadi`;
+---
+
+<SiteLayout
+  title={pageTitle}
+  locale={locale}
+  pathSegment="publications"
+  alternateAvailable={alternateAvailable}
+>
+  <PublicationsPageContent locale={locale} model={model} />
+</SiteLayout>

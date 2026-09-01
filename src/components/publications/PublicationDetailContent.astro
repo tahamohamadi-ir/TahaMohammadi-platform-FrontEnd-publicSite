@@ -1,0 +1,130 @@
+---
+import LongFormDetailTemplate from '../templates/LongFormDetailTemplate.astro';
+import SectionLead from '../ui/SectionLead.astro';
+import ContentState from '../state/ContentState.astro';
+import Link from '../ui/Link.astro';
+import {
+  getPublicationsUnavailableCopy,
+  publicationsRouteTitle,
+  type PublicationDetailModel,
+} from '../../lib/publications-content';
+import { splitBodyParagraphs } from '../../lib/research-content';
+import { localePath, type Locale } from '../../lib/navigation';
+
+interface Props {
+  locale: Locale;
+  model: PublicationDetailModel;
+}
+
+const { locale, model } = Astro.props;
+const publicationsHref = localePath(locale, 'publications');
+---
+
+{
+  model.status === 'unavailable' ? (
+    <div class="publications-page publications-page--unavailable">
+      <ContentState
+        variant="unavailable"
+        locale={locale}
+        headingLevel="h1"
+        title={getPublicationsUnavailableCopy(locale).title}
+        message={getPublicationsUnavailableCopy(locale).message}
+        actionLabel={locale === 'en' ? 'Back to outputs' : 'بازگشت به خروجی‌ها'}
+        actionHref={publicationsHref}
+      />
+    </div>
+  ) : (
+    <LongFormDetailTemplate class="publications-page publications-page--detail">
+      <SectionLead
+        slot="lead"
+        eyebrow={publicationsRouteTitle[locale]}
+        title={model.publication.title}
+        summary={[model.publication.authors, model.publication.venue].filter(Boolean).join(' · ')}
+      />
+
+      <div slot="body" class="publications-page__detail">
+        <dl class="publications-page__meta">
+          {
+            model.publication.publication_type ? (
+              <>
+                <dt>{locale === 'en' ? 'Type' : 'نوع'}</dt>
+                <dd>{model.publication.publication_type}</dd>
+              </>
+            ) : null
+          }
+          {
+            model.publication.academic_stage ? (
+              <>
+                <dt>{locale === 'en' ? 'Stage' : 'مرحله'}</dt>
+                <dd>{model.publication.academic_stage}</dd>
+              </>
+            ) : null
+          }
+          {
+            model.publication.access_state ? (
+              <>
+                <dt>{locale === 'en' ? 'Access' : 'دسترسی'}</dt>
+                <dd>{model.publication.access_state}</dd>
+              </>
+            ) : null
+          }
+          {
+            model.publication.doi ? (
+              <>
+                <dt>DOI</dt>
+                <dd>{model.publication.doi}</dd>
+              </>
+            ) : null
+          }
+        </dl>
+
+        {
+          model.publication.abstract?.trim() ? (
+            <section class="publications-page__abstract" aria-labelledby="publication-abstract-title">
+              <h2 id="publication-abstract-title" class="publications-page__section-title">
+                {locale === 'en' ? 'Abstract' : 'چکیده'}
+              </h2>
+              <div class="publications-page__prose">
+                {splitBodyParagraphs(model.publication.abstract).map((paragraph) => (
+                  <p>{paragraph}</p>
+                ))}
+              </div>
+            </section>
+          ) : null
+        }
+
+        {
+          model.publication.citation_text ? (
+            <section class="publications-page__citation" aria-labelledby="publication-citation-title">
+              <h2 id="publication-citation-title" class="publications-page__section-title">
+                {locale === 'en' ? 'Citation' : 'ارجاع'}
+              </h2>
+              <p class="publications-page__citation-text">{model.publication.citation_text}</p>
+            </section>
+          ) : null
+        }
+
+        <div class="publications-page__links">
+          {
+            model.publication.url ? (
+              <Link href={model.publication.url} label={locale === 'en' ? 'View source' : 'مشاهده منبع'} variant="standalone" />
+            ) : null
+          }
+          {
+            model.publication.pdf_url ? (
+              <Link href={model.publication.pdf_url} label="PDF" variant="standalone" />
+            ) : null
+          }
+        </div>
+      </div>
+
+      <p slot="related" class="publications-page__back">
+        <Link
+          href={publicationsHref}
+          label={locale === 'en' ? '← Back to outputs' : '← بازگشت به خروجی‌ها'}
+          variant="standalone"
+        />
+      </p>
+    </LongFormDetailTemplate>
+  )
+}

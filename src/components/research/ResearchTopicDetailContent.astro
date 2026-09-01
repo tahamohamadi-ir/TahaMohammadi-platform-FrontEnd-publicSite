@@ -1,0 +1,159 @@
+---
+import LongFormDetailTemplate from '../templates/LongFormDetailTemplate.astro';
+import SectionLead from '../ui/SectionLead.astro';
+import ContentState from '../state/ContentState.astro';
+import Link from '../ui/Link.astro';
+import {
+  getResearchRouteTitle,
+  getResearchUnavailableCopy,
+  splitBodyParagraphs,
+  type ResearchDetailModel,
+} from '../../lib/research-content';
+import { localePath, type Locale } from '../../lib/navigation';
+
+interface Props {
+  locale: Locale;
+  model: ResearchDetailModel;
+}
+
+const { locale, model } = Astro.props;
+const researchHref = localePath(locale, 'research');
+---
+
+{
+  model.status === 'unavailable' ? (
+    <div class="research-page research-page--unavailable">
+      <ContentState
+        variant="unavailable"
+        locale={locale}
+        headingLevel="h1"
+        title={getResearchUnavailableCopy(locale).title}
+        message={getResearchUnavailableCopy(locale).message}
+        actionLabel={locale === 'en' ? 'Back to research' : 'بازگشت به پژوهش'}
+        actionHref={researchHref}
+      />
+    </div>
+  ) : model.kind === 'statement' ? (
+    <LongFormDetailTemplate class="research-page research-page--detail">
+      <SectionLead slot="lead" eyebrow={getResearchRouteTitle(locale)} title={model.record.title} />
+
+      <div slot="body" class="research-page__prose">
+        {splitBodyParagraphs(model.record.body).map((paragraph) => (
+          <p>{paragraph}</p>
+        ))}
+      </div>
+
+      <p slot="related" class="research-page__back">
+        <Link
+          href={researchHref}
+          label={locale === 'en' ? '← Back to research' : '← بازگشت به پژوهش'}
+          variant="standalone"
+        />
+      </p>
+    </LongFormDetailTemplate>
+  ) : (
+    <LongFormDetailTemplate class="research-page research-page--detail">
+      <SectionLead
+        slot="lead"
+        eyebrow={getResearchRouteTitle(locale)}
+        title={model.record.title}
+        summary={model.record.summary}
+      />
+
+      <div slot="body" class="research-page__detail-sections">
+        {
+          [
+            { id: 'motivation', label: locale === 'en' ? 'Motivation' : 'انگیزه', value: model.record.motivation },
+            { id: 'problems', label: locale === 'en' ? 'Problems' : 'مسائل', value: model.record.problems },
+            {
+              id: 'research-questions',
+              label: locale === 'en' ? 'Research questions' : 'پرسش‌های پژوهشی',
+              value: model.record.research_questions,
+            },
+            { id: 'methods', label: locale === 'en' ? 'Methods' : 'روش‌ها', value: model.record.methods },
+            {
+              id: 'future-directions',
+              label: locale === 'en' ? 'Future directions' : 'جهت‌های آینده',
+              value: model.record.future_directions,
+            },
+          ].map((section) =>
+            section.value?.trim() ? (
+              <section id={section.id} class="research-page__section" aria-labelledby={`${section.id}-title`}>
+                <h2 id={`${section.id}-title`} class="research-page__section-title">
+                  {section.label}
+                </h2>
+                <div class="research-page__prose">
+                  {splitBodyParagraphs(section.value).map((paragraph) => (
+                    <p>{paragraph}</p>
+                  ))}
+                </div>
+              </section>
+            ) : null,
+          )
+        }
+      </div>
+
+      {
+        model.record.projects?.length || model.record.publications?.length ? (
+          <div slot="related" class="research-page__related">
+            {
+              model.record.projects?.length ? (
+                <section aria-labelledby="related-projects-title">
+                  <h2 id="related-projects-title" class="research-page__section-title">
+                    {locale === 'en' ? 'Related projects' : 'پروژه‌های مرتبط'}
+                  </h2>
+                  <ul class="research-page__related-list">
+                    {model.record.projects.map((item) => (
+                      <li>
+                        <Link
+                          href={localePath(locale, `projects/${item.slug}`)}
+                          label={item.title}
+                          variant="standalone"
+                        />
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              ) : null
+            }
+            {
+              model.record.publications?.length ? (
+                <section aria-labelledby="related-publications-title">
+                  <h2 id="related-publications-title" class="research-page__section-title">
+                    {locale === 'en' ? 'Related outputs' : 'خروجی‌های مرتبط'}
+                  </h2>
+                  <ul class="research-page__related-list">
+                    {model.record.publications.map((item) => (
+                      <li>
+                        <Link
+                          href={localePath(locale, `publications/${item.slug}`)}
+                          label={item.title}
+                          variant="standalone"
+                        />
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              ) : null
+            }
+            <p class="research-page__back">
+              <Link
+                href={researchHref}
+                label={locale === 'en' ? '← Back to research' : '← بازگشت به پژوهش'}
+                variant="standalone"
+              />
+            </p>
+          </div>
+        ) : (
+          <p slot="related" class="research-page__back">
+            <Link
+              href={researchHref}
+              label={locale === 'en' ? '← Back to research' : '← بازگشت به پژوهش'}
+              variant="standalone"
+            />
+          </p>
+        )
+      }
+    </LongFormDetailTemplate>
+  )
+}

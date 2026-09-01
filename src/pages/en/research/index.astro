@@ -1,0 +1,24 @@
+---
+import SiteLayout from '../../../layouts/SiteLayout.astro';
+import ResearchPageContent from '../../../components/research/ResearchPageContent.astro';
+import {
+  fetchResearchIndex,
+  getResearchRouteTitle,
+  resolveResearchAlternateAvailability,
+} from '../../../lib/research-content';
+import '../../../styles/page-families.css';
+
+const locale = 'en' as const;
+const model = await fetchResearchIndex(locale);
+const alternateAvailable = await resolveResearchAlternateAvailability(locale);
+const pageTitle = `${getResearchRouteTitle(locale)} — Taha Mohammadi`;
+---
+
+<SiteLayout
+  title={pageTitle}
+  locale={locale}
+  pathSegment="research"
+  alternateAvailable={alternateAvailable}
+>
+  <ResearchPageContent locale={locale} model={model} />
+</SiteLayout>

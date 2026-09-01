@@ -1,0 +1,123 @@
+---
+import CollectionIndexTemplate from '../templates/CollectionIndexTemplate.astro';
+import SectionLead from '../ui/SectionLead.astro';
+import ContentState from '../state/ContentState.astro';
+import Link from '../ui/Link.astro';
+import {
+  getResearchEmptyTopicsCopy,
+  getResearchRouteTitle,
+  getResearchUnavailableCopy,
+  splitBodyParagraphs,
+  type ResearchIndexModel,
+} from '../../lib/research-content';
+import { localePath, type Locale } from '../../lib/navigation';
+
+interface Props {
+  locale: Locale;
+  model: ResearchIndexModel;
+}
+
+const { locale, model } = Astro.props;
+const homeHref = localePath(locale);
+const routeTitle = getResearchRouteTitle(locale);
+---
+
+{
+  model.status === 'unavailable' ? (
+    <div class="research-page research-page--unavailable">
+      <ContentState
+        variant="unavailable"
+        locale={locale}
+        headingLevel="h1"
+        title={getResearchUnavailableCopy(locale).title}
+        message={getResearchUnavailableCopy(locale).message}
+        actionLabel={locale === 'en' ? 'Back to home' : 'بازگشت به صفحهٔ اصلی'}
+        actionHref={homeHref}
+      />
+    </div>
+  ) : (
+    <CollectionIndexTemplate class="research-page">
+      <SectionLead
+        slot="lead"
+        eyebrow={locale === 'en' ? 'Research program' : 'برنامه پژوهشی'}
+        title={routeTitle}
+        summary={model.statement?.title ?? undefined}
+      />
+
+      {
+        model.statement ? (
+          <section slot="records" class="research-page__statement" aria-labelledby="research-statement-title">
+            <h2 id="research-statement-title" class="research-page__section-title">
+              {model.statement.title}
+            </h2>
+            <div class="research-page__prose">
+              {splitBodyParagraphs(model.statement.body).map((paragraph) => (
+                <p>{paragraph}</p>
+              ))}
+            </div>
+          </section>
+        ) : null
+      }
+
+      {
+        model.topics.length ? (
+          <section slot="records" class="research-page__topics" aria-labelledby="research-topics-title">
+            <h2 id="research-topics-title" class="research-page__section-title">
+              {locale === 'en' ? 'Focus areas' : 'حوزه‌های تمرکز'}
+            </h2>
+            <ul class="research-page__list">
+              {model.topics.map((topic) => (
+                <li>
+                  <article class="research-page__card">
+                    <h3 class="research-page__card-title">
+                      <a href={localePath(locale, `research/${topic.slug}`)} class="research-page__card-link">
+                        {topic.title}
+                      </a>
+                    </h3>
+                    {topic.summary ? <p class="research-page__card-summary">{topic.summary}</p> : null}
+                  </article>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : (
+          <ContentState
+            slot="records"
+            variant="empty"
+            locale={locale}
+            title={getResearchEmptyTopicsCopy(locale).title}
+            message={getResearchEmptyTopicsCopy(locale).message}
+          />
+        )
+      }
+
+      {
+        model.projects.length ? (
+          <section slot="records" class="research-page__systems" aria-labelledby="research-systems-title">
+            <h2 id="research-systems-title" class="research-page__section-title">
+              {locale === 'en' ? 'Research systems' : 'سامانه‌های پژوهشی'}
+            </h2>
+            <ul class="research-page__list">
+              {model.projects.map((project) => (
+                <li>
+                  <article class="research-page__card">
+                    <h3 class="research-page__card-title">
+                      <Link
+                        href={localePath(locale, `projects/${project.slug}`)}
+                        label={project.title}
+                        variant="standalone"
+                      />
+                    </h3>
+                    {project.objective ? (
+                      <p class="research-page__card-summary">{project.objective}</p>
+                    ) : null}
+                  </article>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null
+      }
+    </CollectionIndexTemplate>
+  )
+}

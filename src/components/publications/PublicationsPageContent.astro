@@ -1,0 +1,66 @@
+---
+import CollectionIndexTemplate from '../templates/CollectionIndexTemplate.astro';
+import SectionLead from '../ui/SectionLead.astro';
+import ContentState from '../state/ContentState.astro';
+import {
+  getPublicationsUnavailableCopy,
+  publicationsRouteTitle,
+  type PublicationsIndexModel,
+} from '../../lib/publications-content';
+import { localePath, type Locale } from '../../lib/navigation';
+
+interface Props {
+  locale: Locale;
+  model: PublicationsIndexModel;
+}
+
+const { locale, model } = Astro.props;
+const homeHref = localePath(locale);
+---
+
+{
+  model.status === 'unavailable' ? (
+    <div class="publications-page publications-page--unavailable">
+      <ContentState
+        variant="unavailable"
+        locale={locale}
+        headingLevel="h1"
+        title={getPublicationsUnavailableCopy(locale).title}
+        message={getPublicationsUnavailableCopy(locale).message}
+        actionLabel={locale === 'en' ? 'Back to home' : 'بازگشت به صفحهٔ اصلی'}
+        actionHref={homeHref}
+      />
+    </div>
+  ) : (
+    <CollectionIndexTemplate class="publications-page">
+      <SectionLead
+        slot="lead"
+        eyebrow={locale === 'en' ? 'Bibliography' : 'فهرست خروجی‌ها'}
+        title={publicationsRouteTitle[locale]}
+      />
+
+      <ul slot="records" class="publications-page__list">
+        {model.publications.map((publication) => (
+          <li>
+            <article class="publications-page__card">
+              <h2 class="publications-page__card-title">
+                <a
+                  href={localePath(locale, `publications/${publication.slug}`)}
+                  class="publications-page__card-link"
+                >
+                  {publication.title}
+                </a>
+              </h2>
+              <p class="publications-page__card-meta">
+                {[publication.authors, publication.venue, publication.date].filter(Boolean).join(' · ')}
+              </p>
+              {publication.publication_type ? (
+                <p class="publications-page__card-type">{publication.publication_type}</p>
+              ) : null}
+            </article>
+          </li>
+        ))}
+      </ul>
+    </CollectionIndexTemplate>
+  )
+}
