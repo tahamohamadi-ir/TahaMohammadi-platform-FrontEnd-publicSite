@@ -1,10 +1,10 @@
-import type { RuntimeAssetId } from './authority-checksums';
-import { AUTHORITY_CHECKSUMS } from './authority-checksums';
-import type { TransformRecipe } from './transform-recipes';
-import { getTransformRecipe } from './transform-recipes';
+import type { RuntimeAssetId } from './authority-checksums'
+import { AUTHORITY_CHECKSUMS } from './authority-checksums'
+import type { TransformRecipe } from './transform-recipes'
+import { getTransformRecipe } from './transform-recipes'
 
-export type Locale = 'fa' | 'en';
-export type Theme = 'light' | 'dark';
+export type Locale = 'fa' | 'en'
+export type Theme = 'light' | 'dark'
 
 export type MediaSlot =
   | 'gateway.atmosphere'
@@ -12,52 +12,67 @@ export type MediaSlot =
   | 'home.graph.backplate'
   | 'home.project.preview'
   | 'home.rail.preview'
-  | 'brand.mark';
+  | 'brand.mark'
 
 export type AltPolicy =
   | { kind: 'decorative'; alt: '' }
   | { kind: 'content'; altByLocale: Readonly<Record<Locale, string>> }
-  | { kind: 'consumer-content' };
+  | { kind: 'consumer-content' }
 
 export interface PromotedAssetRecord {
-  id: RuntimeAssetId;
-  authorityPath: string;
-  sourceSha256: string;
-  intrinsic: { width: number; height: number };
-  approval: { ledgerId: string; decision: string; decisionDate: '2026-08-29' | '2026-08-30' };
-  semantics: AltPolicy;
+  id: RuntimeAssetId
+  authorityPath: string
+  sourceSha256: string
+  intrinsic: { width: number; height: number }
+  approval: {
+    ledgerId: string
+    decision: string
+    decisionDate: '2026-08-29' | '2026-08-30'
+  }
+  semantics: AltPolicy
   placement: {
-    slot: MediaSlot;
-    theme: Theme | 'both';
-    locales: readonly Locale[];
-  };
+    slot: MediaSlot
+    theme: Theme | 'both'
+    locales: readonly Locale[]
+  }
   transform: TransformRecipe & {
-    formats: readonly ['avif', 'webp'];
-    fit: 'cover' | 'contain';
-    focalByLocale: Readonly<Partial<Record<Locale, string>>>;
-    loading: 'lazy' | 'eager';
-    fetchPriority: 'auto' | 'high';
+    formats: readonly ['avif', 'webp']
+    fit: 'cover' | 'contain'
+    focalByLocale: Readonly<Partial<Record<Locale, string>>>
+    loading: 'lazy' | 'eager'
+    fetchPriority: 'auto' | 'high'
     /** Populated after build measurement; omitted until WP-40 acceptance run. */
-    measuredByteCeiling?: Readonly<Partial<Record<string, number>>>;
-  };
-  assetFile: string;
+    measuredByteCeiling?: Readonly<Partial<Record<string, number>>>
+  }
+  assetFile: string
 }
 
-const ledger = (id: RuntimeAssetId) => id;
+const ledger = (id: RuntimeAssetId) => id
 
-const decorative = { kind: 'decorative' as const, alt: '' as const };
+const decorative = { kind: 'decorative' as const, alt: '' as const }
 
-const consumerContentAlt: AltPolicy = { kind: 'consumer-content' };
+const consumerContentAlt: AltPolicy = { kind: 'consumer-content' }
 
-export const PROMOTED_ASSET_REGISTRY: Record<RuntimeAssetId, PromotedAssetRecord> = {
+export const PROMOTED_ASSET_REGISTRY: Record<
+  RuntimeAssetId,
+  PromotedAssetRecord
+> = {
   'portal-centered-dark': {
     id: 'portal-centered-dark',
     authorityPath: 'art/portal-centered-dark.png',
     sourceSha256: AUTHORITY_CHECKSUMS['portal-centered-dark'],
     intrinsic: { width: 1672, height: 941 },
-    approval: { ledgerId: ledger('portal-centered-dark'), decision: 'seed-promotion-decorative', decisionDate: '2026-08-29' },
+    approval: {
+      ledgerId: ledger('portal-centered-dark'),
+      decision: 'seed-promotion-decorative',
+      decisionDate: '2026-08-29',
+    },
     semantics: decorative,
-    placement: { slot: 'gateway.atmosphere', theme: 'dark', locales: ['fa', 'en'] },
+    placement: {
+      slot: 'gateway.atmosphere',
+      theme: 'dark',
+      locales: ['fa', 'en'],
+    },
     transform: {
       ...getTransformRecipe('gateway.atmosphere'),
       formats: ['avif', 'webp'],
@@ -73,9 +88,17 @@ export const PROMOTED_ASSET_REGISTRY: Record<RuntimeAssetId, PromotedAssetRecord
     authorityPath: 'art/portal-centered-light.png',
     sourceSha256: AUTHORITY_CHECKSUMS['portal-centered-light'],
     intrinsic: { width: 1672, height: 941 },
-    approval: { ledgerId: ledger('portal-centered-light'), decision: 'seed-promotion-decorative', decisionDate: '2026-08-29' },
+    approval: {
+      ledgerId: ledger('portal-centered-light'),
+      decision: 'seed-promotion-decorative',
+      decisionDate: '2026-08-29',
+    },
     semantics: decorative,
-    placement: { slot: 'gateway.atmosphere', theme: 'light', locales: ['fa', 'en'] },
+    placement: {
+      slot: 'gateway.atmosphere',
+      theme: 'light',
+      locales: ['fa', 'en'],
+    },
     transform: {
       ...getTransformRecipe('gateway.atmosphere'),
       formats: ['avif', 'webp'],
@@ -91,9 +114,17 @@ export const PROMOTED_ASSET_REGISTRY: Record<RuntimeAssetId, PromotedAssetRecord
     authorityPath: 'art/portal-orbit-dark.png',
     sourceSha256: AUTHORITY_CHECKSUMS['portal-orbit-dark'],
     intrinsic: { width: 1672, height: 941 },
-    approval: { ledgerId: ledger('portal-orbit-dark'), decision: 'seed-promotion-decorative', decisionDate: '2026-08-29' },
+    approval: {
+      ledgerId: ledger('portal-orbit-dark'),
+      decision: 'seed-promotion-decorative',
+      decisionDate: '2026-08-29',
+    },
     semantics: decorative,
-    placement: { slot: 'home.hero.atmosphere', theme: 'dark', locales: ['fa', 'en'] },
+    placement: {
+      slot: 'home.hero.atmosphere',
+      theme: 'dark',
+      locales: ['fa', 'en'],
+    },
     transform: {
       ...getTransformRecipe('home.hero.atmosphere'),
       formats: ['avif', 'webp'],
@@ -109,9 +140,17 @@ export const PROMOTED_ASSET_REGISTRY: Record<RuntimeAssetId, PromotedAssetRecord
     authorityPath: 'art/portal-orbit-light.png',
     sourceSha256: AUTHORITY_CHECKSUMS['portal-orbit-light'],
     intrinsic: { width: 1672, height: 941 },
-    approval: { ledgerId: ledger('portal-orbit-light'), decision: 'seed-promotion-decorative', decisionDate: '2026-08-29' },
+    approval: {
+      ledgerId: ledger('portal-orbit-light'),
+      decision: 'seed-promotion-decorative',
+      decisionDate: '2026-08-29',
+    },
     semantics: decorative,
-    placement: { slot: 'home.hero.atmosphere', theme: 'light', locales: ['fa', 'en'] },
+    placement: {
+      slot: 'home.hero.atmosphere',
+      theme: 'light',
+      locales: ['fa', 'en'],
+    },
     transform: {
       ...getTransformRecipe('home.hero.atmosphere'),
       formats: ['avif', 'webp'],
@@ -127,7 +166,11 @@ export const PROMOTED_ASSET_REGISTRY: Record<RuntimeAssetId, PromotedAssetRecord
     authorityPath: 'brand/taha-mark-primary.png',
     sourceSha256: AUTHORITY_CHECKSUMS['brand-primary'],
     intrinsic: { width: 256, height: 233 },
-    approval: { ledgerId: ledger('brand-primary'), decision: 'owner-approved-mark', decisionDate: '2026-08-29' },
+    approval: {
+      ledgerId: ledger('brand-primary'),
+      decision: 'owner-approved-mark',
+      decisionDate: '2026-08-29',
+    },
     semantics: {
       kind: 'content',
       altByLocale: { en: 'Taha Mohammadi', fa: 'طه محمدی' },
@@ -148,7 +191,11 @@ export const PROMOTED_ASSET_REGISTRY: Record<RuntimeAssetId, PromotedAssetRecord
     authorityPath: 'brand/taha-mark-favicon.png',
     sourceSha256: AUTHORITY_CHECKSUMS['brand-favicon'],
     intrinsic: { width: 64, height: 64 },
-    approval: { ledgerId: ledger('brand-favicon'), decision: 'owner-approved-favicon', decisionDate: '2026-08-29' },
+    approval: {
+      ledgerId: ledger('brand-favicon'),
+      decision: 'owner-approved-favicon',
+      decisionDate: '2026-08-29',
+    },
     semantics: decorative,
     placement: { slot: 'brand.mark', theme: 'both', locales: ['fa', 'en'] },
     transform: {
@@ -174,7 +221,11 @@ export const PROMOTED_ASSET_REGISTRY: Record<RuntimeAssetId, PromotedAssetRecord
       decisionDate: '2026-08-29',
     },
     semantics: consumerContentAlt,
-    placement: { slot: 'home.project.preview', theme: 'both', locales: ['fa', 'en'] },
+    placement: {
+      slot: 'home.project.preview',
+      theme: 'both',
+      locales: ['fa', 'en'],
+    },
     transform: {
       ...getTransformRecipe('home.project.preview'),
       formats: ['avif', 'webp'],
@@ -196,7 +247,11 @@ export const PROMOTED_ASSET_REGISTRY: Record<RuntimeAssetId, PromotedAssetRecord
       decisionDate: '2026-08-29',
     },
     semantics: consumerContentAlt,
-    placement: { slot: 'home.project.preview', theme: 'both', locales: ['fa', 'en'] },
+    placement: {
+      slot: 'home.project.preview',
+      theme: 'both',
+      locales: ['fa', 'en'],
+    },
     transform: {
       ...getTransformRecipe('home.project.preview'),
       formats: ['avif', 'webp'],
@@ -218,7 +273,11 @@ export const PROMOTED_ASSET_REGISTRY: Record<RuntimeAssetId, PromotedAssetRecord
       decisionDate: '2026-08-29',
     },
     semantics: decorative,
-    placement: { slot: 'home.rail.preview', theme: 'both', locales: ['fa', 'en'] },
+    placement: {
+      slot: 'home.rail.preview',
+      theme: 'both',
+      locales: ['fa', 'en'],
+    },
     transform: {
       ...getTransformRecipe('home.rail.preview'),
       formats: ['avif', 'webp'],
@@ -240,7 +299,11 @@ export const PROMOTED_ASSET_REGISTRY: Record<RuntimeAssetId, PromotedAssetRecord
       decisionDate: '2026-08-29',
     },
     semantics: decorative,
-    placement: { slot: 'home.rail.preview', theme: 'both', locales: ['fa', 'en'] },
+    placement: {
+      slot: 'home.rail.preview',
+      theme: 'both',
+      locales: ['fa', 'en'],
+    },
     transform: {
       ...getTransformRecipe('home.rail.preview'),
       formats: ['avif', 'webp'],
@@ -262,7 +325,11 @@ export const PROMOTED_ASSET_REGISTRY: Record<RuntimeAssetId, PromotedAssetRecord
       decisionDate: '2026-08-29',
     },
     semantics: decorative,
-    placement: { slot: 'home.rail.preview', theme: 'both', locales: ['fa', 'en'] },
+    placement: {
+      slot: 'home.rail.preview',
+      theme: 'both',
+      locales: ['fa', 'en'],
+    },
     transform: {
       ...getTransformRecipe('home.rail.preview'),
       formats: ['avif', 'webp'],
@@ -284,7 +351,11 @@ export const PROMOTED_ASSET_REGISTRY: Record<RuntimeAssetId, PromotedAssetRecord
       decisionDate: '2026-08-30',
     },
     semantics: decorative,
-    placement: { slot: 'home.graph.backplate', theme: 'light', locales: ['fa', 'en'] },
+    placement: {
+      slot: 'home.graph.backplate',
+      theme: 'light',
+      locales: ['fa', 'en'],
+    },
     transform: {
       ...getTransformRecipe('home.graph.backplate'),
       formats: ['avif', 'webp'],
@@ -306,7 +377,11 @@ export const PROMOTED_ASSET_REGISTRY: Record<RuntimeAssetId, PromotedAssetRecord
       decisionDate: '2026-08-30',
     },
     semantics: decorative,
-    placement: { slot: 'home.graph.backplate', theme: 'dark', locales: ['fa', 'en'] },
+    placement: {
+      slot: 'home.graph.backplate',
+      theme: 'dark',
+      locales: ['fa', 'en'],
+    },
     transform: {
       ...getTransformRecipe('home.graph.backplate'),
       formats: ['avif', 'webp'],
@@ -317,31 +392,39 @@ export const PROMOTED_ASSET_REGISTRY: Record<RuntimeAssetId, PromotedAssetRecord
     },
     assetFile: 'art/home-graph-backplate-dark.png',
   },
-};
-
-export function getPromotedAssetRecord(id: string, expectedSlot: MediaSlot): PromotedAssetRecord {
-  if (!(id in PROMOTED_ASSET_REGISTRY)) {
-    throw new Error(`Unknown promoted asset id: ${id}`);
-  }
-  const record = PROMOTED_ASSET_REGISTRY[id as RuntimeAssetId];
-  if (record.placement.slot !== expectedSlot) {
-    throw new Error(`Asset ${id} is registered for ${record.placement.slot}, not ${expectedSlot}`);
-  }
-  return record;
 }
 
-export function altForLocale(record: PromotedAssetRecord, locale: Locale): string {
+export function getPromotedAssetRecord(
+  id: string,
+  expectedSlot: MediaSlot,
+): PromotedAssetRecord {
+  if (!(id in PROMOTED_ASSET_REGISTRY)) {
+    throw new Error(`Unknown promoted asset id: ${id}`)
+  }
+  const record = PROMOTED_ASSET_REGISTRY[id as RuntimeAssetId]
+  if (record.placement.slot !== expectedSlot) {
+    throw new Error(
+      `Asset ${id} is registered for ${record.placement.slot}, not ${expectedSlot}`,
+    )
+  }
+  return record
+}
+
+export function altForLocale(
+  record: PromotedAssetRecord,
+  locale: Locale,
+): string {
   if (record.semantics.kind === 'decorative') {
-    return record.semantics.alt;
+    return record.semantics.alt
   }
   if (record.semantics.kind === 'consumer-content') {
     throw new Error(
       `Asset ${record.id} requires consumer-supplied localized alt; registry alt is not permitted`,
-    );
+    )
   }
-  const alt = record.semantics.altByLocale[locale];
+  const alt = record.semantics.altByLocale[locale]
   if (!alt) {
-    throw new Error(`Missing alt policy for ${record.id} locale ${locale}`);
+    throw new Error(`Missing alt policy for ${record.id} locale ${locale}`)
   }
-  return alt;
+  return alt
 }

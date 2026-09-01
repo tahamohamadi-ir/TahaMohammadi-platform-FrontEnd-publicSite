@@ -11,10 +11,10 @@ This checklist does **not** close `PUBLIC-190`. Passing computed-style probes do
 
 ## Locale font contract
 
-| Locale | `--font-display` | `--font-body` | Preload (PUBLIC-050) |
-|---|---|---|---|
-| `en` | Newsreader Variable | Inter Variable | `/fonts/inter/InterVariable.woff2`, `/fonts/newsreader/Newsreader-Variable.woff2` |
-| `fa` | Estedad Variable | Vazirmatn Variable | `/fonts/vazirmatn/Vazirmatn-Variable.woff2`, `/fonts/estedad/Estedad-Variable.woff2` |
+| Locale | `--font-display`    | `--font-body`      | Preload (PUBLIC-050)                                                                 |
+| ------ | ------------------- | ------------------ | ------------------------------------------------------------------------------------ |
+| `en`   | Newsreader Variable | Inter Variable     | `/fonts/inter/InterVariable.woff2`, `/fonts/newsreader/Newsreader-Variable.woff2`    |
+| `fa`   | Estedad Variable    | Vazirmatn Variable | `/fonts/vazirmatn/Vazirmatn-Variable.woff2`, `/fonts/estedad/Estedad-Variable.woff2` |
 
 Runtime rules:
 
@@ -26,13 +26,13 @@ Runtime rules:
 
 ## Automated gate
 
-| Gate | Command | Result | Notes |
-|---|---|---|---|
-| Build | `npm run build` | PASS | 23 static pages |
-| Vitest scaffold | `npm test` (includes `public-060.font-tokens.test.ts`) | PASS | 187 tests; token wiring + harness guard |
-| Font computed probe | `npm run test:foundation -- --grep PUBLIC-060` | **4 passed** | body + h1 computed `font-family`, CSS vars, 200% zoom |
-| Design authority | `npm run validate:design` | PASS | 24 components, 6 templates |
-| SEO | `npm run validate:seo` | PASS | sitemap/hreflang/canonical |
+| Gate                | Command                                                | Result       | Notes                                                 |
+| ------------------- | ------------------------------------------------------ | ------------ | ----------------------------------------------------- |
+| Build               | `npm run build`                                        | PASS         | 23 static pages                                       |
+| Vitest scaffold     | `npm test` (includes `public-060.font-tokens.test.ts`) | PASS         | 187 tests; token wiring + harness guard               |
+| Font computed probe | `npm run test:foundation -- --grep PUBLIC-060`         | **4 passed** | body + h1 computed `font-family`, CSS vars, 200% zoom |
+| Design authority    | `npm run validate:design`                              | PASS         | 24 components, 6 templates                            |
+| SEO                 | `npm run validate:seo`                                 | PASS         | sitemap/hreflang/canonical                            |
 
 **Runner:** `npm run test:foundation -- --grep PUBLIC-060`
 
@@ -42,10 +42,10 @@ Runtime rules:
 
 ## Probe routes
 
-| Route | Locale | Checks |
-|---|---|---|
-| `/en/` | `en` | body → Inter Variable; h1 → Newsreader Variable |
-| `/fa/` | `fa` | body → Vazirmatn Variable; h1 → Estedad Variable (or Vazirmatn fallback) |
+| Route  | Locale | Checks                                                                   |
+| ------ | ------ | ------------------------------------------------------------------------ |
+| `/en/` | `en`   | body → Inter Variable; h1 → Newsreader Variable                          |
+| `/fa/` | `fa`   | body → Vazirmatn Variable; h1 → Estedad Variable (or Vazirmatn fallback) |
 
 Additional probes:
 
@@ -56,9 +56,9 @@ Additional probes:
 
 ## Remaining (not in this packet)
 
-| Item | Owner / gate |
-|---|---|
+| Item                                     | Owner / gate                |
+| ---------------------------------------- | --------------------------- |
 | Persian + Latin subset coverage fixtures | FONT-ACQUISITION-PLAN PS-10 |
-| Mixed-direction string fixture | deferred |
-| CLS budget under preload | PUBLIC-290 |
-| Manual owner visual compare | PUBLIC-190 |
+| Mixed-direction string fixture           | deferred                    |
+| CLS budget under preload                 | PUBLIC-290                  |
+| Manual owner visual compare              | PUBLIC-190                  |

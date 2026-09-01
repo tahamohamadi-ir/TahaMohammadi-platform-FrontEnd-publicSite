@@ -334,24 +334,40 @@ html[data-theme='dark'] .site-header {
 }
 
 html[data-theme='light'] .site-footer {
-  background: color-mix(in srgb, var(--color-surface-muted) 70%, var(--color-surface));
+  background: color-mix(
+    in srgb,
+    var(--color-surface-muted) 70%,
+    var(--color-surface)
+  );
   border-top-color: var(--color-border-strong);
 }
 
 html[data-theme='dark'] .site-footer {
-  background: color-mix(in srgb, var(--color-surface-muted) 55%, var(--color-canvas));
+  background: color-mix(
+    in srgb,
+    var(--color-surface-muted) 55%,
+    var(--color-canvas)
+  );
 }
 
 @media (prefers-color-scheme: light) {
   html:not([data-theme]) .site-footer {
-    background: color-mix(in srgb, var(--color-surface-muted) 70%, var(--color-surface));
+    background: color-mix(
+      in srgb,
+      var(--color-surface-muted) 70%,
+      var(--color-surface)
+    );
     border-top-color: var(--color-border-strong);
   }
 }
 
 @media (prefers-color-scheme: dark) {
   html:not([data-theme]) .site-footer {
-    background: color-mix(in srgb, var(--color-surface-muted) 55%, var(--color-canvas));
+    background: color-mix(
+      in srgb,
+      var(--color-surface-muted) 55%,
+      var(--color-canvas)
+    );
   }
 }
 

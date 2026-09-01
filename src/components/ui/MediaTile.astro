@@ -1,10 +1,10 @@
 ---
 interface Props {
-  caption?: string;
-  href?: string;
-  variant?: 'grid' | 'lead' | 'failed';
-  aspectRatio?: string;
-  class?: string;
+  caption?: string
+  href?: string
+  variant?: 'grid' | 'lead' | 'failed'
+  aspectRatio?: string
+  class?: string
 }
 
 const {
@@ -13,11 +13,13 @@ const {
   variant = 'grid',
   aspectRatio = '4 / 3',
   class: className = '',
-} = Astro.props;
+} = Astro.props
 ---
 
 <figure
-  class={['ui-media-tile', `ui-media-tile--${variant}`, className].filter(Boolean).join(' ')}
+  class={['ui-media-tile', `ui-media-tile--${variant}`, className]
+    .filter(Boolean)
+    .join(' ')}
   data-visual-id="MediaTile"
   style={`--ui-media-tile-aspect: ${aspectRatio};`}
 >

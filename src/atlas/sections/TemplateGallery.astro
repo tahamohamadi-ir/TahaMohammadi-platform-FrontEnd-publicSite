@@ -1,28 +1,42 @@
 ---
-import AboutContactUtilityTemplate from '../../components/templates/AboutContactUtilityTemplate.astro';
-import CollectionIndexTemplate from '../../components/templates/CollectionIndexTemplate.astro';
-import EditorialIndexTemplate from '../../components/templates/EditorialIndexTemplate.astro';
-import EvidenceVisualDetailTemplate from '../../components/templates/EvidenceVisualDetailTemplate.astro';
-import HomeTemplate from '../../components/templates/HomeTemplate.astro';
-import LongFormDetailTemplate from '../../components/templates/LongFormDetailTemplate.astro';
-import SectionLead from '../../components/ui/SectionLead.astro';
+import AboutContactUtilityTemplate from '../../components/templates/AboutContactUtilityTemplate.astro'
+import CollectionIndexTemplate from '../../components/templates/CollectionIndexTemplate.astro'
+import EditorialIndexTemplate from '../../components/templates/EditorialIndexTemplate.astro'
+import EvidenceVisualDetailTemplate from '../../components/templates/EvidenceVisualDetailTemplate.astro'
+import HomeTemplate from '../../components/templates/HomeTemplate.astro'
+import LongFormDetailTemplate from '../../components/templates/LongFormDetailTemplate.astro'
+import SectionLead from '../../components/ui/SectionLead.astro'
 ---
 
-<section class="atlas-section" id="atlas-templates" data-visual-id="AtlasTemplatesSection">
+<section
+  class="atlas-section"
+  id="atlas-templates"
+  data-visual-id="AtlasTemplatesSection"
+>
   <h2 class="atlas-section__title">Templates</h2>
-  <p class="atlas-section__summary">Six slot-based templates with delegated H1 lead regions and optional section collapse.</p>
+  <p class="atlas-section__summary">
+    Six slot-based templates with delegated H1 lead regions and optional section
+    collapse.
+  </p>
 
   <div class="atlas-specimen" data-visual-id="AtlasTemplateSpecimen-Home">
     <p class="atlas-specimen__label">HomeTemplate</p>
     <HomeTemplate>
       <div slot="header">Header slot</div>
-      <SectionLead slot="identity-lead" title="Home lead" summary="Identity lead region." />
+      <SectionLead
+        slot="identity-lead"
+        title="Home lead"
+        summary="Identity lead region."
+      />
       <ul slot="relationship-graph"><li>Graph slot</li></ul>
       <div slot="footer">Footer slot</div>
     </HomeTemplate>
   </div>
 
-  <div class="atlas-specimen" data-visual-id="AtlasTemplateSpecimen-CollectionIndex">
+  <div
+    class="atlas-specimen"
+    data-visual-id="AtlasTemplateSpecimen-CollectionIndex"
+  >
     <p class="atlas-specimen__label">CollectionIndexTemplate</p>
     <CollectionIndexTemplate>
       <div slot="header">Header slot</div>
@@ -35,7 +49,10 @@ import SectionLead from '../../components/ui/SectionLead.astro';
     </CollectionIndexTemplate>
   </div>
 
-  <div class="atlas-specimen" data-visual-id="AtlasTemplateSpecimen-EditorialIndex">
+  <div
+    class="atlas-specimen"
+    data-visual-id="AtlasTemplateSpecimen-EditorialIndex"
+  >
     <p class="atlas-specimen__label">EditorialIndexTemplate</p>
     <EditorialIndexTemplate>
       <div slot="header">Header slot</div>
@@ -48,7 +65,10 @@ import SectionLead from '../../components/ui/SectionLead.astro';
     </EditorialIndexTemplate>
   </div>
 
-  <div class="atlas-specimen" data-visual-id="AtlasTemplateSpecimen-LongFormDetail">
+  <div
+    class="atlas-specimen"
+    data-visual-id="AtlasTemplateSpecimen-LongFormDetail"
+  >
     <p class="atlas-specimen__label">LongFormDetailTemplate</p>
     <LongFormDetailTemplate>
       <div slot="header">Header slot</div>
@@ -61,7 +81,10 @@ import SectionLead from '../../components/ui/SectionLead.astro';
     </LongFormDetailTemplate>
   </div>
 
-  <div class="atlas-specimen" data-visual-id="AtlasTemplateSpecimen-EvidenceVisualDetail">
+  <div
+    class="atlas-specimen"
+    data-visual-id="AtlasTemplateSpecimen-EvidenceVisualDetail"
+  >
     <p class="atlas-specimen__label">EvidenceVisualDetailTemplate</p>
     <EvidenceVisualDetailTemplate>
       <div slot="header">Header slot</div>
@@ -75,7 +98,10 @@ import SectionLead from '../../components/ui/SectionLead.astro';
     </EvidenceVisualDetailTemplate>
   </div>
 
-  <div class="atlas-specimen" data-visual-id="AtlasTemplateSpecimen-AboutContactUtility">
+  <div
+    class="atlas-specimen"
+    data-visual-id="AtlasTemplateSpecimen-AboutContactUtility"
+  >
     <p class="atlas-specimen__label">AboutContactUtilityTemplate</p>
     <AboutContactUtilityTemplate>
       <div slot="header">Header slot</div>

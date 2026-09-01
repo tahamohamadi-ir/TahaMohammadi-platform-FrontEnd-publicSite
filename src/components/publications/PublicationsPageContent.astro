@@ -1,21 +1,21 @@
 ---
-import CollectionIndexTemplate from '../templates/CollectionIndexTemplate.astro';
-import SectionLead from '../ui/SectionLead.astro';
-import ContentState from '../state/ContentState.astro';
+import CollectionIndexTemplate from '../templates/CollectionIndexTemplate.astro'
+import SectionLead from '../ui/SectionLead.astro'
+import ContentState from '../state/ContentState.astro'
 import {
   getPublicationsUnavailableCopy,
   publicationsRouteTitle,
   type PublicationsIndexModel,
-} from '../../lib/publications-content';
-import { localePath, type Locale } from '../../lib/navigation';
+} from '../../lib/publications-content'
+import { localePath, type Locale } from '../../lib/navigation'
 
 interface Props {
-  locale: Locale;
-  model: PublicationsIndexModel;
+  locale: Locale
+  model: PublicationsIndexModel
 }
 
-const { locale, model } = Astro.props;
-const homeHref = localePath(locale);
+const { locale, model } = Astro.props
+const homeHref = localePath(locale)
 ---
 
 {
@@ -52,10 +52,14 @@ const homeHref = localePath(locale);
                 </a>
               </h2>
               <p class="publications-page__card-meta">
-                {[publication.authors, publication.venue, publication.date].filter(Boolean).join(' · ')}
+                {[publication.authors, publication.venue, publication.date]
+                  .filter(Boolean)
+                  .join(' · ')}
               </p>
               {publication.publication_type ? (
-                <p class="publications-page__card-type">{publication.publication_type}</p>
+                <p class="publications-page__card-type">
+                  {publication.publication_type}
+                </p>
               ) : null}
             </article>
           </li>

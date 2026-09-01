@@ -1,19 +1,19 @@
 ---
-import FeaturedRecord from '../ui/FeaturedRecord.astro';
-import Badge from '../ui/Badge.astro';
-import Chip from '../ui/Chip.astro';
-import Link from '../ui/Link.astro';
-import PromotedPicture from '../media/PromotedPicture.astro';
-import { getHomeFeaturedContent } from '../../lib/home-content';
-import { localePath, type Locale } from '../../lib/navigation';
+import FeaturedRecord from '../ui/FeaturedRecord.astro'
+import Badge from '../ui/Badge.astro'
+import Chip from '../ui/Chip.astro'
+import Link from '../ui/Link.astro'
+import PromotedPicture from '../media/PromotedPicture.astro'
+import { getHomeFeaturedContent } from '../../lib/home-content'
+import { localePath, type Locale } from '../../lib/navigation'
 
 interface Props {
-  locale: Locale;
+  locale: Locale
 }
 
-const { locale } = Astro.props;
-const content = getHomeFeaturedContent(locale);
-const projectsHref = localePath(locale, 'projects');
+const { locale } = Astro.props
+const content = getHomeFeaturedContent(locale)
+const projectsHref = localePath(locale, 'projects')
 ---
 
 <section class="hm-projects">
@@ -23,7 +23,12 @@ const projectsHref = localePath(locale, 'projects');
         <h2 id="hm-projects-title" class="hm-eyebrow hm-projects__title">
           {content.title}
         </h2>
-        <Link href={projectsHref} label={content.viewAll} variant="standalone" showIcon />
+        <Link
+          href={projectsHref}
+          label={content.viewAll}
+          variant="standalone"
+          showIcon
+        />
       </div>
       <p class="hm-projects__note">{content.draftNote}</p>
     </header>

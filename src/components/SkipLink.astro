@@ -1,12 +1,14 @@
 ---
-import { shellCopy, type Locale } from '../lib/navigation';
+import { shellCopy, type Locale } from '../lib/navigation'
 
 interface Props {
-  locale: Locale;
-  target?: string;
+  locale: Locale
+  target?: string
 }
 
-const { locale, target = '#main-content' } = Astro.props;
+const { locale, target = '#main-content' } = Astro.props
 ---
 
-<a href={target} class="skip-link" data-visual-id="SkipLink">{shellCopy.skipLink[locale]}</a>
+<a href={target} class="skip-link" data-visual-id="SkipLink"
+  >{shellCopy.skipLink[locale]}</a
+>

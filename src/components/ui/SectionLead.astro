@@ -1,17 +1,27 @@
 ---
 interface Props {
-  eyebrow?: string;
-  title: string;
-  summary?: string;
-  primaryAction?: { href: string; label: string };
-  secondaryAction?: { href: string; label: string };
-  class?: string;
+  eyebrow?: string
+  title: string
+  summary?: string
+  primaryAction?: { href: string; label: string }
+  secondaryAction?: { href: string; label: string }
+  class?: string
 }
 
-const { eyebrow, title, summary, primaryAction, secondaryAction, class: className = '' } = Astro.props;
+const {
+  eyebrow,
+  title,
+  summary,
+  primaryAction,
+  secondaryAction,
+  class: className = '',
+} = Astro.props
 ---
 
-<header class={['ui-section-lead', className].filter(Boolean).join(' ')} data-visual-id="SectionLead">
+<header
+  class={['ui-section-lead', className].filter(Boolean).join(' ')}
+  data-visual-id="SectionLead"
+>
   {eyebrow ? <p class="ui-section-lead__eyebrow">{eyebrow}</p> : null}
   <h1 class="ui-section-lead__title">{title}</h1>
   {summary ? <p class="ui-section-lead__summary">{summary}</p> : null}
@@ -22,12 +32,18 @@ const { eyebrow, title, summary, primaryAction, secondaryAction, class: classNam
     primaryAction || secondaryAction ? (
       <div class="ui-section-lead__actions">
         {primaryAction ? (
-          <a href={primaryAction.href} class="ui-section-lead__action ui-section-lead__action--primary">
+          <a
+            href={primaryAction.href}
+            class="ui-section-lead__action ui-section-lead__action--primary"
+          >
             {primaryAction.label}
           </a>
         ) : null}
         {secondaryAction ? (
-          <a href={secondaryAction.href} class="ui-section-lead__action ui-section-lead__action--secondary">
+          <a
+            href={secondaryAction.href}
+            class="ui-section-lead__action ui-section-lead__action--secondary"
+          >
             {secondaryAction.label}
           </a>
         ) : null}
@@ -55,7 +71,11 @@ const { eyebrow, title, summary, primaryAction, secondaryAction, class: classNam
   .ui-section-lead__title {
     margin: 0;
     font-family: var(--font-display);
-    font-size: clamp(var(--font-size-display-min), 4vw, var(--font-size-display-max));
+    font-size: clamp(
+      var(--font-size-display-min),
+      4vw,
+      var(--font-size-display-max)
+    );
     line-height: 1.15;
     color: var(--color-ink);
   }

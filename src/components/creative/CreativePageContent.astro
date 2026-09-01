@@ -1,22 +1,22 @@
 ---
-import CollectionIndexTemplate from '../templates/CollectionIndexTemplate.astro';
-import SectionLead from '../ui/SectionLead.astro';
-import ContentState from '../state/ContentState.astro';
+import CollectionIndexTemplate from '../templates/CollectionIndexTemplate.astro'
+import SectionLead from '../ui/SectionLead.astro'
+import ContentState from '../state/ContentState.astro'
 import {
   formatCreativeCardMeta,
   getCreativeRouteTitle,
   getCreativeUnavailableCopy,
   type CreativeIndexModel,
-} from '../../lib/creative-content';
-import { localePath, type Locale } from '../../lib/navigation';
+} from '../../lib/creative-content'
+import { localePath, type Locale } from '../../lib/navigation'
 
 interface Props {
-  locale: Locale;
-  model: CreativeIndexModel;
+  locale: Locale
+  model: CreativeIndexModel
 }
 
-const { locale, model } = Astro.props;
-const homeHref = localePath(locale);
+const { locale, model } = Astro.props
+const homeHref = localePath(locale)
 ---
 
 {
@@ -36,7 +36,9 @@ const homeHref = localePath(locale);
     <CollectionIndexTemplate class="creative-page">
       <SectionLead
         slot="lead"
-        eyebrow={locale === 'en' ? 'Visual & creative work' : 'آثار بصری و خلاقه'}
+        eyebrow={
+          locale === 'en' ? 'Visual & creative work' : 'آثار بصری و خلاقه'
+        }
         title={getCreativeRouteTitle(locale)}
       />
 
@@ -45,12 +47,19 @@ const homeHref = localePath(locale);
           <li>
             <article class="creative-page__card">
               <h2 class="creative-page__card-title">
-                <a href={localePath(locale, `creative/${work.slug}`)} class="creative-page__card-link">
+                <a
+                  href={localePath(locale, `creative/${work.slug}`)}
+                  class="creative-page__card-link"
+                >
                   {work.title}
                 </a>
               </h2>
-              {work.description ? <p class="creative-page__card-summary">{work.description}</p> : null}
-              <p class="creative-page__card-meta">{formatCreativeCardMeta(work)}</p>
+              {work.description ? (
+                <p class="creative-page__card-summary">{work.description}</p>
+              ) : null}
+              <p class="creative-page__card-meta">
+                {formatCreativeCardMeta(work)}
+              </p>
             </article>
           </li>
         ))}

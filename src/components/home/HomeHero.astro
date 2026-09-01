@@ -1,17 +1,17 @@
 ---
-import SectionLead from '../ui/SectionLead.astro';
-import Chip from '../ui/Chip.astro';
-import ThemePicture from '../media/ThemePicture.astro';
-import { getHomeHeroContent } from '../../lib/home-content';
-import { HOME_HERO_ATMOSPHERE_ASSETS } from '../../lib/media/promoted-media';
-import type { Locale } from '../../lib/navigation';
+import SectionLead from '../ui/SectionLead.astro'
+import Chip from '../ui/Chip.astro'
+import ThemePicture from '../media/ThemePicture.astro'
+import { getHomeHeroContent } from '../../lib/home-content'
+import { HOME_HERO_ATMOSPHERE_ASSETS } from '../../lib/media/promoted-media'
+import type { Locale } from '../../lib/navigation'
 
 interface Props {
-  locale: Locale;
+  locale: Locale
 }
 
-const { locale } = Astro.props;
-const content = getHomeHeroContent(locale);
+const { locale } = Astro.props
+const content = getHomeHeroContent(locale)
 ---
 
 <section class="hm-hero">

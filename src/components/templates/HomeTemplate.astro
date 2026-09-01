@@ -1,18 +1,24 @@
 ---
-import './template-base.css';
+import './template-base.css'
 
 interface Props {
-  class?: string;
+  class?: string
 }
 
-const { class: className = '' } = Astro.props;
+const { class: className = '' } = Astro.props
 ---
 
-<div class={['tm-template tm-home-template', className].filter(Boolean).join(' ')} data-visual-id="HomeTemplate">
+<div
+  class={['tm-template tm-home-template', className].filter(Boolean).join(' ')}
+  data-visual-id="HomeTemplate"
+>
   <slot name="header" />
 
   <div class="tm-template__main tm-home-template__main">
-    <section class="tm-template__section" aria-labelledby="home-identity-region">
+    <section
+      class="tm-template__section"
+      aria-labelledby="home-identity-region"
+    >
       <div id="home-identity-region" class="tm-home-template__h1-region">
         <slot name="identity-lead" />
       </div>
@@ -20,7 +26,10 @@ const { class: className = '' } = Astro.props;
 
     {
       Astro.slots.has('relationship-graph') ? (
-        <section class="tm-template__section tm-template__section--optional" aria-labelledby="home-graph-region">
+        <section
+          class="tm-template__section tm-template__section--optional"
+          aria-labelledby="home-graph-region"
+        >
           <div id="home-graph-region">
             <slot name="relationship-graph" />
           </div>
@@ -30,7 +39,10 @@ const { class: className = '' } = Astro.props;
 
     {
       Astro.slots.has('research-fit') ? (
-        <section class="tm-template__section tm-template__section--optional" aria-labelledby="home-research-fit-region">
+        <section
+          class="tm-template__section tm-template__section--optional"
+          aria-labelledby="home-research-fit-region"
+        >
           <div id="home-research-fit-region">
             <slot name="research-fit" />
           </div>
@@ -40,7 +52,10 @@ const { class: className = '' } = Astro.props;
 
     {
       Astro.slots.has('journey-timeline') ? (
-        <section class="tm-template__section tm-template__section--optional" aria-labelledby="home-journey-region">
+        <section
+          class="tm-template__section tm-template__section--optional"
+          aria-labelledby="home-journey-region"
+        >
           <div id="home-journey-region">
             <slot name="journey-timeline" />
           </div>
@@ -50,7 +65,10 @@ const { class: className = '' } = Astro.props;
 
     {
       Astro.slots.has('selected-projects') ? (
-        <section class="tm-template__section tm-template__section--optional" aria-labelledby="home-projects-region">
+        <section
+          class="tm-template__section tm-template__section--optional"
+          aria-labelledby="home-projects-region"
+        >
           <div id="home-projects-region">
             <slot name="selected-projects" />
           </div>
@@ -60,7 +78,10 @@ const { class: className = '' } = Astro.props;
 
     {
       Astro.slots.has('selected-publications') ? (
-        <section class="tm-template__section tm-template__section--optional" aria-labelledby="home-publications-region">
+        <section
+          class="tm-template__section tm-template__section--optional"
+          aria-labelledby="home-publications-region"
+        >
           <div id="home-publications-region">
             <slot name="selected-publications" />
           </div>
@@ -83,7 +104,10 @@ const { class: className = '' } = Astro.props;
 
     {
       Astro.slots.has('collaboration-cv-contact') ? (
-        <section class="tm-template__section tm-template__section--optional" aria-labelledby="home-collaboration-region">
+        <section
+          class="tm-template__section tm-template__section--optional"
+          aria-labelledby="home-collaboration-region"
+        >
           <div id="home-collaboration-region">
             <slot name="collaboration-cv-contact" />
           </div>

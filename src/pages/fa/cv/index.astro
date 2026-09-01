@@ -1,17 +1,17 @@
 ---
-import SiteLayout from '../../../layouts/SiteLayout.astro';
-import CvPageContent from '../../../components/cv/CvPageContent.astro';
+import SiteLayout from '../../../layouts/SiteLayout.astro'
+import CvPageContent from '../../../components/cv/CvPageContent.astro'
 import {
   fetchCvPageModel,
   getCvRouteTitle,
   resolveCvAlternateAvailability,
-} from '../../../lib/cv-content';
-import '../../../styles/page-families.css';
+} from '../../../lib/cv-content'
+import '../../../styles/page-families.css'
 
-const locale = 'fa' as const;
-const model = await fetchCvPageModel();
-const alternateAvailable = resolveCvAlternateAvailability(model);
-const pageTitle = `${getCvRouteTitle(locale)} — Taha Mohammadi`;
+const locale = 'fa' as const
+const model = await fetchCvPageModel()
+const alternateAvailable = resolveCvAlternateAvailability(model)
+const pageTitle = `${getCvRouteTitle(locale)} — Taha Mohammadi`
 ---
 
 <SiteLayout

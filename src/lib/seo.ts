@@ -1,17 +1,22 @@
 /** Head metadata helpers for canonical URLs and hreflang alternates. */
 
-import { buildAlternateLinks, buildCanonicalUrl, getDir, type Locale } from './routes';
+import {
+  buildAlternateLinks,
+  buildCanonicalUrl,
+  getDir,
+  type Locale,
+} from './routes'
 
-export { getDir };
+export { getDir }
 
 export interface AlternateLink {
-  hreflang: string;
-  href: string;
+  hreflang: string
+  href: string
 }
 
 export interface PageSeo {
-  canonical: string;
-  alternates: AlternateLink[];
+  canonical: string
+  alternates: AlternateLink[]
 }
 
 /**
@@ -35,6 +40,11 @@ export function buildPageSeo(
 ): PageSeo {
   return {
     canonical: buildCanonicalUrl(siteOrigin, locale, pathSegment),
-    alternates: buildAlternateLinks(siteOrigin, locale, pathSegment, alternateAvailable),
-  };
+    alternates: buildAlternateLinks(
+      siteOrigin,
+      locale,
+      pathSegment,
+      alternateAvailable,
+    ),
+  }
 }

@@ -1,17 +1,17 @@
 ---
-import SiteLayout from '../../../layouts/SiteLayout.astro';
-import ProjectsPageContent from '../../../components/projects/ProjectsPageContent.astro';
+import SiteLayout from '../../../layouts/SiteLayout.astro'
+import ProjectsPageContent from '../../../components/projects/ProjectsPageContent.astro'
 import {
   fetchProjectsIndex,
   getProjectsRouteTitle,
   resolveProjectsAlternateAvailability,
-} from '../../../lib/projects-content';
-import '../../../styles/page-families.css';
+} from '../../../lib/projects-content'
+import '../../../styles/page-families.css'
 
-const locale = 'en' as const;
-const model = await fetchProjectsIndex(locale);
-const alternateAvailable = await resolveProjectsAlternateAvailability(locale);
-const pageTitle = `${getProjectsRouteTitle(locale)} — Taha Mohammadi`;
+const locale = 'en' as const
+const model = await fetchProjectsIndex(locale)
+const alternateAvailable = await resolveProjectsAlternateAvailability(locale)
+const pageTitle = `${getProjectsRouteTitle(locale)} — Taha Mohammadi`
 ---
 
 <SiteLayout

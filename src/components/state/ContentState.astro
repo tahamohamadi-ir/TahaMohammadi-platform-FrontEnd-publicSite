@@ -1,19 +1,19 @@
 ---
-import Link from '../ui/Link.astro';
-import type { ContentStateLocale, ContentStateVariant } from './types';
+import Link from '../ui/Link.astro'
+import type { ContentStateLocale, ContentStateVariant } from './types'
 
 interface Props {
-  variant: ContentStateVariant;
-  locale: ContentStateLocale;
-  title: string;
-  message?: string;
-  actionLabel?: string;
-  actionHref?: string;
-  alternateLabel?: string;
-  alternateHref?: string;
+  variant: ContentStateVariant
+  locale: ContentStateLocale
+  title: string
+  message?: string
+  actionLabel?: string
+  actionHref?: string
+  alternateLabel?: string
+  alternateHref?: string
   /** Page-level states use one H1; inline states use H2. */
-  headingLevel?: 'h1' | 'h2';
-  class?: string;
+  headingLevel?: 'h1' | 'h2'
+  class?: string
 }
 
 const {
@@ -27,22 +27,27 @@ const {
   alternateHref,
   headingLevel = 'h2',
   class: className = '',
-} = Astro.props;
+} = Astro.props
 
-const HeadingTag = headingLevel;
+const HeadingTag = headingLevel
 
-const role = variant === 'error' ? 'alert' : 'status';
-const live = variant === 'loading' ? 'polite' : undefined;
-const hasAction = Boolean(actionLabel && actionHref);
-const hasAlternate = variant === 'untranslated' && Boolean(alternateLabel && alternateHref);
+const role = variant === 'error' ? 'alert' : 'status'
+const live = variant === 'loading' ? 'polite' : undefined
+const hasAction = Boolean(actionLabel && actionHref)
+const hasAlternate =
+  variant === 'untranslated' && Boolean(alternateLabel && alternateHref)
 
 if (variant === 'untranslated' && !hasAlternate) {
-  throw new Error('ContentState untranslated requires alternateLabel and alternateHref');
+  throw new Error(
+    'ContentState untranslated requires alternateLabel and alternateHref',
+  )
 }
 ---
 
 <section
-  class={['ui-content-state', `ui-content-state--${variant}`, className].filter(Boolean).join(' ')}
+  class={['ui-content-state', `ui-content-state--${variant}`, className]
+    .filter(Boolean)
+    .join(' ')}
   role={role}
   aria-live={live}
   aria-labelledby={`content-state-title-${variant}`}
@@ -58,7 +63,10 @@ if (variant === 'untranslated' && !hasAlternate) {
         <span class="ui-content-state__icon" aria-hidden="true" />
       )
     }
-    <HeadingTag id={`content-state-title-${variant}`} class="ui-content-state__title">
+    <HeadingTag
+      id={`content-state-title-${variant}`}
+      class="ui-content-state__title"
+    >
       {title}
     </HeadingTag>
     {message ? <p class="ui-content-state__message">{message}</p> : null}
@@ -67,12 +75,22 @@ if (variant === 'untranslated' && !hasAlternate) {
   <div class="ui-content-state__actions">
     {
       hasAction ? (
-        <Link href={actionHref!} label={actionLabel!} variant="standalone" showIcon />
+        <Link
+          href={actionHref!}
+          label={actionLabel!}
+          variant="standalone"
+          showIcon
+        />
       ) : null
     }
     {
       hasAlternate ? (
-        <Link href={alternateHref!} label={alternateLabel!} variant="standalone" showIcon />
+        <Link
+          href={alternateHref!}
+          label={alternateLabel!}
+          variant="standalone"
+          showIcon
+        />
       ) : null
     }
   </div>

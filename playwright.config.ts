@@ -1,8 +1,8 @@
-import { createServer } from 'node:net';
-import type { AddressInfo } from 'node:net';
-import { defineConfig } from '@playwright/test';
+import { createServer } from 'node:net'
+import type { AddressInfo } from 'node:net'
+import { defineConfig } from '@playwright/test'
 
-const PORT_ENV = 'TM_E2E_PORT';
+const PORT_ENV = 'TM_E2E_PORT'
 
 /**
  * Resolve one ephemeral free port per run so the harness never depends on a
@@ -13,27 +13,27 @@ const PORT_ENV = 'TM_E2E_PORT';
  * inherit it and evaluate to the same baseURL and webServer port.
  */
 async function resolveRunPort(): Promise<number> {
-  const published = process.env[PORT_ENV];
+  const published = process.env[PORT_ENV]
   if (published && /^\d+$/.test(published)) {
-    return Number(published);
+    return Number(published)
   }
 
   const port = await new Promise<number>((resolve, reject) => {
-    const probe = createServer();
-    probe.unref();
-    probe.once('error', reject);
+    const probe = createServer()
+    probe.unref()
+    probe.once('error', reject)
     probe.listen(0, '127.0.0.1', () => {
-      const { port: freePort } = probe.address() as AddressInfo;
-      probe.close((error) => (error ? reject(error) : resolve(freePort)));
-    });
-  });
+      const { port: freePort } = probe.address() as AddressInfo
+      probe.close((error) => (error ? reject(error) : resolve(freePort)))
+    })
+  })
 
-  process.env[PORT_ENV] = String(port);
-  return port;
+  process.env[PORT_ENV] = String(port)
+  return port
 }
 
-const port = await resolveRunPort();
-const baseURL = `http://127.0.0.1:${port}`;
+const port = await resolveRunPort()
+const baseURL = `http://127.0.0.1:${port}`
 
 export default defineConfig({
   testDir: './tests/e2e',
@@ -49,4 +49,4 @@ export default defineConfig({
     reuseExistingServer: false,
     timeout: 300_000,
   },
-});
+})

@@ -1,15 +1,17 @@
 ---
-import './template-base.css';
+import './template-base.css'
 
 interface Props {
-  class?: string;
+  class?: string
 }
 
-const { class: className = '' } = Astro.props;
+const { class: className = '' } = Astro.props
 ---
 
 <div
-  class={['tm-template tm-evidence-visual-detail-template', className].filter(Boolean).join(' ')}
+  class={['tm-template tm-evidence-visual-detail-template', className]
+    .filter(Boolean)
+    .join(' ')}
   data-visual-id="EvidenceVisualDetailTemplate"
 >
   <slot name="header" />
@@ -35,7 +37,10 @@ const { class: className = '' } = Astro.props;
 
     {
       Astro.slots.has('limitations') ? (
-        <section class="tm-template__section tm-template__section--optional" aria-labelledby="evidence-limitations-region">
+        <section
+          class="tm-template__section tm-template__section--optional"
+          aria-labelledby="evidence-limitations-region"
+        >
           <div id="evidence-limitations-region">
             <slot name="limitations" />
           </div>
@@ -45,7 +50,10 @@ const { class: className = '' } = Astro.props;
 
     {
       Astro.slots.has('related') ? (
-        <section class="tm-template__section tm-template__section--optional" aria-labelledby="evidence-related-region">
+        <section
+          class="tm-template__section tm-template__section--optional"
+          aria-labelledby="evidence-related-region"
+        >
           <div id="evidence-related-region">
             <slot name="related" />
           </div>

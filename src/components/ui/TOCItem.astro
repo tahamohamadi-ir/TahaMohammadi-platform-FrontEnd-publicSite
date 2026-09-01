@@ -1,22 +1,37 @@
 ---
 interface Props {
-  href: string;
-  label: string;
-  level?: 1 | 2;
-  current?: boolean;
-  class?: string;
+  href: string
+  label: string
+  level?: 1 | 2
+  current?: boolean
+  class?: string
 }
 
-const { href, label, level = 1, current = false, class: className = '' } = Astro.props;
+const {
+  href,
+  label,
+  level = 1,
+  current = false,
+  class: className = '',
+} = Astro.props
 ---
 
 <li
-  class={['ui-toc-item', `ui-toc-item--level${level}`, current && 'ui-toc-item--current', className]
+  class={[
+    'ui-toc-item',
+    `ui-toc-item--level${level}`,
+    current && 'ui-toc-item--current',
+    className,
+  ]
     .filter(Boolean)
     .join(' ')}
   data-visual-id="TOCItem"
 >
-  <a href={href} class="ui-toc-item__link" aria-current={current ? 'location' : undefined}>
+  <a
+    href={href}
+    class="ui-toc-item__link"
+    aria-current={current ? 'location' : undefined}
+  >
     {label}
     {current ? <span class="ui-toc-item__marker" aria-hidden="true" /> : null}
   </a>

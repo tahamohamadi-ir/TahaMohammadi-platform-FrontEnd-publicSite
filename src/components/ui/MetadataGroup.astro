@@ -1,20 +1,23 @@
 ---
 export interface MetadataEntry {
-  label: string;
-  value?: string;
-  dir?: 'ltr' | 'rtl' | 'auto';
+  label: string
+  value?: string
+  dir?: 'ltr' | 'rtl' | 'auto'
 }
 
 interface Props {
-  items: MetadataEntry[];
-  class?: string;
+  items: MetadataEntry[]
+  class?: string
 }
 
-const { items, class: className = '' } = Astro.props;
-const visibleItems = items.filter((item) => item.value);
+const { items, class: className = '' } = Astro.props
+const visibleItems = items.filter((item) => item.value)
 ---
 
-<dl class={['ui-metadata-group', className].filter(Boolean).join(' ')} data-visual-id="MetadataGroup">
+<dl
+  class={['ui-metadata-group', className].filter(Boolean).join(' ')}
+  data-visual-id="MetadataGroup"
+>
   {
     visibleItems.map((item) => (
       <div class="ui-metadata-group__row">

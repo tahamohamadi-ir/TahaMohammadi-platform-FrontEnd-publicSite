@@ -1,14 +1,14 @@
 ---
 interface Props {
-  typeLabel?: string;
-  statusLabel?: string;
-  title: string;
-  authors?: string;
-  venue?: string;
-  date?: string;
-  identifier?: string;
-  href?: string;
-  class?: string;
+  typeLabel?: string
+  statusLabel?: string
+  title: string
+  authors?: string
+  venue?: string
+  date?: string
+  identifier?: string
+  href?: string
+  class?: string
 }
 
 const {
@@ -21,13 +21,24 @@ const {
   identifier,
   href,
   class: className = '',
-} = Astro.props;
+} = Astro.props
 ---
 
-<article class={['ui-publication-row', className].filter(Boolean).join(' ')} data-visual-id="PublicationRow">
+<article
+  class={['ui-publication-row', className].filter(Boolean).join(' ')}
+  data-visual-id="PublicationRow"
+>
   <div class="ui-publication-row__labels">
-    {typeLabel ? <span class="ui-publication-row__type">{typeLabel}</span> : null}
-    {statusLabel ? <span class="ui-publication-row__status">{statusLabel}</span> : null}
+    {
+      typeLabel ? (
+        <span class="ui-publication-row__type">{typeLabel}</span>
+      ) : null
+    }
+    {
+      statusLabel ? (
+        <span class="ui-publication-row__status">{statusLabel}</span>
+      ) : null
+    }
   </div>
   <div class="ui-publication-row__citation">
     <h3 class="ui-publication-row__title">

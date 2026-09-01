@@ -1,15 +1,15 @@
 ---
 interface Props {
-  id: string;
-  label: string;
-  name: string;
-  value?: string;
-  hint?: string;
-  error?: string;
-  disabled?: boolean;
-  type?: 'text' | 'email' | 'search' | 'url' | 'tel';
-  autocomplete?: string;
-  class?: string;
+  id: string
+  label: string
+  name: string
+  value?: string
+  hint?: string
+  error?: string
+  disabled?: boolean
+  type?: 'text' | 'email' | 'search' | 'url' | 'tel'
+  autocomplete?: string
+  class?: string
 }
 
 const {
@@ -23,10 +23,15 @@ const {
   type = 'text',
   autocomplete,
   class: className = '',
-} = Astro.props;
+} = Astro.props
 ---
 
-<div class={['ui-input', error && 'ui-input--error', className].filter(Boolean).join(' ')} data-visual-id="Input">
+<div
+  class={['ui-input', error && 'ui-input--error', className]
+    .filter(Boolean)
+    .join(' ')}
+  data-visual-id="Input"
+>
   <label class="ui-input__label" for={id}>
     {label}
   </label>
@@ -39,20 +44,27 @@ const {
     disabled={disabled}
     autocomplete={autocomplete}
     aria-invalid={error ? 'true' : undefined}
-    aria-describedby={[hint ? `${id}-hint` : undefined, error ? `${id}-error` : undefined]
+    aria-describedby={[
+      hint ? `${id}-hint` : undefined,
+      error ? `${id}-error` : undefined,
+    ]
       .filter(Boolean)
       .join(' ') || undefined}
   />
-  {hint ? (
-    <p class="ui-input__hint" id={`${id}-hint`}>
-      {hint}
-    </p>
-  ) : null}
-  {error ? (
-    <p class="ui-input__error" id={`${id}-error`} role="alert">
-      {error}
-    </p>
-  ) : null}
+  {
+    hint ? (
+      <p class="ui-input__hint" id={`${id}-hint`}>
+        {hint}
+      </p>
+    ) : null
+  }
+  {
+    error ? (
+      <p class="ui-input__error" id={`${id}-error`} role="alert">
+        {error}
+      </p>
+    ) : null
+  }
 </div>
 
 <style>

@@ -3,7 +3,7 @@
  * Keep aligned with src/lib/seo-route-registry.ts.
  */
 
-export const LOCALES = ['fa', 'en'];
+export const LOCALES = ['fa', 'en']
 
 /** Route tail without locale prefix; empty string is home `/{locale}/`. */
 export const LOCALE_INDEX_ROUTES = [
@@ -18,4 +18,4 @@ export const LOCALE_INDEX_ROUTES = [
   'cv',
   'contact',
   'search',
-];
+]

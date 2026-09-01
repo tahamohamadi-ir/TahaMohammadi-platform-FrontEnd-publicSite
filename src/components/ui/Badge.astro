@@ -1,19 +1,26 @@
 ---
 interface Props {
-  label: string;
-  variant?: 'status' | 'type';
-  tone?: 'neutral' | 'brand' | 'research' | 'context' | 'danger';
-  class?: string;
+  label: string
+  variant?: 'status' | 'type'
+  tone?: 'neutral' | 'brand' | 'research' | 'context' | 'danger'
+  class?: string
 }
 
-const { label, variant = 'status', tone = 'neutral', class: className = '' } = Astro.props;
+const {
+  label,
+  variant = 'status',
+  tone = 'neutral',
+  class: className = '',
+} = Astro.props
 ---
 
 <span
-  class={['ui-badge', `ui-badge--${variant}`, `ui-badge--${tone}`, className].filter(Boolean).join(' ')}
+  class={['ui-badge', `ui-badge--${variant}`, `ui-badge--${tone}`, className]
+    .filter(Boolean)
+    .join(' ')}
   data-visual-id="Badge"
 >
-  <span class="ui-badge__shape" aria-hidden="true" />
+  <span class="ui-badge__shape" aria-hidden="true"></span>
   <span class="ui-badge__label">{label}</span>
 </span>
 
@@ -60,7 +67,11 @@ const { label, variant = 'status', tone = 'neutral', class: className = '' } = A
   }
 
   .ui-badge--danger {
-    background: color-mix(in srgb, var(--color-danger) 12%, var(--color-surface));
+    background: color-mix(
+      in srgb,
+      var(--color-danger) 12%,
+      var(--color-surface)
+    );
     border-color: var(--color-danger);
     color: var(--color-danger);
   }

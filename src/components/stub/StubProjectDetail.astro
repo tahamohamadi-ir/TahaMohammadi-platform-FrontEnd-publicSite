@@ -1,17 +1,20 @@
 ---
-import { localePath, type Locale } from '../../lib/navigation';
-import type { FeaturedProjectCard } from '../../lib/home-content';
-import { getStubProjectDraftNote, getStubBackToProjectsLabel } from '../../lib/stub-detail-content';
+import { localePath, type Locale } from '../../lib/navigation'
+import type { FeaturedProjectCard } from '../../lib/home-content'
+import {
+  getStubProjectDraftNote,
+  getStubBackToProjectsLabel,
+} from '../../lib/stub-detail-content'
 
 interface Props {
-  locale: Locale;
-  project: FeaturedProjectCard;
+  locale: Locale
+  project: FeaturedProjectCard
 }
 
-const { locale, project } = Astro.props;
-const projectsIndexHref = localePath(locale, 'projects');
-const draftNote = getStubProjectDraftNote(locale);
-const backLabel = getStubBackToProjectsLabel(locale);
+const { locale, project } = Astro.props
+const projectsIndexHref = localePath(locale, 'projects')
+const draftNote = getStubProjectDraftNote(locale)
+const backLabel = getStubBackToProjectsLabel(locale)
 ---
 
 <article class="page-shell">

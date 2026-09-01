@@ -1,36 +1,41 @@
 ---
-import Badge from '../../components/ui/Badge.astro';
-import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
-import Button from '../../components/ui/Button.astro';
-import Card from '../../components/ui/Card.astro';
-import Chip from '../../components/ui/Chip.astro';
-import ContactCTA from '../../components/ui/ContactCTA.astro';
-import ContentRow from '../../components/ui/ContentRow.astro';
-import FeaturedRecord from '../../components/ui/FeaturedRecord.astro';
-import FilterBar from '../../components/ui/FilterBar.astro';
-import IconButton from '../../components/ui/IconButton.astro';
-import Input from '../../components/ui/Input.astro';
-import Link from '../../components/ui/Link.astro';
-import LocalTabs from '../../components/ui/LocalTabs.astro';
-import MediaTile from '../../components/ui/MediaTile.astro';
-import MetadataGroup from '../../components/ui/MetadataGroup.astro';
-import Pagination from '../../components/ui/Pagination.astro';
-import PublicationRow from '../../components/ui/PublicationRow.astro';
-import SectionLead from '../../components/ui/SectionLead.astro';
-import Textarea from '../../components/ui/Textarea.astro';
-import TimelineNode from '../../components/ui/TimelineNode.astro';
-import TOCItem from '../../components/ui/TOCItem.astro';
-import Header from '../../components/Header.astro';
-import LanguageToggle from '../../components/LanguageToggle.astro';
-import ThemeToggle from '../../components/ThemeToggle.astro';
-import { shellCopy } from '../../lib/navigation';
-import { Menu } from 'lucide-astro';
+import Badge from '../../components/ui/Badge.astro'
+import Breadcrumbs from '../../components/ui/Breadcrumbs.astro'
+import Button from '../../components/ui/Button.astro'
+import Card from '../../components/ui/Card.astro'
+import Chip from '../../components/ui/Chip.astro'
+import ContactCTA from '../../components/ui/ContactCTA.astro'
+import ContentRow from '../../components/ui/ContentRow.astro'
+import FeaturedRecord from '../../components/ui/FeaturedRecord.astro'
+import FilterBar from '../../components/ui/FilterBar.astro'
+import IconButton from '../../components/ui/IconButton.astro'
+import Input from '../../components/ui/Input.astro'
+import Link from '../../components/ui/Link.astro'
+import LocalTabs from '../../components/ui/LocalTabs.astro'
+import MediaTile from '../../components/ui/MediaTile.astro'
+import MetadataGroup from '../../components/ui/MetadataGroup.astro'
+import Pagination from '../../components/ui/Pagination.astro'
+import PublicationRow from '../../components/ui/PublicationRow.astro'
+import SectionLead from '../../components/ui/SectionLead.astro'
+import Textarea from '../../components/ui/Textarea.astro'
+import TimelineNode from '../../components/ui/TimelineNode.astro'
+import TOCItem from '../../components/ui/TOCItem.astro'
+import Header from '../../components/Header.astro'
+import LanguageToggle from '../../components/LanguageToggle.astro'
+import ThemeToggle from '../../components/ThemeToggle.astro'
+import { shellCopy } from '../../lib/navigation'
+import { Menu } from 'lucide-astro'
 ---
 
-<section class="atlas-section" id="atlas-components" data-visual-id="AtlasComponentsSection">
+<section
+  class="atlas-section"
+  id="atlas-components"
+  data-visual-id="AtlasComponentsSection"
+>
   <h2 class="atlas-section__title">Components</h2>
   <p class="atlas-section__summary">
-    All 24 pinned inventory components with representative states for review. Specimens use neutral labels only.
+    All 24 pinned inventory components with representative states for review.
+    Specimens use neutral labels only.
   </p>
 
   <div class="atlas-grid atlas-grid--components">
@@ -47,14 +52,22 @@ import { Menu } from 'lucide-astro';
     <div class="atlas-specimen" data-visual-id="AtlasSpecimen-IconButton">
       <p class="atlas-specimen__label">IconButton</p>
       <div class="atlas-state-row">
-        <IconButton label={shellCopy.menuToggle.en} variant="outlined"><Menu size={18} /></IconButton>
-        <IconButton label={shellCopy.menuToggle.fa} variant="outlined"><Menu size={18} /></IconButton>
+        <IconButton label={shellCopy.menuToggle.en} variant="outlined"
+          ><Menu size={18} /></IconButton
+        >
+        <IconButton label={shellCopy.menuToggle.fa} variant="outlined"
+          ><Menu size={18} /></IconButton
+        >
       </div>
     </div>
 
     <div class="atlas-specimen" data-visual-id="AtlasSpecimen-Link">
       <p class="atlas-specimen__label">Link</p>
-      <Link href="#atlas-components" label="Standalone link" variant="standalone" />
+      <Link
+        href="#atlas-components"
+        label="Standalone link"
+        variant="standalone"
+      />
     </div>
 
     <div class="atlas-specimen" data-visual-id="AtlasSpecimen-Chip">
@@ -104,7 +117,12 @@ import { Menu } from 'lucide-astro';
 
     <div class="atlas-specimen" data-visual-id="AtlasSpecimen-FilterBar">
       <p class="atlas-specimen__label">FilterBar</p>
-      <FilterBar action="/en/projects/" queryLabel="Search" sortLabel="Sort" resultSummary="12 results" />
+      <FilterBar
+        action="/en/projects/"
+        queryLabel="Search"
+        sortLabel="Sort"
+        resultSummary="12 results"
+      />
     </div>
 
     <div class="atlas-specimen" data-visual-id="AtlasSpecimen-Pagination">
@@ -120,22 +138,44 @@ import { Menu } from 'lucide-astro';
 
     <div class="atlas-specimen" data-visual-id="AtlasSpecimen-SectionLead">
       <p class="atlas-specimen__label">SectionLead</p>
-      <SectionLead eyebrow="Eyebrow" title="Section title" summary="Section summary." />
+      <SectionLead
+        eyebrow="Eyebrow"
+        title="Section title"
+        summary="Section summary."
+      />
     </div>
 
     <div class="atlas-specimen" data-visual-id="AtlasSpecimen-Card">
       <p class="atlas-specimen__label">Card</p>
-      <Card typeLabel="Type" title="Card title" summary="Card summary." href="#" actionLabel="Open" />
+      <Card
+        typeLabel="Type"
+        title="Card title"
+        summary="Card summary."
+        href="#"
+        actionLabel="Open"
+      />
     </div>
 
     <div class="atlas-specimen" data-visual-id="AtlasSpecimen-FeaturedRecord">
       <p class="atlas-specimen__label">FeaturedRecord</p>
-      <FeaturedRecord label="Featured" title="Featured title" summary="Featured summary." href="#" actionLabel="Open" />
+      <FeaturedRecord
+        label="Featured"
+        title="Featured title"
+        summary="Featured summary."
+        href="#"
+        actionLabel="Open"
+      />
     </div>
 
     <div class="atlas-specimen" data-visual-id="AtlasSpecimen-ContentRow">
       <p class="atlas-specimen__label">ContentRow</p>
-      <ContentRow typeLabel="Project" title="Content row" excerpt="Excerpt text." href="#" actionLabel="Open" />
+      <ContentRow
+        typeLabel="Project"
+        title="Content row"
+        excerpt="Excerpt text."
+        href="#"
+        actionLabel="Open"
+      />
     </div>
 
     <div class="atlas-specimen" data-visual-id="AtlasSpecimen-PublicationRow">
@@ -162,7 +202,11 @@ import { Menu } from 'lucide-astro';
 
     <div class="atlas-specimen" data-visual-id="AtlasSpecimen-TimelineNode">
       <p class="atlas-specimen__label">TimelineNode</p>
-      <TimelineNode label="Timeline step" period="2024–2026" summary="Timeline summary." />
+      <TimelineNode
+        label="Timeline step"
+        period="2024–2026"
+        summary="Timeline summary."
+      />
     </div>
 
     <div class="atlas-specimen" data-visual-id="AtlasSpecimen-MediaTile">
@@ -191,17 +235,32 @@ import { Menu } from 'lucide-astro';
     <div class="atlas-specimen" data-visual-id="AtlasSpecimen-Input">
       <p class="atlas-specimen__label">Input</p>
       <Input id="atlas-input" name="email" label="Email" hint="Hint text" />
-      <Input id="atlas-input-error" name="email-error" label="Email" error="Error message" />
+      <Input
+        id="atlas-input-error"
+        name="email-error"
+        label="Email"
+        error="Error message"
+      />
     </div>
 
     <div class="atlas-specimen" data-visual-id="AtlasSpecimen-Textarea">
       <p class="atlas-specimen__label">Textarea</p>
-      <Textarea id="atlas-textarea" name="message" label="Message" hint="Hint text" />
+      <Textarea
+        id="atlas-textarea"
+        name="message"
+        label="Message"
+        hint="Hint text"
+      />
     </div>
   </div>
 
   <div class="atlas-specimen" data-visual-id="AtlasSpecimen-Header">
     <p class="atlas-specimen__label">Header</p>
-    <Header locale="en" currentPath="/en/" alternateHref="/fa/" alternateAvailable />
+    <Header
+      locale="en"
+      currentPath="/en/"
+      alternateHref="/fa/"
+      alternateAvailable
+    />
   </div>
 </section>

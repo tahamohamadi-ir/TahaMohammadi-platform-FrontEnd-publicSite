@@ -27,11 +27,11 @@ Use **npm** as the sole package manager for `Front-End/public-site/`.
 
 ## Alternatives considered
 
-| Option | Why not chosen (Wave 0) |
-|---|---|
-| pnpm | Faster installs, but adds a prerequisite not required for this single-package repo yet |
-| yarn | Same as pnpm; no cross-repo workspace need today |
-| bun | Not required for static Astro output; less predictable in CI for this team baseline |
+| Option | Why not chosen (Wave 0)                                                                |
+| ------ | -------------------------------------------------------------------------------------- |
+| pnpm   | Faster installs, but adds a prerequisite not required for this single-package repo yet |
+| yarn   | Same as pnpm; no cross-repo workspace need today                                       |
+| bun    | Not required for static Astro output; less predictable in CI for this team baseline    |
 
 ## References
 

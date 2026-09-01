@@ -1,28 +1,28 @@
 ---
-import SiteLayout from '../../../layouts/SiteLayout.astro';
-import ResearchTopicDetailContent from '../../../components/research/ResearchTopicDetailContent.astro';
+import SiteLayout from '../../../layouts/SiteLayout.astro'
+import ResearchTopicDetailContent from '../../../components/research/ResearchTopicDetailContent.astro'
 import {
   fetchResearchDetail,
   listResearchDetailSlugs,
   resolveResearchAlternateAvailability,
-} from '../../../lib/research-content';
-import '../../../styles/page-families.css';
+} from '../../../lib/research-content'
+import '../../../styles/page-families.css'
 
 export async function getStaticPaths() {
-  const slugs = await listResearchDetailSlugs('en');
-  return slugs.map((slug) => ({ params: { slug } }));
+  const slugs = await listResearchDetailSlugs('en')
+  return slugs.map((slug) => ({ params: { slug } }))
 }
 
-const locale = 'en' as const;
-const slug = Astro.params.slug ?? '';
-const model = await fetchResearchDetail(locale, slug);
+const locale = 'en' as const
+const slug = Astro.params.slug ?? ''
+const model = await fetchResearchDetail(locale, slug)
 
 if (model.status === 'unavailable') {
-  return new Response(null, { status: 404, statusText: 'Not Found' });
+  return new Response(null, { status: 404, statusText: 'Not Found' })
 }
 
-const alternateAvailable = await resolveResearchAlternateAvailability(locale);
-const pageTitle = `${model.record.title} — Taha Mohammadi`;
+const alternateAvailable = await resolveResearchAlternateAvailability(locale)
+const pageTitle = `${model.record.title} — Taha Mohammadi`
 ---
 
 <SiteLayout

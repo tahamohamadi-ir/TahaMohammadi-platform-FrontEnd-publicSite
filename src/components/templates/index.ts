@@ -5,6 +5,6 @@ export const templateNames = [
   'LongFormDetailTemplate',
   'EvidenceVisualDetailTemplate',
   'AboutContactUtilityTemplate',
-] as const;
+] as const
 
-export type TemplateName = (typeof templateNames)[number];
+export type TemplateName = (typeof templateNames)[number]

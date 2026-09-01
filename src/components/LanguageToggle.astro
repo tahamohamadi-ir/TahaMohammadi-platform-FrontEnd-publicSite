@@ -1,12 +1,17 @@
 ---
-import { alternateLocale, localeDisplayCode, shellCopy, type Locale } from '../lib/navigation';
+import {
+  alternateLocale,
+  localeDisplayCode,
+  shellCopy,
+  type Locale,
+} from '../lib/navigation'
 
 interface Props {
-  currentLocale: Locale;
-  alternateHref?: string;
-  available: boolean;
-  variant?: 'compact' | 'menu';
-  class?: string;
+  currentLocale: Locale
+  alternateHref?: string
+  available: boolean
+  variant?: 'compact' | 'menu'
+  class?: string
 }
 
 const {
@@ -15,16 +20,18 @@ const {
   available,
   variant = 'compact',
   class: className = '',
-} = Astro.props;
+} = Astro.props
 
-const otherLocale = alternateLocale(currentLocale);
-const currentCode = localeDisplayCode(currentLocale);
-const alternateCode = localeDisplayCode(otherLocale);
-const unavailableLabel = shellCopy.localeUnavailable[currentLocale];
+const otherLocale = alternateLocale(currentLocale)
+const currentCode = localeDisplayCode(currentLocale)
+const alternateCode = localeDisplayCode(otherLocale)
+const unavailableLabel = shellCopy.localeUnavailable[currentLocale]
 ---
 
 <div
-  class={['language-toggle', `language-toggle--${variant}`, className].filter(Boolean).join(' ')}
+  class={['language-toggle', `language-toggle--${variant}`, className]
+    .filter(Boolean)
+    .join(' ')}
   data-visual-id="LanguageToggle"
   role="group"
   aria-label={shellCopy.localeSwitch[currentLocale]}
@@ -32,55 +39,61 @@ const unavailableLabel = shellCopy.localeUnavailable[currentLocale];
   {
     currentLocale === 'en' ? (
       <>
-        <span class="language-toggle__locale language-toggle__locale--current" aria-current="true">
+        <span
+          class="language-toggle__locale language-toggle__locale--current"
+          aria-current="true"
+        >
           {currentCode}
         </span>
-        <span class="language-toggle__sep" aria-hidden="true">/</span>
-        {
-          available && alternateHref ? (
-            <a
-              href={alternateHref}
-              class="language-toggle__locale language-toggle__locale--link"
-              lang={otherLocale}
-              hreflang={otherLocale}
-            >
-              {alternateCode}
-            </a>
-          ) : (
-            <span
-              class="language-toggle__locale language-toggle__locale--unavailable"
-              aria-disabled="true"
-              title={unavailableLabel}
-            >
-              {alternateCode}
-            </span>
-          )
-        }
+        <span class="language-toggle__sep" aria-hidden="true">
+          /
+        </span>
+        {available && alternateHref ? (
+          <a
+            href={alternateHref}
+            class="language-toggle__locale language-toggle__locale--link"
+            lang={otherLocale}
+            hreflang={otherLocale}
+          >
+            {alternateCode}
+          </a>
+        ) : (
+          <span
+            class="language-toggle__locale language-toggle__locale--unavailable"
+            aria-disabled="true"
+            title={unavailableLabel}
+          >
+            {alternateCode}
+          </span>
+        )}
       </>
     ) : (
       <>
-        {
-          available && alternateHref ? (
-            <a
-              href={alternateHref}
-              class="language-toggle__locale language-toggle__locale--link"
-              lang={otherLocale}
-              hreflang={otherLocale}
-            >
-              {alternateCode}
-            </a>
-          ) : (
-            <span
-              class="language-toggle__locale language-toggle__locale--unavailable"
-              aria-disabled="true"
-              title={unavailableLabel}
-            >
-              {alternateCode}
-            </span>
-          )
-        }
-        <span class="language-toggle__sep" aria-hidden="true">/</span>
-        <span class="language-toggle__locale language-toggle__locale--current" aria-current="true">
+        {available && alternateHref ? (
+          <a
+            href={alternateHref}
+            class="language-toggle__locale language-toggle__locale--link"
+            lang={otherLocale}
+            hreflang={otherLocale}
+          >
+            {alternateCode}
+          </a>
+        ) : (
+          <span
+            class="language-toggle__locale language-toggle__locale--unavailable"
+            aria-disabled="true"
+            title={unavailableLabel}
+          >
+            {alternateCode}
+          </span>
+        )}
+        <span class="language-toggle__sep" aria-hidden="true">
+          /
+        </span>
+        <span
+          class="language-toggle__locale language-toggle__locale--current"
+          aria-current="true"
+        >
           {currentCode}
         </span>
       </>

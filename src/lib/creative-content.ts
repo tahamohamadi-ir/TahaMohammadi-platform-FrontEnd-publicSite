@@ -3,41 +3,46 @@
  * Fetches only published API records; never substitutes seed or draft content.
  */
 
-import type { components } from '../generated/public-api';
+import type { components } from '../generated/public-api'
 import {
   assertPublishedOnly,
   filterPublishedOnly,
   parseJsonResponse,
   PublicApiError,
-} from './api/client';
-import { buildPublicApiUrl, canFetchPublicApi } from './api/resolve-url';
-import { primaryNav, type Locale } from './navigation';
+} from './api/client'
+import { buildPublicApiUrl, canFetchPublicApi } from './api/resolve-url'
+import { primaryNav, type Locale } from './navigation'
 
-export type CreativeWorkListOut = components['schemas']['CreativeWorkListOut'];
-export type CreativeWorkDetailOut = components['schemas']['CreativeWorkDetailOut'];
+export type CreativeWorkListOut = components['schemas']['CreativeWorkListOut']
+export type CreativeWorkDetailOut =
+  components['schemas']['CreativeWorkDetailOut']
 
 export type CreativeIndexModel =
-  | { status: 'unavailable' }
-  | { status: 'ready'; works: CreativeWorkListOut[] };
+  { status: 'unavailable' } | { status: 'ready'; works: CreativeWorkListOut[] }
 
 export type CreativeDetailModel =
-  | { status: 'unavailable' }
-  | { status: 'ready'; work: CreativeWorkDetailOut };
+  { status: 'unavailable' } | { status: 'ready'; work: CreativeWorkDetailOut }
 
-const creativeNavItem = primaryNav.find((item) => item.slug === 'creative');
+const creativeNavItem = primaryNav.find((item) => item.slug === 'creative')
 
 export function getCreativeRouteTitle(locale: Locale): string {
-  return creativeNavItem?.label[locale] ?? (locale === 'en' ? 'Creative' : 'آثار خلاقه');
+  return (
+    creativeNavItem?.label[locale] ??
+    (locale === 'en' ? 'Creative' : 'آثار خلاقه')
+  )
 }
 
 async function fetchJson<T>(path: string): Promise<T> {
   const response = await fetch(buildPublicApiUrl(path), {
     headers: { Accept: 'application/json' },
-  });
-  return parseJsonResponse<T>(response);
+  })
+  return parseJsonResponse<T>(response)
 }
 
-export function getCreativeUnavailableCopy(locale: Locale): { title: string; message: string } {
+export function getCreativeUnavailableCopy(locale: Locale): {
+  title: string
+  message: string
+} {
   return locale === 'en'
     ? {
         title: getCreativeRouteTitle('en'),
@@ -46,50 +51,62 @@ export function getCreativeUnavailableCopy(locale: Locale): { title: string; mes
     : {
         title: getCreativeRouteTitle('fa'),
         message: 'آثار خلاقهٔ منتشرشده هنوز در دسترس نیست.',
-      };
+      }
 }
 
 export function formatCreativeCardMeta(work: CreativeWorkListOut): string {
-  return [work.work_type, work.creator_name, work.creation_date, work.access_state]
+  return [
+    work.work_type,
+    work.creator_name,
+    work.creation_date,
+    work.access_state,
+  ]
     .filter(Boolean)
-    .join(' · ');
+    .join(' · ')
 }
 
-export async function listCreativeWorks(locale: Locale): Promise<CreativeWorkListOut[]> {
-  if (!canFetchPublicApi()) return [];
-  const pageSize = 100;
-  let page = 1;
-  const collected: CreativeWorkListOut[] = [];
+export async function listCreativeWorks(
+  locale: Locale,
+): Promise<CreativeWorkListOut[]> {
+  if (!canFetchPublicApi()) return []
+  const pageSize = 100
+  let page = 1
+  const collected: CreativeWorkListOut[] = []
 
   try {
     while (true) {
-      const payload = await fetchJson<components['schemas']['PagedCreativeWorkListOut']>(
-        `/api/creative/${locale}?page=${page}&page_size=${pageSize}`,
-      );
-      collected.push(...filterPublishedOnly(payload.items ?? []));
-      if (collected.length >= (payload.count ?? 0) || (payload.items?.length ?? 0) < pageSize) {
-        break;
+      const payload = await fetchJson<
+        components['schemas']['PagedCreativeWorkListOut']
+      >(`/api/creative/${locale}?page=${page}&page_size=${pageSize}`)
+      collected.push(...filterPublishedOnly(payload.items ?? []))
+      if (
+        collected.length >= (payload.count ?? 0) ||
+        (payload.items?.length ?? 0) < pageSize
+      ) {
+        break
       }
-      page += 1;
+      page += 1
     }
   } catch {
-    return [];
+    return []
   }
 
-  return collected;
+  return collected
 }
 
-export async function fetchCreativeIndex(locale: Locale): Promise<CreativeIndexModel> {
+export async function fetchCreativeIndex(
+  locale: Locale,
+): Promise<CreativeIndexModel> {
   if (!canFetchPublicApi()) {
-    return { status: 'unavailable' };
+    return { status: 'unavailable' }
   }
 
-  const works = await listCreativeWorks(locale);
+  const works = await listCreativeWorks(locale)
   if (!works.length) {
-    return { status: 'unavailable' };
+    return { status: 'unavailable' }
   }
 
-  return { status: 'ready', works };
+  return { status: 'ready', works }
 }
 
 export async function fetchCreativeDetail(
@@ -97,33 +114,38 @@ export async function fetchCreativeDetail(
   slug: string,
 ): Promise<CreativeDetailModel> {
   if (!canFetchPublicApi()) {
-    return { status: 'unavailable' };
+    return { status: 'unavailable' }
   }
 
   try {
     const work = await fetchJson<CreativeWorkDetailOut>(
       `/api/creative/${locale}/${encodeURIComponent(slug)}`,
-    );
-    assertPublishedOnly(work);
+    )
+    assertPublishedOnly(work)
     if (work.locale !== locale) {
-      throw new PublicApiError('Locale mismatch', 'validation');
+      throw new PublicApiError('Locale mismatch', 'validation')
     }
-    return { status: 'ready', work };
+    return { status: 'ready', work }
   } catch (error) {
-    if (error instanceof PublicApiError && (error.kind === 'unavailable' || error.status === 404)) {
-      return { status: 'unavailable' };
+    if (
+      error instanceof PublicApiError &&
+      (error.kind === 'unavailable' || error.status === 404)
+    ) {
+      return { status: 'unavailable' }
     }
-    return { status: 'unavailable' };
+    return { status: 'unavailable' }
   }
 }
 
 export async function listCreativeSlugs(locale: Locale): Promise<string[]> {
-  const works = await listCreativeWorks(locale);
-  return works.map((item) => item.slug);
+  const works = await listCreativeWorks(locale)
+  return works.map((item) => item.slug)
 }
 
-export async function resolveCreativeAlternateAvailability(locale: Locale): Promise<boolean> {
-  const alternate: Locale = locale === 'en' ? 'fa' : 'en';
-  const model = await fetchCreativeIndex(alternate);
-  return model.status === 'ready';
+export async function resolveCreativeAlternateAvailability(
+  locale: Locale,
+): Promise<boolean> {
+  const alternate: Locale = locale === 'en' ? 'fa' : 'en'
+  const model = await fetchCreativeIndex(alternate)
+  return model.status === 'ready'
 }

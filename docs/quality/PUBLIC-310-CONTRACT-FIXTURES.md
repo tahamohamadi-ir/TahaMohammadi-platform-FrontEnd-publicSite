@@ -11,13 +11,13 @@ This checklist does **not** close `PUBLIC-190`. Passing contract fixture validat
 
 ## Automated gate
 
-| Gate | Command | Result | Notes |
-|---|---|---|---|
-| Build | `npm run build` | required | unchanged production surface |
+| Gate                     | Command                                                      | Result   | Notes                                           |
+| ------------------------ | ------------------------------------------------------------ | -------- | ----------------------------------------------- |
+| Build                    | `npm run build`                                              | required | unchanged production surface                    |
 | Vitest contract fixtures | `npm test` (includes `public-310.contract-fixtures.test.ts`) | required | OpenAPI hash pin + fixture drift + schema shape |
-| Design authority | `npm run validate:design` | required | semantic token contract |
-| SEO | `npm run validate:seo` | required | sitemap/hreflang/canonical |
-| CI | `.github/workflows/ci.yml` | push/PR | unit + design + SEO + build |
+| Design authority         | `npm run validate:design`                                    | required | semantic token contract                         |
+| SEO                      | `npm run validate:seo`                                       | required | sitemap/hreflang/canonical                      |
+| CI                       | `.github/workflows/ci.yml`                                   | push/PR  | unit + design + SEO + build                     |
 
 **Harness:** `src/test-harness/contract-fixtures.ts`, `src/public-310.contract-fixtures.test.ts`
 
@@ -25,10 +25,10 @@ This checklist does **not** close `PUBLIC-190`. Passing contract fixture validat
 
 ## Consumer fixture paths
 
-| Path | Purpose |
-|---|---|
+| Path                                  | Purpose                                                                               |
+| ------------------------------------- | ------------------------------------------------------------------------------------- |
 | `tests/fixtures/contracts/responses/` | Published public DTO examples copied from `Back-End/tests/fixtures/contracts/public/` |
-| `tests/fixtures/contracts/errors/` | Public error matrix rows copied from `Back-End/tests/fixtures/contracts/errors/` |
+| `tests/fixtures/contracts/errors/`    | Public error matrix rows copied from `Back-End/tests/fixtures/contracts/errors/`      |
 
 Each consumer file is byte-compared to the backend authoritative fixture. Response fixtures additionally validate against accepted OpenAPI components (profile detail uses the observed field set until Gap A closes).
 
@@ -36,15 +36,15 @@ Each consumer file is byte-compared to the backend authoritative fixture. Respon
 
 ## Response coverage
 
-| Fixture | OpenAPI component |
-|---|---|
-| `landing.get.200.json` | `LandingOut` |
-| `articles.get.200.json` | `PagedArticleListOut` / `ArticleListOut` items |
-| `articles-detail.get.200.json` | `ArticleDetailOut` |
-| `profile-detail.get.200.json` | observed profile detail field set (Gap A) |
-| `publication-detail.get.200.json` | `PublicationDetailOut` |
-| `project-detail.get.200.json` | `ProjectDetailOut` |
-| `site.get.200.json` | `PublicSiteSettingsOut` |
+| Fixture                           | OpenAPI component                              |
+| --------------------------------- | ---------------------------------------------- |
+| `landing.get.200.json`            | `LandingOut`                                   |
+| `articles.get.200.json`           | `PagedArticleListOut` / `ArticleListOut` items |
+| `articles-detail.get.200.json`    | `ArticleDetailOut`                             |
+| `profile-detail.get.200.json`     | observed profile detail field set (Gap A)      |
+| `publication-detail.get.200.json` | `PublicationDetailOut`                         |
+| `project-detail.get.200.json`     | `ProjectDetailOut`                             |
+| `site.get.200.json`               | `PublicSiteSettingsOut`                        |
 
 ---
 
@@ -52,11 +52,11 @@ Each consumer file is byte-compared to the backend authoritative fixture. Respon
 
 Aligned with `Docs/03-contracts/ERROR-COMPATIBILITY-MATRIX.md`:
 
-| Fixture | Matrix row |
-|---|---|
-| `profile-not-found.404.json` | Public profile not found (`detail` string, 404) |
-| `contact.post.error.json` | Public contact JSON failure (`ok: false`, `error`) |
-| `contact.post.validation.html` | Public contact HTML 422 (progressive form path) |
+| Fixture                        | Matrix row                                         |
+| ------------------------------ | -------------------------------------------------- |
+| `profile-not-found.404.json`   | Public profile not found (`detail` string, 404)    |
+| `contact.post.error.json`      | Public contact JSON failure (`ok: false`, `error`) |
+| `contact.post.validation.html` | Public contact HTML 422 (progressive form path)    |
 
 `framework-validation.unhandled.json` remains backend-only until accepted in OpenAPI.
 
@@ -64,7 +64,7 @@ Aligned with `Docs/03-contracts/ERROR-COMPATIBILITY-MATRIX.md`:
 
 ## Follow-on
 
-| Task | Notes |
-|---|---|
+| Task       | Notes                                                                                         |
+| ---------- | --------------------------------------------------------------------------------------------- |
 | PUBLIC-320 | integrated staging smoke scaffold shipped; live probes skip until staging URL + `BACKEND-180` |
-| PUBLIC-190 | owner visual QA remains `REVISE` |
+| PUBLIC-190 | owner visual QA remains `REVISE`                                                              |

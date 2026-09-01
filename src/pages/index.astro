@@ -1,14 +1,22 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import ThemeToggle from '../components/ThemeToggle.astro';
-import ThemePicture from '../components/media/ThemePicture.astro';
-import PromotedPicture from '../components/media/PromotedPicture.astro';
-import { GATEWAY_ROLE_LINE } from '../lib/navigation';
-import { BRAND_MARK_ASSET_ID, GATEWAY_ATMOSPHERE_ASSETS } from '../lib/media/promoted-media';
-import '../styles/gateway.css';
+import BaseLayout from '../layouts/BaseLayout.astro'
+import ThemeToggle from '../components/ThemeToggle.astro'
+import ThemePicture from '../components/media/ThemePicture.astro'
+import PromotedPicture from '../components/media/PromotedPicture.astro'
+import { GATEWAY_ROLE_LINE } from '../lib/navigation'
+import {
+  BRAND_MARK_ASSET_ID,
+  GATEWAY_ATMOSPHERE_ASSETS,
+} from '../lib/media/promoted-media'
+import '../styles/gateway.css'
 ---
 
-<BaseLayout title="Taha Mohammadi — Language gateway" lang="en" dir="ltr" gateway>
+<BaseLayout
+  title="Taha Mohammadi — Language gateway"
+  lang="en"
+  dir="ltr"
+  gateway
+>
   <div class="gw">
     <div class="gw__atmosphere" aria-hidden="true">
       <ThemePicture
@@ -35,7 +43,11 @@ import '../styles/gateway.css';
       </div>
 
       <h1 id="gateway-name" class="gw__title">
-        <span class="gw__title-primary">Taha</span><span class="gw__title-accent"> Mohammadi</span>
+        <span class="gw__title-primary">Taha</span><span
+          class="gw__title-accent"
+        >
+          Mohammadi</span
+        >
       </h1>
 
       <p class="gw__roles">{GATEWAY_ROLE_LINE}</p>

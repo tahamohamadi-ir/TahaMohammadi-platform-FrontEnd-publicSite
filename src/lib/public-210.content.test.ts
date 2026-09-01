@@ -1,12 +1,15 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest'
 
-import { formatProjectAvailability, getProjectsRouteTitle } from './projects-content';
+import {
+  formatProjectAvailability,
+  getProjectsRouteTitle,
+} from './projects-content'
 
 describe('projects content helpers', () => {
   it('provides locale-specific route title', () => {
-    expect(getProjectsRouteTitle('en')).toBe('Projects');
-    expect(getProjectsRouteTitle('fa')).toBe('پروژه‌ها');
-  });
+    expect(getProjectsRouteTitle('en')).toBe('Projects')
+    expect(getProjectsRouteTitle('fa')).toBe('پروژه‌ها')
+  })
 
   it('formats availability fields from API records', () => {
     expect(
@@ -15,6 +18,6 @@ describe('projects content helpers', () => {
         data_availability: 'On request',
         demo_availability: 'Live demo',
       } as Parameters<typeof formatProjectAvailability>[0]),
-    ).toBe('Open source · On request · Live demo');
-  });
-});
+    ).toBe('Open source · On request · Live demo')
+  })
+})

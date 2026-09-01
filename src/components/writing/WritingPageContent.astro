@@ -1,23 +1,23 @@
 ---
-import CollectionIndexTemplate from '../templates/CollectionIndexTemplate.astro';
-import SectionLead from '../ui/SectionLead.astro';
-import ContentState from '../state/ContentState.astro';
+import CollectionIndexTemplate from '../templates/CollectionIndexTemplate.astro'
+import SectionLead from '../ui/SectionLead.astro'
+import ContentState from '../state/ContentState.astro'
 import {
   formatArticleCardMeta,
   formatBookCardMeta,
   getWritingRouteTitle,
   getWritingUnavailableCopy,
   type WritingIndexModel,
-} from '../../lib/writing-content';
-import { localePath, type Locale } from '../../lib/navigation';
+} from '../../lib/writing-content'
+import { localePath, type Locale } from '../../lib/navigation'
 
 interface Props {
-  locale: Locale;
-  model: WritingIndexModel;
+  locale: Locale
+  model: WritingIndexModel
 }
 
-const { locale, model } = Astro.props;
-const homeHref = localePath(locale);
+const { locale, model } = Astro.props
+const homeHref = localePath(locale)
 ---
 
 {
@@ -42,56 +42,66 @@ const homeHref = localePath(locale);
       />
 
       <div slot="records" class="writing-page__sections">
-        {
-          model.books.length ? (
-            <section class="writing-page__section" aria-labelledby="writing-books-title">
-              <h2 id="writing-books-title" class="writing-page__section-title">
-                {locale === 'en' ? 'Books' : 'کتاب‌ها'}
-              </h2>
-              <ul class="writing-page__list">
-                {model.books.map((book) => (
-                  <li>
-                    <article class="writing-page__card">
-                      <h3 class="writing-page__card-title">{book.title}</h3>
-                      {book.isbn ? <p class="writing-page__card-isbn">ISBN {book.isbn}</p> : null}
-                      <p class="writing-page__card-meta">{formatBookCardMeta(book)}</p>
-                    </article>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          ) : null
-        }
+        {model.books.length ? (
+          <section
+            class="writing-page__section"
+            aria-labelledby="writing-books-title"
+          >
+            <h2 id="writing-books-title" class="writing-page__section-title">
+              {locale === 'en' ? 'Books' : 'کتاب‌ها'}
+            </h2>
+            <ul class="writing-page__list">
+              {model.books.map((book) => (
+                <li>
+                  <article class="writing-page__card">
+                    <h3 class="writing-page__card-title">{book.title}</h3>
+                    {book.isbn ? (
+                      <p class="writing-page__card-isbn">ISBN {book.isbn}</p>
+                    ) : null}
+                    <p class="writing-page__card-meta">
+                      {formatBookCardMeta(book)}
+                    </p>
+                  </article>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
 
-        {
-          model.articles.length ? (
-            <section class="writing-page__section" aria-labelledby="writing-articles-title">
-              <h2 id="writing-articles-title" class="writing-page__section-title">
-                {locale === 'en' ? 'Articles' : 'مقالات'}
-              </h2>
-              <ul class="writing-page__list">
-                {model.articles.map((article) => (
-                  <li>
-                    <article class="writing-page__card">
-                      <h3 class="writing-page__card-title">
-                        <a
-                          href={localePath(locale, `writing/${article.slug}`)}
-                          class="writing-page__card-link"
-                        >
-                          {article.title}
-                        </a>
-                      </h3>
-                      {article.excerpt ? (
-                        <p class="writing-page__card-summary">{article.excerpt}</p>
-                      ) : null}
-                      <p class="writing-page__card-meta">{formatArticleCardMeta(locale, article)}</p>
-                    </article>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          ) : null
-        }
+        {model.articles.length ? (
+          <section
+            class="writing-page__section"
+            aria-labelledby="writing-articles-title"
+          >
+            <h2 id="writing-articles-title" class="writing-page__section-title">
+              {locale === 'en' ? 'Articles' : 'مقالات'}
+            </h2>
+            <ul class="writing-page__list">
+              {model.articles.map((article) => (
+                <li>
+                  <article class="writing-page__card">
+                    <h3 class="writing-page__card-title">
+                      <a
+                        href={localePath(locale, `writing/${article.slug}`)}
+                        class="writing-page__card-link"
+                      >
+                        {article.title}
+                      </a>
+                    </h3>
+                    {article.excerpt ? (
+                      <p class="writing-page__card-summary">
+                        {article.excerpt}
+                      </p>
+                    ) : null}
+                    <p class="writing-page__card-meta">
+                      {formatArticleCardMeta(locale, article)}
+                    </p>
+                  </article>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
       </div>
     </CollectionIndexTemplate>
   )

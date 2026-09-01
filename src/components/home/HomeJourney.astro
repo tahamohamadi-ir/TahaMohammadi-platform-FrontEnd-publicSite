@@ -1,15 +1,15 @@
 ---
-import TimelineNode from '../ui/TimelineNode.astro';
-import { Waypoints } from 'lucide-astro';
-import { getHomeJourneyContent } from '../../lib/home-content';
-import type { Locale } from '../../lib/navigation';
+import TimelineNode from '../ui/TimelineNode.astro'
+import { Waypoints } from 'lucide-astro'
+import { getHomeJourneyContent } from '../../lib/home-content'
+import type { Locale } from '../../lib/navigation'
 
 interface Props {
-  locale: Locale;
+  locale: Locale
 }
 
-const { locale } = Astro.props;
-const content = getHomeJourneyContent(locale);
+const { locale } = Astro.props
+const content = getHomeJourneyContent(locale)
 ---
 
 <section class="hm-journey">

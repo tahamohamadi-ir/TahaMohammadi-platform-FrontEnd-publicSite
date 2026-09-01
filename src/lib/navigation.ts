@@ -1,36 +1,56 @@
 /** Primary navigation — paths from ROUTE-REGISTRY; labels from seed route_copy titles. */
 
-export type Locale = 'en' | 'fa';
+export type Locale = 'en' | 'fa'
 
 /** Approved structural role line for the language gateway (design authority). */
-export const GATEWAY_ROLE_LINE = 'Researcher · Engineer · Designer';
+export const GATEWAY_ROLE_LINE = 'Researcher · Engineer · Designer'
 
 export interface NavItem {
-  slug: string;
-  pathSegment: string;
-  label: Record<Locale, string>;
+  slug: string
+  pathSegment: string
+  label: Record<Locale, string>
 }
 
 export const primaryNav: NavItem[] = [
   { slug: 'about', pathSegment: 'about', label: { en: 'About', fa: 'درباره' } },
-  { slug: 'research', pathSegment: 'research', label: { en: 'Research', fa: 'پژوهش' } },
-  { slug: 'projects', pathSegment: 'projects', label: { en: 'Projects', fa: 'پروژه‌ها' } },
-  { slug: 'creative', pathSegment: 'creative', label: { en: 'Creative', fa: 'آثار خلاقه' } },
-  { slug: 'writing', pathSegment: 'writing', label: { en: 'Writing', fa: 'نوشتار' } },
-  { slug: 'teaching', pathSegment: 'teaching', label: { en: 'Teaching', fa: 'تدریس' } },
-];
+  {
+    slug: 'research',
+    pathSegment: 'research',
+    label: { en: 'Research', fa: 'پژوهش' },
+  },
+  {
+    slug: 'projects',
+    pathSegment: 'projects',
+    label: { en: 'Projects', fa: 'پروژه‌ها' },
+  },
+  {
+    slug: 'creative',
+    pathSegment: 'creative',
+    label: { en: 'Creative', fa: 'آثار خلاقه' },
+  },
+  {
+    slug: 'writing',
+    pathSegment: 'writing',
+    label: { en: 'Writing', fa: 'نوشتار' },
+  },
+  {
+    slug: 'teaching',
+    pathSegment: 'teaching',
+    label: { en: 'Teaching', fa: 'تدریس' },
+  },
+]
 
 export function localePath(locale: Locale, pathSegment = ''): string {
-  if (!pathSegment) return `/${locale}/`;
-  return `/${locale}/${pathSegment}/`;
+  if (!pathSegment) return `/${locale}/`
+  return `/${locale}/${pathSegment}/`
 }
 
 export function alternateLocale(locale: Locale): Locale {
-  return locale === 'en' ? 'fa' : 'en';
+  return locale === 'en' ? 'fa' : 'en'
 }
 
 export function localeDisplayCode(locale: Locale): 'EN' | 'FA' {
-  return locale === 'en' ? 'EN' : 'FA';
+  return locale === 'en' ? 'EN' : 'FA'
 }
 
 export function buildLanguageToggleHref(
@@ -38,13 +58,17 @@ export function buildLanguageToggleHref(
   pathSegment: string,
   alternateAvailable: boolean,
 ): string | undefined {
-  if (!alternateAvailable) return undefined;
-  return localePath(alternateLocale(currentLocale), pathSegment);
+  if (!alternateAvailable) return undefined
+  return localePath(alternateLocale(currentLocale), pathSegment)
 }
 
-export function isNavActive(pathname: string, locale: Locale, pathSegment: string): boolean {
-  const base = localePath(locale, pathSegment);
-  return pathname === base || pathname.startsWith(`${base}`);
+export function isNavActive(
+  pathname: string,
+  locale: Locale,
+  pathSegment: string,
+): boolean {
+  const base = localePath(locale, pathSegment)
+  return pathname === base || pathname.startsWith(`${base}`)
 }
 
 /** Shell chrome copy — aligned with owner-content-seed-v1 route_copy and availability drafts. */
@@ -70,4 +94,4 @@ export const shellCopy = {
   cv: { en: 'CV', fa: 'رزومه' },
   brandName: { en: 'Taha Mohammadi', fa: 'طه محمدی' },
   themeToggle: { en: 'Toggle color theme', fa: 'تغییر پوستهٔ رنگی' },
-} as const satisfies Record<string, Record<Locale, string>>;
+} as const satisfies Record<string, Record<Locale, string>>

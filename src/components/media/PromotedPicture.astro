@@ -1,19 +1,22 @@
 ---
-import { Picture } from 'astro:assets';
+import { Picture } from 'astro:assets'
 
-import type { Locale } from '../../lib/media/promoted-media';
-import { getPromotedMedia, resolvePromotedMediaAlt } from '../../lib/media/promoted-media';
-import type { MediaSlot } from '../../lib/media/promoted-media-registry';
+import type { Locale } from '../../lib/media/promoted-media'
+import {
+  getPromotedMedia,
+  resolvePromotedMediaAlt,
+} from '../../lib/media/promoted-media'
+import type { MediaSlot } from '../../lib/media/promoted-media-registry'
 
 interface Props {
-  assetId: string;
-  mediaSlot: MediaSlot;
-  locale?: Locale;
-  alt?: string;
-  class?: string;
-  imgClass?: string;
-  loading?: 'lazy' | 'eager';
-  fetchPriority?: 'auto' | 'high';
+  assetId: string
+  mediaSlot: MediaSlot
+  locale?: Locale
+  alt?: string
+  class?: string
+  imgClass?: string
+  loading?: 'lazy' | 'eager'
+  fetchPriority?: 'auto' | 'high'
 }
 
 const {
@@ -25,12 +28,12 @@ const {
   imgClass,
   loading,
   fetchPriority,
-} = Astro.props;
+} = Astro.props
 
-const media = getPromotedMedia(assetId, mediaSlot);
-const alt = resolvePromotedMediaAlt(assetId, mediaSlot, locale, consumerAlt);
-const resolvedLoading = loading ?? media.transform.loading;
-const resolvedFetchPriority = fetchPriority ?? media.transform.fetchPriority;
+const media = getPromotedMedia(assetId, mediaSlot)
+const alt = resolvePromotedMediaAlt(assetId, mediaSlot, locale, consumerAlt)
+const resolvedLoading = loading ?? media.transform.loading
+const resolvedFetchPriority = fetchPriority ?? media.transform.fetchPriority
 ---
 
 <Picture

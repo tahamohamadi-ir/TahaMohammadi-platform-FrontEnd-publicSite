@@ -1,17 +1,17 @@
 ---
-import SiteLayout from '../../../layouts/SiteLayout.astro';
-import TeachingPageContent from '../../../components/teaching/TeachingPageContent.astro';
+import SiteLayout from '../../../layouts/SiteLayout.astro'
+import TeachingPageContent from '../../../components/teaching/TeachingPageContent.astro'
 import {
   fetchTeachingIndex,
   getTeachingRouteTitle,
   resolveTeachingAlternateAvailability,
-} from '../../../lib/teaching-content';
-import '../../../styles/page-families.css';
+} from '../../../lib/teaching-content'
+import '../../../styles/page-families.css'
 
-const locale = 'fa' as const;
-const model = await fetchTeachingIndex(locale);
-const alternateAvailable = await resolveTeachingAlternateAvailability(locale);
-const pageTitle = `${getTeachingRouteTitle(locale)} — Taha Mohammadi`;
+const locale = 'fa' as const
+const model = await fetchTeachingIndex(locale)
+const alternateAvailable = await resolveTeachingAlternateAvailability(locale)
+const pageTitle = `${getTeachingRouteTitle(locale)} — Taha Mohammadi`
 ---
 
 <SiteLayout

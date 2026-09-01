@@ -1,16 +1,16 @@
 ---
-import Button from '../ui/Button.astro';
-import PromotedPicture from '../media/PromotedPicture.astro';
-import { getHomeCollaborationContent } from '../../lib/home-content';
-import { BRAND_MARK_ASSET_ID } from '../../lib/media/promoted-media';
-import type { Locale } from '../../lib/navigation';
+import Button from '../ui/Button.astro'
+import PromotedPicture from '../media/PromotedPicture.astro'
+import { getHomeCollaborationContent } from '../../lib/home-content'
+import { BRAND_MARK_ASSET_ID } from '../../lib/media/promoted-media'
+import type { Locale } from '../../lib/navigation'
 
 interface Props {
-  locale: Locale;
+  locale: Locale
 }
 
-const { locale } = Astro.props;
-const content = getHomeCollaborationContent(locale);
+const { locale } = Astro.props
+const content = getHomeCollaborationContent(locale)
 ---
 
 <section class="hm-collab">

@@ -1,16 +1,19 @@
-import { experimental_AstroContainer as AstroContainer } from 'astro/container';
-import { describe, expect, it } from 'vitest';
+import { experimental_AstroContainer as AstroContainer } from 'astro/container'
+import { describe, expect, it } from 'vitest'
 
-import WritingPageContent from './WritingPageContent.astro';
-import WritingDetailContent from './WritingDetailContent.astro';
+import WritingPageContent from './WritingPageContent.astro'
+import WritingDetailContent from './WritingDetailContent.astro'
 
 type Component = Parameters<
   Awaited<ReturnType<typeof AstroContainer.create>>['renderToString']
->[0];
+>[0]
 
-async function render(component: Component, props: Record<string, unknown> = {}) {
-  const container = await AstroContainer.create();
-  return container.renderToString(component, { props });
+async function render(
+  component: Component,
+  props: Record<string, unknown> = {},
+) {
+  const container = await AstroContainer.create()
+  return container.renderToString(component, { props })
 }
 
 describe('PUBLIC-211/212 writing pages', () => {
@@ -18,11 +21,11 @@ describe('PUBLIC-211/212 writing pages', () => {
     const html = await render(WritingPageContent, {
       locale: 'en',
       model: { status: 'unavailable' },
-    });
-    expect(html).toMatch(/data-state-variant="unavailable"/);
-    expect(html).toContain('Writing');
-    expect(html).toMatch(/<h1[\s>]/);
-  });
+    })
+    expect(html).toMatch(/data-state-variant="unavailable"/)
+    expect(html).toContain('Writing')
+    expect(html).toMatch(/<h1[\s>]/)
+  })
 
   it('renders article and book sections when the index model is ready', async () => {
     const html = await render(WritingPageContent, {
@@ -57,13 +60,13 @@ describe('PUBLIC-211/212 writing pages', () => {
           },
         ],
       },
-    });
-    expect(html).toContain('Dashboard Book');
-    expect(html).toContain('Visual Discourse');
-    expect(html).toMatch(/href="\/en\/writing\/visual-discourse\/"/);
-    expect(html).toContain('Books');
-    expect(html).toContain('Articles');
-  });
+    })
+    expect(html).toContain('Dashboard Book')
+    expect(html).toContain('Visual Discourse')
+    expect(html).toMatch(/href="\/en\/writing\/visual-discourse\/"/)
+    expect(html).toContain('Books')
+    expect(html).toContain('Articles')
+  })
 
   it('renders article detail body when ready', async () => {
     const html = await render(WritingDetailContent, {
@@ -81,13 +84,20 @@ describe('PUBLIC-211/212 writing pages', () => {
           accessibility_notes: '',
           published_at: '2026-01-01T00:00:00Z',
           updated_at: null,
-          topic_tags: [{ locale: 'en', slug: 'visual-analytics', name: 'Visual analytics', description: '' }],
+          topic_tags: [
+            {
+              locale: 'en',
+              slug: 'visual-analytics',
+              name: 'Visual analytics',
+              description: '',
+            },
+          ],
         },
       },
-    });
-    expect(html).toContain('Visual Discourse');
-    expect(html).toContain('Sanitized body paragraph.');
-    expect(html).toContain('Visual analytics');
-    expect(html).toContain('8 min read');
-  });
-});
+    })
+    expect(html).toContain('Visual Discourse')
+    expect(html).toContain('Sanitized body paragraph.')
+    expect(html).toContain('Visual analytics')
+    expect(html).toContain('8 min read')
+  })
+})

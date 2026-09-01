@@ -1,22 +1,22 @@
 ---
-import CollectionIndexTemplate from '../templates/CollectionIndexTemplate.astro';
-import SectionLead from '../ui/SectionLead.astro';
-import ContentState from '../state/ContentState.astro';
+import CollectionIndexTemplate from '../templates/CollectionIndexTemplate.astro'
+import SectionLead from '../ui/SectionLead.astro'
+import ContentState from '../state/ContentState.astro'
 import {
   formatProjectAvailability,
   getProjectsRouteTitle,
   getProjectsUnavailableCopy,
   type ProjectsIndexModel,
-} from '../../lib/projects-content';
-import { localePath, type Locale } from '../../lib/navigation';
+} from '../../lib/projects-content'
+import { localePath, type Locale } from '../../lib/navigation'
 
 interface Props {
-  locale: Locale;
-  model: ProjectsIndexModel;
+  locale: Locale
+  model: ProjectsIndexModel
 }
 
-const { locale, model } = Astro.props;
-const homeHref = localePath(locale);
+const { locale, model } = Astro.props
+const homeHref = localePath(locale)
 ---
 
 {
@@ -36,7 +36,11 @@ const homeHref = localePath(locale);
     <CollectionIndexTemplate class="projects-page">
       <SectionLead
         slot="lead"
-        eyebrow={locale === 'en' ? 'Systems & case studies' : 'سامانه‌ها و مطالعات موردی'}
+        eyebrow={
+          locale === 'en'
+            ? 'Systems & case studies'
+            : 'سامانه‌ها و مطالعات موردی'
+        }
         title={getProjectsRouteTitle(locale)}
       />
 
@@ -45,13 +49,20 @@ const homeHref = localePath(locale);
           <li>
             <article class="projects-page__card">
               <h2 class="projects-page__card-title">
-                <a href={localePath(locale, `projects/${project.slug}`)} class="projects-page__card-link">
+                <a
+                  href={localePath(locale, `projects/${project.slug}`)}
+                  class="projects-page__card-link"
+                >
                   {project.title}
                 </a>
               </h2>
-              {project.objective ? <p class="projects-page__card-summary">{project.objective}</p> : null}
+              {project.objective ? (
+                <p class="projects-page__card-summary">{project.objective}</p>
+              ) : null}
               <p class="projects-page__card-meta">
-                {[project.project_type, formatProjectAvailability(project)].filter(Boolean).join(' · ')}
+                {[project.project_type, formatProjectAvailability(project)]
+                  .filter(Boolean)
+                  .join(' · ')}
               </p>
             </article>
           </li>

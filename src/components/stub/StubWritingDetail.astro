@@ -1,22 +1,22 @@
 ---
-import { localePath, type Locale } from '../../lib/navigation';
-import type { PublicationCard } from '../../lib/home-content';
+import { localePath, type Locale } from '../../lib/navigation'
+import type { PublicationCard } from '../../lib/home-content'
 import {
   getStubPublicationDraftNote,
   getStubBackToWritingLabel,
-} from '../../lib/stub-detail-content';
-import { getHomePublicationsContent } from '../../lib/home-content';
+} from '../../lib/stub-detail-content'
+import { getHomePublicationsContent } from '../../lib/home-content'
 
 interface Props {
-  locale: Locale;
-  publication: PublicationCard;
+  locale: Locale
+  publication: PublicationCard
 }
 
-const { locale, publication } = Astro.props;
-const writingIndexHref = localePath(locale, 'writing');
-const draftNote = getStubPublicationDraftNote(locale);
-const backLabel = getStubBackToWritingLabel(locale);
-const manuscriptLabel = getHomePublicationsContent(locale).manuscriptLabel;
+const { locale, publication } = Astro.props
+const writingIndexHref = localePath(locale, 'writing')
+const draftNote = getStubPublicationDraftNote(locale)
+const backLabel = getStubBackToWritingLabel(locale)
+const manuscriptLabel = getHomePublicationsContent(locale).manuscriptLabel
 ---
 
 <article class="page-shell">

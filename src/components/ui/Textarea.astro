@@ -1,16 +1,16 @@
 ---
 interface Props {
-  id: string;
-  label: string;
-  name: string;
-  value?: string;
-  hint?: string;
-  error?: string;
-  disabled?: boolean;
-  rows?: number;
-  maxlength?: number;
-  counterLabel?: string;
-  class?: string;
+  id: string
+  label: string
+  name: string
+  value?: string
+  hint?: string
+  error?: string
+  disabled?: boolean
+  rows?: number
+  maxlength?: number
+  counterLabel?: string
+  class?: string
 }
 
 const {
@@ -25,10 +25,15 @@ const {
   maxlength,
   counterLabel,
   class: className = '',
-} = Astro.props;
+} = Astro.props
 ---
 
-<div class={['ui-textarea', error && 'ui-textarea--error', className].filter(Boolean).join(' ')} data-visual-id="Textarea">
+<div
+  class={['ui-textarea', error && 'ui-textarea--error', className]
+    .filter(Boolean)
+    .join(' ')}
+  data-visual-id="Textarea"
+>
   <label class="ui-textarea__label" for={id}>
     {label}
   </label>
@@ -40,27 +45,37 @@ const {
     disabled={disabled}
     maxlength={maxlength}
     aria-invalid={error ? 'true' : undefined}
-    aria-describedby={[hint ? `${id}-hint` : undefined, error ? `${id}-error` : undefined, counterLabel ? `${id}-counter` : undefined]
+    aria-describedby={[
+      hint ? `${id}-hint` : undefined,
+      error ? `${id}-error` : undefined,
+      counterLabel ? `${id}-counter` : undefined,
+    ]
       .filter(Boolean)
-      .join(' ') || undefined}
-  >{value}</textarea>
+      .join(' ') || undefined}>{value}</textarea
+  >
   <div class="ui-textarea__meta">
-    {hint ? (
-      <p class="ui-textarea__hint" id={`${id}-hint`}>
-        {hint}
-      </p>
-    ) : null}
-    {counterLabel ? (
-      <p class="ui-textarea__counter" id={`${id}-counter`}>
-        {counterLabel}
-      </p>
-    ) : null}
+    {
+      hint ? (
+        <p class="ui-textarea__hint" id={`${id}-hint`}>
+          {hint}
+        </p>
+      ) : null
+    }
+    {
+      counterLabel ? (
+        <p class="ui-textarea__counter" id={`${id}-counter`}>
+          {counterLabel}
+        </p>
+      ) : null
+    }
   </div>
-  {error ? (
-    <p class="ui-textarea__error" id={`${id}-error`} role="alert">
-      {error}
-    </p>
-  ) : null}
+  {
+    error ? (
+      <p class="ui-textarea__error" id={`${id}-error`} role="alert">
+        {error}
+      </p>
+    ) : null
+  }
 </div>
 
 <style>

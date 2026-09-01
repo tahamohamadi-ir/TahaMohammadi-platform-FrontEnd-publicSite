@@ -6,16 +6,16 @@
 export const STAGING_ENV_KEYS = {
   siteUrl: 'PUBLIC_STAGING_SITE_URL',
   apiBaseUrl: 'PUBLIC_STAGING_API_BASE_URL',
-} as const;
+} as const
 
 export type StagingSmokeProbe = {
-  id: string;
-  description: string;
-  method: 'GET';
+  id: string
+  description: string
+  method: 'GET'
   /** Path relative to the API origin (includes leading slash). */
-  path: string;
-  expectStatus: number | readonly number[];
-};
+  path: string
+  expectStatus: number | readonly number[]
+}
 
 /** Accepted public API probes — status only; response bodies are not asserted in smoke. */
 export const STAGING_API_PROBES: readonly StagingSmokeProbe[] = [
@@ -47,13 +47,13 @@ export const STAGING_API_PROBES: readonly StagingSmokeProbe[] = [
     path: '/api/landings/fa',
     expectStatus: 200,
   },
-] as const;
+] as const
 
 export type StagingSiteRoute = {
-  id: string;
-  path: string;
-  locale?: 'en' | 'fa';
-};
+  id: string
+  path: string
+  locale?: 'en' | 'fa'
+}
 
 /** Representative static routes served by the deployed public site artifact. */
 export const STAGING_SITE_ROUTES: readonly StagingSiteRoute[] = [
@@ -62,76 +62,76 @@ export const STAGING_SITE_ROUTES: readonly StagingSiteRoute[] = [
   { id: 'home-fa', path: '/fa/', locale: 'fa' },
   { id: 'about-en', path: '/en/about/', locale: 'en' },
   { id: 'about-fa', path: '/fa/about/', locale: 'fa' },
-] as const;
+] as const
 
 export type StagingSmokeConfig =
   | {
-      ready: true;
-      siteUrl: string;
-      apiBaseUrl: string;
-      skipReason: null;
+      ready: true
+      siteUrl: string
+      apiBaseUrl: string
+      skipReason: null
     }
   | {
-      ready: false;
-      siteUrl: null;
-      apiBaseUrl: null;
-      skipReason: string;
-    };
+      ready: false
+      siteUrl: null
+      apiBaseUrl: null
+      skipReason: string
+    }
 
 function trimTrailingSlash(value: string): string {
-  return value.replace(/\/+$/, '');
+  return value.replace(/\/+$/, '')
 }
 
-function readEnvString(
-  env: NodeJS.ProcessEnv,
-  key: string,
-): string {
-  return String(env[key] ?? '').trim();
+function readEnvString(env: NodeJS.ProcessEnv, key: string): string {
+  return String(env[key] ?? '').trim()
 }
 
 export function resolveStagingSmokeConfig(
   env: NodeJS.ProcessEnv = process.env,
 ): StagingSmokeConfig {
-  const siteUrl = trimTrailingSlash(readEnvString(env, STAGING_ENV_KEYS.siteUrl));
+  const siteUrl = trimTrailingSlash(
+    readEnvString(env, STAGING_ENV_KEYS.siteUrl),
+  )
 
   if (!siteUrl) {
     return {
       ready: false,
       siteUrl: null,
       apiBaseUrl: null,
-      skipReason:
-        `${STAGING_ENV_KEYS.siteUrl} is not set; integrated staging smoke requires BACKEND-180 staging deployment (see docs/quality/PUBLIC-320-STAGING-SMOKE.md)`,
-    };
+      skipReason: `${STAGING_ENV_KEYS.siteUrl} is not set; integrated staging smoke requires BACKEND-180 staging deployment (see docs/quality/PUBLIC-320-STAGING-SMOKE.md)`,
+    }
   }
 
   const explicitApiBase = trimTrailingSlash(
     readEnvString(env, STAGING_ENV_KEYS.apiBaseUrl),
-  );
-  const apiBaseUrl = explicitApiBase || siteUrl;
+  )
+  const apiBaseUrl = explicitApiBase || siteUrl
 
   return {
     ready: true,
     siteUrl,
     apiBaseUrl,
     skipReason: null,
-  };
+  }
 }
 
 export function buildStagingApiUrl(
   config: Extract<StagingSmokeConfig, { ready: true }>,
   probePath: string,
 ): string {
-  return `${config.apiBaseUrl}${probePath}`;
+  return `${config.apiBaseUrl}${probePath}`
 }
 
 export function acceptsStatus(
   actual: number,
   expected: number | readonly number[],
 ): boolean {
-  const allowed = Array.isArray(expected) ? expected : [expected];
-  return allowed.includes(actual);
+  const allowed = Array.isArray(expected) ? expected : [expected]
+  return allowed.includes(actual)
 }
 
-export function isSameOriginStaging(config: Extract<StagingSmokeConfig, { ready: true }>): boolean {
-  return config.apiBaseUrl === config.siteUrl;
+export function isSameOriginStaging(
+  config: Extract<StagingSmokeConfig, { ready: true }>,
+): boolean {
+  return config.apiBaseUrl === config.siteUrl
 }

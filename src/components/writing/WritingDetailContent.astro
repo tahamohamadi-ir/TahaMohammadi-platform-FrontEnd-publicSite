@@ -1,23 +1,23 @@
 ---
-import LongFormDetailTemplate from '../templates/LongFormDetailTemplate.astro';
-import SectionLead from '../ui/SectionLead.astro';
-import ContentState from '../state/ContentState.astro';
-import Link from '../ui/Link.astro';
+import LongFormDetailTemplate from '../templates/LongFormDetailTemplate.astro'
+import SectionLead from '../ui/SectionLead.astro'
+import ContentState from '../state/ContentState.astro'
+import Link from '../ui/Link.astro'
 import {
   formatReadingTime,
   getWritingRouteTitle,
   getWritingUnavailableCopy,
   type WritingDetailModel,
-} from '../../lib/writing-content';
-import { localePath, type Locale } from '../../lib/navigation';
+} from '../../lib/writing-content'
+import { localePath, type Locale } from '../../lib/navigation'
 
 interface Props {
-  locale: Locale;
-  model: WritingDetailModel;
+  locale: Locale
+  model: WritingDetailModel
 }
 
-const { locale, model } = Astro.props;
-const writingHref = localePath(locale, 'writing');
+const { locale, model } = Astro.props
+const writingHref = localePath(locale, 'writing')
 ---
 
 {
@@ -43,64 +43,59 @@ const writingHref = localePath(locale, 'writing');
       />
 
       <div slot="body" class="writing-page__detail">
-        {
-          model.article.featured_image?.url ? (
-            <figure class="writing-page__figure">
-              <img
-                src={model.article.featured_image.url}
-                alt={model.article.featured_image.alt || ''}
-                loading="lazy"
-                decoding="async"
-              />
-            </figure>
-          ) : null
-        }
+        {model.article.featured_image?.url ? (
+          <figure class="writing-page__figure">
+            <img
+              src={model.article.featured_image.url}
+              alt={model.article.featured_image.alt || ''}
+              loading="lazy"
+              decoding="async"
+            />
+          </figure>
+        ) : null}
 
         <dl class="writing-page__meta">
-          {
-            formatReadingTime(locale, model.article.reading_time_minutes) ? (
-              <>
-                <dt>{locale === 'en' ? 'Reading time' : 'زمان مطالعه'}</dt>
-                <dd>{formatReadingTime(locale, model.article.reading_time_minutes)}</dd>
-              </>
-            ) : null
-          }
-          {
-            model.article.license ? (
-              <>
-                <dt>{locale === 'en' ? 'License' : 'مجوز'}</dt>
-                <dd>{model.article.license}</dd>
-              </>
-            ) : null
-          }
-          {
-            model.article.series?.length ? (
-              <>
-                <dt>{locale === 'en' ? 'Series' : 'مجموعه'}</dt>
-                <dd>{model.article.series.map((item) => item.title).join(', ')}</dd>
-              </>
-            ) : null
-          }
+          {formatReadingTime(locale, model.article.reading_time_minutes) ? (
+            <>
+              <dt>{locale === 'en' ? 'Reading time' : 'زمان مطالعه'}</dt>
+              <dd>
+                {formatReadingTime(locale, model.article.reading_time_minutes)}
+              </dd>
+            </>
+          ) : null}
+          {model.article.license ? (
+            <>
+              <dt>{locale === 'en' ? 'License' : 'مجوز'}</dt>
+              <dd>{model.article.license}</dd>
+            </>
+          ) : null}
+          {model.article.series?.length ? (
+            <>
+              <dt>{locale === 'en' ? 'Series' : 'مجموعه'}</dt>
+              <dd>
+                {model.article.series.map((item) => item.title).join(', ')}
+              </dd>
+            </>
+          ) : null}
         </dl>
 
-        {
-          model.article.topic_tags?.length ? (
-            <ul class="writing-page__tags" aria-label={locale === 'en' ? 'Topics' : 'موضوعات'}>
-              {model.article.topic_tags.map((tag) => (
-                <li class="writing-page__tag">{tag.name}</li>
-              ))}
-            </ul>
-          ) : null
-        }
+        {model.article.topic_tags?.length ? (
+          <ul
+            class="writing-page__tags"
+            aria-label={locale === 'en' ? 'Topics' : 'موضوعات'}
+          >
+            {model.article.topic_tags.map((tag) => (
+              <li class="writing-page__tag">{tag.name}</li>
+            ))}
+          </ul>
+        ) : null}
 
-        {
-          model.article.body?.trim() ? (
-            <div
-              class="writing-page__prose writing-page__body-html"
-              set:html={model.article.body}
-            />
-          ) : null
-        }
+        {model.article.body?.trim() ? (
+          <div
+            class="writing-page__prose writing-page__body-html"
+            set:html={model.article.body}
+          />
+        ) : null}
       </div>
 
       <p slot="related" class="writing-page__back">

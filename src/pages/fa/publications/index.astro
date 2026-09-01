@@ -1,17 +1,18 @@
 ---
-import SiteLayout from '../../../layouts/SiteLayout.astro';
-import PublicationsPageContent from '../../../components/publications/PublicationsPageContent.astro';
+import SiteLayout from '../../../layouts/SiteLayout.astro'
+import PublicationsPageContent from '../../../components/publications/PublicationsPageContent.astro'
 import {
   fetchPublicationsIndex,
   publicationsRouteTitle,
   resolvePublicationsAlternateAvailability,
-} from '../../../lib/publications-content';
-import '../../../styles/page-families.css';
+} from '../../../lib/publications-content'
+import '../../../styles/page-families.css'
 
-const locale = 'fa' as const;
-const model = await fetchPublicationsIndex(locale);
-const alternateAvailable = await resolvePublicationsAlternateAvailability(locale);
-const pageTitle = `${publicationsRouteTitle.fa} — Taha Mohammadi`;
+const locale = 'fa' as const
+const model = await fetchPublicationsIndex(locale)
+const alternateAvailable =
+  await resolvePublicationsAlternateAvailability(locale)
+const pageTitle = `${publicationsRouteTitle.fa} — Taha Mohammadi`
 ---
 
 <SiteLayout

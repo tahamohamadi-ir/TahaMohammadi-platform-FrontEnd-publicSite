@@ -1,15 +1,18 @@
-import { experimental_AstroContainer as AstroContainer } from 'astro/container';
-import { describe, expect, it } from 'vitest';
+import { experimental_AstroContainer as AstroContainer } from 'astro/container'
+import { describe, expect, it } from 'vitest'
 
-import AboutPageContent from './AboutPageContent.astro';
+import AboutPageContent from './AboutPageContent.astro'
 
 type Component = Parameters<
   Awaited<ReturnType<typeof AstroContainer.create>>['renderToString']
->[0];
+>[0]
 
-async function render(component: Component, props: Record<string, unknown> = {}) {
-  const container = await AstroContainer.create();
-  return container.renderToString(component, { props });
+async function render(
+  component: Component,
+  props: Record<string, unknown> = {},
+) {
+  const container = await AstroContainer.create()
+  return container.renderToString(component, { props })
 }
 
 describe('PUBLIC-200 about page', () => {
@@ -17,12 +20,12 @@ describe('PUBLIC-200 about page', () => {
     const html = await render(AboutPageContent, {
       locale: 'en',
       model: { status: 'unavailable' },
-    });
-    expect(html).toMatch(/data-state-variant="unavailable"/);
-    expect(html).toContain('About');
-    expect(html).toMatch(/href="\/en\/"/);
-    expect(html).toMatch(/<h1[\s>]/);
-  });
+    })
+    expect(html).toMatch(/data-state-variant="unavailable"/)
+    expect(html).toContain('About')
+    expect(html).toMatch(/href="\/en\/"/)
+    expect(html).toMatch(/<h1[\s>]/)
+  })
 
   it('renders profile sections with anchor ids when ready', async () => {
     const html = await render(AboutPageContent, {
@@ -56,12 +59,12 @@ describe('PUBLIC-200 about page', () => {
           published_at: '2026-01-01T00:00:00Z',
         },
       },
-    });
-    expect(html).toContain('About Taha Mohammadi');
-    expect(html).toMatch(/id="about-intro"/);
-    expect(html).toMatch(/id="about-engineering"/);
-    expect(html).toMatch(/id="about-education"/);
-    expect(html).toMatch(/id="about-experience"/);
-    expect(html).toContain('Intro paragraph one.');
-  });
-});
+    })
+    expect(html).toContain('About Taha Mohammadi')
+    expect(html).toMatch(/id="about-intro"/)
+    expect(html).toMatch(/id="about-engineering"/)
+    expect(html).toMatch(/id="about-education"/)
+    expect(html).toMatch(/id="about-experience"/)
+    expect(html).toContain('Intro paragraph one.')
+  })
+})

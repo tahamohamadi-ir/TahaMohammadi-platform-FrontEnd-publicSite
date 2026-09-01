@@ -1,20 +1,24 @@
 ---
 export interface BreadcrumbItem {
-  label: string;
-  href?: string;
+  label: string
+  href?: string
 }
 
 interface Props {
-  items: BreadcrumbItem[];
-  currentLabel: string;
-  ariaLabel: string;
-  class?: string;
+  items: BreadcrumbItem[]
+  currentLabel: string
+  ariaLabel: string
+  class?: string
 }
 
-const { items, currentLabel, ariaLabel, class: className = '' } = Astro.props;
+const { items, currentLabel, ariaLabel, class: className = '' } = Astro.props
 ---
 
-<nav class={['ui-breadcrumbs', className].filter(Boolean).join(' ')} data-visual-id="Breadcrumbs" aria-label={ariaLabel}>
+<nav
+  class={['ui-breadcrumbs', className].filter(Boolean).join(' ')}
+  data-visual-id="Breadcrumbs"
+  aria-label={ariaLabel}
+>
   <ol class="ui-breadcrumbs__list">
     {
       items.map((item) => (
@@ -29,7 +33,10 @@ const { items, currentLabel, ariaLabel, class: className = '' } = Astro.props;
         </li>
       ))
     }
-    <li class="ui-breadcrumbs__item ui-breadcrumbs__item--current" aria-current="page">
+    <li
+      class="ui-breadcrumbs__item ui-breadcrumbs__item--current"
+      aria-current="page"
+    >
       <span class="ui-breadcrumbs__current">{currentLabel}</span>
     </li>
   </ol>

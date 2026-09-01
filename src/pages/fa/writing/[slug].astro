@@ -1,28 +1,28 @@
 ---
-import SiteLayout from '../../../layouts/SiteLayout.astro';
-import WritingDetailContent from '../../../components/writing/WritingDetailContent.astro';
+import SiteLayout from '../../../layouts/SiteLayout.astro'
+import WritingDetailContent from '../../../components/writing/WritingDetailContent.astro'
 import {
   fetchArticleDetail,
   listArticleSlugs,
   resolveWritingAlternateAvailability,
-} from '../../../lib/writing-content';
-import '../../../styles/page-families.css';
+} from '../../../lib/writing-content'
+import '../../../styles/page-families.css'
 
 export async function getStaticPaths() {
-  const slugs = await listArticleSlugs('fa');
-  return slugs.map((slug) => ({ params: { slug } }));
+  const slugs = await listArticleSlugs('fa')
+  return slugs.map((slug) => ({ params: { slug } }))
 }
 
-const locale = 'fa' as const;
-const slug = Astro.params.slug ?? '';
-const model = await fetchArticleDetail(locale, slug);
+const locale = 'fa' as const
+const slug = Astro.params.slug ?? ''
+const model = await fetchArticleDetail(locale, slug)
 
 if (model.status === 'unavailable') {
-  return new Response(null, { status: 404, statusText: 'Not Found' });
+  return new Response(null, { status: 404, statusText: 'Not Found' })
 }
 
-const alternateAvailable = await resolveWritingAlternateAvailability(locale);
-const pageTitle = `${model.article.title} — طه محمدی`;
+const alternateAvailable = await resolveWritingAlternateAvailability(locale)
+const pageTitle = `${model.article.title} — طه محمدی`
 ---
 
 <SiteLayout

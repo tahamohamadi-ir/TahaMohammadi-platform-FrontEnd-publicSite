@@ -3,13 +3,13 @@
  * Route shape from ROUTE-REGISTRY; copy is UI chrome only.
  */
 
-import { localePath, type Locale } from './navigation';
+import { localePath, type Locale } from './navigation'
 
-export const searchQueryParam = 'q';
+export const searchQueryParam = 'q'
 
 /** Utility route title — not owner publication content. */
 export function getSearchRouteTitle(locale: Locale): string {
-  return locale === 'en' ? 'Search' : 'جستجو';
+  return locale === 'en' ? 'Search' : 'جستجو'
 }
 
 export const searchCopy = {
@@ -42,26 +42,29 @@ export const searchCopy = {
     },
   },
   noscript: {
-    title: { en: 'Search requires JavaScript', fa: 'جستجو به جاوااسکریپت نیاز دارد' },
+    title: {
+      en: 'Search requires JavaScript',
+      fa: 'جستجو به جاوااسکریپت نیاز دارد',
+    },
     message: {
       en: 'Full-text search runs in the browser using the offline Pagefind index.',
       fa: 'جستجوی تمام‌متن در مرورگر و با نمایهٔ آفلاین Pagefind انجام می‌شود.',
     },
   },
-} as const;
+} as const
 
 export function buildSearchPageHref(locale: Locale, query = ''): string {
-  const base = localePath(locale, 'search');
-  const trimmed = query.trim();
-  if (!trimmed) return base;
-  return `${base}?${searchQueryParam}=${encodeURIComponent(trimmed)}`;
+  const base = localePath(locale, 'search')
+  const trimmed = query.trim()
+  if (!trimmed) return base
+  return `${base}?${searchQueryParam}=${encodeURIComponent(trimmed)}`
 }
 
 export function parseSearchQuery(searchParams: URLSearchParams): string {
-  return searchParams.get(searchQueryParam)?.trim() ?? '';
+  return searchParams.get(searchQueryParam)?.trim() ?? ''
 }
 
 /** Per-locale Pagefind bundle path written by the build integration. */
 export function getSearchBundlePath(locale: Locale): string {
-  return `/pagefind/${locale}`;
+  return `/pagefind/${locale}`
 }

@@ -1,14 +1,14 @@
 ---
-import ContentRow from '../ui/ContentRow.astro';
-import { getHomeInterestsContent } from '../../lib/home-content';
-import type { Locale } from '../../lib/navigation';
+import ContentRow from '../ui/ContentRow.astro'
+import { getHomeInterestsContent } from '../../lib/home-content'
+import type { Locale } from '../../lib/navigation'
 
 interface Props {
-  locale: Locale;
+  locale: Locale
 }
 
-const { locale } = Astro.props;
-const content = getHomeInterestsContent(locale);
+const { locale } = Astro.props
+const content = getHomeInterestsContent(locale)
 ---
 
 <section class="hm-interests">
@@ -25,7 +25,11 @@ const content = getHomeInterestsContent(locale);
         <ul class="hm-interests__grid">
           {content.cards.map((card) => (
             <li>
-              <ContentRow title={card.title} excerpt={card.excerpt} class="hm-interests__card" />
+              <ContentRow
+                title={card.title}
+                excerpt={card.excerpt}
+                class="hm-interests__card"
+              />
             </li>
           ))}
         </ul>

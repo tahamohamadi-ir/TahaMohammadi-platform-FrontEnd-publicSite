@@ -1,1 +1,5 @@
-export { contentStateVariants, type ContentStateLocale, type ContentStateVariant } from './types';
+export {
+  contentStateVariants,
+  type ContentStateLocale,
+  type ContentStateVariant,
+} from './types'

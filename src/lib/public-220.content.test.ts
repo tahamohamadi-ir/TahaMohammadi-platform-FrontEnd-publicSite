@@ -1,19 +1,21 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest'
 
 import {
   formatCourseCardMeta,
   formatTalkCardMeta,
   getTeachingRouteTitle,
   getTeachingUnavailableCopy,
-} from './teaching-content';
+} from './teaching-content'
 
 describe('teaching content helpers', () => {
   it('returns localized route titles and unavailable copy', () => {
-    expect(getTeachingRouteTitle('en')).toBe('Teaching');
-    expect(getTeachingRouteTitle('fa')).toBe('تدریس');
-    expect(getTeachingUnavailableCopy('en').message).toContain('not available yet');
-    expect(getTeachingUnavailableCopy('fa').title).toBe('تدریس');
-  });
+    expect(getTeachingRouteTitle('en')).toBe('Teaching')
+    expect(getTeachingRouteTitle('fa')).toBe('تدریس')
+    expect(getTeachingUnavailableCopy('en').message).toContain(
+      'not available yet',
+    )
+    expect(getTeachingUnavailableCopy('fa').title).toBe('تدریس')
+  })
 
   it('formats course and talk card metadata from API fields only', () => {
     expect(
@@ -31,7 +33,7 @@ describe('teaching content helpers', () => {
         published_at: '2026-01-01T00:00:00Z',
         updated_at: null,
       }),
-    ).toBe('Graduate · Online · English · Open');
+    ).toBe('Graduate · Online · English · Open')
 
     expect(
       formatTalkCardMeta({
@@ -47,6 +49,6 @@ describe('teaching content helpers', () => {
         published_at: '2026-01-01T00:00:00Z',
         updated_at: null,
       }),
-    ).toBe('AI Summit · 2026-03-01 · Tehran · Public');
-  });
-});
+    ).toBe('AI Summit · 2026-03-01 · Tehran · Public')
+  })
+})

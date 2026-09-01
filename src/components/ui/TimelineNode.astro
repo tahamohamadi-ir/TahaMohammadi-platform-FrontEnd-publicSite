@@ -1,29 +1,42 @@
 ---
 interface Props {
-  typeLabel?: string;
-  label: string;
-  period?: string;
-  summary?: string;
-  href?: string;
-  detailLabel?: string;
-  class?: string;
+  typeLabel?: string
+  label: string
+  period?: string
+  summary?: string
+  href?: string
+  detailLabel?: string
+  class?: string
 }
 
-const { typeLabel, label, period, summary, href, detailLabel, class: className = '' } = Astro.props;
+const {
+  typeLabel,
+  label,
+  period,
+  summary,
+  href,
+  detailLabel,
+  class: className = '',
+} = Astro.props
 ---
 
-<li class={['ui-timeline-node', className].filter(Boolean).join(' ')} data-visual-id="TimelineNode">
-  <div class="ui-timeline-node__marker" aria-hidden="true" />
+<li
+  class={['ui-timeline-node', className].filter(Boolean).join(' ')}
+  data-visual-id="TimelineNode"
+>
+  <div class="ui-timeline-node__marker" aria-hidden="true"></div>
   <div class="ui-timeline-node__content">
     {typeLabel ? <p class="ui-timeline-node__type">{typeLabel}</p> : null}
     <h3 class="ui-timeline-node__label">{label}</h3>
     {period ? <p class="ui-timeline-node__period">{period}</p> : null}
     {summary ? <p class="ui-timeline-node__summary">{summary}</p> : null}
-    {href && detailLabel ? (
-      <a href={href} class="ui-timeline-node__link">
-        {detailLabel}
-      </a>
-    ) : null}
+    {
+      href && detailLabel ? (
+        <a href={href} class="ui-timeline-node__link">
+          {detailLabel}
+        </a>
+      ) : null
+    }
   </div>
 </li>
 

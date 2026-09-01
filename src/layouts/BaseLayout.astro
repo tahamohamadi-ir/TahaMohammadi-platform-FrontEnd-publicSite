@@ -1,21 +1,21 @@
 ---
-import '../styles/global.css';
+import '../styles/global.css'
 
 interface AlternateLink {
-  hreflang: string;
-  href: string;
+  hreflang: string
+  href: string
 }
 
 interface Props {
-  title: string;
-  lang: string;
-  dir: 'rtl' | 'ltr';
-  gateway?: boolean;
-  canonical?: string;
-  alternates?: AlternateLink[];
+  title: string
+  lang: string
+  dir: 'rtl' | 'ltr'
+  gateway?: boolean
+  canonical?: string
+  alternates?: AlternateLink[]
 }
 
-const { title, lang, dir, gateway = false, canonical, alternates } = Astro.props;
+const { title, lang, dir, gateway = false, canonical, alternates } = Astro.props
 ---
 
 <!doctype html>
@@ -70,10 +70,10 @@ const { title, lang, dir, gateway = false, canonical, alternates } = Astro.props
       )
     }
     <script is:inline>
-      (function () {
-        const storageKey = 'tm-theme';
-        const root = document.documentElement;
-        const modes = ['system', 'light', 'dark'];
+      ;(function () {
+        const storageKey = 'tm-theme'
+        const root = document.documentElement
+        const modes = ['system', 'light', 'dark']
 
         /**
          * Stable theme interface: `tm-themechange` is dispatched once after
@@ -83,53 +83,74 @@ const { title, lang, dir, gateway = false, canonical, alternates } = Astro.props
          * `aria-pressed="false"` for light, or `aria-pressed="true"` for dark.
          */
         function systemTheme() {
-          return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          return window.matchMedia('(prefers-color-scheme: dark)').matches
+            ? 'dark'
+            : 'light'
         }
 
         function updateControls(requested) {
-          document.querySelectorAll('[data-theme-toggle]').forEach((control) => {
-            control.setAttribute('data-theme-mode', requested);
-            const pressed = requested === 'system' ? 'mixed' : requested === 'light' ? 'false' : 'true';
-            control.setAttribute('aria-pressed', pressed);
-          });
+          document
+            .querySelectorAll('[data-theme-toggle]')
+            .forEach((control) => {
+              control.setAttribute('data-theme-mode', requested)
+              const pressed =
+                requested === 'system'
+                  ? 'mixed'
+                  : requested === 'light'
+                    ? 'false'
+                    : 'true'
+              control.setAttribute('aria-pressed', pressed)
+            })
         }
 
         function applyTheme(mode) {
-          const requested = modes.includes(mode) ? mode : 'system';
-          const resolved = requested === 'system' ? systemTheme() : requested;
-          root.dataset.themeRequested = requested;
-          root.dataset.theme = resolved;
-          root.style.colorScheme = resolved;
-          updateControls(requested);
+          const requested = modes.includes(mode) ? mode : 'system'
+          const resolved = requested === 'system' ? systemTheme() : requested
+          root.dataset.themeRequested = requested
+          root.dataset.theme = resolved
+          root.style.colorScheme = resolved
+          updateControls(requested)
           window.dispatchEvent(
-            new CustomEvent('tm-themechange', { detail: { requested, resolved } }),
-          );
-          return { requested, resolved };
+            new CustomEvent('tm-themechange', {
+              detail: { requested, resolved },
+            }),
+          )
+          return { requested, resolved }
         }
 
-        let storedTheme = 'system';
+        let storedTheme = 'system'
         try {
-          storedTheme = localStorage.getItem(storageKey) || 'system';
-        } catch {}
-        applyTheme(storedTheme);
+          storedTheme = localStorage.getItem(storageKey) || 'system'
+        } catch {
+          /* localStorage unavailable */
+        }
+        applyTheme(storedTheme)
 
-        window.__tmApplyTheme = applyTheme;
-        window.__tmThemeStorageKey = storageKey;
-        document.addEventListener('DOMContentLoaded', () => updateControls(root.dataset.themeRequested || 'system'), { once: true });
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-          if (root.dataset.themeRequested === 'system') applyTheme('system');
-        });
+        window.__tmApplyTheme = applyTheme
+        window.__tmThemeStorageKey = storageKey
+        document.addEventListener(
+          'DOMContentLoaded',
+          () => updateControls(root.dataset.themeRequested || 'system'),
+          { once: true },
+        )
+        window
+          .matchMedia('(prefers-color-scheme: dark)')
+          .addEventListener('change', () => {
+            if (root.dataset.themeRequested === 'system') applyTheme('system')
+          })
         document.addEventListener('click', (event) => {
-          if (!(event.target instanceof Element)) return;
-          if (!event.target.closest('[data-theme-toggle]')) return;
-          const current = root.dataset.themeRequested || 'system';
-          const next = modes[(modes.indexOf(current) + 1) % modes.length];
+          if (!(event.target instanceof Element)) return
+          if (!event.target.closest('[data-theme-toggle]')) return
+          const current = root.dataset.themeRequested || 'system'
+          const next = modes[(modes.indexOf(current) + 1) % modes.length]
           try {
-            localStorage.setItem(storageKey, next);
-          } catch {}
-          applyTheme(next);
-        });
-      })();
+            localStorage.setItem(storageKey, next)
+          } catch {
+            /* localStorage unavailable */
+          }
+          applyTheme(next)
+        })
+      })()
     </script>
   </head>
   <body

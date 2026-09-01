@@ -1,33 +1,40 @@
 ---
-import { Picture } from 'astro:assets';
-import type { HTMLAttributes } from 'astro/types';
+import { Picture } from 'astro:assets'
+import type { HTMLAttributes } from 'astro/types'
 
-import { getPromotedMedia } from '../../lib/media/promoted-media';
-import type { MediaSlot } from '../../lib/media/promoted-media-registry';
+import { getPromotedMedia } from '../../lib/media/promoted-media'
+import type { MediaSlot } from '../../lib/media/promoted-media-registry'
 
 interface Props extends HTMLAttributes<'div'> {
-  lightAssetId: string;
-  darkAssetId: string;
-  mediaSlot: MediaSlot;
-  class?: string;
-  imgClass?: string;
+  lightAssetId: string
+  darkAssetId: string
+  mediaSlot: MediaSlot
+  class?: string
+  imgClass?: string
 }
 
-const { lightAssetId, darkAssetId, mediaSlot, class: wrapperClass, imgClass, ...rest } = Astro.props;
+const {
+  lightAssetId,
+  darkAssetId,
+  mediaSlot,
+  class: wrapperClass,
+  imgClass,
+  ...rest
+} = Astro.props
 
-const light = getPromotedMedia(lightAssetId, mediaSlot);
-const dark = getPromotedMedia(darkAssetId, mediaSlot);
+const light = getPromotedMedia(lightAssetId, mediaSlot)
+const dark = getPromotedMedia(darkAssetId, mediaSlot)
 
 if (light.placement.theme !== 'light') {
   throw new Error(
     `ThemePicture lightAssetId ${lightAssetId} is registered for theme ${light.placement.theme}, not light`,
-  );
+  )
 }
 
 if (dark.placement.theme !== 'dark') {
   throw new Error(
     `ThemePicture darkAssetId ${darkAssetId} is registered for theme ${dark.placement.theme}, not dark`,
-  );
+  )
 }
 
 const pictureProps = (media: typeof light) => ({
@@ -41,7 +48,7 @@ const pictureProps = (media: typeof light) => ({
   fetchpriority: media.transform.fetchPriority,
   class: imgClass,
   pictureAttributes: { class: 'theme-picture__picture' },
-});
+})
 ---
 
 <div
@@ -63,34 +70,38 @@ const pictureProps = (media: typeof light) => ({
 </div>
 
 <script is:inline>
-  (function mountThemePicture() {
+  ;(function mountThemePicture() {
     const resolveTheme = () => {
-      const requested = document.documentElement.dataset.theme;
-      if (requested === 'light' || requested === 'dark') return requested;
-      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    };
+      const requested = document.documentElement.dataset.theme
+      if (requested === 'light' || requested === 'dark') return requested
+      return window.matchMedia('(prefers-color-scheme: dark)').matches
+        ? 'dark'
+        : 'light'
+    }
 
     const mountVariant = (root, theme) => {
-      const mount = root.querySelector('[data-theme-picture-mount]');
-      const template = root.querySelector('[data-theme-picture-template="' + theme + '"]');
-      if (!mount || !template) return;
-      mount.replaceChildren(template.content.cloneNode(true));
-      root.dataset.activeTheme = theme;
-    };
+      const mount = root.querySelector('[data-theme-picture-mount]')
+      const template = root.querySelector(
+        '[data-theme-picture-template="' + theme + '"]',
+      )
+      if (!mount || !template) return
+      mount.replaceChildren(template.content.cloneNode(true))
+      root.dataset.activeTheme = theme
+    }
 
     for (const root of document.querySelectorAll('[data-theme-picture]')) {
-      mountVariant(root, resolveTheme());
+      mountVariant(root, resolveTheme())
     }
 
     window.addEventListener('tm-themechange', () => {
-      const theme = resolveTheme();
+      const theme = resolveTheme()
       for (const root of document.querySelectorAll('[data-theme-picture]')) {
         if (root.dataset.activeTheme !== theme) {
-          mountVariant(root, theme);
+          mountVariant(root, theme)
         }
       }
-    });
-  })();
+    })
+  })()
 </script>
 
 <style>

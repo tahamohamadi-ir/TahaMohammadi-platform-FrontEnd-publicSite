@@ -1,18 +1,23 @@
 ---
-import SiteLayout from '../../layouts/SiteLayout.astro';
-import HomeTemplate from '../../components/templates/HomeTemplate.astro';
-import HomeHero from '../../components/home/HomeHero.astro';
-import HomeResearchGraph from '../../components/home/HomeResearchGraph.astro';
-import HomeResearchInterests from '../../components/home/HomeResearchInterests.astro';
-import HomeJourney from '../../components/home/HomeJourney.astro';
-import HomeFeaturedProjects from '../../components/home/HomeFeaturedProjects.astro';
-import HomeFeaturedPublications from '../../components/home/HomeFeaturedPublications.astro';
-import HomeExploreRails from '../../components/home/HomeExploreRails.astro';
-import HomeCollaborationCta from '../../components/home/HomeCollaborationCta.astro';
-import '../../styles/home.css';
+import SiteLayout from '../../layouts/SiteLayout.astro'
+import HomeTemplate from '../../components/templates/HomeTemplate.astro'
+import HomeHero from '../../components/home/HomeHero.astro'
+import HomeResearchGraph from '../../components/home/HomeResearchGraph.astro'
+import HomeResearchInterests from '../../components/home/HomeResearchInterests.astro'
+import HomeJourney from '../../components/home/HomeJourney.astro'
+import HomeFeaturedProjects from '../../components/home/HomeFeaturedProjects.astro'
+import HomeFeaturedPublications from '../../components/home/HomeFeaturedPublications.astro'
+import HomeExploreRails from '../../components/home/HomeExploreRails.astro'
+import HomeCollaborationCta from '../../components/home/HomeCollaborationCta.astro'
+import '../../styles/home.css'
 ---
 
-<SiteLayout title="Taha Mohammadi — Home" locale="en" alternateAvailable hideFooterPromo>
+<SiteLayout
+  title="Taha Mohammadi — Home"
+  locale="en"
+  alternateAvailable
+  hideFooterPromo
+>
   <HomeTemplate>
     <HomeHero slot="identity-lead" locale="en" />
     <HomeResearchGraph slot="relationship-graph" locale="en" />

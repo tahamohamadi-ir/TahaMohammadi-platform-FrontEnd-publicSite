@@ -16,14 +16,14 @@
   --primitive-white: #ffffff;
 
   /* Semantic, typography, motion, and layout layers */
-  --font-display-en: "Newsreader Variable", "Georgia", serif;
-  --font-body-en: "Inter Variable", system-ui, sans-serif;
-  --font-display-fa: "Estedad Variable", "Vazirmatn Variable", sans-serif;
-  --font-body-fa: "Vazirmatn Variable", "Tahoma", sans-serif;
+  --font-display-en: 'Newsreader Variable', 'Georgia', serif;
+  --font-body-en: 'Inter Variable', system-ui, sans-serif;
+  --font-display-fa: 'Estedad Variable', 'Vazirmatn Variable', sans-serif;
+  --font-body-fa: 'Vazirmatn Variable', 'Tahoma', sans-serif;
   --font-display: var(--font-display-en);
   --font-body: var(--font-body-en);
-  --font-latin: "Inter Variable";
-  --font-persian: "Vazirmatn Variable";
+  --font-latin: 'Inter Variable';
+  --font-persian: 'Vazirmatn Variable';
   --font-size-xs: 12px;
   --font-size-sm: 14px;
   --font-size-base: 16px;

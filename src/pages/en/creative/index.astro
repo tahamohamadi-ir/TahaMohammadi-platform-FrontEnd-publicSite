@@ -1,17 +1,17 @@
 ---
-import SiteLayout from '../../../layouts/SiteLayout.astro';
-import CreativePageContent from '../../../components/creative/CreativePageContent.astro';
+import SiteLayout from '../../../layouts/SiteLayout.astro'
+import CreativePageContent from '../../../components/creative/CreativePageContent.astro'
 import {
   fetchCreativeIndex,
   getCreativeRouteTitle,
   resolveCreativeAlternateAvailability,
-} from '../../../lib/creative-content';
-import '../../../styles/page-families.css';
+} from '../../../lib/creative-content'
+import '../../../styles/page-families.css'
 
-const locale = 'en' as const;
-const model = await fetchCreativeIndex(locale);
-const alternateAvailable = await resolveCreativeAlternateAvailability(locale);
-const pageTitle = `${getCreativeRouteTitle(locale)} — Taha Mohammadi`;
+const locale = 'en' as const
+const model = await fetchCreativeIndex(locale)
+const alternateAvailable = await resolveCreativeAlternateAvailability(locale)
+const pageTitle = `${getCreativeRouteTitle(locale)} — Taha Mohammadi`
 ---
 
 <SiteLayout

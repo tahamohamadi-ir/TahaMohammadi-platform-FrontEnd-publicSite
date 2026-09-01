@@ -1,16 +1,19 @@
-import { experimental_AstroContainer as AstroContainer } from 'astro/container';
-import { describe, expect, it } from 'vitest';
+import { experimental_AstroContainer as AstroContainer } from 'astro/container'
+import { describe, expect, it } from 'vitest'
 
-import ResearchPageContent from './ResearchPageContent.astro';
-import ResearchTopicDetailContent from './ResearchTopicDetailContent.astro';
+import ResearchPageContent from './ResearchPageContent.astro'
+import ResearchTopicDetailContent from './ResearchTopicDetailContent.astro'
 
 type Component = Parameters<
   Awaited<ReturnType<typeof AstroContainer.create>>['renderToString']
->[0];
+>[0]
 
-async function render(component: Component, props: Record<string, unknown> = {}) {
-  const container = await AstroContainer.create();
-  return container.renderToString(component, { props });
+async function render(
+  component: Component,
+  props: Record<string, unknown> = {},
+) {
+  const container = await AstroContainer.create()
+  return container.renderToString(component, { props })
 }
 
 describe('PUBLIC-201 research pages', () => {
@@ -18,11 +21,11 @@ describe('PUBLIC-201 research pages', () => {
     const html = await render(ResearchPageContent, {
       locale: 'en',
       model: { status: 'unavailable' },
-    });
-    expect(html).toMatch(/data-state-variant="unavailable"/);
-    expect(html).toContain('Research');
-    expect(html).toMatch(/<h1[\s>]/);
-  });
+    })
+    expect(html).toMatch(/data-state-variant="unavailable"/)
+    expect(html).toContain('Research')
+    expect(html).toMatch(/<h1[\s>]/)
+  })
 
   it('renders topic cards when the index model is ready', async () => {
     const html = await render(ResearchPageContent, {
@@ -42,10 +45,10 @@ describe('PUBLIC-201 research pages', () => {
         statement: null,
         projects: [],
       },
-    });
-    expect(html).toContain('Human-Centered AI');
-    expect(html).toMatch(/href="\/en\/research\/human-centered-ai\/"/);
-  });
+    })
+    expect(html).toContain('Human-Centered AI')
+    expect(html).toMatch(/href="\/en\/research\/human-centered-ai\/"/)
+  })
 
   it('renders topic detail sections when ready', async () => {
     const html = await render(ResearchTopicDetailContent, {
@@ -67,9 +70,9 @@ describe('PUBLIC-201 research pages', () => {
           updated_at: null,
         },
       },
-    });
-    expect(html).toContain('Human-Centered AI');
-    expect(html).toMatch(/id="motivation"/);
-    expect(html).toContain('Motivation paragraph.');
-  });
-});
+    })
+    expect(html).toContain('Human-Centered AI')
+    expect(html).toMatch(/id="motivation"/)
+    expect(html).toContain('Motivation paragraph.')
+  })
+})

@@ -3,8 +3,8 @@
  * Detail slugs are API-driven at build time and are not listed here.
  */
 
-export const LOCALES = ['fa', 'en'] as const;
-export type SeoLocale = (typeof LOCALES)[number];
+export const LOCALES = ['fa', 'en'] as const
+export type SeoLocale = (typeof LOCALES)[number]
 
 /** Route tail without locale prefix; empty string is home `/{locale}/`. */
 export const LOCALE_INDEX_ROUTES = [
@@ -19,6 +19,6 @@ export const LOCALE_INDEX_ROUTES = [
   'cv',
   'contact',
   'search',
-] as const;
+] as const
 
-export type LocaleIndexRoute = (typeof LOCALE_INDEX_ROUTES)[number];
+export type LocaleIndexRoute = (typeof LOCALE_INDEX_ROUTES)[number]

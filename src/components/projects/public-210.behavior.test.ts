@@ -1,16 +1,19 @@
-import { experimental_AstroContainer as AstroContainer } from 'astro/container';
-import { describe, expect, it } from 'vitest';
+import { experimental_AstroContainer as AstroContainer } from 'astro/container'
+import { describe, expect, it } from 'vitest'
 
-import ProjectsPageContent from './ProjectsPageContent.astro';
-import ProjectDetailContent from './ProjectDetailContent.astro';
+import ProjectsPageContent from './ProjectsPageContent.astro'
+import ProjectDetailContent from './ProjectDetailContent.astro'
 
 type Component = Parameters<
   Awaited<ReturnType<typeof AstroContainer.create>>['renderToString']
->[0];
+>[0]
 
-async function render(component: Component, props: Record<string, unknown> = {}) {
-  const container = await AstroContainer.create();
-  return container.renderToString(component, { props });
+async function render(
+  component: Component,
+  props: Record<string, unknown> = {},
+) {
+  const container = await AstroContainer.create()
+  return container.renderToString(component, { props })
 }
 
 describe('PUBLIC-210 projects pages', () => {
@@ -18,11 +21,11 @@ describe('PUBLIC-210 projects pages', () => {
     const html = await render(ProjectsPageContent, {
       locale: 'en',
       model: { status: 'unavailable' },
-    });
-    expect(html).toMatch(/data-state-variant="unavailable"/);
-    expect(html).toContain('Projects');
-    expect(html).toMatch(/<h1[\s>]/);
-  });
+    })
+    expect(html).toMatch(/data-state-variant="unavailable"/)
+    expect(html).toContain('Projects')
+    expect(html).toMatch(/<h1[\s>]/)
+  })
 
   it('renders project cards when the index model is ready', async () => {
     const html = await render(ProjectsPageContent, {
@@ -46,10 +49,10 @@ describe('PUBLIC-210 projects pages', () => {
           },
         ],
       },
-    });
-    expect(html).toContain('PARS SQL / VTD Edge');
-    expect(html).toMatch(/href="\/en\/projects\/pars-sql-vtd-edge\/"/);
-  });
+    })
+    expect(html).toContain('PARS SQL / VTD Edge')
+    expect(html).toMatch(/href="\/en\/projects\/pars-sql-vtd-edge\/"/)
+  })
 
   it('renders project detail sections when ready', async () => {
     const html = await render(ProjectDetailContent, {
@@ -78,9 +81,9 @@ describe('PUBLIC-210 projects pages', () => {
           updated_at: null,
         },
       },
-    });
-    expect(html).toContain('PARS SQL / VTD Edge');
-    expect(html).toContain('Methods paragraph.');
-    expect(html).toMatch(/href="https:\/\/example.com\/code"/);
-  });
-});
+    })
+    expect(html).toContain('PARS SQL / VTD Edge')
+    expect(html).toContain('Methods paragraph.')
+    expect(html).toMatch(/href="https:\/\/example.com\/code"/)
+  })
+})

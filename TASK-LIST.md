@@ -9,7 +9,7 @@ Status: `[x]` done, `[ ]` open, `[~]` in progress.
 ## PUB-0 — Scaffold and toolchain
 
 - [x] **PUBLIC-010** Init Astro 7 + TypeScript 5.9; commit lockfile; `npm run build` green.
-- [ ] **PUBLIC-011** ESLint + Prettier aligned with repo conventions.
+- [x] **PUBLIC-011** ESLint + Prettier aligned with repo conventions. Evidence: `eslint.config.js`, `.prettierrc`, `npm run lint`, `npm run format:check`, `src/public-011.toolchain.test.ts`, CI lint/format steps.
 - [x] **PUBLIC-012** GitHub Actions: install, unit tests, design + SEO validation, build (Phase 1 CI). Evidence: `.github/workflows/ci.yml` on push/PR; Playwright visual optional locally.
 - [ ] **PUBLIC-013** ADRs: package manager, routing, deployment, testing, browsers.
 

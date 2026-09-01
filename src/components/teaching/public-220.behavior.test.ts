@@ -1,16 +1,19 @@
-import { experimental_AstroContainer as AstroContainer } from 'astro/container';
-import { describe, expect, it } from 'vitest';
+import { experimental_AstroContainer as AstroContainer } from 'astro/container'
+import { describe, expect, it } from 'vitest'
 
-import TeachingPageContent from './TeachingPageContent.astro';
-import TeachingDetailContent from './TeachingDetailContent.astro';
+import TeachingPageContent from './TeachingPageContent.astro'
+import TeachingDetailContent from './TeachingDetailContent.astro'
 
 type Component = Parameters<
   Awaited<ReturnType<typeof AstroContainer.create>>['renderToString']
->[0];
+>[0]
 
-async function render(component: Component, props: Record<string, unknown> = {}) {
-  const container = await AstroContainer.create();
-  return container.renderToString(component, { props });
+async function render(
+  component: Component,
+  props: Record<string, unknown> = {},
+) {
+  const container = await AstroContainer.create()
+  return container.renderToString(component, { props })
 }
 
 describe('PUBLIC-220 teaching pages', () => {
@@ -18,11 +21,11 @@ describe('PUBLIC-220 teaching pages', () => {
     const html = await render(TeachingPageContent, {
       locale: 'en',
       model: { status: 'unavailable' },
-    });
-    expect(html).toMatch(/data-state-variant="unavailable"/);
-    expect(html).toContain('Teaching');
-    expect(html).toMatch(/<h1[\s>]/);
-  });
+    })
+    expect(html).toMatch(/data-state-variant="unavailable"/)
+    expect(html).toContain('Teaching')
+    expect(html).toMatch(/<h1[\s>]/)
+  })
 
   it('renders course and talk cards when the index model is ready', async () => {
     const html = await render(TeachingPageContent, {
@@ -61,12 +64,12 @@ describe('PUBLIC-220 teaching pages', () => {
           },
         ],
       },
-    });
-    expect(html).toContain('Intro to AI');
-    expect(html).toContain('AI Summit Keynote');
-    expect(html).toMatch(/href="\/en\/teaching\/intro-ai\/"/);
-    expect(html).toMatch(/href="\/en\/teaching\/ai-summit-keynote\/"/);
-  });
+    })
+    expect(html).toContain('Intro to AI')
+    expect(html).toContain('AI Summit Keynote')
+    expect(html).toMatch(/href="\/en\/teaching\/intro-ai\/"/)
+    expect(html).toMatch(/href="\/en\/teaching\/ai-summit-keynote\/"/)
+  })
 
   it('renders course detail sections when ready', async () => {
     const html = await render(TeachingDetailContent, {
@@ -93,11 +96,11 @@ describe('PUBLIC-220 teaching pages', () => {
           accessibility_notes: '',
         },
       },
-    });
-    expect(html).toContain('Intro to AI');
-    expect(html).toContain('Linear algebra.');
-    expect(html).toContain('Course body.');
-  });
+    })
+    expect(html).toContain('Intro to AI')
+    expect(html).toContain('Linear algebra.')
+    expect(html).toContain('Course body.')
+  })
 
   it('renders talk detail links when ready', async () => {
     const html = await render(TeachingDetailContent, {
@@ -123,9 +126,9 @@ describe('PUBLIC-220 teaching pages', () => {
           accessibility_notes: '',
         },
       },
-    });
-    expect(html).toContain('AI Summit Keynote');
-    expect(html).toMatch(/href="https:\/\/example.com\/video"/);
-    expect(html).toMatch(/href="https:\/\/example.com\/slides"/);
-  });
-});
+    })
+    expect(html).toContain('AI Summit Keynote')
+    expect(html).toMatch(/href="https:\/\/example.com\/video"/)
+    expect(html).toMatch(/href="https:\/\/example.com\/slides"/)
+  })
+})

@@ -11,14 +11,14 @@ This checklist does **not** close `PUBLIC-190`. Passing the no-JS crawl does not
 
 ## Automated gate
 
-| Gate | Command | Result | Notes |
-|---|---|---|---|
-| Build | `npm run build` | PASS | 23 static pages |
-| Vitest scaffold | `npm test` (includes `public-300.no-js-audit.test.ts`) | PASS | route map + wiring guard |
-| No-JS crawl | `npm run test:nojs` | **23 passed** | gateway + home + PF index + search |
-| Design authority | `npm run validate:design` | PASS | semantic token contract |
-| SEO | `npm run validate:seo` | PASS | sitemap/hreflang/canonical |
-| CI | `.github/workflows/ci.yml` | push/PR | unit + design + SEO + build (no-JS optional locally) |
+| Gate             | Command                                                | Result        | Notes                                                |
+| ---------------- | ------------------------------------------------------ | ------------- | ---------------------------------------------------- |
+| Build            | `npm run build`                                        | PASS          | 23 static pages                                      |
+| Vitest scaffold  | `npm test` (includes `public-300.no-js-audit.test.ts`) | PASS          | route map + wiring guard                             |
+| No-JS crawl      | `npm run test:nojs`                                    | **23 passed** | gateway + home + PF index + search                   |
+| Design authority | `npm run validate:design`                              | PASS          | semantic token contract                              |
+| SEO              | `npm run validate:seo`                                 | PASS          | sitemap/hreflang/canonical                           |
+| CI               | `.github/workflows/ci.yml`                             | push/PR       | unit + design + SEO + build (no-JS optional locally) |
 
 **Runner:** `npm run test:nojs`
 
@@ -28,18 +28,18 @@ This checklist does **not** close `PUBLIC-190`. Passing the no-JS crawl does not
 
 ## Route coverage (23 static pages)
 
-| Profile | Route(s) | Locales | Assertions without JS |
-|---|---|---|---|
-| Gateway | `/` | — | language-selection nav, locale links, single H1 |
-| Home | `/{locale}/` | EN, FA | shell chrome, hero H1, graph node labels |
-| PF-01 | `/{locale}/creative/` | EN, FA | shell, H1, main content text |
-| PF-03 | `/{locale}/writing/` | EN, FA | shell, H1, main content text |
-| PF-04 | `/{locale}/projects/` | EN, FA | shell, H1, main content text |
-| PF-05 | `/{locale}/research/`, `/{locale}/publications/` | EN, FA | shell, H1, main content text |
-| PF-06 | `/{locale}/teaching/` | EN, FA | shell, H1, main content text |
-| PF-07 | `/{locale}/about/`, `/{locale}/cv/` | EN, FA | shell, H1, main content text |
-| PF-08 | `/{locale}/contact/` | EN, FA | shell, H1, main content text |
-| Utility | `/{locale}/search/` | EN, FA | shell, H1, GET search form (`name="q"`) |
+| Profile | Route(s)                                         | Locales | Assertions without JS                           |
+| ------- | ------------------------------------------------ | ------- | ----------------------------------------------- |
+| Gateway | `/`                                              | —       | language-selection nav, locale links, single H1 |
+| Home    | `/{locale}/`                                     | EN, FA  | shell chrome, hero H1, graph node labels        |
+| PF-01   | `/{locale}/creative/`                            | EN, FA  | shell, H1, main content text                    |
+| PF-03   | `/{locale}/writing/`                             | EN, FA  | shell, H1, main content text                    |
+| PF-04   | `/{locale}/projects/`                            | EN, FA  | shell, H1, main content text                    |
+| PF-05   | `/{locale}/research/`, `/{locale}/publications/` | EN, FA  | shell, H1, main content text                    |
+| PF-06   | `/{locale}/teaching/`                            | EN, FA  | shell, H1, main content text                    |
+| PF-07   | `/{locale}/about/`, `/{locale}/cv/`              | EN, FA  | shell, H1, main content text                    |
+| PF-08   | `/{locale}/contact/`                             | EN, FA  | shell, H1, main content text                    |
+| Utility | `/{locale}/search/`                              | EN, FA  | shell, H1, GET search form (`name="q"`)         |
 
 **Excluded:** PF-02 creative detail (`/{locale}/creative/{slug}/`) until a published detail route ships in the static build.
 
@@ -60,12 +60,12 @@ Search with a query string remains a progressive-enhancement surface: the GET fo
 
 ## Deferrals and open items
 
-| Item | Notes |
-|---|---|
-| PF-02 detail | add when creative detail pages exist in `dist/` |
-| Search results without JS | honest noscript unavailable state when `?q=` is present |
-| PUBLIC-190 visual acceptance | independent QA stays `REVISE` |
-| PUBLIC-310 | contract fixture tests follow this packet |
+| Item                         | Notes                                                   |
+| ---------------------------- | ------------------------------------------------------- |
+| PF-02 detail                 | add when creative detail pages exist in `dist/`         |
+| Search results without JS    | honest noscript unavailable state when `?q=` is present |
+| PUBLIC-190 visual acceptance | independent QA stays `REVISE`                           |
+| PUBLIC-310                   | contract fixture tests follow this packet               |
 
 ---
 

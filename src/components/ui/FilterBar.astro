@@ -1,16 +1,16 @@
 ---
 interface Props {
-  action: string;
-  queryLabel: string;
-  queryName?: string;
-  queryValue?: string;
-  sortLabel?: string;
-  clearLabel?: string;
-  resultSummary?: string;
-  variant?: 'expanded' | 'disclosure';
-  empty?: boolean;
-  noResults?: boolean;
-  class?: string;
+  action: string
+  queryLabel: string
+  queryName?: string
+  queryValue?: string
+  sortLabel?: string
+  clearLabel?: string
+  resultSummary?: string
+  variant?: 'expanded' | 'disclosure'
+  empty?: boolean
+  noResults?: boolean
+  class?: string
 }
 
 const {
@@ -25,11 +25,13 @@ const {
   empty = false,
   noResults = false,
   class: className = '',
-} = Astro.props;
+} = Astro.props
 ---
 
 <form
-  class={['ui-filter-bar', `ui-filter-bar--${variant}`, className].filter(Boolean).join(' ')}
+  class={['ui-filter-bar', `ui-filter-bar--${variant}`, className]
+    .filter(Boolean)
+    .join(' ')}
   data-visual-id="FilterBar"
   method="get"
   action={action}
@@ -46,22 +48,26 @@ const {
         autocomplete="off"
       />
     </label>
-    {sortLabel ? (
-      <label class="ui-filter-bar__field">
-        <span class="ui-filter-bar__label">{sortLabel}</span>
-        <select class="ui-filter-bar__select" name="sort">
-          <slot name="sort-options" />
-        </select>
-      </label>
-    ) : null}
+    {
+      sortLabel ? (
+        <label class="ui-filter-bar__field">
+          <span class="ui-filter-bar__label">{sortLabel}</span>
+          <select class="ui-filter-bar__select" name="sort">
+            <slot name="sort-options" />
+          </select>
+        </label>
+      ) : null
+    }
     <div class="ui-filter-bar__facets">
       <slot name="facets" />
     </div>
-    {clearLabel ? (
-      <a class="ui-filter-bar__clear" href={action}>
-        {clearLabel}
-      </a>
-    ) : null}
+    {
+      clearLabel ? (
+        <a class="ui-filter-bar__clear" href={action}>
+          {clearLabel}
+        </a>
+      ) : null
+    }
   </div>
   {
     resultSummary ? (

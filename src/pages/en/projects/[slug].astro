@@ -1,28 +1,28 @@
 ---
-import SiteLayout from '../../../layouts/SiteLayout.astro';
-import ProjectDetailContent from '../../../components/projects/ProjectDetailContent.astro';
+import SiteLayout from '../../../layouts/SiteLayout.astro'
+import ProjectDetailContent from '../../../components/projects/ProjectDetailContent.astro'
 import {
   fetchProjectDetail,
   listProjectSlugs,
   resolveProjectsAlternateAvailability,
-} from '../../../lib/projects-content';
-import '../../../styles/page-families.css';
+} from '../../../lib/projects-content'
+import '../../../styles/page-families.css'
 
 export async function getStaticPaths() {
-  const slugs = await listProjectSlugs('en');
-  return slugs.map((slug) => ({ params: { slug } }));
+  const slugs = await listProjectSlugs('en')
+  return slugs.map((slug) => ({ params: { slug } }))
 }
 
-const locale = 'en' as const;
-const slug = Astro.params.slug ?? '';
-const model = await fetchProjectDetail(locale, slug);
+const locale = 'en' as const
+const slug = Astro.params.slug ?? ''
+const model = await fetchProjectDetail(locale, slug)
 
 if (model.status === 'unavailable') {
-  return new Response(null, { status: 404, statusText: 'Not Found' });
+  return new Response(null, { status: 404, statusText: 'Not Found' })
 }
 
-const alternateAvailable = await resolveProjectsAlternateAvailability(locale);
-const pageTitle = `${model.project.title} — Taha Mohammadi`;
+const alternateAvailable = await resolveProjectsAlternateAvailability(locale)
+const pageTitle = `${model.project.title} — Taha Mohammadi`
 ---
 
 <SiteLayout

@@ -1,19 +1,19 @@
 ---
-import SiteLayout from '../../../layouts/SiteLayout.astro';
-import AboutPageContent from '../../../components/about/AboutPageContent.astro';
+import SiteLayout from '../../../layouts/SiteLayout.astro'
+import AboutPageContent from '../../../components/about/AboutPageContent.astro'
 import {
   fetchAboutProfile,
   resolveAboutAlternateAvailability,
-} from '../../../lib/about-profile';
-import '../../../styles/about.css';
+} from '../../../lib/about-profile'
+import '../../../styles/about.css'
 
-const locale = 'fa' as const;
-const model = await fetchAboutProfile(locale);
-const alternateAvailable = await resolveAboutAlternateAvailability(locale);
+const locale = 'fa' as const
+const model = await fetchAboutProfile(locale)
+const alternateAvailable = await resolveAboutAlternateAvailability(locale)
 const pageTitle =
   model.status === 'ready'
     ? `${model.profile.title} — طه محمدی`
-    : 'درباره — طه محمدی';
+    : 'درباره — طه محمدی'
 ---
 
 <SiteLayout

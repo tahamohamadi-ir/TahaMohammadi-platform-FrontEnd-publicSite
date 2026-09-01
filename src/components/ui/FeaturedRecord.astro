@@ -1,12 +1,12 @@
 ---
 interface Props {
-  label?: string;
-  title: string;
-  summary?: string;
-  href?: string;
-  actionLabel?: string;
-  inactive?: boolean;
-  class?: string;
+  label?: string
+  title: string
+  summary?: string
+  href?: string
+  actionLabel?: string
+  inactive?: boolean
+  class?: string
 }
 
 const {
@@ -17,12 +17,15 @@ const {
   actionLabel,
   inactive = false,
   class: className = '',
-} = Astro.props;
+} = Astro.props
 ---
 
 {
   !inactive ? (
-    <article class={['ui-featured-record', className].filter(Boolean).join(' ')} data-visual-id="FeaturedRecord">
+    <article
+      class={['ui-featured-record', className].filter(Boolean).join(' ')}
+      data-visual-id="FeaturedRecord"
+    >
       <div class="ui-featured-record__media">
         <slot name="media" />
       </div>

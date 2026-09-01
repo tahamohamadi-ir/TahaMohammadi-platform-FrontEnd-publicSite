@@ -1,10 +1,10 @@
 /** Locale route parsing and canonical URL helpers — paths from ROUTE-REGISTRY. */
 
-import { alternateLocale, localePath, type Locale } from './navigation';
+import { alternateLocale, localePath, type Locale } from './navigation'
 
-export type { Locale };
+export type { Locale }
 
-const DEFAULT_LOCALE: Locale = 'fa';
+const DEFAULT_LOCALE: Locale = 'fa'
 
 /**
  * Read the locale prefix from a pathname.
@@ -15,8 +15,8 @@ const DEFAULT_LOCALE: Locale = 'fa';
  * localeFromPath('/');          // null
  */
 export function localeFromPath(pathname: string): Locale | null {
-  const match = pathname.match(/^\/(fa|en)(?=\/|$)/);
-  return match ? (match[1] as Locale) : null;
+  const match = pathname.match(/^\/(fa|en)(?=\/|$)/)
+  return match ? (match[1] as Locale) : null
 }
 
 /**
@@ -28,11 +28,11 @@ export function localeFromPath(pathname: string): Locale | null {
  * stripLocalePrefix('/about/');    // 'about'
  */
 export function stripLocalePrefix(pathname: string): string {
-  let rest = pathname;
+  let rest = pathname
   if (/^\/(fa|en)(?=\/|$)/.test(rest)) {
-    rest = rest.replace(/^\/(fa|en)/, '');
+    rest = rest.replace(/^\/(fa|en)/, '')
   }
-  return rest.replace(/^\/+|\/+$/g, '');
+  return rest.replace(/^\/+|\/+$/g, '')
 }
 
 /**
@@ -47,8 +47,8 @@ export function buildCanonicalUrl(
   locale: Locale,
   pathSegment = '',
 ): string {
-  const origin = siteOrigin.replace(/\/+$/, '');
-  return `${origin}${localePath(locale, pathSegment)}`;
+  const origin = siteOrigin.replace(/\/+$/, '')
+  return `${origin}${localePath(locale, pathSegment)}`
 }
 
 /**
@@ -74,22 +74,22 @@ export function buildAlternateLinks(
       hreflang: currentLocale,
       href: buildCanonicalUrl(siteOrigin, currentLocale, pathSegment),
     },
-  ];
+  ]
 
   if (alternateAvailable) {
-    const alt = alternateLocale(currentLocale);
+    const alt = alternateLocale(currentLocale)
     links.push({
       hreflang: alt,
       href: buildCanonicalUrl(siteOrigin, alt, pathSegment),
-    });
+    })
   }
 
   links.push({
     hreflang: 'x-default',
     href: buildCanonicalUrl(siteOrigin, DEFAULT_LOCALE, pathSegment),
-  });
+  })
 
-  return links;
+  return links
 }
 
 /**
@@ -100,5 +100,5 @@ export function buildAlternateLinks(
  * getDir('en'); // 'ltr'
  */
 export function getDir(locale: Locale): 'rtl' | 'ltr' {
-  return locale === 'fa' ? 'rtl' : 'ltr';
+  return locale === 'fa' ? 'rtl' : 'ltr'
 }

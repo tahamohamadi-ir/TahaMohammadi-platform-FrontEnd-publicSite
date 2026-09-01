@@ -1,4 +1,4 @@
-import { defineConfig } from '@playwright/test';
+import { defineConfig } from '@playwright/test'
 
 export default defineConfig({
   testDir: './tests/atlas',
@@ -6,4 +6,4 @@ export default defineConfig({
   fullyParallel: false,
   workers: 1,
   timeout: 180_000,
-});
+})

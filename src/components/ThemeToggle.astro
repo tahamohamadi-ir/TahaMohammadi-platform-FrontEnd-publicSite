@@ -1,13 +1,13 @@
 ---
-import { shellCopy, type Locale } from '../lib/navigation';
-import { Monitor, Moon, Sun } from 'lucide-astro';
+import { shellCopy, type Locale } from '../lib/navigation'
+import { Monitor, Moon, Sun } from 'lucide-astro'
 
 interface Props {
-  locale?: Locale;
+  locale?: Locale
 }
 
-const { locale = 'en' } = Astro.props;
-const themeLabel = shellCopy.themeToggle[locale];
+const { locale = 'en' } = Astro.props
+const themeLabel = shellCopy.themeToggle[locale]
 ---
 
 <button
@@ -20,7 +20,13 @@ const themeLabel = shellCopy.themeToggle[locale];
   aria-pressed="mixed"
   title={themeLabel}
 >
-  <span class="theme-toggle__icon theme-toggle__icon--system" aria-hidden="true"><Monitor size={18} /></span>
-  <span class="theme-toggle__icon theme-toggle__icon--light" aria-hidden="true"><Sun size={18} /></span>
-  <span class="theme-toggle__icon theme-toggle__icon--dark" aria-hidden="true"><Moon size={18} /></span>
+  <span class="theme-toggle__icon theme-toggle__icon--system" aria-hidden="true"
+    ><Monitor size={18} /></span
+  >
+  <span class="theme-toggle__icon theme-toggle__icon--light" aria-hidden="true"
+    ><Sun size={18} /></span
+  >
+  <span class="theme-toggle__icon theme-toggle__icon--dark" aria-hidden="true"
+    ><Moon size={18} /></span
+  >
 </button>

@@ -1,7 +1,7 @@
 ---
-import ThemeToggle from './ThemeToggle.astro';
-import LanguageToggle from './LanguageToggle.astro';
-import PromotedPicture from './media/PromotedPicture.astro';
+import ThemeToggle from './ThemeToggle.astro'
+import LanguageToggle from './LanguageToggle.astro'
+import PromotedPicture from './media/PromotedPicture.astro'
 import {
   GATEWAY_ROLE_LINE,
   localePath,
@@ -9,14 +9,14 @@ import {
   shellCopy,
   isNavActive,
   type Locale,
-} from '../lib/navigation';
-import { BRAND_MARK_ASSET_ID } from '../lib/media/promoted-media';
+} from '../lib/navigation'
+import { BRAND_MARK_ASSET_ID } from '../lib/media/promoted-media'
 
 interface Props {
-  locale: Locale;
-  currentPath: string;
-  alternateHref?: string;
-  alternateAvailable?: boolean;
+  locale: Locale
+  currentPath: string
+  alternateHref?: string
+  alternateAvailable?: boolean
 }
 
 const {
@@ -24,10 +24,12 @@ const {
   currentPath,
   alternateHref,
   alternateAvailable = false,
-} = Astro.props;
-const homeHref = localePath(locale);
+} = Astro.props
+const homeHref = localePath(locale)
 const brandNameDisplay =
-  locale === 'en' ? shellCopy.brandName.en.toUpperCase() : shellCopy.brandName.fa;
+  locale === 'en'
+    ? shellCopy.brandName.en.toUpperCase()
+    : shellCopy.brandName.fa
 ---
 
 <header class="site-header" data-visual-id="Header">
@@ -46,23 +48,29 @@ const brandNameDisplay =
       </span>
     </a>
 
-    <nav class="site-header__nav site-header__nav--desktop" aria-label={shellCopy.mainMenu[locale]}>
+    <nav
+      class="site-header__nav site-header__nav--desktop"
+      aria-label={shellCopy.mainMenu[locale]}
+    >
       <ul class="site-header__nav-list">
         {
           primaryNav.map((item) => {
-            const href = localePath(locale, item.pathSegment);
-            const active = isNavActive(currentPath, locale, item.pathSegment);
+            const href = localePath(locale, item.pathSegment)
+            const active = isNavActive(currentPath, locale, item.pathSegment)
             return (
               <li>
                 <a
                   href={href}
-                  class:list={['site-header__nav-link', active && 'site-header__nav-link--active']}
+                  class:list={[
+                    'site-header__nav-link',
+                    active && 'site-header__nav-link--active',
+                  ]}
                   aria-current={active ? 'page' : undefined}
                 >
                   {item.label[locale]}
                 </a>
               </li>
-            );
+            )
           })
         }
       </ul>
@@ -72,7 +80,9 @@ const brandNameDisplay =
       <a
         href={localePath(locale, 'search')}
         class="site-header__search-link"
-        aria-current={isNavActive(currentPath, locale, 'search') ? 'page' : undefined}
+        aria-current={isNavActive(currentPath, locale, 'search')
+          ? 'page'
+          : undefined}
       >
         {locale === 'en' ? 'Search' : 'جستجو'}
       </a>
@@ -83,13 +93,22 @@ const brandNameDisplay =
       />
       <ThemeToggle locale={locale} />
       <details class="site-header__drawer">
-        <summary class="site-header__menu-trigger">{shellCopy.menuToggle[locale]}</summary>
-        <nav class="site-header__nav site-header__nav--mobile" aria-label={shellCopy.mainMenu[locale]}>
+        <summary class="site-header__menu-trigger"
+          >{shellCopy.menuToggle[locale]}</summary
+        >
+        <nav
+          class="site-header__nav site-header__nav--mobile"
+          aria-label={shellCopy.mainMenu[locale]}
+        >
           <ul class="site-header__nav-list site-header__nav-list--stacked">
             {
               primaryNav.map((item) => {
-                const href = localePath(locale, item.pathSegment);
-                const active = isNavActive(currentPath, locale, item.pathSegment);
+                const href = localePath(locale, item.pathSegment)
+                const active = isNavActive(
+                  currentPath,
+                  locale,
+                  item.pathSegment,
+                )
                 return (
                   <li>
                     <a
@@ -103,7 +122,7 @@ const brandNameDisplay =
                       {item.label[locale]}
                     </a>
                   </li>
-                );
+                )
               })
             }
           </ul>

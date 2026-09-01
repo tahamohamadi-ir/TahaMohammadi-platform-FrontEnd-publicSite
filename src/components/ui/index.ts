@@ -20,6 +20,6 @@ export const uiComponentNames = [
   'ContactCTA',
   'Input',
   'Textarea',
-] as const;
+] as const
 
-export type UiComponentName = (typeof uiComponentNames)[number];
+export type UiComponentName = (typeof uiComponentNames)[number]

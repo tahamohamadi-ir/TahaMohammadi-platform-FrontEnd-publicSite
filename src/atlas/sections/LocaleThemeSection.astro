@@ -1,27 +1,53 @@
 ---
-import SectionLead from '../../components/ui/SectionLead.astro';
-import ThemeToggle from '../../components/ThemeToggle.astro';
-import tokens from '../../../contracts/design-authority/tokens.json';
+import SectionLead from '../../components/ui/SectionLead.astro'
+import ThemeToggle from '../../components/ThemeToggle.astro'
+import tokens from '../../../contracts/design-authority/tokens.json'
 
-const { semanticLight, semanticDark } = tokens;
+const { semanticLight, semanticDark } = tokens
 ---
 
-<section class="atlas-section" id="atlas-locale-theme" data-visual-id="AtlasLocaleThemeSection">
+<section
+  class="atlas-section"
+  id="atlas-locale-theme"
+  data-visual-id="AtlasLocaleThemeSection"
+>
   <h2 class="atlas-section__title">Locale and theme parity</h2>
   <p class="atlas-section__summary">
-    English LTR and Persian RTL specimens with shared token surfaces. Theme resolution uses the existing bootstrap and toggle controls.
+    English LTR and Persian RTL specimens with shared token surfaces. Theme
+    resolution uses the existing bootstrap and toggle controls.
   </p>
 
-  <div class="atlas-locale-panel" lang="en" dir="ltr" data-visual-id="AtlasLocaleSpecimen-en">
-    <SectionLead eyebrow="English" title="English specimen" summary="Left-to-right layout sample." />
+  <div
+    class="atlas-locale-panel"
+    lang="en"
+    dir="ltr"
+    data-visual-id="AtlasLocaleSpecimen-en"
+  >
+    <SectionLead
+      eyebrow="English"
+      title="English specimen"
+      summary="Left-to-right layout sample."
+    />
   </div>
 
-  <div class="atlas-locale-panel" lang="fa" dir="rtl" data-visual-id="AtlasLocaleSpecimen-fa">
-    <SectionLead eyebrow="فارسی" title="نمونهٔ فارسی" summary="نمونهٔ چیدمان راست‌به‌چپ." />
+  <div
+    class="atlas-locale-panel"
+    lang="fa"
+    dir="rtl"
+    data-visual-id="AtlasLocaleSpecimen-fa"
+  >
+    <SectionLead
+      eyebrow="فارسی"
+      title="نمونهٔ فارسی"
+      summary="نمونهٔ چیدمان راست‌به‌چپ."
+    />
   </div>
 
   <div class="atlas-theme-grid">
-    <div class="atlas-specimen atlas-theme-specimen" data-visual-id="AtlasThemeSpecimen-light">
+    <div
+      class="atlas-specimen atlas-theme-specimen"
+      data-visual-id="AtlasThemeSpecimen-light"
+    >
       <p class="atlas-specimen__label">Light reference</p>
       <div
         class="atlas-theme-specimen__swatch"
@@ -31,7 +57,10 @@ const { semanticLight, semanticDark } = tokens;
       </div>
     </div>
 
-    <div class="atlas-specimen atlas-theme-specimen" data-visual-id="AtlasThemeSpecimen-dark">
+    <div
+      class="atlas-specimen atlas-theme-specimen"
+      data-visual-id="AtlasThemeSpecimen-dark"
+    >
       <p class="atlas-specimen__label">Dark reference</p>
       <div
         class="atlas-theme-specimen__swatch"
@@ -41,13 +70,19 @@ const { semanticLight, semanticDark } = tokens;
       </div>
     </div>
 
-    <div class="atlas-specimen atlas-theme-specimen atlas-theme-specimen--live" data-visual-id="AtlasThemeSpecimen-live">
+    <div
+      class="atlas-specimen atlas-theme-specimen atlas-theme-specimen--live"
+      data-visual-id="AtlasThemeSpecimen-live"
+    >
       <p class="atlas-specimen__label">Live theme resolution</p>
       <div class="atlas-state-row">
         <ThemeToggle locale="en" />
         <ThemeToggle locale="fa" />
       </div>
-      <div class="atlas-theme-specimen__probe" data-visual-id="AtlasThemeSpecimen-probe">
+      <div
+        class="atlas-theme-specimen__probe"
+        data-visual-id="AtlasThemeSpecimen-probe"
+      >
         Resolved canvas, brand, and ink tokens follow the active theme.
       </div>
     </div>

@@ -3,26 +3,26 @@
  * Renders unavailable when no owner-published contact details or form exist.
  */
 
-import type { PublicContactBlockOut } from './site-settings-content';
+import type { PublicContactBlockOut } from './site-settings-content'
 import {
   fetchPublicSiteSettings,
   hasPublishedContactDetails,
   isContactFormAvailable,
-} from './site-settings-content';
-import { shellCopy, type Locale } from './navigation';
+} from './site-settings-content'
+import { shellCopy, type Locale } from './navigation'
 
 export type ContactPageModel =
   | { status: 'unavailable' }
-  | { status: 'ready'; contact: PublicContactBlockOut; formEnabled: boolean };
+  | { status: 'ready'; contact: PublicContactBlockOut; formEnabled: boolean }
 
 export interface ContactFormState {
-  sent: boolean;
-  failed: boolean;
+  sent: boolean
+  failed: boolean
   values: {
-    name: string;
-    email: string;
-    message: string;
-  };
+    name: string
+    email: string
+    message: string
+  }
 }
 
 /** UI chrome for the progressive-enhancement contact form — not owner contact content. */
@@ -47,13 +47,16 @@ export const contactFormCopy = {
     employer: { en: 'Work', fa: 'محل کار' },
     location: { en: 'Location', fa: 'موقعیت' },
   },
-} as const;
+} as const
 
 export function getContactRouteTitle(locale: Locale): string {
-  return shellCopy.contact[locale];
+  return shellCopy.contact[locale]
 }
 
-export function getContactUnavailableCopy(locale: Locale): { title: string; message: string } {
+export function getContactUnavailableCopy(locale: Locale): {
+  title: string
+  message: string
+} {
   return locale === 'en'
     ? {
         title: getContactRouteTitle('en'),
@@ -62,15 +65,18 @@ export function getContactUnavailableCopy(locale: Locale): { title: string; mess
     : {
         title: getContactRouteTitle('fa'),
         message: 'اطلاعات تماس منتشرشده هنوز در دسترس نیست.',
-      };
+      }
 }
 
 export async function fetchContactPageModel(): Promise<ContactPageModel> {
-  const settings = await fetchPublicSiteSettings();
-  const contact = settings?.contact;
+  const settings = await fetchPublicSiteSettings()
+  const contact = settings?.contact
 
-  if (!hasPublishedContactDetails(contact) && !isContactFormAvailable(contact)) {
-    return { status: 'unavailable' };
+  if (
+    !hasPublishedContactDetails(contact) &&
+    !isContactFormAvailable(contact)
+  ) {
+    return { status: 'unavailable' }
   }
 
   return {
@@ -85,10 +91,12 @@ export async function fetchContactPageModel(): Promise<ContactPageModel> {
       orcid: '',
     },
     formEnabled: isContactFormAvailable(contact),
-  };
+  }
 }
 
-export function parseContactFormState(searchParams: URLSearchParams): ContactFormState {
+export function parseContactFormState(
+  searchParams: URLSearchParams,
+): ContactFormState {
   return {
     sent: searchParams.get('sent') === '1',
     failed: searchParams.get('sent') === '0',
@@ -97,18 +105,20 @@ export function parseContactFormState(searchParams: URLSearchParams): ContactFor
       email: searchParams.get('email') ?? '',
       message: searchParams.get('message') ?? '',
     },
-  };
+  }
 }
 
 export function formatExternalLinkLabel(url: string): string {
-  return url.replace(/^https?:\/\//, '');
+  return url.replace(/^https?:\/\//, '')
 }
 
 /** Same-origin POST target for progressive-enhancement form navigation. */
 export function getContactFormActionUrl(): string {
-  return '/api/contact';
+  return '/api/contact'
 }
 
-export function resolveContactAlternateAvailability(model: ContactPageModel): boolean {
-  return model.status === 'ready';
+export function resolveContactAlternateAvailability(
+  model: ContactPageModel,
+): boolean {
+  return model.status === 'ready'
 }

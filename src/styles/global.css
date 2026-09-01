@@ -1,8 +1,8 @@
-@import "tailwindcss";
-@import "./fonts.css";
-@import "./tokens.css";
-@import "./base.css";
-@import "./utilities.css";
+@import 'tailwindcss';
+@import './fonts.css';
+@import './tokens.css';
+@import './base.css';
+@import './utilities.css';
 
 @theme inline {
   --color-canvas: var(--color-canvas);
@@ -37,7 +37,6 @@
   --max-width-prose: var(--layout-prose);
   --max-width-narrow: var(--layout-narrow);
 }
-
 
 /* Language gateway (PF gateway / language-gateway concept) */
 .gateway-body {
@@ -244,7 +243,6 @@ button[data-theme-mode='dark'] .theme-toggle__icon--dark {
   background: color-mix(in srgb, var(--color-brand-soft) 40%, transparent);
 }
 
-
 /* Stub detail pages — draft-safe scaffold for home card targets */
 .page-shell {
   max-width: var(--max-width-page);
@@ -388,7 +386,6 @@ button[data-theme-mode='dark'] .theme-toggle__icon--dark {
   color: var(--color-brand);
 }
 
-
 /* Home shared typography + interactive cards */
 .home-prose-justify {
   text-align: justify;
@@ -417,8 +414,13 @@ button[data-theme-mode='dark'] .theme-toggle__icon--dark {
 
 @media (hover: hover) {
   .home-card-interactive:hover {
-    border-color: color-mix(in srgb, var(--color-brand) 55%, var(--color-border-subtle));
-    box-shadow: 0 0.25rem 0.85rem color-mix(in srgb, var(--color-brand) 10%, transparent);
+    border-color: color-mix(
+      in srgb,
+      var(--color-brand) 55%,
+      var(--color-border-subtle)
+    );
+    box-shadow: 0 0.25rem 0.85rem
+      color-mix(in srgb, var(--color-brand) 10%, transparent);
   }
 }
 
@@ -637,7 +639,8 @@ html[data-theme='light'] .home-hero__atmosphere-img--light {
     var(--color-brand)
   );
   color: var(--color-inverse);
-  box-shadow: 0 0.35rem 1rem color-mix(in srgb, var(--color-brand) 22%, transparent);
+  box-shadow: 0 0.35rem 1rem
+    color-mix(in srgb, var(--color-brand) 22%, transparent);
 }
 
 .home-hero__cta--primary:hover {
@@ -698,7 +701,11 @@ html[data-theme='light'] .home-hero__atmosphere-img--light {
   padding: 0.35rem 0.85rem;
   border: 1px solid var(--color-border-subtle);
   border-radius: 999px;
-  background: color-mix(in srgb, var(--color-canvas) 72%, var(--color-surface-muted));
+  background: color-mix(
+    in srgb,
+    var(--color-canvas) 72%,
+    var(--color-surface-muted)
+  );
   color: var(--color-ink-secondary);
   font-size: 0.85rem;
   line-height: 1.3;
@@ -1141,7 +1148,8 @@ html[data-theme='light'] .home-hero__atmosphere-img--light {
     left: 10%;
     right: 10%;
     height: 1px;
-    border-top: 1px dashed color-mix(in srgb, var(--color-brand) 45%, transparent);
+    border-top: 1px dashed
+      color-mix(in srgb, var(--color-brand) 45%, transparent);
     pointer-events: none;
   }
 }
@@ -1608,7 +1616,11 @@ html[data-theme='light'] .home-hero__atmosphere-img--light {
   padding: 2rem;
   border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-md);
-  background: color-mix(in srgb, var(--color-brand-soft) 35%, var(--color-surface));
+  background: color-mix(
+    in srgb,
+    var(--color-brand-soft) 35%,
+    var(--color-surface)
+  );
 }
 
 @media (min-width: 768px) {

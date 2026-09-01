@@ -1,15 +1,17 @@
 ---
-import './template-base.css';
+import './template-base.css'
 
 interface Props {
-  class?: string;
+  class?: string
 }
 
-const { class: className = '' } = Astro.props;
+const { class: className = '' } = Astro.props
 ---
 
 <div
-  class={['tm-template tm-long-form-detail-template', className].filter(Boolean).join(' ')}
+  class={['tm-template tm-long-form-detail-template', className]
+    .filter(Boolean)
+    .join(' ')}
   data-visual-id="LongFormDetailTemplate"
 >
   <slot name="header" />
@@ -23,7 +25,10 @@ const { class: className = '' } = Astro.props;
     <div class="tm-template__detail-grid">
       {
         Astro.slots.has('toc') ? (
-          <aside class="tm-template__section tm-template__section--optional" aria-label="Table of contents">
+          <aside
+            class="tm-template__section tm-template__section--optional"
+            aria-label="Table of contents"
+          >
             <slot name="toc" />
           </aside>
         ) : null
@@ -35,7 +40,10 @@ const { class: className = '' } = Astro.props;
 
     {
       Astro.slots.has('related') ? (
-        <section class="tm-template__section tm-template__section--optional" aria-labelledby="long-form-related-region">
+        <section
+          class="tm-template__section tm-template__section--optional"
+          aria-labelledby="long-form-related-region"
+        >
           <div id="long-form-related-region">
             <slot name="related" />
           </div>

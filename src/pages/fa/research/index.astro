@@ -1,17 +1,17 @@
 ---
-import SiteLayout from '../../../layouts/SiteLayout.astro';
-import ResearchPageContent from '../../../components/research/ResearchPageContent.astro';
+import SiteLayout from '../../../layouts/SiteLayout.astro'
+import ResearchPageContent from '../../../components/research/ResearchPageContent.astro'
 import {
   fetchResearchIndex,
   getResearchRouteTitle,
   resolveResearchAlternateAvailability,
-} from '../../../lib/research-content';
-import '../../../styles/page-families.css';
+} from '../../../lib/research-content'
+import '../../../styles/page-families.css'
 
-const locale = 'fa' as const;
-const model = await fetchResearchIndex(locale);
-const alternateAvailable = await resolveResearchAlternateAvailability(locale);
-const pageTitle = `${getResearchRouteTitle(locale)} — Taha Mohammadi`;
+const locale = 'fa' as const
+const model = await fetchResearchIndex(locale)
+const alternateAvailable = await resolveResearchAlternateAvailability(locale)
+const pageTitle = `${getResearchRouteTitle(locale)} — Taha Mohammadi`
 ---
 
 <SiteLayout

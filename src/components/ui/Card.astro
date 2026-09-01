@@ -1,12 +1,12 @@
 ---
 interface Props {
-  typeLabel?: string;
-  title: string;
-  summary?: string;
-  href?: string;
-  actionLabel?: string;
-  variant?: 'default' | 'research' | 'editorial' | 'visual';
-  class?: string;
+  typeLabel?: string
+  title: string
+  summary?: string
+  href?: string
+  actionLabel?: string
+  variant?: 'default' | 'research' | 'editorial' | 'visual'
+  class?: string
 }
 
 const {
@@ -17,11 +17,13 @@ const {
   actionLabel,
   variant = 'default',
   class: className = '',
-} = Astro.props;
+} = Astro.props
 ---
 
 <article
-  class={['ui-card', `ui-card--${variant}`, className].filter(Boolean).join(' ')}
+  class={['ui-card', `ui-card--${variant}`, className]
+    .filter(Boolean)
+    .join(' ')}
   data-visual-id="Card"
 >
   <div class="ui-card__media">
@@ -59,7 +61,11 @@ const {
 
   .ui-card--research {
     border-color: var(--color-research);
-    background: linear-gradient(180deg, var(--color-research-soft), var(--card-background));
+    background: linear-gradient(
+      180deg,
+      var(--color-research-soft),
+      var(--card-background)
+    );
   }
 
   .ui-card--editorial {

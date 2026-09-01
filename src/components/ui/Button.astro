@@ -1,12 +1,12 @@
 ---
 interface Props {
-  label: string;
-  href?: string;
-  type?: 'button' | 'submit' | 'reset';
-  variant?: 'primary' | 'secondary' | 'quiet';
-  disabled?: boolean;
-  loading?: boolean;
-  class?: string;
+  label: string
+  href?: string
+  type?: 'button' | 'submit' | 'reset'
+  variant?: 'primary' | 'secondary' | 'quiet'
+  disabled?: boolean
+  loading?: boolean
+  class?: string
 }
 
 const {
@@ -17,14 +17,16 @@ const {
   disabled = false,
   loading = false,
   class: className = '',
-} = Astro.props;
+} = Astro.props
 
 const shared = {
-  class: ['ui-button', `ui-button--${variant}`, className].filter(Boolean).join(' '),
+  class: ['ui-button', `ui-button--${variant}`, className]
+    .filter(Boolean)
+    .join(' '),
   'data-loading': loading ? 'true' : 'false',
   'aria-busy': loading ? 'true' : undefined,
   'aria-disabled': disabled || loading ? 'true' : undefined,
-};
+}
 ---
 
 {
@@ -34,7 +36,12 @@ const shared = {
       {loading ? <span class="ui-button__spinner" aria-hidden="true" /> : null}
     </a>
   ) : (
-    <button type={type} disabled={disabled || loading} {...shared} data-visual-id="Button">
+    <button
+      type={type}
+      disabled={disabled || loading}
+      {...shared}
+      data-visual-id="Button"
+    >
       <span class="ui-button__label">{label}</span>
       {loading ? <span class="ui-button__spinner" aria-hidden="true" /> : null}
     </button>

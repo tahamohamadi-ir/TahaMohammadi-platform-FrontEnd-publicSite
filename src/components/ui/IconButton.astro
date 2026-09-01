@@ -1,10 +1,10 @@
 ---
 interface Props {
-  label: string;
-  variant?: 'quiet' | 'outlined';
-  disabled?: boolean;
-  type?: 'button' | 'submit' | 'reset';
-  class?: string;
+  label: string
+  variant?: 'quiet' | 'outlined'
+  disabled?: boolean
+  type?: 'button' | 'submit' | 'reset'
+  class?: string
 }
 
 const {
@@ -13,13 +13,14 @@ const {
   disabled = false,
   type = 'button',
   class: className = '',
-} = Astro.props;
-
+} = Astro.props
 ---
 
 <button
   type={type}
-  class={['ui-icon-button', `ui-icon-button--${variant}`, className].filter(Boolean).join(' ')}
+  class={['ui-icon-button', `ui-icon-button--${variant}`, className]
+    .filter(Boolean)
+    .join(' ')}
   data-visual-id="IconButton"
   aria-label={label}
   disabled={disabled}

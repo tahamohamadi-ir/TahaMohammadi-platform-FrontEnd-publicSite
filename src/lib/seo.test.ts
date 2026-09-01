@@ -1,9 +1,9 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest'
 
-import { buildPageSeo } from './seo';
+import { buildPageSeo } from './seo'
 
 describe('buildPageSeo', () => {
-  const origin = 'https://tahamohamadi.ir';
+  const origin = 'https://tahamohamadi.ir'
 
   it('builds canonical and alternates for a locale home page', () => {
     expect(buildPageSeo(origin, 'fa', '', false)).toEqual({
@@ -12,8 +12,8 @@ describe('buildPageSeo', () => {
         { hreflang: 'fa', href: 'https://tahamohamadi.ir/fa/' },
         { hreflang: 'x-default', href: 'https://tahamohamadi.ir/fa/' },
       ],
-    });
-  });
+    })
+  })
 
   it('includes the alternate locale when available', () => {
     expect(buildPageSeo(origin, 'en', 'contact', true)).toEqual({
@@ -23,6 +23,6 @@ describe('buildPageSeo', () => {
         { hreflang: 'fa', href: 'https://tahamohamadi.ir/fa/contact/' },
         { hreflang: 'x-default', href: 'https://tahamohamadi.ir/fa/contact/' },
       ],
-    });
-  });
-});
+    })
+  })
+})

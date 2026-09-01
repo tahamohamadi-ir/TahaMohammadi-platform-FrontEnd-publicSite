@@ -1,42 +1,55 @@
 ---
 export interface LocalTabItem {
-  id: string;
-  label: string;
-  href: string;
+  id: string
+  label: string
+  href: string
 }
 
 interface Props {
-  items: LocalTabItem[];
-  activeId: string;
-  ariaLabel: string;
-  variant?: 'inline' | 'overflow';
-  class?: string;
+  items: LocalTabItem[]
+  activeId: string
+  ariaLabel: string
+  variant?: 'inline' | 'overflow'
+  class?: string
 }
 
-const { items, activeId, ariaLabel, variant = 'inline', class: className = '' } = Astro.props;
+const {
+  items,
+  activeId,
+  ariaLabel,
+  variant = 'inline',
+  class: className = '',
+} = Astro.props
 ---
 
 <nav
-  class={['ui-local-tabs', `ui-local-tabs--${variant}`, className].filter(Boolean).join(' ')}
+  class={['ui-local-tabs', `ui-local-tabs--${variant}`, className]
+    .filter(Boolean)
+    .join(' ')}
   data-visual-id="LocalTabs"
   aria-label={ariaLabel}
 >
   <ul class="ui-local-tabs__list">
     {
       items.map((item) => {
-        const active = item.id === activeId;
+        const active = item.id === activeId
         return (
           <li class="ui-local-tabs__item">
             <a
               href={item.href}
-              class:list={['ui-local-tabs__tab', active && 'ui-local-tabs__tab--active']}
+              class:list={[
+                'ui-local-tabs__tab',
+                active && 'ui-local-tabs__tab--active',
+              ]}
               aria-current={active ? 'page' : undefined}
             >
               {item.label}
-              {active ? <span class="ui-local-tabs__marker" aria-hidden="true" /> : null}
+              {active ? (
+                <span class="ui-local-tabs__marker" aria-hidden="true" />
+              ) : null}
             </a>
           </li>
-        );
+        )
       })
     }
   </ul>

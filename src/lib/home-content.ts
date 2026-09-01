@@ -4,31 +4,31 @@
  * Locale rule: exact-locale records only; no fallback content.
  */
 
-import type { Locale } from './navigation';
-import { shellCopy } from './navigation';
-import type { RuntimeAssetId } from './media/authority-checksums';
+import type { Locale } from './navigation'
+import { shellCopy } from './navigation'
+import type { RuntimeAssetId } from './media/authority-checksums'
 import {
   HOME_PROJECT_ASSET_BY_SLUG,
   HOME_RAIL_ASSET_BY_PATH,
-} from './media/project-mappings';
+} from './media/project-mappings'
 
 /** profile.identity.{locale}.data.name */
 const displayName: Record<Locale, string> = {
   en: 'Taha Mohammadi',
   fa: 'طه محمدی',
-};
+}
 
 /** profile.identity.{locale}.data.professional_title */
 const professionalRole: Record<Locale, string> = {
   en: 'Software Engineer & Researcher in Human-Centered AI, Data Systems, and Visual Analytics',
   fa: 'مهندس نرم‌افزار و پژوهشگر در حوزه هوش مصنوعی انسان‌محور، سامانه‌های داده و تحلیل بصری',
-};
+}
 
 /** route.home.{locale}.body_markdown */
 const introCopy: Record<Locale, string> = {
   en: 'I work across software engineering, AI, data systems, visual analytics, and interaction design—with a focus on systems that remain inspectable, controllable, and useful in real decisions.',
   fa: 'در مرز مهندسی نرم‌افزار، هوش مصنوعی، سامانه‌های داده، تحلیل بصری و طراحی تعامل کار می‌کنم؛ با تمرکز بر سامانه‌هایی که در تصمیم‌های واقعی قابل‌فهم، کنترل‌پذیر و مفید باقی بمانند.',
-};
+}
 
 /** Home research-focus slot — research.focus.*.en titles (EN-only records in seed). */
 const focusChipsEn = [
@@ -37,7 +37,7 @@ const focusChipsEn = [
   'Visual Analytics & Decision Support',
   'Behavioral Data & Personalization',
   'Digital Health & Wearable AI',
-] as const;
+] as const
 
 /** research.statement.fa.data.focus_areas */
 const focusChipsFa = [
@@ -46,58 +46,58 @@ const focusChipsFa = [
   'تحلیل بصری و پشتیبانی از تصمیم با کمک هوش مصنوعی',
   'سامانه‌های داده رفتاری و شخصی‌سازی توضیح‌پذیر',
   'هوش مصنوعی محلی و لبه با ملاحظات حریم خصوصی',
-] as const;
+] as const
 
 const focusAreasLabel: Record<Locale, string> = {
   en: 'Focus areas',
   fa: 'حوزه‌های تمرکز',
-};
+}
 
 /** research.statement.{locale}.title */
 const researchTitle: Record<Locale, string> = {
   en: 'Research Statement',
   fa: 'بیانیه پژوهشی',
-};
+}
 
 /** research.statement.{locale}.excerpt */
 const researchExcerpt: Record<Locale, string> = {
   en: 'How can intelligent systems extend human capability without obscuring evidence, uncertainty, or control?',
   fa: 'سامانه‌های هوشمند چگونه می‌توانند توانایی انسان را افزایش دهند، بدون آن‌که شواهد، عدم‌قطعیت یا کنترل را پنهان کنند؟',
-};
+}
 
 /** research.statement.{locale}.body_markdown — first paragraph only for home. */
 const researchLead: Record<Locale, string> = {
   en: 'My research interest is centered on a practical question: how can intelligent systems extend human capability without obscuring evidence, uncertainty, or control?',
   fa: 'محور اصلی علاقه پژوهشی من یک پرسش عملی است: سامانه‌های هوشمند چگونه می‌توانند توانایی انسان را افزایش دهند، بدون آن‌که شواهد، عدم‌قطعیت یا امکان کنترل را پنهان کنند؟',
-};
+}
 
 const featuredTitle: Record<Locale, string> = {
   en: 'Featured projects',
   fa: 'پروژه‌های برجسته',
-};
+}
 
 const featuredDraftNote: Record<Locale, string> = {
   en: 'Draft preview from owner seed — not yet published via API.',
   fa: 'پیش‌نمایش پیش‌نویس از seed مالک — هنوز از API منتشر نشده است.',
-};
+}
 
 const viewAllProjects: Record<Locale, string> = {
   en: 'View all projects',
   fa: 'همهٔ پروژه‌ها',
-};
+}
 
 const viewProjectLabel: Record<Locale, string> = {
   en: 'View project',
   fa: 'مشاهدهٔ پروژه',
-};
+}
 
 export interface FeaturedProjectCard {
-  slug: string;
-  title: string;
-  excerpt: string;
-  statusLabel: string;
-  tags: readonly string[];
-  assetId: RuntimeAssetId;
+  slug: string
+  title: string
+  excerpt: string
+  statusLabel: string
+  tags: readonly string[]
+  assetId: RuntimeAssetId
 }
 
 /** Public draft-safe featured projects from seed v1.1 (not API-backed). */
@@ -106,7 +106,8 @@ const featuredProjects: Record<Locale, FeaturedProjectCard[]> = {
     {
       slug: 'pars-sql-vtd-edge',
       title: 'PARS-SQL / VTD-Edge',
-      excerpt: 'Reliable Persian natural-language interaction with structured data.',
+      excerpt:
+        'Reliable Persian natural-language interaction with structured data.',
       statusLabel: 'Ongoing research and engineering project',
       tags: ['human-centered-ai', 'nlp-to-sql', 'trustworthy-ai', 'local-ai'],
       assetId: HOME_PROJECT_ASSET_BY_SLUG['pars-sql-vtd-edge'],
@@ -114,9 +115,14 @@ const featuredProjects: Record<Locale, FeaturedProjectCard[]> = {
     {
       slug: 'organizational-dashboard-research',
       title: 'Organizational Dashboard Research & Design',
-      excerpt: 'Research and design across nine organizational dashboard suites.',
+      excerpt:
+        'Research and design across nine organizational dashboard suites.',
       statusLabel: '2022–2025',
-      tags: ['visual-analytics', 'dashboard-design', 'information-visualization'],
+      tags: [
+        'visual-analytics',
+        'dashboard-design',
+        'information-visualization',
+      ],
       assetId: HOME_PROJECT_ASSET_BY_SLUG['organizational-dashboard-research'],
     },
   ],
@@ -134,27 +140,31 @@ const featuredProjects: Record<Locale, FeaturedProjectCard[]> = {
       title: 'پژوهش و طراحی داشبوردهای سازمانی',
       excerpt: 'پژوهش و طراحی در نه مجموعه داشبورد سازمانی.',
       statusLabel: '۱۴۰۱–۱۴۰۴',
-      tags: ['visual-analytics', 'dashboard-design', 'information-visualization'],
+      tags: [
+        'visual-analytics',
+        'dashboard-design',
+        'information-visualization',
+      ],
       assetId: HOME_PROJECT_ASSET_BY_SLUG['organizational-dashboard-research'],
     },
   ],
-};
+}
 
 export interface HomeHeroContent {
-  name: string;
-  namePrimary: string;
-  nameAccent: string;
-  role: string;
-  intro: string;
-  focusChips: readonly string[];
-  focusAreasLabel: string;
+  name: string
+  namePrimary: string
+  nameAccent: string
+  role: string
+  intro: string
+  focusChips: readonly string[]
+  focusAreasLabel: string
 }
 
 export function getHomeHeroContent(locale: Locale): HomeHeroContent {
-  const name = displayName[locale];
+  const name = displayName[locale]
 
   if (locale === 'en') {
-    const [given, ...rest] = name.split(' ');
+    const [given, ...rest] = name.split(' ')
     return {
       name,
       namePrimary: given,
@@ -163,7 +173,7 @@ export function getHomeHeroContent(locale: Locale): HomeHeroContent {
       intro: introCopy.en,
       focusChips: focusChipsEn,
       focusAreasLabel: focusAreasLabel.en,
-    };
+    }
   }
 
   return {
@@ -174,21 +184,21 @@ export function getHomeHeroContent(locale: Locale): HomeHeroContent {
     intro: introCopy.fa,
     focusChips: focusChipsFa,
     focusAreasLabel: focusAreasLabel.fa,
-  };
+  }
 }
 
 export interface HomeResearchContent {
-  title: string;
-  excerpt: string;
-  lead: string;
+  title: string
+  excerpt: string
+  lead: string
 }
 
 export interface HomeFeaturedContent {
-  title: string;
-  draftNote: string;
-  viewAll: string;
-  viewProject: string;
-  projects: FeaturedProjectCard[];
+  title: string
+  draftNote: string
+  viewAll: string
+  viewProject: string
+  projects: FeaturedProjectCard[]
 }
 
 export function getHomeResearchContent(locale: Locale): HomeResearchContent {
@@ -196,7 +206,7 @@ export function getHomeResearchContent(locale: Locale): HomeResearchContent {
     title: researchTitle[locale],
     excerpt: researchExcerpt[locale],
     lead: researchLead[locale],
-  };
+  }
 }
 
 export function getHomeFeaturedContent(locale: Locale): HomeFeaturedContent {
@@ -206,10 +216,11 @@ export function getHomeFeaturedContent(locale: Locale): HomeFeaturedContent {
     viewAll: viewAllProjects[locale],
     viewProject: viewProjectLabel[locale],
     projects: featuredProjects[locale],
-  };
+  }
 }
 
-type ConstellationAccent = 'brand' | 'signature' | 'research' | 'context' | 'ink';
+type ConstellationAccent =
+  'brand' | 'signature' | 'research' | 'context' | 'ink'
 
 const constellationAccents: ConstellationAccent[] = [
   'brand',
@@ -217,15 +228,21 @@ const constellationAccents: ConstellationAccent[] = [
   'signature',
   'context',
   'ink',
-];
+]
 
-const constellationPositions: ConstellationNode['position'][] = ['a', 'b', 'c', 'd', 'e'];
+const constellationPositions: ConstellationNode['position'][] = [
+  'a',
+  'b',
+  'c',
+  'd',
+  'e',
+]
 
 export interface ConstellationNode {
-  slug: string;
-  label: string;
-  accent: ConstellationAccent;
-  position: 'a' | 'b' | 'c' | 'd' | 'e';
+  slug: string
+  label: string
+  accent: ConstellationAccent
+  position: 'a' | 'b' | 'c' | 'd' | 'e'
 }
 
 function buildConstellationNodes(
@@ -236,18 +253,18 @@ function buildConstellationNodes(
     label: card.title,
     accent: constellationAccents[index] ?? 'brand',
     position: constellationPositions[index] ?? 'a',
-  }));
+  }))
 }
 
 const interestsSectionTitle: Record<Locale, string> = {
   en: 'Research interests & fit',
   fa: 'علاقه‌مندی‌ها و تناسب پژوهشی',
-};
+}
 
 const interestsSectionLead: Record<Locale, string> = {
   en: 'Five interconnected areas where research questions, system design, and real-world constraints meet.',
   fa: 'پنج حوزهٔ به‌هم‌پیوسته که پرسش‌های پژوهشی، طراحی سامانه و محدودیت‌های دنیای واقعی در آن‌ها تلاقی می‌کنند.',
-};
+}
 
 /** research.focus.*.en — EN-only seed records. */
 const researchInterestsEn = [
@@ -281,28 +298,28 @@ const researchInterestsEn = [
     excerpt:
       'A developing research direction focused on responsible use of health, behavioral, and multimodal human data.',
   },
-] as const;
+] as const
 
 const researchFitTitle: Record<Locale, string> = {
   en: 'Research fit',
   fa: 'تناسب پژوهشی',
-};
+}
 
 /** route.about.{locale}.body_markdown */
 const researchFitCopy: Record<Locale, string> = {
   en: 'My path is intentionally interdisciplinary: from architecture and visual communication to production software, data systems, and applied AI. That combination shapes the questions I work on today.',
   fa: 'مسیر حرفه‌ای و پژوهشی من عمداً میان‌رشته‌ای بوده است: از معماری و ارتباط تصویری تا توسعه نرم‌افزار، سامانه‌های داده و هوش مصنوعی کاربردی.',
-};
+}
 
 const journeyTitle: Record<Locale, string> = {
   en: 'My journey',
   fa: 'مسیر من',
-};
+}
 
 const journeyHeadline: Record<Locale, string> = {
   en: 'Architecture → Visual Design → Software → Data → AI',
   fa: 'معماری → طراحی بصری → نرم‌افزار → داده → هوش مصنوعی',
-};
+}
 
 const journeyMilestones: Record<Locale, readonly { title: string }[]> = {
   en: [
@@ -319,34 +336,34 @@ const journeyMilestones: Record<Locale, readonly { title: string }[]> = {
     { title: 'سامانه‌های داده' },
     { title: 'هوش مصنوعی کاربردی' },
   ],
-};
+}
 
 const publicationsTitle: Record<Locale, string> = {
   en: 'Selected publications',
   fa: 'انتشارات منتخب',
-};
+}
 
 const viewAllPublications: Record<Locale, string> = {
   en: 'View all publications',
   fa: 'همهٔ انتشارات',
-};
+}
 
 const manuscriptLabel: Record<Locale, string> = {
   en: 'Manuscript draft',
   fa: 'پیش‌نویس پژوهشی',
-};
+}
 
 const publicationsDraftNote: Record<Locale, string> = {
   en: 'Manuscript records from seed — not peer-reviewed publications until approved.',
   fa: 'رکوردهای پیش‌نویس انگلیسی از seed — ترجمه و انتشار هنوز تأیید نشده است.',
-};
+}
 
 /** writing.visual-discourse.en / writing.vtd-edge.en — EN-only manuscript records. */
 const featuredPublicationsEn: readonly {
-  slug: string;
-  title: string;
-  excerpt: string;
-  statusLabel: string;
+  slug: string
+  title: string
+  excerpt: string
+  statusLabel: string
 }[] = [
   {
     slug: 'visual-discourse-elections',
@@ -364,12 +381,12 @@ const featuredPublicationsEn: readonly {
       'Technical manuscript in preparation on reliable Persian NLP-to-SQL.',
     statusLabel: 'Manuscript in preparation',
   },
-];
+]
 
 const exploreRailsTitle: Record<Locale, string> = {
   en: 'Explore more',
   fa: 'کاوش بیشتر',
-};
+}
 
 /** seed.empty.teaching.{locale} / seed.empty.creative.{locale} — seed-backed unavailable states. */
 const seedEmptyStates: Record<
@@ -384,18 +401,24 @@ const seedEmptyStates: Record<
     en: 'Selected visual and design work will be added after authorship, credits, and publication rights are confirmed.',
     fa: 'آثار منتخب بصری و طراحی پس از تأیید مالکیت، اعتباردهی و حقوق انتشار اضافه می‌شوند.',
   },
-};
+}
 
 /** route_copy excerpts for secondary home rails. */
 const exploreRails: Record<
   Locale,
-  readonly { pathSegment: 'creative' | 'writing' | 'teaching'; title: string; excerpt: string; viewLabel: string }[]
+  readonly {
+    pathSegment: 'creative' | 'writing' | 'teaching'
+    title: string
+    excerpt: string
+    viewLabel: string
+  }[]
 > = {
   en: [
     {
       pathSegment: 'creative',
       title: 'Creative Work',
-      excerpt: 'Selected visual and design work, published only with clear rights and credits.',
+      excerpt:
+        'Selected visual and design work, published only with clear rights and credits.',
       viewLabel: 'View gallery',
     },
     {
@@ -415,7 +438,8 @@ const exploreRails: Record<
     {
       pathSegment: 'creative',
       title: 'آثار خلاقه',
-      excerpt: 'آثار بصری و طراحی منتخب، فقط با حقوق و اعتبار روشن منتشر می‌شوند.',
+      excerpt:
+        'آثار بصری و طراحی منتخب، فقط با حقوق و اعتبار روشن منتشر می‌شوند.',
       viewLabel: 'مشاهده گالری',
     },
     {
@@ -427,79 +451,86 @@ const exploreRails: Record<
     {
       pathSegment: 'teaching',
       title: 'تدریس',
-      excerpt: 'منتخبی از آموزش‌های ساختاریافته و توسعه حرفه‌ای که مستقیماً از مسیر پژوهشی و مهندسی من پشتیبانی می‌کنند.',
+      excerpt:
+        'منتخبی از آموزش‌های ساختاریافته و توسعه حرفه‌ای که مستقیماً از مسیر پژوهشی و مهندسی من پشتیبانی می‌کنند.',
       viewLabel: 'مشاهده تدریس',
     },
   ],
-};
+}
 
 export interface HomeConstellationContent {
-  sectionLabel: string;
-  heading: string;
-  research: HomeResearchContent;
-  nodes: ConstellationNode[];
+  sectionLabel: string
+  heading: string
+  research: HomeResearchContent
+  nodes: ConstellationNode[]
 }
 
 export interface ResearchInterestCard {
-  slug: string;
-  title: string;
-  excerpt: string;
+  slug: string
+  title: string
+  excerpt: string
 }
 
 export interface HomeInterestsContent {
-  sectionTitle: string;
-  sectionLead: string;
-  cards: readonly ResearchInterestCard[];
-  fitTitle: string;
-  fitCopy: string;
+  sectionTitle: string
+  sectionLead: string
+  cards: readonly ResearchInterestCard[]
+  fitTitle: string
+  fitCopy: string
 }
 
 export interface HomeJourneyContent {
-  title: string;
-  headline: string;
-  milestones: readonly { title: string }[];
+  title: string
+  headline: string
+  milestones: readonly { title: string }[]
 }
 
 export interface PublicationCard {
-  slug: string;
-  title: string;
-  excerpt: string;
-  statusLabel: string;
+  slug: string
+  title: string
+  excerpt: string
+  statusLabel: string
 }
 
 export interface HomePublicationsContent {
-  title: string;
-  draftNote: string;
-  viewAll: string;
-  manuscriptLabel: string;
-  items: readonly PublicationCard[];
+  title: string
+  draftNote: string
+  viewAll: string
+  manuscriptLabel: string
+  items: readonly PublicationCard[]
 }
 
 export interface ExploreRail {
-  pathSegment: 'creative' | 'writing' | 'teaching';
-  title: string;
-  excerpt: string;
-  viewLabel?: string;
+  pathSegment: 'creative' | 'writing' | 'teaching'
+  title: string
+  excerpt: string
+  viewLabel?: string
   /** seed-backed empty-state text; set only when the route is unavailable. */
-  unavailableStatus?: string;
-  assetId: RuntimeAssetId;
+  unavailableStatus?: string
+  assetId: RuntimeAssetId
 }
 
 export interface HomeExploreContent {
-  title: string;
-  rails: readonly ExploreRail[];
+  title: string
+  rails: readonly ExploreRail[]
 }
 
-export function getHomeConstellationContent(locale: Locale): HomeConstellationContent {
+export function getHomeConstellationContent(
+  locale: Locale,
+): HomeConstellationContent {
   return {
     sectionLabel: researchTitle[locale],
     heading: researchExcerpt[locale],
     research: getHomeResearchContent(locale),
-    nodes: buildConstellationNodes(locale === 'en' ? researchInterestsEn : focusChipsFa.map((label, index) => ({
-      slug: researchInterestsEn[index]?.slug ?? `focus-${index}`,
-      title: label,
-    }))),
-  };
+    nodes: buildConstellationNodes(
+      locale === 'en'
+        ? researchInterestsEn
+        : focusChipsFa.map((label, index) => ({
+            slug: researchInterestsEn[index]?.slug ?? `focus-${index}`,
+            title: label,
+          })),
+    ),
+  }
 }
 
 export function getHomeInterestsContent(locale: Locale): HomeInterestsContent {
@@ -509,7 +540,7 @@ export function getHomeInterestsContent(locale: Locale): HomeInterestsContent {
     cards: locale === 'en' ? researchInterestsEn : [],
     fitTitle: researchFitTitle[locale],
     fitCopy: researchFitCopy[locale],
-  };
+  }
 }
 
 export function getHomeJourneyContent(locale: Locale): HomeJourneyContent {
@@ -517,17 +548,19 @@ export function getHomeJourneyContent(locale: Locale): HomeJourneyContent {
     title: journeyTitle[locale],
     headline: journeyHeadline[locale],
     milestones: journeyMilestones[locale],
-  };
+  }
 }
 
-export function getHomePublicationsContent(locale: Locale): HomePublicationsContent {
+export function getHomePublicationsContent(
+  locale: Locale,
+): HomePublicationsContent {
   return {
     title: publicationsTitle[locale],
     draftNote: publicationsDraftNote[locale],
     viewAll: viewAllPublications[locale],
     manuscriptLabel: manuscriptLabel[locale],
     items: locale === 'en' ? featuredPublicationsEn : [],
-  };
+  }
 }
 
 export function getHomeExploreContent(locale: Locale): HomeExploreContent {
@@ -535,40 +568,42 @@ export function getHomeExploreContent(locale: Locale): HomeExploreContent {
     title: exploreRailsTitle[locale],
     rails: exploreRails[locale].map((rail) => {
       if (rail.pathSegment === 'writing') {
-        return { ...rail, assetId: HOME_RAIL_ASSET_BY_PATH.writing };
+        return { ...rail, assetId: HOME_RAIL_ASSET_BY_PATH.writing }
       }
       return {
         ...rail,
         assetId: HOME_RAIL_ASSET_BY_PATH[rail.pathSegment],
         unavailableStatus: seedEmptyStates[rail.pathSegment][locale],
-      };
+      }
     }),
-  };
+  }
 }
 
 /** availability.phd-2027.{locale} — home collaboration band copy. */
 const collaborationTitle: Record<Locale, string> = {
   en: '2027 Research Availability',
   fa: 'آمادگی برای فرصت‌های پژوهشی ۲۰۲۷',
-};
+}
 
 const collaborationMessage: Record<Locale, string> = {
   en: 'Open to funded PhD and research opportunities for 2027 in Human-Centered AI, Human-AI Interaction, trustworthy AI, visual analytics, intelligent data systems, and digital health.',
   fa: 'برای فرصت‌های پژوهشی و دکترای دارای تأمین مالی در سال ۲۰۲۷ در حوزه‌های هوش مصنوعی انسان‌محور، تعامل انسان و هوش مصنوعی، هوش مصنوعی قابل‌اعتماد، تحلیل بصری، سامانه‌های هوشمند داده و سلامت دیجیتال آماده گفت‌وگو و همکاری هستم.',
-};
-
-export interface HomeCollaborationContent {
-  title: string;
-  message: string;
-  connectLabel: string;
-  cvLabel: string;
 }
 
-export function getHomeCollaborationContent(locale: Locale): HomeCollaborationContent {
+export interface HomeCollaborationContent {
+  title: string
+  message: string
+  connectLabel: string
+  cvLabel: string
+}
+
+export function getHomeCollaborationContent(
+  locale: Locale,
+): HomeCollaborationContent {
   return {
     title: collaborationTitle[locale],
     message: collaborationMessage[locale],
     connectLabel: shellCopy.contact[locale],
     cvLabel: shellCopy.cv[locale],
-  };
+  }
 }

@@ -1,32 +1,34 @@
-import fs from 'node:fs';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import fs from 'node:fs'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 
-import { defineConfig, envField } from 'astro/config';
-import tailwindcss from '@tailwindcss/vite';
-import sitemap from '@astrojs/sitemap';
-import designAtlasIntegration from './src/integrations/design-atlas.mjs';
-import pagefindIntegration from './src/integrations/pagefind.mjs';
+import { defineConfig, envField } from 'astro/config'
+import tailwindcss from '@tailwindcss/vite'
+import sitemap from '@astrojs/sitemap'
+import designAtlasIntegration from './src/integrations/design-atlas.mjs'
+import pagefindIntegration from './src/integrations/pagefind.mjs'
 
-const projectRoot = path.dirname(fileURLToPath(import.meta.url));
-const publicMediaRoot = path.join(projectRoot, 'public', 'media');
+const projectRoot = path.dirname(fileURLToPath(import.meta.url))
+const publicMediaRoot = path.join(projectRoot, 'public', 'media')
 
 function localPromotedMediaPath(urlPath) {
-  if (!urlPath?.startsWith('/media/')) return null;
-  const relative = urlPath.replace(/^\//, '').split('/').join(path.sep);
-  const candidate = path.join(projectRoot, 'public', relative);
-  if (!candidate.startsWith(publicMediaRoot)) return null;
+  if (!urlPath?.startsWith('/media/')) return null
+  const relative = urlPath.replace(/^\//, '').split('/').join(path.sep)
+  const candidate = path.join(projectRoot, 'public', relative)
+  if (!candidate.startsWith(publicMediaRoot)) return null
   try {
-    return fs.existsSync(candidate) && fs.statSync(candidate).isFile() ? urlPath : null;
+    return fs.existsSync(candidate) && fs.statSync(candidate).isFile()
+      ? urlPath
+      : null
   } catch {
-    return null;
+    return null
   }
 }
 
-const site = process.env.PUBLIC_SITE_URL ?? 'http://127.0.0.1:4321';
-const designAtlasEnabled = process.env.DESIGN_ATLAS === '1';
+const site = process.env.PUBLIC_SITE_URL ?? 'http://127.0.0.1:4321'
+const designAtlasEnabled = process.env.DESIGN_ATLAS === '1'
 const apiProxyTarget =
-  process.env.PUBLIC_API_PROXY_TARGET ?? 'http://127.0.0.1:8000';
+  process.env.PUBLIC_API_PROXY_TARGET ?? 'http://127.0.0.1:8000'
 
 // https://astro.build/config
 export default defineConfig({
@@ -42,8 +44,11 @@ export default defineConfig({
         },
       },
       filter: (page) => {
-        const pathname = new URL(page).pathname;
-        return !pathname.startsWith('/pagefind/') && !pathname.startsWith('/_design/');
+        const pathname = new URL(page).pathname
+        return (
+          !pathname.startsWith('/pagefind/') &&
+          !pathname.startsWith('/_design/')
+        )
       },
     }),
     ...(designAtlasEnabled ? [designAtlasIntegration()] : []),
@@ -83,10 +88,10 @@ export default defineConfig({
           target: apiProxyTarget,
           changeOrigin: true,
           bypass(req) {
-            return localPromotedMediaPath(req.url) ?? undefined;
+            return localPromotedMediaPath(req.url) ?? undefined
           },
         },
       },
     },
   },
-});
+})

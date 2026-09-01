@@ -1,31 +1,31 @@
 ---
-import AboutContactUtilityTemplate from '../templates/AboutContactUtilityTemplate.astro';
-import SectionLead from '../ui/SectionLead.astro';
-import ContentState from '../state/ContentState.astro';
-import Input from '../ui/Input.astro';
-import Button from '../ui/Button.astro';
+import AboutContactUtilityTemplate from '../templates/AboutContactUtilityTemplate.astro'
+import SectionLead from '../ui/SectionLead.astro'
+import ContentState from '../state/ContentState.astro'
+import Input from '../ui/Input.astro'
+import Button from '../ui/Button.astro'
 import {
-  buildSearchPageHref,
   getSearchBundlePath,
   getSearchRouteTitle,
   parseSearchQuery,
   searchCopy,
   searchQueryParam,
-} from '../../lib/search-content';
-import { localePath, type Locale } from '../../lib/navigation';
+} from '../../lib/search-content'
+import { localePath, type Locale } from '../../lib/navigation'
 
 interface Props {
-  locale: Locale;
+  locale: Locale
   /** Test hook — defaults to the current request query string. */
-  initialQuery?: string;
+  initialQuery?: string
 }
 
-const { locale, initialQuery: initialQueryProp } = Astro.props;
-const homeHref = localePath(locale);
-const searchHref = localePath(locale, 'search');
-const initialQuery = initialQueryProp ?? parseSearchQuery(Astro.url.searchParams);
-const routeTitle = getSearchRouteTitle(locale);
-const bundlePath = getSearchBundlePath(locale);
+const { locale, initialQuery: initialQueryProp } = Astro.props
+const homeHref = localePath(locale)
+const searchHref = localePath(locale, 'search')
+const initialQuery =
+  initialQueryProp ?? parseSearchQuery(Astro.url.searchParams)
+const routeTitle = getSearchRouteTitle(locale)
+const bundlePath = getSearchBundlePath(locale)
 ---
 
 <div class="search-page" data-pagefind-ignore>
@@ -65,14 +65,20 @@ const bundlePath = getSearchBundlePath(locale);
               headingLevel="h2"
               title={searchCopy.noscript.title[locale]}
               message={searchCopy.noscript.message[locale]}
-              actionLabel={locale === 'en' ? 'Back to home' : 'بازگشت به صفحهٔ اصلی'}
+              actionLabel={
+                locale === 'en' ? 'Back to home' : 'بازگشت به صفحهٔ اصلی'
+              }
               actionHref={homeHref}
             />
           ) : null
         }
       </noscript>
 
-      <div class="search-page__results" data-search-results hidden={initialQuery ? undefined : true}>
+      <div
+        class="search-page__results"
+        data-search-results
+        hidden={initialQuery ? undefined : true}
+      >
         {
           initialQuery ? (
             <div data-search-loading hidden={false}>
@@ -108,7 +114,9 @@ const bundlePath = getSearchBundlePath(locale);
             headingLevel="h2"
             title={searchCopy.noResults.title[locale]}
             message={searchCopy.noResults.message[locale]}
-            actionLabel={locale === 'en' ? 'Back to home' : 'بازگشت به صفحهٔ اصلی'}
+            actionLabel={locale === 'en'
+              ? 'Back to home'
+              : 'بازگشت به صفحهٔ اصلی'}
             actionHref={homeHref}
             class="search-page__no-results"
           />
@@ -121,7 +129,9 @@ const bundlePath = getSearchBundlePath(locale);
             headingLevel="h2"
             title={searchCopy.indexUnavailable.title[locale]}
             message={searchCopy.indexUnavailable.message[locale]}
-            actionLabel={locale === 'en' ? 'Back to home' : 'بازگشت به صفحهٔ اصلی'}
+            actionLabel={locale === 'en'
+              ? 'Back to home'
+              : 'بازگشت به صفحهٔ اصلی'}
             actionHref={homeHref}
             class="search-page__index-unavailable"
           />
@@ -131,107 +141,111 @@ const bundlePath = getSearchBundlePath(locale);
   </AboutContactUtilityTemplate>
 </div>
 
-<script define:vars={{ initialQuery, locale, searchHref, searchQueryParam, bundlePath }}>
-  const form = document.querySelector('[data-search-form]');
-  const resultsRoot = document.querySelector('[data-search-results]');
-  const loadingState = document.querySelector('[data-search-loading]');
-  const resultsBody = document.querySelector('[data-search-results-body]');
-  const resultsList = document.querySelector('[data-search-results-list]');
-  const noResultsState = document.querySelector('[data-search-no-results]');
-  const indexUnavailableState = document.querySelector('[data-search-index-unavailable]');
+<script define:vars={{ initialQuery, searchQueryParam, bundlePath }}>
+  const form = document.querySelector('[data-search-form]')
+  const resultsRoot = document.querySelector('[data-search-results]')
+  const loadingState = document.querySelector('[data-search-loading]')
+  const resultsBody = document.querySelector('[data-search-results-body]')
+  const resultsList = document.querySelector('[data-search-results-list]')
+  const noResultsState = document.querySelector('[data-search-no-results]')
+  const indexUnavailableState = document.querySelector(
+    '[data-search-index-unavailable]',
+  )
 
   function setHidden(element, hidden) {
-    if (!element) return;
-    element.hidden = hidden;
+    if (!element) return
+    element.hidden = hidden
   }
 
   function showState(state) {
-    setHidden(loadingState, state !== 'loading');
-    setHidden(resultsBody, state !== 'ready');
-    setHidden(noResultsState, state !== 'no-results');
-    setHidden(indexUnavailableState, state !== 'unavailable');
-    if (resultsRoot) resultsRoot.hidden = state === 'idle';
+    setHidden(loadingState, state !== 'loading')
+    setHidden(resultsBody, state !== 'ready')
+    setHidden(noResultsState, state !== 'no-results')
+    setHidden(indexUnavailableState, state !== 'unavailable')
+    if (resultsRoot) resultsRoot.hidden = state === 'idle'
   }
 
   function syncQueryToUrl(query) {
-    const url = new URL(window.location.href);
-    const trimmed = query.trim();
+    const url = new URL(window.location.href)
+    const trimmed = query.trim()
     if (trimmed) {
-      url.searchParams.set(searchQueryParam, trimmed);
+      url.searchParams.set(searchQueryParam, trimmed)
     } else {
-      url.searchParams.delete(searchQueryParam);
+      url.searchParams.delete(searchQueryParam)
     }
-    window.history.replaceState({}, '', url);
+    window.history.replaceState({}, '', url)
   }
 
   function renderResults(items) {
-    if (!resultsList) return;
-    resultsList.replaceChildren();
+    if (!resultsList) return
+    resultsList.replaceChildren()
     for (const item of items) {
-      const li = document.createElement('li');
-      li.className = 'search-page__result';
-      const link = document.createElement('a');
-      link.className = 'search-page__result-link';
-      link.href = item.url;
-      link.textContent = item.title;
-      const excerpt = document.createElement('p');
-      excerpt.className = 'search-page__result-excerpt';
-      excerpt.textContent = item.excerpt;
-      li.append(link, excerpt);
-      resultsList.append(li);
+      const li = document.createElement('li')
+      li.className = 'search-page__result'
+      const link = document.createElement('a')
+      link.className = 'search-page__result-link'
+      link.href = item.url
+      link.textContent = item.title
+      const excerpt = document.createElement('p')
+      excerpt.className = 'search-page__result-excerpt'
+      excerpt.textContent = item.excerpt
+      li.append(link, excerpt)
+      resultsList.append(li)
     }
   }
 
   async function runSearch(query) {
-    const trimmed = query.trim();
+    const trimmed = query.trim()
     if (!trimmed) {
-      showState('idle');
-      return;
+      showState('idle')
+      return
     }
 
-    showState('loading');
+    showState('loading')
 
     try {
-      const pagefind = await import(`${bundlePath}/pagefind.js`);
-      await pagefind.init();
-      const response = await pagefind.search(trimmed);
-      const data = await response.results.slice(0, 12).reduce(async (accPromise, result) => {
-        const acc = await accPromise;
-        const record = await result.data();
-        acc.push({
-          url: record.url,
-          title: record.meta.title || record.url,
-          excerpt: record.excerpt || '',
-        });
-        return acc;
-      }, Promise.resolve([]));
+      const pagefind = await import(`${bundlePath}/pagefind.js`)
+      await pagefind.init()
+      const response = await pagefind.search(trimmed)
+      const data = await response.results
+        .slice(0, 12)
+        .reduce(async (accPromise, result) => {
+          const acc = await accPromise
+          const record = await result.data()
+          acc.push({
+            url: record.url,
+            title: record.meta.title || record.url,
+            excerpt: record.excerpt || '',
+          })
+          return acc
+        }, Promise.resolve([]))
 
       if (!data.length) {
-        showState('no-results');
-        return;
+        showState('no-results')
+        return
       }
 
-      renderResults(data);
-      showState('ready');
+      renderResults(data)
+      showState('ready')
     } catch {
-      showState('unavailable');
+      showState('unavailable')
     }
   }
 
   if (form instanceof HTMLFormElement) {
     form.addEventListener('submit', (event) => {
-      event.preventDefault();
-      const field = form.elements.namedItem(searchQueryParam);
-      const query = field instanceof HTMLInputElement ? field.value : '';
-      syncQueryToUrl(query);
-      void runSearch(query);
-    });
+      event.preventDefault()
+      const field = form.elements.namedItem(searchQueryParam)
+      const query = field instanceof HTMLInputElement ? field.value : ''
+      syncQueryToUrl(query)
+      void runSearch(query)
+    })
   }
 
   if (initialQuery) {
-    showState('loading');
-    void runSearch(initialQuery);
+    showState('loading')
+    void runSearch(initialQuery)
   } else {
-    showState('idle');
+    showState('idle')
   }
 </script>

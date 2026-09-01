@@ -1,19 +1,24 @@
 ---
-import ContactCTA from './ui/ContactCTA.astro';
-import Link from './ui/Link.astro';
-import PromotedPicture from './media/PromotedPicture.astro';
-import { localePath, primaryNav, shellCopy, type Locale } from '../lib/navigation';
-import { BRAND_MARK_ASSET_ID } from '../lib/media/promoted-media';
+import ContactCTA from './ui/ContactCTA.astro'
+import Link from './ui/Link.astro'
+import PromotedPicture from './media/PromotedPicture.astro'
+import {
+  localePath,
+  primaryNav,
+  shellCopy,
+  type Locale,
+} from '../lib/navigation'
+import { BRAND_MARK_ASSET_ID } from '../lib/media/promoted-media'
 
 interface Props {
-  locale: Locale;
-  hidePromo?: boolean;
+  locale: Locale
+  hidePromo?: boolean
 }
 
-const { locale, hidePromo = false } = Astro.props;
-const homeHref = localePath(locale);
-const contactHref = localePath(locale, 'contact');
-const cvHref = localePath(locale, 'cv');
+const { locale, hidePromo = false } = Astro.props
+const homeHref = localePath(locale)
+const contactHref = localePath(locale, 'contact')
+const cvHref = localePath(locale, 'cv')
 ---
 
 <footer class="site-footer" data-visual-id="Footer">
@@ -64,7 +69,11 @@ const cvHref = localePath(locale, 'cv');
       <p class="site-footer__nav-title">{shellCopy.footerConnect[locale]}</p>
       <ul class="site-footer__nav-list">
         <li>
-          <Link href={contactHref} label={shellCopy.contact[locale]} variant="inline" />
+          <Link
+            href={contactHref}
+            label={shellCopy.contact[locale]}
+            variant="inline"
+          />
         </li>
         <li>
           <Link href={cvHref} label={shellCopy.cv[locale]} variant="inline" />

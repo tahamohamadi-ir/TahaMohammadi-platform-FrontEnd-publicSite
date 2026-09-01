@@ -1,16 +1,19 @@
-import { experimental_AstroContainer as AstroContainer } from 'astro/container';
-import { describe, expect, it } from 'vitest';
+import { experimental_AstroContainer as AstroContainer } from 'astro/container'
+import { describe, expect, it } from 'vitest'
 
-import CreativePageContent from './CreativePageContent.astro';
-import CreativeDetailContent from './CreativeDetailContent.astro';
+import CreativePageContent from './CreativePageContent.astro'
+import CreativeDetailContent from './CreativeDetailContent.astro'
 
 type Component = Parameters<
   Awaited<ReturnType<typeof AstroContainer.create>>['renderToString']
->[0];
+>[0]
 
-async function render(component: Component, props: Record<string, unknown> = {}) {
-  const container = await AstroContainer.create();
-  return container.renderToString(component, { props });
+async function render(
+  component: Component,
+  props: Record<string, unknown> = {},
+) {
+  const container = await AstroContainer.create()
+  return container.renderToString(component, { props })
 }
 
 describe('PUBLIC-221 creative pages', () => {
@@ -18,11 +21,11 @@ describe('PUBLIC-221 creative pages', () => {
     const html = await render(CreativePageContent, {
       locale: 'en',
       model: { status: 'unavailable' },
-    });
-    expect(html).toMatch(/data-state-variant="unavailable"/);
-    expect(html).toContain('Creative');
-    expect(html).toMatch(/<h1[\s>]/);
-  });
+    })
+    expect(html).toMatch(/data-state-variant="unavailable"/)
+    expect(html).toContain('Creative')
+    expect(html).toMatch(/<h1[\s>]/)
+  })
 
   it('renders creative work cards when the index model is ready', async () => {
     const html = await render(CreativePageContent, {
@@ -46,10 +49,10 @@ describe('PUBLIC-221 creative pages', () => {
           },
         ],
       },
-    });
-    expect(html).toContain('Ivory Forms');
-    expect(html).toMatch(/href="\/en\/creative\/ivory-forms\/"/);
-  });
+    })
+    expect(html).toContain('Ivory Forms')
+    expect(html).toMatch(/href="\/en\/creative\/ivory-forms\/"/)
+  })
 
   it('renders creative detail gallery when ready', async () => {
     const html = await render(CreativeDetailContent, {
@@ -84,9 +87,9 @@ describe('PUBLIC-221 creative pages', () => {
           accessibility_notes: '',
         },
       },
-    });
-    expect(html).toContain('Ivory Forms');
-    expect(html).toContain('Creative body.');
-    expect(html).toMatch(/src="https:\/\/example.com\/image.jpg"/);
-  });
-});
+    })
+    expect(html).toContain('Ivory Forms')
+    expect(html).toContain('Creative body.')
+    expect(html).toMatch(/src="https:\/\/example.com\/image.jpg"/)
+  })
+})

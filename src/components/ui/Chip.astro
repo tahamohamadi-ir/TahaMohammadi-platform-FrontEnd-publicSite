@@ -1,10 +1,10 @@
 ---
 interface Props {
-  label: string;
-  variant?: 'neutral' | 'selected' | 'taxonomy';
-  removable?: boolean;
-  removeLabel?: string;
-  class?: string;
+  label: string
+  variant?: 'neutral' | 'selected' | 'taxonomy'
+  removable?: boolean
+  removeLabel?: string
+  class?: string
 }
 
 const {
@@ -13,11 +13,13 @@ const {
   removable = false,
   removeLabel = 'Remove',
   class: className = '',
-} = Astro.props;
+} = Astro.props
 ---
 
 <span
-  class={['ui-chip', `ui-chip--${variant}`, className].filter(Boolean).join(' ')}
+  class={['ui-chip', `ui-chip--${variant}`, className]
+    .filter(Boolean)
+    .join(' ')}
   data-visual-id="Chip"
 >
   <span class="ui-chip__label">{label}</span>

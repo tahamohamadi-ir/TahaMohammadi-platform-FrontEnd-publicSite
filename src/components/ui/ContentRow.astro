@@ -1,13 +1,13 @@
 ---
 interface Props {
-  typeLabel?: string;
-  title: string;
-  excerpt?: string;
-  href?: string;
-  actionLabel?: string;
-  statusLabel?: string;
-  unavailable?: boolean;
-  class?: string;
+  typeLabel?: string
+  title: string
+  excerpt?: string
+  href?: string
+  actionLabel?: string
+  statusLabel?: string
+  unavailable?: boolean
+  class?: string
 }
 
 const {
@@ -19,11 +19,17 @@ const {
   statusLabel,
   unavailable = false,
   class: className = '',
-} = Astro.props;
+} = Astro.props
 ---
 
 <article
-  class={['ui-content-row', unavailable && 'ui-content-row--unavailable', className].filter(Boolean).join(' ')}
+  class={[
+    'ui-content-row',
+    unavailable && 'ui-content-row--unavailable',
+    className,
+  ]
+    .filter(Boolean)
+    .join(' ')}
   data-visual-id="ContentRow"
 >
   <div class="ui-content-row__main">
@@ -40,12 +46,18 @@ const {
     </div>
   </div>
   <div class="ui-content-row__aside">
-    {statusLabel ? <span class="ui-content-row__status">{statusLabel}</span> : null}
-    {href && actionLabel ? (
-      <a href={href} class="ui-content-row__action">
-        {actionLabel}
-      </a>
-    ) : null}
+    {
+      statusLabel ? (
+        <span class="ui-content-row__status">{statusLabel}</span>
+      ) : null
+    }
+    {
+      href && actionLabel ? (
+        <a href={href} class="ui-content-row__action">
+          {actionLabel}
+        </a>
+      ) : null
+    }
   </div>
 </article>
 

@@ -5,8 +5,8 @@ export const contentStateVariants = [
   'error',
   'untranslated',
   'no-results',
-] as const;
+] as const
 
-export type ContentStateVariant = (typeof contentStateVariants)[number];
+export type ContentStateVariant = (typeof contentStateVariants)[number]
 
-export type ContentStateLocale = 'fa' | 'en';
+export type ContentStateLocale = 'fa' | 'en'

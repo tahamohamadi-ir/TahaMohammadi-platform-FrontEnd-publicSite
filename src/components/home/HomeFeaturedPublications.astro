@@ -1,16 +1,16 @@
 ---
-import PublicationRow from '../ui/PublicationRow.astro';
-import Link from '../ui/Link.astro';
-import { getHomePublicationsContent } from '../../lib/home-content';
-import { localePath, type Locale } from '../../lib/navigation';
+import PublicationRow from '../ui/PublicationRow.astro'
+import Link from '../ui/Link.astro'
+import { getHomePublicationsContent } from '../../lib/home-content'
+import { localePath, type Locale } from '../../lib/navigation'
 
 interface Props {
-  locale: Locale;
+  locale: Locale
 }
 
-const { locale } = Astro.props;
-const content = getHomePublicationsContent(locale);
-const writingHref = localePath(locale, 'writing');
+const { locale } = Astro.props
+const content = getHomePublicationsContent(locale)
+const writingHref = localePath(locale, 'writing')
 ---
 
 {
@@ -19,10 +19,18 @@ const writingHref = localePath(locale, 'writing');
       <div class="hm-publications__inner">
         <header class="hm-publications__header">
           <div class="hm-section-heading">
-            <h2 id="hm-publications-title" class="hm-eyebrow hm-publications__title">
+            <h2
+              id="hm-publications-title"
+              class="hm-eyebrow hm-publications__title"
+            >
               {content.title}
             </h2>
-            <Link href={writingHref} label={content.viewAll} variant="standalone" showIcon />
+            <Link
+              href={writingHref}
+              label={content.viewAll}
+              variant="standalone"
+              showIcon
+            />
           </div>
           <p class="hm-publications__note">{content.draftNote}</p>
         </header>
