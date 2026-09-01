@@ -11,7 +11,7 @@ Status: `[x]` done, `[ ]` open, `[~]` in progress.
 - [x] **PUBLIC-010** Init Astro 7 + TypeScript 5.9; commit lockfile; `npm run build` green.
 - [x] **PUBLIC-011** ESLint + Prettier aligned with repo conventions. Evidence: `eslint.config.js`, `.prettierrc`, `npm run lint`, `npm run format:check`, `src/public-011.toolchain.test.ts`, CI lint/format steps.
 - [x] **PUBLIC-012** GitHub Actions: install, unit tests, design + SEO validation, build (Phase 1 CI). Evidence: `.github/workflows/ci.yml` on push/PR; Playwright visual optional locally.
-- [ ] **PUBLIC-013** ADRs: package manager, routing, deployment, testing, browsers.
+- [x] **PUBLIC-013** ADRs: package manager, routing, deployment, testing, browsers. Evidence: `docs/architecture/README.md`, `ADR-PACKAGE-MANAGER.md`, `ADR-ROUTING.md`, `ADR-DEPLOYMENT.md`, `ADR-TESTING.md`, `ADR-BROWSER-SUPPORT.md`, `src/public-013.adr.test.ts`.
 
 ## PUB-1 — i18n, theme, fonts
 

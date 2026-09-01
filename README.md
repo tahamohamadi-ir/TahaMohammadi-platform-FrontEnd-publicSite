@@ -19,4 +19,4 @@ Greenfield public frontend for the bilingual personal platform. This repository 
 
 ## Start here
 
-Read [AGENTS.md](AGENTS.md), [PROJECT-MANIFEST.md](PROJECT-MANIFEST.md), and [docs/architecture/ARCHITECTURE.md](docs/architecture/ARCHITECTURE.md). Before scaffolding, confirm the accepted static-first architecture and record remaining routing, deployment, package-manager, and testing decisions.
+Read [AGENTS.md](AGENTS.md), [PROJECT-MANIFEST.md](PROJECT-MANIFEST.md), [docs/architecture/ARCHITECTURE.md](docs/architecture/ARCHITECTURE.md), and the [architecture ADR index](docs/architecture/README.md).

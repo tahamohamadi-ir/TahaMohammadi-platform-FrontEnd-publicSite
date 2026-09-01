@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted (Wave 0 scaffold)
+Accepted (PUBLIC-013; Wave 0 scaffold)
 
 ## Context
 
@@ -33,7 +33,15 @@ Use **npm** as the sole package manager for `Front-End/public-site/`.
 | yarn   | Same as pnpm; no cross-repo workspace need today                                       |
 | bun    | Not required for static Astro output; less predictable in CI for this team baseline    |
 
+## Verification
+
+- `package-lock.json` committed; `node_modules/` gitignored
+- `package.json` scripts use `npm run …` convention
+- `.github/workflows/ci.yml` — `cache: npm`, `npm ci`
+- `src/public-013.adr.test.ts` — ADR guard
+
 ## References
 
+- `docs/architecture/README.md` — ADR index
 - `TASK-LIST.md` — PUBLIC-010, PUBLIC-013
 - `Docs/05-delivery/MULTI-AGENT-TASK-BOARD.md` — PUBLIC-010
