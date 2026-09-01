@@ -1,24 +1,35 @@
 ---
 import SiteLayout from '../../../layouts/SiteLayout.astro';
-import StubProjectDetail from '../../../components/stub/StubProjectDetail.astro';
-import { getStubProject, stubProjectSlugs } from '../../../lib/stub-detail-content';
+import ProjectDetailContent from '../../../components/projects/ProjectDetailContent.astro';
+import {
+  fetchProjectDetail,
+  listProjectSlugs,
+  resolveProjectsAlternateAvailability,
+} from '../../../lib/projects-content';
+import '../../../styles/page-families.css';
 
-export function getStaticPaths() {
-  return stubProjectSlugs.map((slug) => ({ params: { slug } }));
+export async function getStaticPaths() {
+  const slugs = await listProjectSlugs('fa');
+  return slugs.map((slug) => ({ params: { slug } }));
 }
 
+const locale = 'fa' as const;
 const slug = Astro.params.slug ?? '';
-const project = getStubProject('fa', slug);
+const model = await fetchProjectDetail(locale, slug);
 
-if (!project) {
+if (model.status === 'unavailable') {
   return new Response(null, { status: 404, statusText: 'Not Found' });
 }
+
+const alternateAvailable = await resolveProjectsAlternateAvailability(locale);
+const pageTitle = `${model.project.title} — Taha Mohammadi`;
 ---
 
 <SiteLayout
-  title={`${project.title} — طه محمدی`}
-  locale="fa"
+  title={pageTitle}
+  locale={locale}
   pathSegment={`projects/${slug}`}
+  alternateAvailable={alternateAvailable}
 >
-  <StubProjectDetail locale="fa" project={project} />
+  <ProjectDetailContent locale={locale} model={model} />
 </SiteLayout>

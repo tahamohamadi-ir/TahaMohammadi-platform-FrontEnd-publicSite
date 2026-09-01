@@ -1,13 +1,24 @@
 ---
 import SiteLayout from '../../../layouts/SiteLayout.astro';
-import StubProjectsIndex from '../../../components/stub/StubProjectsIndex.astro';
-import { getHomeFeaturedContent } from '../../../lib/home-content';
+import ProjectsPageContent from '../../../components/projects/ProjectsPageContent.astro';
+import {
+  fetchProjectsIndex,
+  getProjectsRouteTitle,
+  resolveProjectsAlternateAvailability,
+} from '../../../lib/projects-content';
+import '../../../styles/page-families.css';
+
+const locale = 'en' as const;
+const model = await fetchProjectsIndex(locale);
+const alternateAvailable = await resolveProjectsAlternateAvailability(locale);
+const pageTitle = `${getProjectsRouteTitle(locale)} — Taha Mohammadi`;
 ---
 
 <SiteLayout
-  title={`${getHomeFeaturedContent('en').title} — Taha Mohammadi`}
-  locale="en"
+  title={pageTitle}
+  locale={locale}
   pathSegment="projects"
+  alternateAvailable={alternateAvailable}
 >
-  <StubProjectsIndex locale="en" />
+  <ProjectsPageContent locale={locale} model={model} />
 </SiteLayout>

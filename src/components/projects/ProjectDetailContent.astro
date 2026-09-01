@@ -1,0 +1,277 @@
+---
+import LongFormDetailTemplate from '../templates/LongFormDetailTemplate.astro';
+import SectionLead from '../ui/SectionLead.astro';
+import ContentState from '../state/ContentState.astro';
+import Link from '../ui/Link.astro';
+import {
+  formatProjectAvailability,
+  getProjectsRouteTitle,
+  getProjectsUnavailableCopy,
+  type ProjectDetailModel,
+} from '../../lib/projects-content';
+import { splitBodyParagraphs } from '../../lib/research-content';
+import { localePath, type Locale } from '../../lib/navigation';
+
+interface Props {
+  locale: Locale;
+  model: ProjectDetailModel;
+}
+
+const { locale, model } = Astro.props;
+const projectsHref = localePath(locale, 'projects');
+
+function formatDateRange(start: string | null, end: string | null): string | undefined {
+  if (!start && !end) return undefined;
+  if (start && end) return `${start} – ${end}`;
+  return start ?? end ?? undefined;
+}
+---
+
+{
+  model.status === 'unavailable' ? (
+    <div class="projects-page projects-page--unavailable">
+      <ContentState
+        variant="unavailable"
+        locale={locale}
+        headingLevel="h1"
+        title={getProjectsUnavailableCopy(locale).title}
+        message={getProjectsUnavailableCopy(locale).message}
+        actionLabel={locale === 'en' ? 'Back to projects' : 'بازگشت به پروژه‌ها'}
+        actionHref={projectsHref}
+      />
+    </div>
+  ) : (
+    <LongFormDetailTemplate class="projects-page projects-page--detail">
+      <SectionLead
+        slot="lead"
+        eyebrow={getProjectsRouteTitle(locale)}
+        title={model.project.title}
+        summary={model.project.objective}
+      />
+
+      <div slot="body" class="projects-page__detail">
+        <dl class="projects-page__meta">
+          {
+            model.project.project_type ? (
+              <>
+                <dt>{locale === 'en' ? 'Type' : 'نوع'}</dt>
+                <dd>{model.project.project_type}</dd>
+              </>
+            ) : null
+          }
+          {
+            model.project.role ? (
+              <>
+                <dt>{locale === 'en' ? 'Role' : 'نقش'}</dt>
+                <dd>{model.project.role}</dd>
+              </>
+            ) : null
+          }
+          {
+            formatDateRange(model.project.start_date, model.project.end_date) ? (
+              <>
+                <dt>{locale === 'en' ? 'Timeline' : 'بازه زمانی'}</dt>
+                <dd>{formatDateRange(model.project.start_date, model.project.end_date)}</dd>
+              </>
+            ) : null
+          }
+          {
+            formatProjectAvailability(model.project) ? (
+              <>
+                <dt>{locale === 'en' ? 'Availability' : 'دسترس‌پذیری'}</dt>
+                <dd>{formatProjectAvailability(model.project)}</dd>
+              </>
+            ) : null
+          }
+          {
+            model.project.license ? (
+              <>
+                <dt>{locale === 'en' ? 'License' : 'مجوز'}</dt>
+                <dd>{model.project.license}</dd>
+              </>
+            ) : null
+          }
+        </dl>
+
+        {
+          model.project.methods_summary?.trim() ? (
+            <section class="projects-page__section" aria-labelledby="project-methods-title">
+              <h2 id="project-methods-title" class="projects-page__section-title">
+                {locale === 'en' ? 'Methods' : 'روش‌ها'}
+              </h2>
+              <div class="projects-page__prose">
+                {splitBodyParagraphs(model.project.methods_summary).map((paragraph) => (
+                  <p>{paragraph}</p>
+                ))}
+              </div>
+            </section>
+          ) : null
+        }
+
+        {
+          model.project.case_study ? (
+            <section class="projects-page__section" aria-labelledby="project-case-study-title">
+              <h2 id="project-case-study-title" class="projects-page__section-title">
+                {locale === 'en' ? 'Case study' : 'مطالعه موردی'}
+              </h2>
+              <div class="projects-page__detail-sections">
+                {
+                  [
+                    { id: 'problem', label: locale === 'en' ? 'Problem' : 'مسئله', value: model.project.case_study.problem },
+                    {
+                      id: 'constraints',
+                      label: locale === 'en' ? 'Constraints' : 'محدودیت‌ها',
+                      value: model.project.case_study.constraints,
+                    },
+                    {
+                      id: 'technical-decisions',
+                      label: locale === 'en' ? 'Technical decisions' : 'تصمیم‌های فنی',
+                      value: model.project.case_study.technical_decisions,
+                    },
+                    {
+                      id: 'trade-offs',
+                      label: locale === 'en' ? 'Trade-offs' : 'مصالحه‌ها',
+                      value: model.project.case_study.trade_offs,
+                    },
+                    {
+                      id: 'outcomes',
+                      label: locale === 'en' ? 'Outcomes' : 'نتایج',
+                      value: model.project.case_study.outcomes_summary,
+                    },
+                    {
+                      id: 'lessons',
+                      label: locale === 'en' ? 'Lessons learned' : 'درس‌های آموخته',
+                      value: model.project.case_study.lessons_learned,
+                    },
+                  ].map((section) =>
+                    section.value?.trim() ? (
+                      <section id={section.id} aria-labelledby={`${section.id}-title`}>
+                        <h3 id={`${section.id}-title`} class="projects-page__subsection-title">
+                          {section.label}
+                        </h3>
+                        <div class="projects-page__prose">
+                          {splitBodyParagraphs(section.value).map((paragraph) => (
+                            <p>{paragraph}</p>
+                          ))}
+                        </div>
+                      </section>
+                    ) : null,
+                  )
+                }
+              </div>
+            </section>
+          ) : null
+        }
+
+        {
+          model.project.screenshots?.length ? (
+            <section class="projects-page__section" aria-labelledby="project-screenshots-title">
+              <h2 id="project-screenshots-title" class="projects-page__section-title">
+                {locale === 'en' ? 'Screenshots' : 'نماگرفت‌ها'}
+              </h2>
+              <ul class="projects-page__media-list">
+                {model.project.screenshots.map((shot) => (
+                  <li>
+                    <figure class="projects-page__figure">
+                      {
+                        shot.image?.url ? (
+                          <img
+                            src={shot.image.url}
+                            alt={shot.alt_text || shot.image.alt || ''}
+                            loading="lazy"
+                            decoding="async"
+                          />
+                        ) : null
+                      }
+                      {shot.caption ? <figcaption>{shot.caption}</figcaption> : null}
+                    </figure>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ) : null
+        }
+
+        <div class="projects-page__links">
+          {
+            model.project.demo_url ? (
+              <Link href={model.project.demo_url} label={locale === 'en' ? 'Demo' : 'نمایش'} variant="standalone" />
+            ) : null
+          }
+          {
+            model.project.code_url ? (
+              <Link href={model.project.code_url} label={locale === 'en' ? 'Code' : 'کد'} variant="standalone" />
+            ) : null
+          }
+          {
+            model.project.data_url ? (
+              <Link href={model.project.data_url} label={locale === 'en' ? 'Data' : 'داده'} variant="standalone" />
+            ) : null
+          }
+        </div>
+      </div>
+
+      {
+        model.project.topics?.length || model.project.publications?.length ? (
+          <div slot="related" class="projects-page__related">
+            {
+              model.project.topics?.length ? (
+                <section aria-labelledby="project-topics-title">
+                  <h2 id="project-topics-title" class="projects-page__section-title">
+                    {locale === 'en' ? 'Related research topics' : 'موضوعات پژوهشی مرتبط'}
+                  </h2>
+                  <ul class="projects-page__related-list">
+                    {model.project.topics.map((item) => (
+                      <li>
+                        <Link
+                          href={localePath(locale, `research/${item.slug}`)}
+                          label={item.title}
+                          variant="standalone"
+                        />
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              ) : null
+            }
+            {
+              model.project.publications?.length ? (
+                <section aria-labelledby="project-publications-title">
+                  <h2 id="project-publications-title" class="projects-page__section-title">
+                    {locale === 'en' ? 'Related outputs' : 'خروجی‌های مرتبط'}
+                  </h2>
+                  <ul class="projects-page__related-list">
+                    {model.project.publications.map((item) => (
+                      <li>
+                        <Link
+                          href={localePath(locale, `publications/${item.slug}`)}
+                          label={item.title}
+                          variant="standalone"
+                        />
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              ) : null
+            }
+            <p class="projects-page__back">
+              <Link
+                href={projectsHref}
+                label={locale === 'en' ? '← Back to projects' : '← بازگشت به پروژه‌ها'}
+                variant="standalone"
+              />
+            </p>
+          </div>
+        ) : (
+          <p slot="related" class="projects-page__back">
+            <Link
+              href={projectsHref}
+              label={locale === 'en' ? '← Back to projects' : '← بازگشت به پروژه‌ها'}
+              variant="standalone"
+            />
+          </p>
+        )
+      }
+    </LongFormDetailTemplate>
+  )
+}
