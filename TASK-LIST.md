@@ -63,7 +63,7 @@ Status: `[x]` done, `[ ]` open, `[~]` in progress.
 - [~] **PUBLIC-270** PF visual comparison vs `concepts/page-families/`. Evidence: `docs/quality/PUBLIC-270-PAGE-FAMILY-VISUAL-EVIDENCE.md`, `public-270.page-family-visual.test.ts`, Playwright `@visual` capture stubs at 1440/390 (36 passed, PF-02 skipped). Manual owner compare and `PUBLIC-190` acceptance remain open.
 - [~] **PUBLIC-280** Responsive matrix: 6 widths × 2 locales × 2 themes. Evidence: `docs/quality/PUBLIC-280-RESPONSIVE-MATRIX-EVIDENCE.md`, `public-280.responsive-matrix.test.ts`, `page-family-index-captures.ts`, Playwright `@visual` dual-theme index captures (216 = 36 locale-route-theme combos × 6 widths; PF-02 detail open). Manual owner compare and `PUBLIC-190` acceptance remain open.
 - [~] **PUBLIC-290** Performance budget (LCP, CLS, font preload, local INP probe). Evidence: `docs/quality/PUBLIC-290-PERFORMANCE-BUDGET.md`, `public-290.performance-budget.test.ts`, Playwright `@performance` probes on home + creative index + theme-toggle INP. Production 75th-percentile telemetry remains open.
-- [ ] **PUBLIC-300** No-JS readability audit all route families.
+- [x] **PUBLIC-300** No-JS readability audit all route families. Evidence: `docs/quality/PUBLIC-300-NO-JS-AUDIT.md`, `public-300.no-js-audit.test.ts`, Playwright `@nojs` crawl of all 23 static routes with JS disabled. PF-02 detail excluded until published creative detail ships.
 - [ ] **PUBLIC-310** Contract fixture tests in CI.
 - [ ] **PUBLIC-320** Integrated staging smoke with backend.
 - [ ] **PUBLIC-350** Release evidence (`R4` + `R8` public).
