@@ -5,13 +5,15 @@ import Chip from '../ui/Chip.astro'
 import Link from '../ui/Link.astro'
 import PromotedPicture from '../media/PromotedPicture.astro'
 import { getHomeFeaturedContent } from '../../lib/home-content'
+import { resolveFeaturedProjectHref } from '../../lib/home-published-links'
 import { localePath, type Locale } from '../../lib/navigation'
 
 interface Props {
   locale: Locale
+  publishedProjectSlugs?: ReadonlySet<string>
 }
 
-const { locale } = Astro.props
+const { locale, publishedProjectSlugs = new Set<string>() } = Astro.props
 const content = getHomeFeaturedContent(locale)
 const projectsHref = localePath(locale, 'projects')
 ---
@@ -40,7 +42,11 @@ const projectsHref = localePath(locale, 'projects')
             <FeaturedRecord
               title={project.title}
               summary={project.excerpt}
-              href={localePath(locale, `projects/${project.slug}`)}
+              href={resolveFeaturedProjectHref(
+                locale,
+                project.slug,
+                publishedProjectSlugs,
+              )}
               actionLabel={content.viewProject}
               class="hm-projects__card"
             >

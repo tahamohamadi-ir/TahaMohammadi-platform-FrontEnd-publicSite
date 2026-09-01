@@ -9,7 +9,11 @@ import HomeFeaturedProjects from '../../components/home/HomeFeaturedProjects.ast
 import HomeFeaturedPublications from '../../components/home/HomeFeaturedPublications.astro'
 import HomeExploreRails from '../../components/home/HomeExploreRails.astro'
 import HomeCollaborationCta from '../../components/home/HomeCollaborationCta.astro'
+import { fetchPublishedHomeLinkSlugs } from '../../lib/home-published-links'
 import '../../styles/home.css'
+
+const locale = 'en' as const
+const { projectSlugs, articleSlugs } = await fetchPublishedHomeLinkSlugs(locale)
 ---
 
 <SiteLayout
@@ -23,8 +27,16 @@ import '../../styles/home.css'
     <HomeResearchGraph slot="relationship-graph" locale="en" />
     <HomeResearchInterests slot="research-fit" locale="en" />
     <HomeJourney slot="journey-timeline" locale="en" />
-    <HomeFeaturedProjects slot="selected-projects" locale="en" />
-    <HomeFeaturedPublications slot="selected-publications" locale="en" />
+    <HomeFeaturedProjects
+      slot="selected-projects"
+      locale={locale}
+      publishedProjectSlugs={projectSlugs}
+    />
+    <HomeFeaturedPublications
+      slot="selected-publications"
+      locale={locale}
+      publishedArticleSlugs={articleSlugs}
+    />
     <HomeExploreRails slot="gallery-writing-learning-previews" locale="en" />
     <HomeCollaborationCta slot="collaboration-cv-contact" locale="en" />
   </HomeTemplate>

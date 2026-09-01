@@ -2,13 +2,15 @@
 import PublicationRow from '../ui/PublicationRow.astro'
 import Link from '../ui/Link.astro'
 import { getHomePublicationsContent } from '../../lib/home-content'
+import { resolveFeaturedPublicationHref } from '../../lib/home-published-links'
 import { localePath, type Locale } from '../../lib/navigation'
 
 interface Props {
   locale: Locale
+  publishedArticleSlugs?: ReadonlySet<string>
 }
 
-const { locale } = Astro.props
+const { locale, publishedArticleSlugs = new Set<string>() } = Astro.props
 const content = getHomePublicationsContent(locale)
 const writingHref = localePath(locale, 'writing')
 ---
@@ -42,7 +44,11 @@ const writingHref = localePath(locale, 'writing')
                 typeLabel={content.manuscriptLabel}
                 statusLabel={item.statusLabel}
                 title={item.title}
-                href={localePath(locale, `writing/${item.slug}`)}
+                href={resolveFeaturedPublicationHref(
+                  locale,
+                  item.slug,
+                  publishedArticleSlugs,
+                )}
               />
             </li>
           ))}

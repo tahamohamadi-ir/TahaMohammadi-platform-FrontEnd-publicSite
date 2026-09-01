@@ -140,19 +140,39 @@ describe('WP-40 featured projects', () => {
     expect(en).toMatch(/project-data-architecture/)
     expect(en).toMatch(/project-dashboard-systems/)
     expect(en).toMatch(/alt="PARS-SQL \/ VTD-Edge"/)
-    expect(en).toMatch(/href="\/en\/projects\/pars-sql-vtd-edge\/"/)
-    expect(en).toMatch(
-      /href="\/en\/projects\/organizational-dashboard-research\/"/,
-    )
     expect(en).not.toMatch(/\/media\//)
 
     const fa = await render(HomeFeaturedProjects, { locale: 'fa' })
     expect(fa).toMatch(/alt="پژوهش و طراحی داشبوردهای سازمانی"/)
-    expect(fa).toMatch(/href="\/fa\/projects\//)
   })
 
-  it('keeps the preview non-clickable with an independent action link', async () => {
-    const html = await render(HomeFeaturedProjects, { locale: 'en' })
+  it('omits detail links when seed slugs are not in the published API set', async () => {
+    const en = await render(HomeFeaturedProjects, { locale: 'en' })
+    expect(en).not.toMatch(/href="\/en\/projects\/pars-sql-vtd-edge\/"/)
+    expect(en).not.toMatch(
+      /href="\/en\/projects\/organizational-dashboard-research\/"/,
+    )
+    expect(en).not.toMatch(/href="\/fa\/projects\//)
+  })
+
+  it('links featured projects only when slug is in the published API set', async () => {
+    const published = new Set(['pars-sql-vtd-edge'])
+    const en = await render(HomeFeaturedProjects, {
+      locale: 'en',
+      publishedProjectSlugs: published,
+    })
+    expect(en).toMatch(/href="\/en\/projects\/pars-sql-vtd-edge\/"/)
+    expect(en).not.toMatch(
+      /href="\/en\/projects\/organizational-dashboard-research\/"/,
+    )
+  })
+
+  it('keeps the preview non-clickable with an independent action link when published', async () => {
+    const published = new Set(['pars-sql-vtd-edge'])
+    const html = await render(HomeFeaturedProjects, {
+      locale: 'en',
+      publishedProjectSlugs: published,
+    })
     const article = html.match(/<article[\s>][\s\S]*?<\/article>/)?.[0] ?? ''
     const mediaIndex = article.indexOf('<picture')
     const firstAnchor = article.indexOf('href=')
@@ -162,11 +182,23 @@ describe('WP-40 featured projects', () => {
 })
 
 describe('WP-40 manuscript rail', () => {
-  it('links EN manuscripts inside /writing with honest status labels', async () => {
+  it('omits writing detail links when seed slugs are not in the published API set', async () => {
     const html = await render(HomeFeaturedPublications, { locale: 'en' })
-    expect(html).toMatch(/href="\/en\/writing\/visual-discourse-elections\/"/)
-    expect(html).toMatch(/href="\/en\/writing\/vtd-edge-manuscript\/"/)
+    expect(html).not.toMatch(
+      /href="\/en\/writing\/visual-discourse-elections\/"/,
+    )
+    expect(html).not.toMatch(/href="\/en\/writing\/vtd-edge-manuscript\/"/)
     expect(html).toMatch(/Manuscript in final revision/)
+  })
+
+  it('links manuscripts only when slug is in the published API set', async () => {
+    const published = new Set(['visual-discourse-elections'])
+    const html = await render(HomeFeaturedPublications, {
+      locale: 'en',
+      publishedArticleSlugs: published,
+    })
+    expect(html).toMatch(/href="\/en\/writing\/visual-discourse-elections\/"/)
+    expect(html).not.toMatch(/href="\/en\/writing\/vtd-edge-manuscript\/"/)
   })
 
   it('omits EN-only manuscripts entirely from FA', async () => {
