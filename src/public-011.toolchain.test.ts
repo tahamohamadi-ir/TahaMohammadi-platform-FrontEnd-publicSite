@@ -42,5 +42,6 @@ describe('PUBLIC-011 ESLint + Prettier toolchain', () => {
     expect(prettierIgnore).toContain('.astro')
     expect(prettierIgnore).toContain('contracts/design-authority')
     expect(prettierIgnore).toContain('tests/fixtures/contracts')
+    expect(prettierIgnore).toContain('src/generated')
   })
 })
