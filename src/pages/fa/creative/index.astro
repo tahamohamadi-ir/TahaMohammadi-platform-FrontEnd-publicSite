@@ -1,0 +1,24 @@
+---
+import SiteLayout from '../../../layouts/SiteLayout.astro';
+import CreativePageContent from '../../../components/creative/CreativePageContent.astro';
+import {
+  fetchCreativeIndex,
+  getCreativeRouteTitle,
+  resolveCreativeAlternateAvailability,
+} from '../../../lib/creative-content';
+import '../../../styles/page-families.css';
+
+const locale = 'fa' as const;
+const model = await fetchCreativeIndex(locale);
+const alternateAvailable = await resolveCreativeAlternateAvailability(locale);
+const pageTitle = `${getCreativeRouteTitle(locale)} — Taha Mohammadi`;
+---
+
+<SiteLayout
+  title={pageTitle}
+  locale={locale}
+  pathSegment="creative"
+  alternateAvailable={alternateAvailable}
+>
+  <CreativePageContent locale={locale} model={model} />
+</SiteLayout>

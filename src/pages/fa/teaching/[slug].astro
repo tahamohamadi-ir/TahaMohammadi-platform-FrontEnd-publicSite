@@ -1,0 +1,35 @@
+---
+import SiteLayout from '../../../layouts/SiteLayout.astro';
+import TeachingDetailContent from '../../../components/teaching/TeachingDetailContent.astro';
+import {
+  fetchTeachingDetail,
+  listTeachingDetailSlugs,
+  resolveTeachingAlternateAvailability,
+} from '../../../lib/teaching-content';
+import '../../../styles/page-families.css';
+
+export async function getStaticPaths() {
+  const slugs = await listTeachingDetailSlugs('fa');
+  return slugs.map((slug) => ({ params: { slug } }));
+}
+
+const locale = 'fa' as const;
+const slug = Astro.params.slug ?? '';
+const model = await fetchTeachingDetail(locale, slug);
+
+if (model.status === 'unavailable') {
+  return new Response(null, { status: 404, statusText: 'Not Found' });
+}
+
+const alternateAvailable = await resolveTeachingAlternateAvailability(locale);
+const pageTitle = `${model.record.title} — Taha Mohammadi`;
+---
+
+<SiteLayout
+  title={pageTitle}
+  locale={locale}
+  pathSegment={`teaching/${slug}`}
+  alternateAvailable={alternateAvailable}
+>
+  <TeachingDetailContent locale={locale} model={model} />
+</SiteLayout>

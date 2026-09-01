@@ -1,0 +1,239 @@
+---
+import LongFormDetailTemplate from '../templates/LongFormDetailTemplate.astro';
+import SectionLead from '../ui/SectionLead.astro';
+import ContentState from '../state/ContentState.astro';
+import Link from '../ui/Link.astro';
+import {
+  getTeachingRouteTitle,
+  getTeachingUnavailableCopy,
+  splitBodyParagraphs,
+  type TeachingDetailModel,
+} from '../../lib/teaching-content';
+import { localePath, type Locale } from '../../lib/navigation';
+
+interface Props {
+  locale: Locale;
+  model: TeachingDetailModel;
+}
+
+const { locale, model } = Astro.props;
+const teachingHref = localePath(locale, 'teaching');
+---
+
+{
+  model.status === 'unavailable' ? (
+    <div class="teaching-page teaching-page--unavailable">
+      <ContentState
+        variant="unavailable"
+        locale={locale}
+        headingLevel="h1"
+        title={getTeachingUnavailableCopy(locale).title}
+        message={getTeachingUnavailableCopy(locale).message}
+        actionLabel={locale === 'en' ? 'Back to teaching' : 'بازگشت به تدریس'}
+        actionHref={teachingHref}
+      />
+    </div>
+  ) : model.kind === 'talk' ? (
+    <LongFormDetailTemplate class="teaching-page teaching-page--detail">
+      <SectionLead
+        slot="lead"
+        eyebrow={getTeachingRouteTitle(locale)}
+        title={model.record.title}
+        summary={model.record.abstract}
+      />
+
+      <div slot="body" class="teaching-page__detail">
+        <dl class="teaching-page__meta">
+          {
+            model.record.event_name ? (
+              <>
+                <dt>{locale === 'en' ? 'Event' : 'رویداد'}</dt>
+                <dd>{model.record.event_name}</dd>
+              </>
+            ) : null
+          }
+          {
+            model.record.event_date ? (
+              <>
+                <dt>{locale === 'en' ? 'Date' : 'تاریخ'}</dt>
+                <dd>{model.record.event_date}</dd>
+              </>
+            ) : null
+          }
+          {
+            model.record.location ? (
+              <>
+                <dt>{locale === 'en' ? 'Location' : 'مکان'}</dt>
+                <dd>{model.record.location}</dd>
+              </>
+            ) : null
+          }
+          {
+            model.record.speakers ? (
+              <>
+                <dt>{locale === 'en' ? 'Speakers' : 'سخنرانان'}</dt>
+                <dd>{model.record.speakers}</dd>
+              </>
+            ) : null
+          }
+          {
+            model.record.access_state ? (
+              <>
+                <dt>{locale === 'en' ? 'Access' : 'دسترسی'}</dt>
+                <dd>{model.record.access_state}</dd>
+              </>
+            ) : null
+          }
+          {
+            model.record.license ? (
+              <>
+                <dt>{locale === 'en' ? 'License' : 'مجوز'}</dt>
+                <dd>{model.record.license}</dd>
+              </>
+            ) : null
+          }
+        </dl>
+
+        {
+          model.record.abstract?.trim() ? (
+            <div class="teaching-page__prose">
+              {splitBodyParagraphs(model.record.abstract).map((paragraph) => (
+                <p>{paragraph}</p>
+              ))}
+            </div>
+          ) : null
+        }
+
+        <div class="teaching-page__links">
+          {
+            model.record.video_url ? (
+              <Link href={model.record.video_url} label={locale === 'en' ? 'Video' : 'ویدیو'} variant="standalone" />
+            ) : null
+          }
+          {
+            model.record.slides_url ? (
+              <Link href={model.record.slides_url} label={locale === 'en' ? 'Slides' : 'اسلایدها'} variant="standalone" />
+            ) : null
+          }
+        </div>
+      </div>
+
+      <p slot="related" class="teaching-page__back">
+        <Link
+          href={teachingHref}
+          label={locale === 'en' ? '← Back to teaching' : '← بازگشت به تدریس'}
+          variant="standalone"
+        />
+      </p>
+    </LongFormDetailTemplate>
+  ) : (
+    <LongFormDetailTemplate class="teaching-page teaching-page--detail">
+      <SectionLead
+        slot="lead"
+        eyebrow={getTeachingRouteTitle(locale)}
+        title={model.record.title}
+        summary={model.record.description}
+      />
+
+      <div slot="body" class="teaching-page__detail">
+        <dl class="teaching-page__meta">
+          {
+            model.record.level ? (
+              <>
+                <dt>{locale === 'en' ? 'Level' : 'سطح'}</dt>
+                <dd>{model.record.level}</dd>
+              </>
+            ) : null
+          }
+          {
+            model.record.course_format ? (
+              <>
+                <dt>{locale === 'en' ? 'Format' : 'قالب'}</dt>
+                <dd>{model.record.course_format}</dd>
+              </>
+            ) : null
+          }
+          {
+            model.record.course_language ? (
+              <>
+                <dt>{locale === 'en' ? 'Language' : 'زبان'}</dt>
+                <dd>{model.record.course_language}</dd>
+              </>
+            ) : null
+          }
+          {
+            model.record.availability ? (
+              <>
+                <dt>{locale === 'en' ? 'Availability' : 'دسترس‌پذیری'}</dt>
+                <dd>{model.record.availability}</dd>
+              </>
+            ) : null
+          }
+          {
+            model.record.last_updated ? (
+              <>
+                <dt>{locale === 'en' ? 'Last updated' : 'آخرین به‌روزرسانی'}</dt>
+                <dd>{model.record.last_updated}</dd>
+              </>
+            ) : null
+          }
+          {
+            model.record.license ? (
+              <>
+                <dt>{locale === 'en' ? 'License' : 'مجوز'}</dt>
+                <dd>{model.record.license}</dd>
+              </>
+            ) : null
+          }
+        </dl>
+
+        {
+          model.record.prerequisites?.trim() ? (
+            <section class="teaching-page__section" aria-labelledby="course-prerequisites-title">
+              <h2 id="course-prerequisites-title" class="teaching-page__section-title">
+                {locale === 'en' ? 'Prerequisites' : 'پیش‌نیازها'}
+              </h2>
+              <div class="teaching-page__prose">
+                {splitBodyParagraphs(model.record.prerequisites).map((paragraph) => (
+                  <p>{paragraph}</p>
+                ))}
+              </div>
+            </section>
+          ) : null
+        }
+
+        {
+          model.record.outcomes?.trim() ? (
+            <section class="teaching-page__section" aria-labelledby="course-outcomes-title">
+              <h2 id="course-outcomes-title" class="teaching-page__section-title">
+                {locale === 'en' ? 'Outcomes' : 'دستاوردها'}
+              </h2>
+              <div class="teaching-page__prose">
+                {splitBodyParagraphs(model.record.outcomes).map((paragraph) => (
+                  <p>{paragraph}</p>
+                ))}
+              </div>
+            </section>
+          ) : null
+        }
+
+        {
+          model.record.body?.trim() ? (
+            <div
+              class="teaching-page__prose teaching-page__body-html"
+              set:html={model.record.body}
+            />
+          ) : null
+        }
+      </div>
+
+      <p slot="related" class="teaching-page__back">
+        <Link
+          href={teachingHref}
+          label={locale === 'en' ? '← Back to teaching' : '← بازگشت به تدریس'}
+          variant="standalone"
+        />
+      </p>
+    </LongFormDetailTemplate>
+  )
+}

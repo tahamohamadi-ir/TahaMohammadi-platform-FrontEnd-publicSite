@@ -1,0 +1,143 @@
+---
+import LongFormDetailTemplate from '../templates/LongFormDetailTemplate.astro';
+import SectionLead from '../ui/SectionLead.astro';
+import ContentState from '../state/ContentState.astro';
+import Link from '../ui/Link.astro';
+import {
+  getCreativeRouteTitle,
+  getCreativeUnavailableCopy,
+  type CreativeDetailModel,
+} from '../../lib/creative-content';
+import { localePath, type Locale } from '../../lib/navigation';
+
+interface Props {
+  locale: Locale;
+  model: CreativeDetailModel;
+}
+
+const { locale, model } = Astro.props;
+const creativeHref = localePath(locale, 'creative');
+---
+
+{
+  model.status === 'unavailable' ? (
+    <div class="creative-page creative-page--unavailable">
+      <ContentState
+        variant="unavailable"
+        locale={locale}
+        headingLevel="h1"
+        title={getCreativeUnavailableCopy(locale).title}
+        message={getCreativeUnavailableCopy(locale).message}
+        actionLabel={locale === 'en' ? 'Back to creative' : 'بازگشت به آثار خلاقه'}
+        actionHref={creativeHref}
+      />
+    </div>
+  ) : (
+    <LongFormDetailTemplate class="creative-page creative-page--detail">
+      <SectionLead
+        slot="lead"
+        eyebrow={getCreativeRouteTitle(locale)}
+        title={model.work.title}
+        summary={model.work.description}
+      />
+
+      <div slot="body" class="creative-page__detail">
+        <dl class="creative-page__meta">
+          {
+            model.work.work_type ? (
+              <>
+                <dt>{locale === 'en' ? 'Type' : 'نوع'}</dt>
+                <dd>{model.work.work_type}</dd>
+              </>
+            ) : null
+          }
+          {
+            model.work.creator_name ? (
+              <>
+                <dt>{locale === 'en' ? 'Creator' : 'آفریننده'}</dt>
+                <dd>
+                  {[model.work.creator_name, model.work.creator_role].filter(Boolean).join(' · ')}
+                </dd>
+              </>
+            ) : null
+          }
+          {
+            model.work.creation_date ? (
+              <>
+                <dt>{locale === 'en' ? 'Created' : 'تاریخ خلق'}</dt>
+                <dd>{model.work.creation_date}</dd>
+              </>
+            ) : null
+          }
+          {
+            model.work.access_state ? (
+              <>
+                <dt>{locale === 'en' ? 'Access' : 'دسترسی'}</dt>
+                <dd>{model.work.access_state}</dd>
+              </>
+            ) : null
+          }
+          {
+            model.work.license ? (
+              <>
+                <dt>{locale === 'en' ? 'License' : 'مجوز'}</dt>
+                <dd>{model.work.license}</dd>
+              </>
+            ) : null
+          }
+          {
+            model.work.rights_statement ? (
+              <>
+                <dt>{locale === 'en' ? 'Rights' : 'حقوق'}</dt>
+                <dd>{model.work.rights_statement}</dd>
+              </>
+            ) : null
+          }
+        </dl>
+
+        {
+          model.work.body?.trim() ? (
+            <div class="creative-page__prose creative-page__body-html" set:html={model.work.body} />
+          ) : null
+        }
+
+        {
+          model.work.gallery?.length ? (
+            <section class="creative-page__section" aria-labelledby="creative-gallery-title">
+              <h2 id="creative-gallery-title" class="creative-page__section-title">
+                {locale === 'en' ? 'Gallery' : 'گالری'}
+              </h2>
+              <ul class="creative-page__media-list">
+                {model.work.gallery.map((image) => (
+                  <li>
+                    <figure class="creative-page__figure">
+                      {
+                        image.url ? (
+                          <img
+                            src={image.url}
+                            alt={image.alt || image.title || ''}
+                            loading="lazy"
+                            decoding="async"
+                          />
+                        ) : null
+                      }
+                      {image.caption ? <figcaption>{image.caption}</figcaption> : null}
+                    </figure>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ) : null
+        }
+      </div>
+
+      <p slot="related" class="creative-page__back">
+        <Link
+          href={creativeHref}
+          label={locale === 'en' ? '← Back to creative' : '← بازگشت به آثار خلاقه'}
+          variant="standalone"
+        />
+      </p>
+    </LongFormDetailTemplate>
+  )
+}

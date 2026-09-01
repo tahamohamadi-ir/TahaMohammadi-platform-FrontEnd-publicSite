@@ -1,0 +1,60 @@
+---
+import CollectionIndexTemplate from '../templates/CollectionIndexTemplate.astro';
+import SectionLead from '../ui/SectionLead.astro';
+import ContentState from '../state/ContentState.astro';
+import {
+  formatCreativeCardMeta,
+  getCreativeRouteTitle,
+  getCreativeUnavailableCopy,
+  type CreativeIndexModel,
+} from '../../lib/creative-content';
+import { localePath, type Locale } from '../../lib/navigation';
+
+interface Props {
+  locale: Locale;
+  model: CreativeIndexModel;
+}
+
+const { locale, model } = Astro.props;
+const homeHref = localePath(locale);
+---
+
+{
+  model.status === 'unavailable' ? (
+    <div class="creative-page creative-page--unavailable">
+      <ContentState
+        variant="unavailable"
+        locale={locale}
+        headingLevel="h1"
+        title={getCreativeUnavailableCopy(locale).title}
+        message={getCreativeUnavailableCopy(locale).message}
+        actionLabel={locale === 'en' ? 'Back to home' : 'بازگشت به صفحهٔ اصلی'}
+        actionHref={homeHref}
+      />
+    </div>
+  ) : (
+    <CollectionIndexTemplate class="creative-page">
+      <SectionLead
+        slot="lead"
+        eyebrow={locale === 'en' ? 'Visual & creative work' : 'آثار بصری و خلاقه'}
+        title={getCreativeRouteTitle(locale)}
+      />
+
+      <ul slot="records" class="creative-page__list">
+        {model.works.map((work) => (
+          <li>
+            <article class="creative-page__card">
+              <h2 class="creative-page__card-title">
+                <a href={localePath(locale, `creative/${work.slug}`)} class="creative-page__card-link">
+                  {work.title}
+                </a>
+              </h2>
+              {work.description ? <p class="creative-page__card-summary">{work.description}</p> : null}
+              <p class="creative-page__card-meta">{formatCreativeCardMeta(work)}</p>
+            </article>
+          </li>
+        ))}
+      </ul>
+    </CollectionIndexTemplate>
+  )
+}

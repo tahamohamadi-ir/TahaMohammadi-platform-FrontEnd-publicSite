@@ -385,3 +385,136 @@
 .writing-page__back {
   margin: var(--space-6) 0 0;
 }
+
+.teaching-page--unavailable,
+.creative-page--unavailable {
+  padding-block: var(--space-10);
+  max-width: var(--layout-content-max, 48rem);
+  margin-inline: auto;
+  padding-inline: var(--space-6);
+}
+
+.teaching-page__sections {
+  display: grid;
+  gap: var(--space-10);
+}
+
+.teaching-page__section-title,
+.creative-page__section-title {
+  margin: 0 0 var(--space-4);
+  font-size: var(--font-size-xl);
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.teaching-page__list,
+.creative-page__list {
+  display: grid;
+  gap: var(--space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.teaching-page__card,
+.creative-page__card {
+  padding: var(--space-5);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+}
+
+.teaching-page__card-title,
+.creative-page__card-title {
+  margin: 0 0 var(--space-2);
+  font-size: var(--font-size-lg);
+}
+
+.teaching-page__card-link,
+.creative-page__card-link {
+  color: var(--color-ink);
+  text-decoration: none;
+}
+
+.teaching-page__card-link:hover,
+.creative-page__card-link:hover {
+  color: var(--color-brand);
+}
+
+.teaching-page__card-summary,
+.teaching-page__card-meta,
+.creative-page__card-summary,
+.creative-page__card-meta {
+  margin: 0;
+  color: var(--color-ink-muted);
+  font-size: var(--font-size-sm);
+}
+
+.teaching-page__meta,
+.creative-page__meta {
+  display: grid;
+  grid-template-columns: minmax(6rem, auto) 1fr;
+  gap: var(--space-2) var(--space-4);
+  margin: 0 0 var(--space-8);
+}
+
+.teaching-page__meta dt,
+.creative-page__meta dt {
+  font-weight: 600;
+  color: var(--color-ink-secondary);
+}
+
+.teaching-page__meta dd,
+.creative-page__meta dd {
+  margin: 0;
+  color: var(--color-ink-muted);
+}
+
+.teaching-page__detail,
+.creative-page__detail {
+  display: grid;
+  gap: var(--space-8);
+}
+
+.teaching-page__prose,
+.creative-page__prose {
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-relaxed, 1.65);
+  color: var(--color-ink-muted);
+}
+
+.teaching-page__prose :is(p, ul, ol, blockquote, pre),
+.creative-page__prose :is(p, ul, ol, blockquote, pre) {
+  margin: 0 0 var(--space-4);
+}
+
+.teaching-page__prose :is(p, ul, ol, blockquote, pre):last-child,
+.creative-page__prose :is(p, ul, ol, blockquote, pre):last-child {
+  margin-bottom: 0;
+}
+
+.teaching-page__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+
+.teaching-page__back,
+.creative-page__back {
+  margin: var(--space-6) 0 0;
+}
+
+.creative-page__media-list {
+  display: grid;
+  gap: var(--space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.creative-page__figure img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--radius-md);
+}

@@ -1,0 +1,104 @@
+---
+import CollectionIndexTemplate from '../templates/CollectionIndexTemplate.astro';
+import SectionLead from '../ui/SectionLead.astro';
+import ContentState from '../state/ContentState.astro';
+import {
+  formatCourseCardMeta,
+  formatTalkCardMeta,
+  getTeachingRouteTitle,
+  getTeachingUnavailableCopy,
+  type TeachingIndexModel,
+} from '../../lib/teaching-content';
+import { localePath, type Locale } from '../../lib/navigation';
+
+interface Props {
+  locale: Locale;
+  model: TeachingIndexModel;
+}
+
+const { locale, model } = Astro.props;
+const homeHref = localePath(locale);
+---
+
+{
+  model.status === 'unavailable' ? (
+    <div class="teaching-page teaching-page--unavailable">
+      <ContentState
+        variant="unavailable"
+        locale={locale}
+        headingLevel="h1"
+        title={getTeachingUnavailableCopy(locale).title}
+        message={getTeachingUnavailableCopy(locale).message}
+        actionLabel={locale === 'en' ? 'Back to home' : 'بازگشت به صفحهٔ اصلی'}
+        actionHref={homeHref}
+      />
+    </div>
+  ) : (
+    <CollectionIndexTemplate class="teaching-page">
+      <SectionLead
+        slot="lead"
+        eyebrow={locale === 'en' ? 'Courses & talks' : 'دوره‌ها و سخنرانی‌ها'}
+        title={getTeachingRouteTitle(locale)}
+      />
+
+      <div slot="records" class="teaching-page__sections">
+        {
+          model.courses.length ? (
+            <section class="teaching-page__section" aria-labelledby="teaching-courses-title">
+              <h2 id="teaching-courses-title" class="teaching-page__section-title">
+                {locale === 'en' ? 'Courses' : 'دوره‌ها'}
+              </h2>
+              <ul class="teaching-page__list">
+                {model.courses.map((course) => (
+                  <li>
+                    <article class="teaching-page__card">
+                      <h3 class="teaching-page__card-title">
+                        <a
+                          href={localePath(locale, `teaching/${course.slug}`)}
+                          class="teaching-page__card-link"
+                        >
+                          {course.title}
+                        </a>
+                      </h3>
+                      {course.description ? (
+                        <p class="teaching-page__card-summary">{course.description}</p>
+                      ) : null}
+                      <p class="teaching-page__card-meta">{formatCourseCardMeta(course)}</p>
+                    </article>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ) : null
+        }
+
+        {
+          model.talks.length ? (
+            <section class="teaching-page__section" aria-labelledby="teaching-talks-title">
+              <h2 id="teaching-talks-title" class="teaching-page__section-title">
+                {locale === 'en' ? 'Talks' : 'سخنرانی‌ها'}
+              </h2>
+              <ul class="teaching-page__list">
+                {model.talks.map((talk) => (
+                  <li>
+                    <article class="teaching-page__card">
+                      <h3 class="teaching-page__card-title">
+                        <a
+                          href={localePath(locale, `teaching/${talk.slug}`)}
+                          class="teaching-page__card-link"
+                        >
+                          {talk.title}
+                        </a>
+                      </h3>
+                      <p class="teaching-page__card-meta">{formatTalkCardMeta(talk)}</p>
+                    </article>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ) : null
+        }
+      </div>
+    </CollectionIndexTemplate>
+  )
+}
