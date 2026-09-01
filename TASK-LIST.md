@@ -10,7 +10,7 @@ Status: `[x]` done, `[ ]` open, `[~]` in progress.
 
 - [x] **PUBLIC-010** Init Astro 7 + TypeScript 5.9; commit lockfile; `npm run build` green.
 - [ ] **PUBLIC-011** ESLint + Prettier aligned with repo conventions.
-- [ ] **PUBLIC-012** GitHub Actions: install, typecheck, build (Phase 1 CI).
+- [x] **PUBLIC-012** GitHub Actions: install, unit tests, design + SEO validation, build (Phase 1 CI). Evidence: `.github/workflows/ci.yml` on push/PR; Playwright visual optional locally.
 - [ ] **PUBLIC-013** ADRs: package manager, routing, deployment, testing, browsers.
 
 ## PUB-1 — i18n, theme, fonts
@@ -61,7 +61,7 @@ Status: `[x]` done, `[ ]` open, `[~]` in progress.
 - [x] **PUBLIC-260** Asset promotion group A (decorative) per `ASSET-PROMOTION-LEDGER.md`. Evidence: `public-260.asset-promotion.test.ts`, promoted atmosphere masters in `src/assets/media`, legacy `public/media/art/portal-*` removed, ThemePicture atmosphere pipeline.
 - [x] **PUBLIC-261** Asset promotion group B (previews, rails, brand shell) per `ASSET-PROMOTION-LEDGER.md`. Evidence: `public-261.asset-promotion.test.ts`, promoted preview/rail/brand masters in `src/assets/media`, legacy `public/media/art/project-*` and `public/media/brand/taha-mark-primary.png` removed, Header/Footer wired to PromotedPicture `brand.mark`.
 - [~] **PUBLIC-270** PF visual comparison vs `concepts/page-families/`. Evidence: `docs/quality/PUBLIC-270-PAGE-FAMILY-VISUAL-EVIDENCE.md`, `public-270.page-family-visual.test.ts`, Playwright `@visual` capture stubs at 1440/390 (36 passed, PF-02 skipped). Manual owner compare and `PUBLIC-190` acceptance remain open.
-- [~] **PUBLIC-280** Responsive matrix: 6 widths × 2 locales × 2 themes. Evidence: `docs/quality/PUBLIC-280-RESPONSIVE-MATRIX-EVIDENCE.md`, `public-280.responsive-matrix.test.ts`, PF-01 six-width `@visual` scaffold. Full PF matrix open.
+- [~] **PUBLIC-280** Responsive matrix: 6 widths × 2 locales × 2 themes. Evidence: `docs/quality/PUBLIC-280-RESPONSIVE-MATRIX-EVIDENCE.md`, `public-280.responsive-matrix.test.ts`, Playwright `@visual` index captures (108 = 18 routes × 6 widths; PF-02 detail + dual-theme matrix open). Manual owner compare and `PUBLIC-190` acceptance remain open.
 - [ ] **PUBLIC-290** Performance budget (LCP, CLS, font preload).
 - [ ] **PUBLIC-300** No-JS readability audit all route families.
 - [ ] **PUBLIC-310** Contract fixture tests in CI.

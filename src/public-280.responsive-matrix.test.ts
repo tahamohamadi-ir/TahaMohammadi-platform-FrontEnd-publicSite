@@ -9,13 +9,25 @@ const checklistPath = path.join(repositoryRoot, 'docs', 'quality', 'PUBLIC-280-R
 const e2ePath = path.join(repositoryRoot, 'tests', 'e2e', 'public-280-responsive-matrix.visual.e2e.ts');
 const widthsPath = path.join(repositoryRoot, 'src', 'test-harness', 'responsive-matrix-widths.ts');
 
-describe('PUBLIC-280 responsive matrix scaffold', () => {
+const INDEX_ROUTE_IDS = [
+  'pf01',
+  'pf03',
+  'pf04',
+  'pf05-research',
+  'pf05-publications',
+  'pf06',
+  'pf07-about',
+  'pf07-cv',
+  'pf08',
+] as const;
+
+describe('PUBLIC-280 responsive matrix', () => {
   it('defines the six-width contract (320–1440 CSS px)', () => {
     expect(RESPONSIVE_MATRIX_WIDTHS).toEqual([320, 390, 768, 1024, 1280, 1440]);
     expect(existsSync(widthsPath)).toBe(true);
   });
 
-  it('ships checklist and Playwright @visual scaffold for PF-01 at all widths', () => {
+  it('ships checklist and Playwright @visual captures for PF-01 and PF-03..PF-08 index routes', () => {
     expect(existsSync(checklistPath)).toBe(true);
     expect(existsSync(e2ePath)).toBe(true);
 
@@ -26,10 +38,17 @@ describe('PUBLIC-280 responsive matrix scaffold', () => {
       expect(checklist).toContain(String(width));
     }
 
+    for (const id of INDEX_ROUTE_IDS) {
+      expect(source).toContain(`id: '${id}'`);
+      expect(checklist).toContain(id);
+    }
+
     expect(source).toContain('RESPONSIVE_MATRIX_WIDTHS');
     expect(checklist).toContain('PUBLIC-270');
     expect(checklist).toContain('does **not** close `PUBLIC-190`');
     expect(source).toContain('@visual');
     expect(source).toContain('PUBLIC-280');
+    expect(source).toContain('/en/contact/');
+    expect(source).not.toContain('scaffoldCaptures');
   });
 });

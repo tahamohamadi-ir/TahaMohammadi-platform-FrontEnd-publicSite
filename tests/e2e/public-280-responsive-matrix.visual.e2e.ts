@@ -10,17 +10,42 @@ test.beforeAll(() => {
   mkdirSync(visualOutputDir, { recursive: true });
 });
 
-/**
- * PUBLIC-280 scaffold: prove six-width capture harness on PF-01 before expanding
- * to the full PF-01..PF-08 matrix (follows PUBLIC-270 index route map).
- */
-const scaffoldCaptures = [
-  { id: 'pf01', pf: 'PF-01', path: '/en/creative/', theme: 'light' as const, locale: 'en' as const, dir: 'ltr' as const },
-  { id: 'pf01', pf: 'PF-01', path: '/fa/creative/', theme: 'light' as const, locale: 'fa' as const, dir: 'rtl' as const },
-] as const;
+type PageFamilyCapture = {
+  id: string;
+  pf: string;
+  path: string;
+  theme: 'light' | 'dark';
+  locale: 'en' | 'fa';
+  dir: 'ltr' | 'rtl';
+};
 
-test.describe('PUBLIC-280 responsive matrix scaffold', () => {
-  for (const target of scaffoldCaptures) {
+/**
+ * PUBLIC-280: six-width responsive matrix for built index routes (PUBLIC-270 map).
+ * PF-02 detail remains open until a published creative detail route exists.
+ */
+const indexCaptures: PageFamilyCapture[] = [
+  { id: 'pf01', pf: 'PF-01', path: '/en/creative/', theme: 'light', locale: 'en', dir: 'ltr' },
+  { id: 'pf01', pf: 'PF-01', path: '/fa/creative/', theme: 'light', locale: 'fa', dir: 'rtl' },
+  { id: 'pf03', pf: 'PF-03', path: '/en/writing/', theme: 'light', locale: 'en', dir: 'ltr' },
+  { id: 'pf03', pf: 'PF-03', path: '/fa/writing/', theme: 'light', locale: 'fa', dir: 'rtl' },
+  { id: 'pf04', pf: 'PF-04', path: '/en/projects/', theme: 'dark', locale: 'en', dir: 'ltr' },
+  { id: 'pf04', pf: 'PF-04', path: '/fa/projects/', theme: 'dark', locale: 'fa', dir: 'rtl' },
+  { id: 'pf05-research', pf: 'PF-05', path: '/en/research/', theme: 'light', locale: 'en', dir: 'ltr' },
+  { id: 'pf05-research', pf: 'PF-05', path: '/fa/research/', theme: 'light', locale: 'fa', dir: 'rtl' },
+  { id: 'pf05-publications', pf: 'PF-05', path: '/en/publications/', theme: 'light', locale: 'en', dir: 'ltr' },
+  { id: 'pf05-publications', pf: 'PF-05', path: '/fa/publications/', theme: 'light', locale: 'fa', dir: 'rtl' },
+  { id: 'pf06', pf: 'PF-06', path: '/en/teaching/', theme: 'dark', locale: 'en', dir: 'ltr' },
+  { id: 'pf06', pf: 'PF-06', path: '/fa/teaching/', theme: 'dark', locale: 'fa', dir: 'rtl' },
+  { id: 'pf07-about', pf: 'PF-07', path: '/en/about/', theme: 'light', locale: 'en', dir: 'ltr' },
+  { id: 'pf07-about', pf: 'PF-07', path: '/fa/about/', theme: 'light', locale: 'fa', dir: 'rtl' },
+  { id: 'pf07-cv', pf: 'PF-07', path: '/en/cv/', theme: 'light', locale: 'en', dir: 'ltr' },
+  { id: 'pf07-cv', pf: 'PF-07', path: '/fa/cv/', theme: 'light', locale: 'fa', dir: 'rtl' },
+  { id: 'pf08', pf: 'PF-08', path: '/en/contact/', theme: 'dark', locale: 'en', dir: 'ltr' },
+  { id: 'pf08', pf: 'PF-08', path: '/fa/contact/', theme: 'dark', locale: 'fa', dir: 'rtl' },
+];
+
+test.describe('PUBLIC-280 responsive matrix', () => {
+  for (const target of indexCaptures) {
     for (const width of RESPONSIVE_MATRIX_WIDTHS) {
       test(`PUBLIC-280 ${target.pf} ${target.path}@${width} ${target.theme} @visual`, async ({ page }) => {
         test.setTimeout(120_000);
