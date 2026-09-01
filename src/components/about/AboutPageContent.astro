@@ -1,0 +1,123 @@
+---
+import AboutContactUtilityTemplate from '../templates/AboutContactUtilityTemplate.astro';
+import SectionLead from '../ui/SectionLead.astro';
+import ContentState from '../state/ContentState.astro';
+import {
+  getAboutUnavailableCopy,
+  splitBodyParagraphs,
+  type AboutPageModel,
+} from '../../lib/about-profile';
+import { localePath, type Locale } from '../../lib/navigation';
+
+interface Props {
+  locale: Locale;
+  model: AboutPageModel;
+}
+
+const { locale, model } = Astro.props;
+const homeHref = localePath(locale);
+---
+
+{
+  model.status === 'unavailable' ? (
+    <div class="about-page about-page--unavailable">
+      <ContentState
+        variant="unavailable"
+        locale={locale}
+        headingLevel="h1"
+        title={getAboutUnavailableCopy(locale).title}
+        message={getAboutUnavailableCopy(locale).message}
+        actionLabel={locale === 'en' ? 'Back to home' : 'بازگشت به صفحهٔ اصلی'}
+        actionHref={homeHref}
+      />
+    </div>
+  ) : (
+    <AboutContactUtilityTemplate class="about-page">
+      <SectionLead
+        slot="lead"
+        eyebrow={locale === 'en' ? 'Profile' : 'پروفایل'}
+        title={model.profile.title}
+        summary={model.profile.excerpt ?? undefined}
+      />
+
+      <div slot="records" class="about-page__sections">
+        {
+          model.profile.body ? (
+            <section id="about-intro" class="about-page__section" aria-labelledby="about-intro-title">
+              <h2 id="about-intro-title" class="about-page__section-title">
+                {locale === 'en' ? 'Introduction' : 'معرفی'}
+              </h2>
+              <div class="about-page__prose">
+                {splitBodyParagraphs(model.profile.body).map((paragraph) => (
+                  <p>{paragraph}</p>
+                ))}
+              </div>
+            </section>
+          ) : null
+        }
+
+        {
+          model.profile.engineering_body ? (
+            <section id="about-engineering" class="about-page__section" aria-labelledby="about-engineering-title">
+              <h2 id="about-engineering-title" class="about-page__section-title">
+                {model.profile.engineering_title ??
+                  (locale === 'en' ? 'Engineering' : 'مهندسی')}
+              </h2>
+              <div class="about-page__prose">
+                {splitBodyParagraphs(model.profile.engineering_body).map((paragraph) => (
+                  <p>{paragraph}</p>
+                ))}
+              </div>
+            </section>
+          ) : null
+        }
+
+        {
+          model.profile.education?.length ? (
+            <section id="about-education" class="about-page__section" aria-labelledby="about-education-title">
+              <h2 id="about-education-title" class="about-page__section-title">
+                {locale === 'en' ? 'Education' : 'تحصیلات'}
+              </h2>
+              <ol class="about-page__timeline">
+                {model.profile.education.map((entry) => (
+                  <li>
+                    <article class="about-page__entry">
+                      <h3 class="about-page__entry-title">{entry.title}</h3>
+                      {entry.institution ? <p class="about-page__entry-meta">{entry.institution}</p> : null}
+                      {entry.period ? <p class="about-page__entry-meta">{entry.period}</p> : null}
+                      {entry.summary ? <p class="about-page__entry-summary">{entry.summary}</p> : null}
+                    </article>
+                  </li>
+                ))}
+              </ol>
+            </section>
+          ) : null
+        }
+
+        {
+          model.profile.experience?.length ? (
+            <section id="about-experience" class="about-page__section" aria-labelledby="about-experience-title">
+              <h2 id="about-experience-title" class="about-page__section-title">
+                {locale === 'en' ? 'Experience' : 'تجربه'}
+              </h2>
+              <ol class="about-page__timeline">
+                {model.profile.experience.map((entry) => (
+                  <li>
+                    <article class="about-page__entry">
+                      <h3 class="about-page__entry-title">{entry.title}</h3>
+                      {entry.organization ? (
+                        <p class="about-page__entry-meta">{entry.organization}</p>
+                      ) : null}
+                      {entry.period ? <p class="about-page__entry-meta">{entry.period}</p> : null}
+                      {entry.summary ? <p class="about-page__entry-summary">{entry.summary}</p> : null}
+                    </article>
+                  </li>
+                ))}
+              </ol>
+            </section>
+          ) : null
+        }
+      </div>
+    </AboutContactUtilityTemplate>
+  )
+}

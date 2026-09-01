@@ -11,6 +11,8 @@ interface Props {
   actionHref?: string;
   alternateLabel?: string;
   alternateHref?: string;
+  /** Page-level states use one H1; inline states use H2. */
+  headingLevel?: 'h1' | 'h2';
   class?: string;
 }
 
@@ -23,8 +25,11 @@ const {
   actionHref,
   alternateLabel,
   alternateHref,
+  headingLevel = 'h2',
   class: className = '',
 } = Astro.props;
+
+const HeadingTag = headingLevel;
 
 const role = variant === 'error' ? 'alert' : 'status';
 const live = variant === 'loading' ? 'polite' : undefined;
@@ -53,9 +58,9 @@ if (variant === 'untranslated' && !hasAlternate) {
         <span class="ui-content-state__icon" aria-hidden="true" />
       )
     }
-    <h2 id={`content-state-title-${variant}`} class="ui-content-state__title">
+    <HeadingTag id={`content-state-title-${variant}`} class="ui-content-state__title">
       {title}
-    </h2>
+    </HeadingTag>
     {message ? <p class="ui-content-state__message">{message}</p> : null}
   </div>
 

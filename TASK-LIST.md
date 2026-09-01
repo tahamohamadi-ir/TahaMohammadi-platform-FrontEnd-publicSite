@@ -45,7 +45,7 @@ Status: `[x]` done, `[ ]` open, `[~]` in progress.
 **Recovery freeze:** Page-family development `PUBLIC-200` through `PUBLIC-240` remains frozen until `PUBLIC-190` receives independent visual QA `PASS` and explicit owner acceptance. `WP-25` and `PUBLIC-260` remain allowed. The prerequisite chain is `PUBLIC-070 → PUBLIC-080 → PUBLIC-130 → PUBLIC-140 → PUBLIC-150 → PUBLIC-160 → PUBLIC-170`, plus `PUBLIC-180` and `BACKEND-070`, before visual acceptance can close `PUBLIC-190`.
 
 - [~] **PUBLIC-190** Home `/{locale}/` — **structure complete; visual acceptance open**. No final acceptance claim; independent QA and owner approval remain required.
-- [ ] **PUBLIC-200** About — profile sections; fetch only `/api/profiles/{locale}/about`.
+- [x] **PUBLIC-200** About — profile sections; fetch only `/api/profiles/{locale}/about`. Unavailable ContentState when unpublished; anchor sections when API returns published profile.
 - [ ] **PUBLIC-201** Research + publications indexes and details.
 - [ ] **PUBLIC-210** Projects index + detail; sanitized media only.
 - [ ] **PUBLIC-211** Writing index + long-form detail.
