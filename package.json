@@ -12,6 +12,7 @@
     "test:watch": "vitest",
     "generate:api-types": "node scripts/generate-api-types.mjs",
     "validate:design": "node scripts/validate-design-authority.mjs",
+    "validate:seo": "node scripts/validate-seo.mjs",
     "test:foundation": "playwright test --grep @foundation",
     "test:visual": "playwright test --grep @visual",
     "test:a11y": "playwright test --grep @a11y",
@@ -22,6 +23,7 @@
     "lucide-astro": "^0.556.0"
   },
   "devDependencies": {
+    "@astrojs/sitemap": "^3.7.4",
     "@axe-core/playwright": "^4.13.0",
     "@playwright/test": "^1.62.1",
     "@tailwindcss/vite": "^4.1.18",

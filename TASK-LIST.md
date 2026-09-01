@@ -57,7 +57,7 @@ Status: `[x]` done, `[ ]` open, `[~]` in progress.
 
 ## PUB-5 — SEO, assets, quality
 
-- [ ] **PUBLIC-250** sitemap, robots, canonical, hreflang validation.
+- [x] **PUBLIC-250** sitemap, robots, canonical, hreflang validation. Evidence: `@astrojs/sitemap`, `public/robots.txt`, `npm run validate:seo`, `public-250.seo.test.ts`.
 - [ ] **PUBLIC-260** Asset promotion group A (decorative) per `ASSET-PROMOTION-LEDGER.md`.
 - [ ] **PUBLIC-261** Asset promotion group B after owner mapping confirmation.
 - [ ] **PUBLIC-270** PF visual comparison vs `concepts/page-families/`.

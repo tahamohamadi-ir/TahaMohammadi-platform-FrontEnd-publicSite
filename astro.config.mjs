@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 
 import { defineConfig, envField } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
+import sitemap from '@astrojs/sitemap';
 import designAtlasIntegration from './src/integrations/design-atlas.mjs';
 import pagefindIntegration from './src/integrations/pagefind.mjs';
 
@@ -32,6 +33,19 @@ export default defineConfig({
   site,
   integrations: [
     pagefindIntegration(),
+    sitemap({
+      i18n: {
+        defaultLocale: 'fa',
+        locales: {
+          fa: 'fa',
+          en: 'en',
+        },
+      },
+      filter: (page) => {
+        const pathname = new URL(page).pathname;
+        return !pathname.startsWith('/pagefind/') && !pathname.startsWith('/_design/');
+      },
+    }),
     ...(designAtlasEnabled ? [designAtlasIntegration()] : []),
   ],
   i18n: {
