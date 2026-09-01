@@ -66,10 +66,10 @@ Detailed evidence per task: `docs/quality/PUBLIC-060-FONT-COMPUTED-EVIDENCE.md` 
 | Vitest release slice | `npm test` (includes `public-350.release-evidence.test.ts`) | required        | honest `ready: false` guard        |
 | Design authority     | `npm run validate:design`                                | required        | semantic token contract            |
 | SEO                  | `npm run validate:seo`                                   | required        | sitemap/hreflang/canonical         |
-| Foundation           | `npm run test:foundation`                                | required        | 6 passed @ `3652fc6` gate sweep    |
-| Performance          | `npm run test:performance`                               | required        | 6 passed @ `3652fc6` gate sweep    |
-| Visual matrix        | `npm run test:visual -- --grep PUBLIC-280`               | required        | 216 passed @ `3652fc6` gate sweep  |
-| No-JS                | `npm run test:nojs`                                      | required        | 23 passed @ `3652fc6` gate sweep   |
+| Foundation           | `npm run test:foundation`                                | required        | 6 passed @ `f3acb24` gate sweep    |
+| Performance          | `npm run test:performance`                               | required        | 6 passed @ `f3acb24` gate sweep    |
+| Visual matrix        | `npm run test:visual -- --grep PUBLIC-280`               | required        | 216 passed @ `f3acb24` gate sweep  |
+| No-JS                | `npm run test:nojs`                                      | required        | 23 passed @ `f3acb24` gate sweep   |
 | Staging smoke        | `npm run test:smoke`                                     | skip when unset | requires `PUBLIC_STAGING_SITE_URL` |
 | Owner acceptance     | manual                                                   | blocked         | PUBLIC-190 visual QA `REVISE`      |
 
