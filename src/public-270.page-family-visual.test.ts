@@ -40,8 +40,7 @@ describe('PUBLIC-270 page-family visual evidence scaffold', () => {
     const source = readFileSync(e2ePath, 'utf8');
 
     expect(source).toContain('@visual');
-    expect(source).toContain('1440');
-    expect(source).toContain('390');
+    expect(source).toContain('PUBLIC_270_CAPTURE_WIDTHS');
     expect(source).toContain('PUBLIC-270');
     expect(source).toContain('/en/creative/');
     expect(source).toContain('/en/contact/');

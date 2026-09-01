@@ -60,8 +60,8 @@ Status: `[x]` done, `[ ]` open, `[~]` in progress.
 - [x] **PUBLIC-250** sitemap, robots, canonical, hreflang validation. Evidence: `@astrojs/sitemap`, `public/robots.txt`, `npm run validate:seo`, `public-250.seo.test.ts`.
 - [x] **PUBLIC-260** Asset promotion group A (decorative) per `ASSET-PROMOTION-LEDGER.md`. Evidence: `public-260.asset-promotion.test.ts`, promoted atmosphere masters in `src/assets/media`, legacy `public/media/art/portal-*` removed, ThemePicture atmosphere pipeline.
 - [x] **PUBLIC-261** Asset promotion group B (previews, rails, brand shell) per `ASSET-PROMOTION-LEDGER.md`. Evidence: `public-261.asset-promotion.test.ts`, promoted preview/rail/brand masters in `src/assets/media`, legacy `public/media/art/project-*` and `public/media/brand/taha-mark-primary.png` removed, Header/Footer wired to PromotedPicture `brand.mark`.
-- [~] **PUBLIC-270** PF visual comparison vs `concepts/page-families/`. Evidence: `docs/quality/PUBLIC-270-PAGE-FAMILY-VISUAL-EVIDENCE.md`, `public-270.page-family-visual.test.ts`, Playwright `@visual` capture stubs at 1440/390. Manual owner compare and `PUBLIC-190` acceptance remain open.
-- [ ] **PUBLIC-280** Responsive matrix: 6 widths × 2 locales × 2 themes.
+- [~] **PUBLIC-270** PF visual comparison vs `concepts/page-families/`. Evidence: `docs/quality/PUBLIC-270-PAGE-FAMILY-VISUAL-EVIDENCE.md`, `public-270.page-family-visual.test.ts`, Playwright `@visual` capture stubs at 1440/390 (36 passed, PF-02 skipped). Manual owner compare and `PUBLIC-190` acceptance remain open.
+- [~] **PUBLIC-280** Responsive matrix: 6 widths × 2 locales × 2 themes. Evidence: `docs/quality/PUBLIC-280-RESPONSIVE-MATRIX-EVIDENCE.md`, `public-280.responsive-matrix.test.ts`, PF-01 six-width `@visual` scaffold. Full PF matrix open.
 - [ ] **PUBLIC-290** Performance budget (LCP, CLS, font preload).
 - [ ] **PUBLIC-300** No-JS readability audit all route families.
 - [ ] **PUBLIC-310** Contract fixture tests in CI.

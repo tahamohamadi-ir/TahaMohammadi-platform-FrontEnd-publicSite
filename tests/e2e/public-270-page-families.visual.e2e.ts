@@ -1,4 +1,14 @@
+import { mkdirSync } from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { expect, test } from '@playwright/test';
+import { PUBLIC_270_CAPTURE_WIDTHS } from '../../src/test-harness/responsive-matrix-widths';
+
+const visualOutputDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../test-results/visual');
+
+test.beforeAll(() => {
+  mkdirSync(visualOutputDir, { recursive: true });
+});
 
 type PageFamilyCapture = {
   id: string;
@@ -9,7 +19,7 @@ type PageFamilyCapture = {
   dir?: 'ltr' | 'rtl';
 };
 
-const widths = [1440, 390] as const;
+const widths = PUBLIC_270_CAPTURE_WIDTHS;
 
 const indexCaptures: PageFamilyCapture[] = [
   { id: 'pf01', pf: 'PF-01', path: '/en/creative/', theme: 'light', locale: 'en', dir: 'ltr' },
@@ -53,7 +63,7 @@ test.describe('PUBLIC-270 page-family visual capture stubs', () => {
 
         const locale = target.locale ?? 'en';
         await page.screenshot({
-          path: `test-results/visual/public-270-${target.id}-${locale}-${width}-${target.theme}.png`,
+          path: path.join(visualOutputDir, `public-270-${target.id}-${locale}-${width}-${target.theme}.png`),
           fullPage: true,
         });
       });
@@ -81,7 +91,7 @@ test.describe('PUBLIC-270 page-family visual capture stubs', () => {
       await page.goto(detailPath!);
       await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
       await page.screenshot({
-        path: `test-results/visual/public-270-pf02-en-${width}-dark.png`,
+        path: path.join(visualOutputDir, `public-270-pf02-en-${width}-dark.png`),
         fullPage: true,
       });
     }
