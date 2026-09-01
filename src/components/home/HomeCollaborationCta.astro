@@ -1,6 +1,9 @@
 ---
-import { localePath, type Locale } from '../../lib/navigation';
+import Button from '../ui/Button.astro';
+import PromotedPicture from '../media/PromotedPicture.astro';
 import { getHomeCollaborationContent } from '../../lib/home-content';
+import { BRAND_MARK_ASSET_ID } from '../../lib/media/promoted-media';
+import type { Locale } from '../../lib/navigation';
 
 interface Props {
   locale: Locale;
@@ -8,33 +11,26 @@ interface Props {
 
 const { locale } = Astro.props;
 const content = getHomeCollaborationContent(locale);
-const contactHref = localePath(locale, 'contact');
-const cvHref = localePath(locale, 'cv');
 ---
 
-<section class="home-collab" aria-labelledby="home-collab-title">
-  <div class="home-collab__inner">
-    <div class="home-collab__mark" aria-hidden="true">
-      <img
-        src="/media/brand/taha-mark-primary.png"
-        alt=""
-        width="48"
-        height="48"
-        class="home-collab__logo"
+<section class="hm-collab">
+  <div class="hm-collab__inner">
+    <div class="hm-collab__mark" aria-hidden="true">
+      <PromotedPicture
+        assetId={BRAND_MARK_ASSET_ID}
+        mediaSlot="brand.mark"
+        locale={locale}
+        imgClass="hm-collab__logo"
       />
     </div>
-    <div class="home-collab__copy">
-      <p class="home-section__eyebrow">{content.title}</p>
-      <h2 id="home-collab-title" class="home-collab__title home-prose-justify">
+    <div class="hm-collab__copy">
+      <p class="hm-eyebrow">{content.title}</p>
+      <h2 id="hm-collab-title" class="hm-collab__title">
         {content.message}
       </h2>
-      <div class="home-collab__actions">
-        <a href={contactHref} class="home-collab__cta home-collab__cta--primary">
-          {content.connectLabel} →
-        </a>
-        <a href={cvHref} class="home-collab__cta home-collab__cta--ghost">
-          {content.cvLabel}
-        </a>
+      <div class="hm-collab__actions">
+        <Button label={content.connectLabel} variant="primary" disabled />
+        <Button label={content.cvLabel} variant="secondary" disabled />
       </div>
     </div>
   </div>

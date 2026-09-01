@@ -1,0 +1,163 @@
+/* Language gateway — WP-40 reconstruction.
+   Concept: language-gateway (centered portal atmosphere, single decision).
+   Tokens only; no page-specific palette or spacing values. */
+
+.gw {
+  position: relative;
+  isolation: isolate;
+  min-height: 100svh;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  padding: var(--space-5) var(--space-6) var(--space-10);
+  text-align: center;
+}
+
+/* Decorative centered-portal atmosphere (ThemePicture resolves one theme). */
+.gw__atmosphere {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.gw__atmosphere .theme-picture,
+.gw__atmosphere .theme-picture__mount,
+.gw__atmosphere noscript .theme-picture__picture,
+.gw__atmosphere .theme-picture__picture,
+.gw__atmosphere .gw__atmosphere-img {
+  inline-size: 100%;
+  block-size: 100%;
+}
+
+.gw__atmosphere .gw__atmosphere-img {
+  object-fit: cover;
+  object-position: 50% 52%;
+}
+
+.gw__scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--color-canvas) 42%, transparent) 0%,
+      color-mix(in srgb, var(--color-canvas) 10%, transparent) 30%,
+      color-mix(in srgb, var(--color-canvas) 10%, transparent) 62%,
+      color-mix(in srgb, var(--color-canvas) 55%, transparent) 100%
+    );
+}
+
+.gw__toolbar {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: flex-end;
+  inline-size: 100%;
+  max-inline-size: 72rem;
+  margin-inline: auto;
+}
+
+.gw__hero {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--space-2);
+  padding-block: var(--space-2) var(--space-4);
+  max-inline-size: 72rem;
+  margin-inline: auto;
+  inline-size: 100%;
+}
+
+.gw__brand {
+  display: inline-grid;
+  place-items: center;
+  margin-block-end: var(--space-2);
+}
+
+.gw__mark {
+  inline-size: 3.5rem;
+  block-size: auto;
+}
+
+.gw__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+
+.gw__title-primary {
+  color: var(--color-ink);
+}
+
+.gw__title-accent {
+  color: var(--color-brand);
+}
+
+.gw__roles {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(0.75rem, 1.6vw, 0.95rem);
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--color-signature);
+  letter-spacing: 0.06em;
+}
+
+.gw__footer {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  margin-block-start: auto;
+  padding-block-end: var(--space-2);
+}
+
+.gw__prompt {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--color-ink-secondary);
+}
+
+.gw__nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-4);
+  margin-block-start: var(--space-4);
+}
+
+.gw__locale {
+  min-inline-size: 9rem;
+  min-height: var(--layout-touch-target-min);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.85rem 1.75rem;
+  border: 1px solid color-mix(in srgb, var(--color-signature) 70%, transparent);
+  border-radius: var(--radius-xs);
+  background: color-mix(in srgb, var(--color-surface) 12%, transparent);
+  color: var(--color-ink);
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  text-decoration: none;
+  transition:
+    border-color var(--motion-fast) var(--motion-ease-out),
+    background-color var(--motion-fast) var(--motion-ease-out),
+    color var(--motion-fast) var(--motion-ease-out);
+}
+
+.gw__locale:hover {
+  border-color: var(--color-brand);
+  color: var(--color-brand);
+  background: color-mix(in srgb, var(--color-brand-soft) 40%, transparent);
+}

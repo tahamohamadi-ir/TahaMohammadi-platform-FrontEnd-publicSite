@@ -1,58 +1,51 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ThemeToggle from '../components/ThemeToggle.astro';
+import ThemePicture from '../components/media/ThemePicture.astro';
+import PromotedPicture from '../components/media/PromotedPicture.astro';
 import { GATEWAY_ROLE_LINE } from '../lib/navigation';
+import { BRAND_MARK_ASSET_ID, GATEWAY_ATMOSPHERE_ASSETS } from '../lib/media/promoted-media';
+import '../styles/gateway.css';
 ---
 
 <BaseLayout title="Taha Mohammadi — Language gateway" lang="en" dir="ltr" gateway>
-  <div class="gateway">
-    <div class="gateway__atmosphere" aria-hidden="true">
-      <img
-        class="gateway__atmosphere-img gateway__atmosphere-img--dark"
-        src="/media/art/portal-centered-dark.png"
-        alt=""
-        width="1920"
-        height="1080"
-        decoding="async"
-        fetchpriority="high"
-      />
-      <img
-        class="gateway__atmosphere-img gateway__atmosphere-img--light"
-        src="/media/art/portal-centered-light.png"
-        alt=""
-        width="1920"
-        height="1080"
-        decoding="async"
+  <div class="gw">
+    <div class="gw__atmosphere" aria-hidden="true">
+      <ThemePicture
+        lightAssetId={GATEWAY_ATMOSPHERE_ASSETS.light}
+        darkAssetId={GATEWAY_ATMOSPHERE_ASSETS.dark}
+        mediaSlot="gateway.atmosphere"
+        imgClass="gw__atmosphere-img"
       />
     </div>
+    <div class="gw__scrim" aria-hidden="true"></div>
 
-    <header class="gateway__toolbar">
+    <header class="gw__toolbar">
       <ThemeToggle />
     </header>
 
-    <section class="gateway__hero" aria-labelledby="gateway-name">
-      <div class="gateway__brand" aria-hidden="true">
-        <img
-          src="/media/brand/taha-mark-primary.png"
-          alt=""
-          width="56"
-          height="56"
-          class="gateway__mark"
+    <section class="gw__hero" aria-labelledby="gateway-name">
+      <div class="gw__brand" aria-hidden="true">
+        <PromotedPicture
+          assetId={BRAND_MARK_ASSET_ID}
+          mediaSlot="brand.mark"
+          locale="en"
+          imgClass="gw__mark"
         />
       </div>
 
-      <h1 id="gateway-name" class="gateway__title">
-        <span class="gateway__title-primary">Taha</span><span class="gateway__title-accent"> Mohammadi</span>
+      <h1 id="gateway-name" class="gw__title">
+        <span class="gw__title-primary">Taha</span><span class="gw__title-accent"> Mohammadi</span>
       </h1>
 
-      <p class="gateway__roles">{GATEWAY_ROLE_LINE}</p>
+      <p class="gw__roles">{GATEWAY_ROLE_LINE}</p>
     </section>
 
-    <footer class="gateway__footer">
-      <p class="gateway__prompt">Choose your language</p>
-      <nav aria-label="Language selection" class="gateway__nav">
-        <a href="/en/" class="gateway__locale" lang="en">English</a>
-        <a href="/fa/" class="gateway__locale" lang="fa">فارسی</a>
+    <footer class="gw__footer">
+      <p class="gw__prompt">Choose your language</p>
+      <nav aria-label="Language selection" class="gw__nav">
+        <a href="/en/" class="gw__locale" lang="en">English</a>
+        <a href="/fa/" class="gw__locale" lang="fa">فارسی</a>
       </nav>
     </footer>
   </div>

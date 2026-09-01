@@ -1,8 +1,10 @@
 import crypto from 'node:crypto';
-import { existsSync, readFileSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { describe, expect, it } from 'vitest';
+import * as esbuild from 'esbuild';
 
 import {
   AUTHORITY_CHECKSUMS,
@@ -18,7 +20,7 @@ import {
   HOME_RAIL_ASSET_BY_PATH,
 } from './project-mappings';
 import { getPromotedAssetRecord, PROMOTED_ASSET_REGISTRY, altForLocale } from './promoted-media-registry';
-import { resolvePromotedMediaAlt } from './promoted-media';
+import { resolveMediaRoot, resolvePromotedMediaAlt } from './promoted-media';
 import { ATMOSPHERE_WIDTHS, GRAPH_BACKPLATE_WIDTHS, PREVIEW_WIDTHS, PROMOTED_FORMATS } from './transform-recipes';
 
 const repositoryRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
@@ -181,6 +183,84 @@ describe('WP-30 promoted media registry', () => {
       const relativePath = PROMOTED_ASSET_REGISTRY[id].assetFile;
       expect(existsSync(path.join(mediaRoot, relativePath))).toBe(true);
       expect(sha256File(relativePath)).toBe(AUTHORITY_CHECKSUMS[id]);
+    }
+  });
+
+  it('resolves mediaRoot by preferring project-root src/assets/media over import.meta fallback', () => {
+    const defaultRoot = resolveMediaRoot();
+    expect(defaultRoot).toBe(mediaRoot);
+
+    const prerenderChunkUrl = pathToFileURL(
+      path.join(repositoryRoot, 'dist/.prerender/chunks/entry.mjs'),
+    ).href;
+    const resolvedPrerenderRoot = resolveMediaRoot(repositoryRoot, prerenderChunkUrl);
+    expect(resolvedPrerenderRoot).toBe(mediaRoot);
+
+    const nonExistentCwd = path.join(repositoryRoot, 'non-existent-prerender-cwd');
+    const sourceMetaUrl = pathToFileURL(path.join(repositoryRoot, 'src/lib/media/promoted-media.ts')).href;
+    const fallbackRoot = resolveMediaRoot(nonExistentCwd, sourceMetaUrl);
+    expect(fallbackRoot).toBe(mediaRoot);
+  });
+
+  it('executes in compiled prerender chunk bundle context without ENOENT source-hash failure', async () => {
+    const outDir = path.join(repositoryRoot, 'dist/.prerender/chunks');
+    mkdirSync(outDir, { recursive: true });
+    const testEntry = path.join(outDir, 'prerender-regression-entry.js');
+    writeFileSync(
+      testEntry,
+      `import { getPromotedMedia } from '../../../src/lib/media/promoted-media.ts';
+const media = getPromotedMedia('portal-centered-dark', 'gateway.atmosphere');
+console.log('PRERENDER_SUCCESS:' + media.id);
+`,
+    );
+
+    const imagePlugin: esbuild.Plugin = {
+      name: 'astro-image-mock',
+      setup(build) {
+        build.onLoad({ filter: /\.png$/ }, (args) => {
+          const dimensions: Record<string, { width: number; height: number }> = {
+            'portal-centered-dark.png': { width: 1672, height: 941 },
+            'portal-centered-light.png': { width: 1672, height: 941 },
+            'portal-orbit-dark.png': { width: 1672, height: 941 },
+            'portal-orbit-light.png': { width: 1672, height: 941 },
+            'project-dashboard-systems.png': { width: 1536, height: 1024 },
+            'project-data-architecture.png': { width: 1536, height: 1024 },
+            'blog-coral-stairs.png': { width: 1536, height: 1024 },
+            'learning-sage-library.png': { width: 1536, height: 1024 },
+            'gallery-ivory-forms.png': { width: 1536, height: 1024 },
+            'home-graph-backplate-light.png': { width: 1254, height: 1254 },
+            'home-graph-backplate-dark.png': { width: 1254, height: 1254 },
+            'taha-mark-primary.png': { width: 256, height: 233 },
+            'taha-mark-favicon.png': { width: 64, height: 64 },
+          };
+          const base = path.basename(args.path);
+          const dim = dimensions[base] || { width: 100, height: 100 };
+          return {
+            contents: `export default { src: '${args.path.replace(/\\/g, '/')}', width: ${dim.width}, height: ${dim.height}, format: 'png' };`,
+            loader: 'js',
+          };
+        });
+      },
+    };
+
+    const bundleOut = path.join(outDir, 'prerender-regression-chunk.mjs');
+    try {
+      await esbuild.build({
+        entryPoints: [testEntry],
+        bundle: true,
+        outfile: bundleOut,
+        format: 'esm',
+        platform: 'node',
+        plugins: [imagePlugin],
+      });
+
+      const output = execFileSync(process.execPath, [bundleOut], {
+        cwd: repositoryRoot,
+        encoding: 'utf8',
+      });
+      expect(output).toContain('PRERENDER_SUCCESS:portal-centered-dark');
+    } finally {
+      rmSync(outDir, { recursive: true, force: true });
     }
   });
 });

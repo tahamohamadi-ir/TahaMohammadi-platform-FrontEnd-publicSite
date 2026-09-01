@@ -1,6 +1,6 @@
 import type { ImageMetadata } from 'astro';
 import { createHash } from 'node:crypto';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -39,7 +39,18 @@ export {
   BRAND_FAVICON_ASSET_ID,
 } from './project-mappings';
 
-const mediaRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../assets/media');
+export function resolveMediaRoot(
+  cwd: string = process.cwd(),
+  metaUrl: string = import.meta.url,
+): string {
+  const cwdMediaRoot = path.resolve(cwd, 'src/assets/media');
+  if (existsSync(cwdMediaRoot)) {
+    return cwdMediaRoot;
+  }
+  return path.resolve(path.dirname(fileURLToPath(metaUrl)), '../../assets/media');
+}
+
+const mediaRoot = resolveMediaRoot();
 
 const SOURCE_IMPORTS: Record<string, ImageMetadata> = {
   'portal-centered-dark': portalCenteredDark,

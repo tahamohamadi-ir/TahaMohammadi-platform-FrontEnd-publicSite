@@ -1,6 +1,7 @@
 ---
-import { localePath, type Locale } from '../../lib/navigation';
+import ContentRow from '../ui/ContentRow.astro';
 import { getHomeInterestsContent } from '../../lib/home-content';
+import type { Locale } from '../../lib/navigation';
 
 interface Props {
   locale: Locale;
@@ -8,45 +9,34 @@ interface Props {
 
 const { locale } = Astro.props;
 const content = getHomeInterestsContent(locale);
-const researchHref = localePath(locale, 'research');
 ---
 
-<section class="home-interests" aria-labelledby="home-interests-title">
-  <div class="home-interests__inner">
-    <header class="home-interests__header">
-      <p class="home-section__eyebrow">{content.sectionTitle}</p>
-      <h2 id="home-interests-title" class="home-interests__title">
+<section class="hm-interests">
+  <div class="hm-interests__inner">
+    <header class="hm-interests__header">
+      <p class="hm-eyebrow">{content.sectionTitle}</p>
+      <h2 id="hm-interests-title" class="hm-interests__title">
         {content.sectionLead}
       </h2>
     </header>
 
-    <ul class="home-interests__grid">
-      {
-        content.cards.map((card, index) => (
-          <li>
-            <a href={researchHref} class="home-interests__card home-card-interactive">
-              <span
-                class="home-interests__card-accent"
-                data-accent={['brand', 'research', 'signature', 'context', 'ink'][index] ?? 'brand'}
-                aria-hidden="true"
-              />
-              <h3 class="home-interests__card-title">{card.title}</h3>
-              <p class="home-interests__card-excerpt home-prose-justify">{card.excerpt}</p>
-              <div class="home-interests__card-footer">
-                <span class="home-interests__card-link">{content.exploreLabel}</span>
-                <span class="home-interests__card-go" aria-hidden="true">→</span>
-              </div>
-            </a>
-          </li>
-        ))
-      }
-    </ul>
+    {
+      content.cards.length > 0 && (
+        <ul class="hm-interests__grid">
+          {content.cards.map((card) => (
+            <li>
+              <ContentRow title={card.title} excerpt={card.excerpt} class="hm-interests__card" />
+            </li>
+          ))}
+        </ul>
+      )
+    }
 
-    <aside class="home-interests__fit" aria-labelledby="home-research-fit-title">
-      <h3 id="home-research-fit-title" class="home-interests__fit-title">
+    <aside class="hm-interests__fit" aria-labelledby="hm-interests-fit-title">
+      <h3 id="hm-interests-fit-title" class="hm-interests__fit-title">
         {content.fitTitle}
       </h3>
-      <p class="home-interests__fit-copy home-prose-justify">{content.fitCopy}</p>
+      <p class="hm-interests__fit-copy">{content.fitCopy}</p>
     </aside>
   </div>
 </section>

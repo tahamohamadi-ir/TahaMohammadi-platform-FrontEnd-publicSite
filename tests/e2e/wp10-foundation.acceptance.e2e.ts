@@ -21,6 +21,15 @@ const toKebabCase = (value: string) =>
     .replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`)
     .replace(/([a-z])([0-9])/g, '$1-$2');
 
+/** Expand 3-digit hex so minified production CSS compares equal to the snapshot. */
+function normalizeColor(value: string) {
+  const trimmed = value.trim().toLowerCase();
+  if (/^#[0-9a-f]{3}$/.test(trimmed)) {
+    return `#${trimmed[1]}${trimmed[1]}${trimmed[2]}${trimmed[2]}${trimmed[3]}${trimmed[3]}`;
+  }
+  return trimmed;
+}
+
 test.describe('WP-10 foundation acceptance', () => {
   const matrix = [
     { id: 'gateway-1440-light', name: 'Gateway desktop light', path: '/', theme: 'light', width: 1440 },
@@ -69,12 +78,16 @@ test.describe('WP-10 foundation acceptance', () => {
         const property = `--color-${toKebabCase(role)}`;
         await expect
           .poll(() =>
-            page.evaluate(
-              ({ propertyName }) => getComputedStyle(document.documentElement).getPropertyValue(propertyName).trim(),
-              { propertyName: property },
-            ),
+            page
+              .evaluate(
+                ({ propertyName }) => getComputedStyle(document.documentElement).getPropertyValue(propertyName).trim(),
+                { propertyName: property },
+              )
+              .then(normalizeColor),
           )
-          .toBe(expectedValue);
+          // Production CSS minification shortens hex values (#ffffff -> #fff);
+          // normalize notation so color equality is compared, not spelling.
+          .toBe(normalizeColor(expectedValue));
       }
     }
   });
