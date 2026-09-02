@@ -60,18 +60,25 @@ Detailed evidence per task: `docs/quality/PUBLIC-060-FONT-COMPUTED-EVIDENCE.md` 
 
 ## Automated gate (scaffold)
 
-| Gate                 | Command                                                     | Result          | Notes                              |
-| -------------------- | ----------------------------------------------------------- | --------------- | ---------------------------------- |
-| Build                | `npm run build`                                             | required        | 23 static pages                    |
-| Vitest release slice | `npm test` (includes `public-350.release-evidence.test.ts`) | required        | honest `ready: false` guard        |
-| Design authority     | `npm run validate:design`                                   | required        | semantic token contract            |
-| SEO                  | `npm run validate:seo`                                      | required        | sitemap/hreflang/canonical         |
-| Foundation           | `npm run test:foundation`                                   | required        | 6 passed @ `f3acb24` gate sweep    |
-| Performance          | `npm run test:performance`                                  | required        | 6 passed @ `f3acb24` gate sweep    |
-| Visual matrix        | `npm run test:visual -- --grep PUBLIC-280`                  | required        | 216 passed @ `f3acb24` gate sweep  |
-| No-JS                | `npm run test:nojs`                                         | required        | 23 passed @ `f3acb24` gate sweep   |
-| Staging smoke        | `npm run test:smoke`                                        | skip when unset | requires `PUBLIC_STAGING_SITE_URL` |
-| Owner acceptance     | manual                                                      | blocked         | PUBLIC-190 visual QA `REVISE`      |
+**Gate-sweep SHA:** `cc4b851` (2026-09-02). Playwright suites run with `--workers=1` on Windows after clean `dist/` rebuild. `summarizeReleaseEvidence().ready` remains **false**.
+
+| Gate              | Command                                    | Result  | Notes                                                                                                                     |
+| ----------------- | ------------------------------------------ | ------- | ------------------------------------------------------------------------------------------------------------------------- |
+| Lint              | `npm run lint`                             | PASS    | ESLint flat config                                                                                                        |
+| Format            | `npm run format:check`                     | PASS    | Prettier + `prettier-plugin-astro`                                                                                        |
+| Build             | `npm run build`                            | PASS    | 23 static pages                                                                                                           |
+| Vitest            | `npm test`                                 | PASS    | **228 passed**; includes `public-350.release-evidence.test.ts`                                                            |
+| Design authority  | `npm run validate:design`                  | PASS    | 24 components, 6 templates                                                                                                |
+| SEO               | `npm run validate:seo`                     | PASS    | sitemap/hreflang/canonical + Pagefind                                                                                     |
+| Foundation        | `npm run test:foundation`                  | PASS    | 6 passed                                                                                                                  |
+| Performance       | `npm run test:performance`                 | PASS    | 6 passed                                                                                                                  |
+| PUBLIC-270 visual | `npm run test:visual -- --grep PUBLIC-270` | PASS    | 36 passed, 1 skipped (PF-02 detail open)                                                                                  |
+| PUBLIC-280 visual | `npm run test:visual -- --grep PUBLIC-280` | PASS    | 216 passed                                                                                                                |
+| No-JS             | `npm run test:nojs`                        | PASS    | 23 passed                                                                                                                 |
+| Visual compare    | `npm run report:visual-compare`            | PASS    | **39 / 48** honest pairs (viewport-aware home @ `cc4b851`)                                                                |
+| GitHub Actions CI | push `main` @ `cc4b851`                    | PASS    | [run 33576370767](https://github.com/tahamohamadi-ir/TahaMohammadi-platform-FrontEnd-publicSite/actions/runs/33576370767) |
+| Staging smoke     | `npm run test:smoke`                       | skip    | `PUBLIC_STAGING_SITE_URL` unset                                                                                           |
+| Owner acceptance  | manual                                     | blocked | PUBLIC-190 visual QA `REVISE`                                                                                             |
 
 ---
 
@@ -82,7 +89,7 @@ Fill `Docs/templates/RELEASE-REPORT-TEMPLATE.md` only after R7 staging and owner
 | Field                | Value (current)                                   |
 | -------------------- | ------------------------------------------------- |
 | Release identifier   | _not tagged — scaffold only_                      |
-| Repository commits   | public-site `main` @ gate-sweep SHA               |
+| Repository commits   | public-site `main` @ `cc4b851`                    |
 | Artifact hashes      | _pending immutable staging build_                 |
 | Automated checks     | Vitest 210+; Playwright tags per table above      |
 | Manual checks        | PUBLIC-190 owner visual compare — **open**        |

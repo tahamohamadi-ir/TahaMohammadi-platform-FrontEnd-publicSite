@@ -8,6 +8,7 @@ import {
   R4_PUBLIC_SLICES,
   R8_PUBLIC_SLICES,
   summarizeReleaseEvidence,
+  PUBLIC_RELEASE_GATE_SWEEP_SHA,
 } from './test-harness/release-evidence'
 import { STAGING_ENV_KEYS } from './test-harness/staging-smoke'
 
@@ -88,6 +89,8 @@ describe('PUBLIC-350 public release evidence scaffold', () => {
     const harness = readFileSync(harnessPath, 'utf8')
 
     expect(checklist).toContain('PUBLIC-350')
+    expect(checklist).toContain(PUBLIC_RELEASE_GATE_SWEEP_SHA)
+    expect(PUBLIC_RELEASE_GATE_SWEEP_SHA).toBe('cc4b851')
     expect(checklist).toContain('R4')
     expect(checklist).toContain('R8')
     expect(checklist).toContain('does **not** close `PUBLIC-190`')
@@ -95,6 +98,7 @@ describe('PUBLIC-350 public release evidence scaffold', () => {
     expect(checklist).toContain('BACKEND-180')
 
     expect(harness).toContain('summarizeReleaseEvidence')
+    expect(harness).toContain('PUBLIC_RELEASE_GATE_SWEEP_SHA')
     expect(harness).toContain('R4_PUBLIC_SLICES')
     expect(harness).toContain('R8_PUBLIC_SLICES')
   })
