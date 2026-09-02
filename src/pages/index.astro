@@ -18,14 +18,6 @@ import '../styles/gateway.css'
   gateway
 >
   <div class="gw">
-    <div class="gw__atmosphere" aria-hidden="true">
-      <ThemePicture
-        lightAssetId={GATEWAY_ATMOSPHERE_ASSETS.light}
-        darkAssetId={GATEWAY_ATMOSPHERE_ASSETS.dark}
-        mediaSlot="gateway.atmosphere"
-        imgClass="gw__atmosphere-img"
-      />
-    </div>
     <div class="gw__scrim" aria-hidden="true"></div>
 
     <header class="gw__toolbar">
@@ -51,6 +43,39 @@ import '../styles/gateway.css'
       </h1>
 
       <p class="gw__roles">{GATEWAY_ROLE_LINE}</p>
+
+      <div class="gw__portal" aria-hidden="true">
+        <svg class="gw__orbital" viewBox="0 0 400 400" focusable="false">
+          <circle
+            cx="200"
+            cy="200"
+            r="148"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1"
+            opacity="0.22"
+          />
+          <circle
+            cx="200"
+            cy="200"
+            r="108"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1"
+            opacity="0.32"
+          />
+          <circle cx="200" cy="52" r="5" class="gw__orbital-glow" />
+          <circle cx="348" cy="200" r="5" class="gw__orbital-glow" />
+          <circle cx="200" cy="348" r="5" class="gw__orbital-glow" />
+          <circle cx="52" cy="200" r="5" class="gw__orbital-glow" />
+        </svg>
+        <ThemePicture
+          lightAssetId={GATEWAY_ATMOSPHERE_ASSETS.light}
+          darkAssetId={GATEWAY_ATMOSPHERE_ASSETS.dark}
+          mediaSlot="gateway.atmosphere"
+          imgClass="gw__portal-img"
+        />
+      </div>
     </section>
 
     <footer class="gw__footer">

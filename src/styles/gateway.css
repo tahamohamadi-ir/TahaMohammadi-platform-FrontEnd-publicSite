@@ -1,5 +1,5 @@
 /* Language gateway — WP-40 reconstruction.
-   Concept: language-gateway (centered portal atmosphere, single decision).
+   Concept: language-gateway (brand first, portal graphic below, orbital glow).
    Tokens only; no page-specific palette or spacing values. */
 
 .gw {
@@ -10,30 +10,9 @@
   grid-template-rows: auto minmax(0, 1fr) auto;
   padding: var(--space-5) var(--space-6) var(--space-8);
   text-align: center;
-  gap: var(--space-2);
+  gap: var(--space-4);
   align-content: center;
-}
-
-/* Decorative centered-portal atmosphere (ThemePicture resolves one theme). */
-.gw__atmosphere {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-}
-
-.gw__atmosphere .theme-picture,
-.gw__atmosphere .theme-picture__mount,
-.gw__atmosphere noscript .theme-picture__picture,
-.gw__atmosphere .theme-picture__picture,
-.gw__atmosphere .gw__atmosphere-img {
-  inline-size: 100%;
-  block-size: 100%;
-}
-
-.gw__atmosphere .gw__atmosphere-img {
-  object-fit: cover;
-  object-position: 50% 52%;
+  background: var(--color-canvas);
 }
 
 .gw__scrim {
@@ -41,12 +20,10 @@
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background: linear-gradient(
-    to bottom,
-    color-mix(in srgb, var(--color-canvas) 42%, transparent) 0%,
-    color-mix(in srgb, var(--color-canvas) 10%, transparent) 30%,
-    color-mix(in srgb, var(--color-canvas) 10%, transparent) 62%,
-    color-mix(in srgb, var(--color-canvas) 55%, transparent) 100%
+  background: radial-gradient(
+    circle at 50% 42%,
+    color-mix(in srgb, var(--color-brand) 10%, transparent) 0%,
+    transparent 58%
   );
 }
 
@@ -67,7 +44,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: var(--space-2);
+  gap: var(--space-3);
   padding-block: clamp(var(--space-3), 4vh, var(--space-6));
   max-inline-size: 72rem;
   margin-inline: auto;
@@ -77,7 +54,6 @@
 .gw__brand {
   display: inline-grid;
   place-items: center;
-  margin-block-end: var(--space-2);
 }
 
 .gw__mark {
@@ -110,6 +86,46 @@
   line-height: 1.4;
   color: var(--color-signature);
   letter-spacing: 0.06em;
+}
+
+.gw__portal {
+  position: relative;
+  inline-size: min(100%, 22rem);
+  margin-block-start: var(--space-4);
+  aspect-ratio: 1;
+}
+
+.gw__orbital {
+  position: absolute;
+  inset: -8%;
+  z-index: 2;
+  inline-size: 116%;
+  block-size: 116%;
+  margin: auto;
+  color: var(--color-brand);
+  pointer-events: none;
+}
+
+.gw__orbital-glow {
+  fill: var(--color-brand);
+  filter: drop-shadow(0 0 0.45rem color-mix(in srgb, var(--color-brand) 80%, transparent));
+}
+
+.gw__portal .theme-picture,
+.gw__portal .theme-picture__mount,
+.gw__portal .theme-picture__picture,
+.gw__portal noscript .theme-picture__picture,
+.gw__portal .gw__portal-img {
+  inline-size: 100%;
+  block-size: 100%;
+}
+
+.gw__portal-img {
+  object-fit: contain;
+  object-position: center;
+  filter: drop-shadow(
+    0 0 2rem color-mix(in srgb, var(--color-brand) 28%, transparent)
+  );
 }
 
 .gw__footer {
@@ -161,4 +177,38 @@
   border-color: var(--color-brand);
   color: var(--color-brand);
   background: color-mix(in srgb, var(--color-brand-soft) 40%, transparent);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .gw__orbital-glow {
+    animation: gw-orbital-pulse 2.8s ease-in-out infinite alternate;
+  }
+
+  .gw__orbital-glow:nth-child(4) {
+    animation-delay: 0.4s;
+  }
+
+  .gw__orbital-glow:nth-child(5) {
+    animation-delay: 0.8s;
+  }
+
+  .gw__orbital-glow:nth-child(6) {
+    animation-delay: 1.2s;
+  }
+
+  .gw__orbital-glow:nth-child(7) {
+    animation-delay: 1.6s;
+  }
+}
+
+@keyframes gw-orbital-pulse {
+  from {
+    opacity: 0.55;
+    filter: drop-shadow(0 0 0.25rem color-mix(in srgb, var(--color-brand) 55%, transparent));
+  }
+
+  to {
+    opacity: 1;
+    filter: drop-shadow(0 0 0.75rem color-mix(in srgb, var(--color-brand) 90%, transparent));
+  }
 }
