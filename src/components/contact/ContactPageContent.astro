@@ -169,11 +169,23 @@ const topicLabels =
         slot="lead"
         locale={locale}
         family="contact"
+        portal
         eyebrow={locale === 'en' ? 'Connect' : 'ارتباط'}
         title={getContactRouteTitle(locale)}
       />
 
       <div slot="records" class="contact-page__sections">
+        <div
+          class="contact-page__topics"
+          role="group"
+          aria-label={topicLabels.region}
+        >
+          <span class="contact-page__topic-chip">{topicLabels.phd}</span>
+          <span class="contact-page__topic-chip">{topicLabels.technical}</span>
+          <span class="contact-page__topic-chip">{topicLabels.creative}</span>
+          <span class="contact-page__topic-chip">{topicLabels.other}</span>
+        </div>
+
         {formState.sent ? (
           <div
             class="contact-page__status contact-page__status--success"
@@ -202,7 +214,7 @@ const topicLabels =
         model.contact.employer ||
         model.contact.location ? (
           <section
-            class="contact-page__section"
+            class="contact-page__section contact-page__panel"
             aria-labelledby="contact-details-title"
           >
             <h2 id="contact-details-title" class="contact-page__section-title">
@@ -276,7 +288,7 @@ const topicLabels =
 
         {model.formEnabled ? (
           <section
-            class="contact-page__section"
+            class="contact-page__section contact-page__panel contact-page__panel--form"
             aria-labelledby="contact-form-title"
           >
             <h2 id="contact-form-title" class="contact-page__section-title">

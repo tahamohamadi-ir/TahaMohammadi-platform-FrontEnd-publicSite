@@ -27,7 +27,7 @@ describe('PUBLIC-230 contact page', () => {
     expect(html).toContain('Contact')
     expect(html).toMatch(/<h1[\s>]/)
     expect(html).toMatch(/data-visual-id="PageFamilyIndexHero"/)
-    expect(html).toMatch(/data-visual-id="PageFamilyIndexHero"/)
+    expect(html).toMatch(/pf-index-hero--portal/)
     expect(html).toMatch(/contact-page__topics/)
     expect(html).not.toMatch(/data-contact-form/)
   })
@@ -49,6 +49,9 @@ describe('PUBLIC-230 contact page', () => {
         },
       },
     })
+    expect(html).toMatch(/pf-index-hero--portal/)
+    expect(html).toMatch(/contact-page__topic-chip/)
+    expect(html).toMatch(/contact-page__panel--form/)
     expect(html).toMatch(/href="mailto:owner@example.com"/)
     expect(html).toMatch(/href="https:\/\/linkedin.com\/in\/example"/)
     expect(html).toMatch(/method="post"/)
@@ -92,7 +95,7 @@ describe('PUBLIC-230 cv page', () => {
     expect(html).toMatch(/<h1[\s>]/)
     expect(html).toMatch(/cv-page__section/)
     expect(html).toMatch(/data-visual-id="PageFamilyIndexHero"/)
-    expect(html).toMatch(/data-visual-id="PageFamilyTimelineShell"/)
+    expect(html).toMatch(/data-visual-id="PageFamilyDownloadListShell"/)
   })
 
   it('renders download cards when the model is ready', async () => {
