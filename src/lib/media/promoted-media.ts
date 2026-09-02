@@ -159,6 +159,9 @@ export function resolvePromotedMediaAlt(
     }
     return trimmed
   }
+  if (record.semantics.kind === 'content' && consumerAlt !== undefined) {
+    return consumerAlt
+  }
   return altForLocale(record, locale)
 }
 

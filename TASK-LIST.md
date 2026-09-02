@@ -21,7 +21,7 @@ Status: `[x]` done, `[ ]` open, `[~]` in progress.
 - [x] **PUBLIC-050** Self-host Newsreader, Inter, Estedad, Vazirmatn (OFL + license files). WOFF2 under `public/fonts/`; `@font-face` in `src/styles/fonts.css`; CDN removed from `BaseLayout.astro`; locale tokens wired per `FONT-ACQUISITION-PLAN.md`. **Remaining for PS-10:** subset/coverage fixtures, CLS/preload budget (PUBLIC-290).
 - [x] **PUBLIC-060** `--font-display` / `--font-body` per locale; computed-style tests. Evidence: `docs/quality/PUBLIC-060-FONT-COMPUTED-EVIDENCE.md`, `public-060.font-tokens.test.ts`, Playwright `@foundation` probes on home EN/FA. Subset/coverage fixtures remain open per FONT-ACQUISITION-PLAN PS-10.
 - [x] **PUBLIC-070** Light / Dark / system theme foundation; resolved before paint, persisted, and multi-instance safe. Evidence: WP-10 focused Playwright acceptance covers requested/resolved state, preference changes, persistence, event detail/count, and multiple controls.
-- [x] **PUBLIC-080** Focus, skip link, reduced-motion baseline. Evidence: WP-10 keyboard-focus and reduced-motion acceptance.
+- [x] **PUBLIC-080** Focus, skip link, reduced-motion baseline. Evidence: WP-10 keyboard-focus and reduced-motion acceptance; `docs/quality/PUBLIC-080-A11Y-AUDIT.md`, `public-080.a11y-audit.test.ts`, Playwright `@a11y` WCAG 2.2 AA crawl (29 passed). Manual keyboard/screen-reader/zoom matrix remains open per PUBLIC-190 §3.
 
 ## PUB-2 — API and routes
 
