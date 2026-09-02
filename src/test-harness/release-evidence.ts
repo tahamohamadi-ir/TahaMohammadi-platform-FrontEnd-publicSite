@@ -10,7 +10,7 @@ import { STAGING_ENV_KEYS } from './staging-smoke'
  * Pin for the last recorded full gate sweep (PUBLIC-350 evidence only).
  * Does not imply `summarizeReleaseEvidence().ready === true`.
  */
-export const PUBLIC_RELEASE_GATE_SWEEP_SHA = '888ccc1' as const
+export const PUBLIC_RELEASE_GATE_SWEEP_SHA = '0e84e69' as const
 
 export type ReleaseEvidenceStatus = 'complete' | 'scaffold' | 'blocked' | 'open'
 

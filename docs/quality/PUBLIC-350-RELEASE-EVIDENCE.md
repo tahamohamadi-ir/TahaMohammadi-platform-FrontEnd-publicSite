@@ -60,7 +60,7 @@ Detailed evidence per task: `docs/quality/PUBLIC-060-FONT-COMPUTED-EVIDENCE.md` 
 
 ## Automated gate (scaffold)
 
-**Gate-sweep SHA:** `888ccc1` (2026-09-02). Playwright suites run with `--workers=1` on Windows after clean `dist/` rebuild. `summarizeReleaseEvidence().ready` remains **false**.
+**Gate-sweep SHA:** `0e84e69` (2026-09-02). Clean `dist/` rebuild once; Playwright suites run with `TM_E2E_SKIP_BUILD=1` after build on Windows. `summarizeReleaseEvidence().ready` remains **false**.
 
 | Gate              | Command                                    | Result  | Notes                                                                                           |
 | ----------------- | ------------------------------------------ | ------- | ----------------------------------------------------------------------------------------------- |
@@ -89,7 +89,7 @@ Fill `Docs/templates/RELEASE-REPORT-TEMPLATE.md` only after R7 staging and owner
 | Field                | Value (current)                                   |
 | -------------------- | ------------------------------------------------- |
 | Release identifier   | _not tagged â€” scaffold only_                    |
-| Repository commits   | public-site @ `888ccc1`                           |
+| Repository commits   | public-site @ `0e84e69`                           |
 | Artifact hashes      | _pending immutable staging build_                 |
 | Automated checks     | Vitest 232; Playwright tags per table above       |
 | Manual checks        | PUBLIC-190 owner visual compare â€” **open**      |
