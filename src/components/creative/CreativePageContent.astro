@@ -53,7 +53,11 @@ const filterLabels =
         title={getCreativeRouteTitle(locale)}
       />
 
-      <PageFamilyFeaturedShell slot="featured" locale={locale} family="creative" />
+      <PageFamilyFeaturedShell
+        slot="featured"
+        locale={locale}
+        family="creative"
+      />
 
       <div
         slot="filters"
@@ -81,7 +85,10 @@ const filterLabels =
         />
       </div>
 
-      <div slot="records" class="creative-page__grid-shell pf-index-empty__shell">
+      <div
+        slot="records"
+        class="creative-page__grid-shell pf-index-empty__shell"
+      >
         <PageFamilyMediaGridPlaceholder locale={locale} family="creative" />
         <ContentState
           variant="empty"

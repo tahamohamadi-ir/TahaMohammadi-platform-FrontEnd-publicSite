@@ -8,6 +8,7 @@ export default tseslint.config(
   {
     ignores: [
       'dist',
+      '.e2e-serve-dist',
       'node_modules',
       '.astro',
       'coverage',

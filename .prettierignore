@@ -1,4 +1,5 @@
 dist
+.e2e-serve-dist
 .astro
 coverage
 node_modules

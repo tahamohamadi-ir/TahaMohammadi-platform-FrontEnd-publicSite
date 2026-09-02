@@ -24,25 +24,25 @@ Progressive enhancement: optional `<script>` blocks remain limited to form submi
 
 ## Rationale
 
-| Requirement        | CSS-first                         | GSAP / Three.js                          |
-| ------------------ | --------------------------------- | ---------------------------------------- |
-| No-JS readability  | Content renders without JS        | Scroll/3D effects absent without JS      |
-| Bundle / LCP       | Zero extra JS for visuals         | Adds KB–MB and parse cost                |
-| Concept fidelity   | Static compositions with art      | 3D not in approved concept PNGs          |
-| Reduced motion     | Native `prefers-reduced-motion`   | Requires explicit `matchMedia` guards    |
-| Astro static output| Styles in CSS; minimal islands    | Client hydration or inline scripts       |
+| Requirement         | CSS-first                       | GSAP / Three.js                       |
+| ------------------- | ------------------------------- | ------------------------------------- |
+| No-JS readability   | Content renders without JS      | Scroll/3D effects absent without JS   |
+| Bundle / LCP        | Zero extra JS for visuals       | Adds KB–MB and parse cost             |
+| Concept fidelity    | Static compositions with art    | 3D not in approved concept PNGs       |
+| Reduced motion      | Native `prefers-reduced-motion` | Requires explicit `matchMedia` guards |
+| Astro static output | Styles in CSS; minimal islands  | Client hydration or inline scripts    |
 
 GSAP remains appropriate if a future task requires scroll-linked sequencing **after** `PUBLIC-190` closes and owner accepts the JS dependency budget. Three.js is out of scope unless a concept revision explicitly requires WebGL.
 
 ## Where motion lives today
 
-| Surface              | Mechanism                                      | File(s)                                      |
-| -------------------- | ---------------------------------------------- | -------------------------------------------- |
-| Theme toggle, buttons| CSS `transition` on tokens                     | `Button.astro`, `gateway.css`                |
-| Gateway locale links | CSS hover transitions                          | `gateway.css`                                |
-| Page-family shells   | Static layout + promoted images                | `src/components/page-family/*`               |
-| Home graph           | Semantic list + backplate (no canvas)          | `HomeResearchGraph.astro`, `home.css`        |
-| Research PF-05 empty | `PageFamilyConstellationShell` (aria-hidden)   | `PageFamilyConstellationShell.astro`         |
+| Surface               | Mechanism                                    | File(s)                               |
+| --------------------- | -------------------------------------------- | ------------------------------------- |
+| Theme toggle, buttons | CSS `transition` on tokens                   | `Button.astro`, `gateway.css`         |
+| Gateway locale links  | CSS hover transitions                        | `gateway.css`                         |
+| Page-family shells    | Static layout + promoted images              | `src/components/page-family/*`        |
+| Home graph            | Semantic list + backplate (no canvas)        | `HomeResearchGraph.astro`, `home.css` |
+| Research PF-05 empty  | `PageFamilyConstellationShell` (aria-hidden) | `PageFamilyConstellationShell.astro`  |
 
 ## Consequences
 
@@ -52,11 +52,11 @@ GSAP remains appropriate if a future task requires scroll-linked sequencing **af
 
 ## Alternatives considered
 
-| Option               | Why deferred                                      |
-| -------------------- | ------------------------------------------------- |
-| GSAP + ScrollTrigger | Not required for empty-state structural chrome    |
-| Three.js hero        | No concept authority for 3D; LCP/CLS risk         |
-| Motion (Framer)      | React-centric; public site is Astro with islands  |
+| Option               | Why deferred                                     |
+| -------------------- | ------------------------------------------------ |
+| GSAP + ScrollTrigger | Not required for empty-state structural chrome   |
+| Three.js hero        | No concept authority for 3D; LCP/CLS risk        |
+| Motion (Framer)      | React-centric; public site is Astro with islands |
 
 ## Verification
 
