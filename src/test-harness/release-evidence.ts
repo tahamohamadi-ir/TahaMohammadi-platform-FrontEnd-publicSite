@@ -186,7 +186,8 @@ export const R8_PUBLIC_SLICES: readonly ReleaseEvidenceSlice[] = [
     description: 'Automated accessibility probes',
     status: 'scaffold',
     command: 'npm run test:a11y',
-    blocker: 'Manual keyboard/screen-reader/zoom matrix open; automated WCAG crawl shipped',
+    blocker:
+      'Manual keyboard/screen-reader/zoom matrix open; automated WCAG crawl shipped',
   },
   {
     id: 'r8-owner-acceptance',

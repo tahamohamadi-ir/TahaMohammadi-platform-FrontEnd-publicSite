@@ -11,13 +11,13 @@ This checklist does **not** close `PUBLIC-190`. Automated scans are necessary bu
 
 ## Automated gate
 
-| Gate             | Command                                                | Result        | Notes                              |
-| ---------------- | ------------------------------------------------------ | ------------- | ---------------------------------- |
-| Build            | `npm run build`                                        | PASS          | 23 static pages                    |
-| Vitest scaffold  | `npm test` (includes `public-080.a11y-audit.test.ts`) | PASS          | route map + wiring guard           |
-| A11y crawl       | `npm run test:a11y`                                    | **29 passed** | 23 route scans + 6 foundation probes |
-| Design authority | `npm run validate:design`                              | PASS          | semantic token contract            |
-| CI               | `.github/workflows/ci.yml`                             | push/PR       | a11y optional locally              |
+| Gate             | Command                                               | Result        | Notes                                |
+| ---------------- | ----------------------------------------------------- | ------------- | ------------------------------------ |
+| Build            | `npm run build`                                       | PASS          | 23 static pages                      |
+| Vitest scaffold  | `npm test` (includes `public-080.a11y-audit.test.ts`) | PASS          | route map + wiring guard             |
+| A11y crawl       | `npm run test:a11y`                                   | **29 passed** | 23 route scans + 6 foundation probes |
+| Design authority | `npm run validate:design`                             | PASS          | semantic token contract              |
+| CI               | `.github/workflows/ci.yml`                            | push/PR       | a11y optional locally                |
 
 **Runner:** `npm run test:a11y`
 
@@ -51,13 +51,13 @@ Foundation probes (WP-10/PUBLIC-150) cover skip-link focus, theme-control contra
 
 ## Deferrals and open items
 
-| Item                         | Notes                                                   |
-| ---------------------------- | ------------------------------------------------------- |
-| Manual keyboard matrix       | gateway, home, PF-01..PF-08, search — owner §3          |
-| Real 200% browser zoom       | owner §3                                                |
-| Screen-reader spot checks    | owner §3                                                |
-| PF-02 detail                 | add when creative detail pages exist in `dist/`         |
-| PUBLIC-190 visual acceptance | independent QA stays `REVISE`                           |
+| Item                         | Notes                                           |
+| ---------------------------- | ----------------------------------------------- |
+| Manual keyboard matrix       | gateway, home, PF-01..PF-08, search — owner §3  |
+| Real 200% browser zoom       | owner §3                                        |
+| Screen-reader spot checks    | owner §3                                        |
+| PF-02 detail                 | add when creative detail pages exist in `dist/` |
+| PUBLIC-190 visual acceptance | independent QA stays `REVISE`                   |
 
 ---
 
