@@ -60,14 +60,14 @@ Detailed evidence per task: `docs/quality/PUBLIC-060-FONT-COMPUTED-EVIDENCE.md` 
 
 ## Automated gate (scaffold)
 
-**Gate-sweep SHA:** `0e84e69` (2026-09-02). Clean `dist/` rebuild once; Playwright suites run with `TM_E2E_SKIP_BUILD=1` after build on Windows. `summarizeReleaseEvidence().ready` remains **false**.
+**Gate-sweep SHA:** `a6dbca1` (2026-09-02). PF consolidation gate sweep; clean `dist/` rebuild once; Playwright suites run with `TM_E2E_SKIP_BUILD=1` after build on Windows. `summarizeReleaseEvidence().ready` remains **false**.
 
 | Gate              | Command                                    | Result  | Notes                                                                                           |
 | ----------------- | ------------------------------------------ | ------- | ----------------------------------------------------------------------------------------------- |
 | Lint              | `npm run lint`                             | PASS    | ESLint flat config                                                                              |
 | Format            | `npm run format:check`                     | PASS    | Prettier + `prettier-plugin-astro`                                                              |
 | Build             | `npm run build`                            | PASS    | 23 static pages                                                                                 |
-| Vitest            | `npm test`                                 | PASS    | **232 passed**; includes `public-080.a11y-audit.test.ts`, `public-350.release-evidence.test.ts` |
+| Vitest            | `npm test`                                 | PASS    | **237 passed**; includes `public-080.a11y-audit.test.ts`, `public-350.release-evidence.test.ts` |
 | Design authority  | `npm run validate:design`                  | PASS    | 24 components, 6 templates                                                                      |
 | SEO               | `npm run validate:seo`                     | PASS    | sitemap/hreflang/canonical + Pagefind                                                           |
 | Foundation        | `npm run test:foundation`                  | PASS    | 6 passed                                                                                        |
@@ -89,9 +89,9 @@ Fill `Docs/templates/RELEASE-REPORT-TEMPLATE.md` only after R7 staging and owner
 | Field                | Value (current)                                   |
 | -------------------- | ------------------------------------------------- |
 | Release identifier   | _not tagged â€” scaffold only_                    |
-| Repository commits   | public-site @ `0e84e69`                           |
+| Repository commits   | public-site @ `a6dbca1`                           |
 | Artifact hashes      | _pending immutable staging build_                 |
-| Automated checks     | Vitest 232; Playwright tags per table above       |
+| Automated checks     | Vitest 237; Playwright tags per table above       |
 | Manual checks        | PUBLIC-190 owner visual compare â€” **open**      |
 | Deferred validations | staging smoke, production telemetry, PF-02 detail |
 | Gate result          | **R4/R8 public slice incomplete**                 |

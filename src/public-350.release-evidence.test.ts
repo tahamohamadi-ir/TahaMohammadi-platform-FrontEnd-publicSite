@@ -90,7 +90,7 @@ describe('PUBLIC-350 public release evidence scaffold', () => {
 
     expect(checklist).toContain('PUBLIC-350')
     expect(checklist).toContain(PUBLIC_RELEASE_GATE_SWEEP_SHA)
-    expect(PUBLIC_RELEASE_GATE_SWEEP_SHA).toBe('0e84e69')
+    expect(PUBLIC_RELEASE_GATE_SWEEP_SHA).toBe('a6dbca1')
     expect(checklist).toContain('R4')
     expect(checklist).toContain('R8')
     expect(checklist).toContain('does **not** close `PUBLIC-190`')
