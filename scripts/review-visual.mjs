@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Owner one-command visual review pipeline:
- *   build → PUBLIC-270 + WP-40 captures → compare report → print file:// path
+ *   build -> PUBLIC-270 + WP-40 captures -> compare report -> print file:// path
  *
  * Does NOT change PUBLIC-190 verdict. Generates local review artifacts only.
  *
@@ -23,14 +23,22 @@ const reportPath = path.join(
   'test-results/visual/compare-report.html',
 )
 const serve = process.argv.includes('--serve')
+const visualGrep =
+  'PUBLIC-270|WP-40 home captures|WP-40 home and gateway capture'
 
-function runStep(label, command, args) {
+function runStep(label, command, args, options = {}) {
   console.log(`\n▶ ${label}`)
-  const result = spawnSync(command, args, {
-    cwd: repositoryRoot,
-    stdio: 'inherit',
-    shell: process.platform === 'win32',
-  })
+  const result = options.rawCommand
+    ? spawnSync(options.rawCommand, {
+        cwd: repositoryRoot,
+        stdio: 'inherit',
+        shell: true,
+      })
+    : spawnSync(command, args, {
+        cwd: repositoryRoot,
+        stdio: 'inherit',
+        shell: options.shell ?? process.platform === 'win32',
+      })
 
   if (result.error) {
     console.error(result.error.message)
@@ -43,13 +51,21 @@ function runStep(label, command, args) {
 }
 
 runStep('build', 'npm', ['run', 'build'])
-runStep('visual captures (PUBLIC-270 + WP-40 home/gateway)', 'npx', [
-  'playwright',
-  'test',
-  '--grep',
-  'PUBLIC-270|WP-40 home captures|WP-40 home and gateway capture',
-  '--workers=1',
-])
+
+if (process.platform === 'win32') {
+  runStep('visual captures (PUBLIC-270 + WP-40 home/gateway)', null, null, {
+    rawCommand: `npx playwright test --grep "${visualGrep}" --workers=1`,
+  })
+} else {
+  runStep('visual captures (PUBLIC-270 + WP-40 home/gateway)', 'npx', [
+    'playwright',
+    'test',
+    '--grep',
+    visualGrep,
+    '--workers=1',
+  ], { shell: false })
+}
+
 runStep('compare report', 'npm', ['run', 'report:visual-compare'])
 
 if (!existsSync(reportPath)) {
@@ -59,7 +75,7 @@ if (!existsSync(reportPath)) {
 
 const fileUrl = pathToFileURL(reportPath).href
 
-console.log('\n✓ Visual compare report ready')
+console.log('\n✔ Visual compare report ready')
 console.log(`  Path: ${reportPath}`)
 console.log(`  Open: ${fileUrl}`)
 console.log(
