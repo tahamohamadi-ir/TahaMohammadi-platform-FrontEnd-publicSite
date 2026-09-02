@@ -32,6 +32,11 @@ describe('PUBLIC-220 teaching pages', () => {
     expect(html).toContain('Teaching')
     expect(html).toMatch(/<h1[\s>]/)
     expect(html).toMatch(/teaching-page__filters/)
+    expect(html).toMatch(/teaching-page--grid/)
+    expect(html).toMatch(/pf-index-empty__filter-chip--rect/)
+    expect(html).toMatch(/data-visual-id="PageFamilyTeachingFilterDropdowns"/)
+    expect(html).toMatch(/pf-index-path--featured/)
+    expect(html).toContain('Browse paths')
   })
 
   it('renders course and talk cards when the index model is ready', async () => {
