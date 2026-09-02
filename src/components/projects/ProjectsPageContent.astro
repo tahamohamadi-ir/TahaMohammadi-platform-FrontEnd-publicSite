@@ -50,11 +50,7 @@ const filterLabels =
         slot="lead"
         locale={locale}
         family="projects"
-        eyebrow={
-          locale === 'en'
-            ? 'Systems & case studies'
-            : 'سامانه‌ها و مطالعات موردی'
-        }
+        eyebrow={locale === 'en' ? 'Selected evidence' : 'شواهد منتخب'}
         title={getProjectsRouteTitle(locale)}
       />
 
@@ -103,7 +99,12 @@ const filterLabels =
         slot="records"
         class="projects-page__grid-shell pf-index-empty__shell"
       >
-        <PageFamilyContentRowPlaceholder locale={locale} family="projects" />
+        <PageFamilyContentRowPlaceholder
+          locale={locale}
+          family="projects"
+          count={4}
+          variant="project"
+        />
         <ContentState
           variant="empty"
           locale={locale}
@@ -119,11 +120,7 @@ const filterLabels =
         slot="lead"
         locale={locale}
         family="projects"
-        eyebrow={
-          locale === 'en'
-            ? 'Systems & case studies'
-            : 'سامانه‌ها و مطالعات موردی'
-        }
+        eyebrow={locale === 'en' ? 'Selected evidence' : 'شواهد منتخب'}
         title={getProjectsRouteTitle(locale)}
       />
 

@@ -28,6 +28,8 @@ describe('PUBLIC-201 research pages', () => {
     expect(html).toMatch(/<h1[\s>]/)
     expect(html).toMatch(/data-visual-id="PageFamilyIndexHero"/)
     expect(html).toMatch(/data-visual-id="PageFamilyConstellationShell"/)
+    expect(html).toMatch(/data-visual-id="PageFamilyResearchFitShell"/)
+    expect(html).toMatch(/research-page__directions/)
     expect(html).toMatch(/research-page__topics/)
   })
 
