@@ -60,25 +60,26 @@ describe('WP-40 home hero', () => {
       expect(html).toMatch(
         new RegExp(`href="/${locale}/(research|cv|contact)/"`),
       )
+      expect(html).toMatch(/lucide/)
       expect(html.match(/class="ui-chip ui-chip--neutral"/g)?.length).toBe(5)
     }
   })
 })
 
 describe('WP-40 research graph', () => {
-  it('overlays a semantic node list on the decorative graph backplate', async () => {
+  it('renders a simple three-node diagram without the watercolor backplate', async () => {
     const html = await render(HomeResearchGraph, { locale: 'en' })
-    expect(html).toMatch(/home-graph-backplate-light/)
-    expect(html).toMatch(/aria-hidden="true"/)
+    expect(html).toMatch(/hm-graph__simple/)
+    expect(html).not.toMatch(/home-graph-backplate-light/)
     expect(html).not.toMatch(/role="img"/)
-    expect(html.match(/<li[\s>]/g)?.length).toBe(5)
+    expect(html.match(/<li[\s>]/g)?.length).toBe(3)
     expect(html).toMatch(/Human-Centered AI/)
     expect(html).not.toMatch(/href="\/en\/research\/"/)
   })
 
   it('presents exact-locale FA research-statement data in the list', async () => {
     const html = await render(HomeResearchGraph, { locale: 'fa' })
-    expect(html).toMatch(/home-graph-backplate-dark|home-graph-backplate-light/)
+    expect(html).toMatch(/hm-graph__simple/)
     expect(html).toContain('هوش مصنوعی انسان‌محور و تعامل انسان و هوش مصنوعی')
     expect(html).not.toContain('Human-Centered AI')
   })
@@ -95,7 +96,7 @@ describe('WP-40 research graph', () => {
       expect(
         list.match(/data-graph-node-state="unavailable"/g)?.length,
         'every node must declare the unavailable state',
-      ).toBe(5)
+      ).toBe(3)
       expect(
         list,
         'no invented anchors while routes are unavailable',

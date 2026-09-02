@@ -3,6 +3,7 @@ import SectionLead from '../ui/SectionLead.astro'
 import Button from '../ui/Button.astro'
 import Chip from '../ui/Chip.astro'
 import ThemePicture from '../media/ThemePicture.astro'
+import { ArrowRight, FileText, Mail } from 'lucide-astro'
 import { getHomeHeroContent } from '../../lib/home-content'
 import { getProfileHeroCtaLabels } from '../../lib/page-family-empty-chrome'
 import { HOME_HERO_ATMOSPHERE_ASSETS } from '../../lib/media/promoted-media'
@@ -42,19 +43,25 @@ const ctaLabels = getProfileHeroCtaLabels(locale)
         href={localePath(locale, 'research')}
         variant="primary"
         class="hm-hero__cta"
-      />
+      >
+        <ArrowRight class="hm-hero__cta-icon" aria-hidden="true" />
+      </Button>
       <Button
         label={ctaLabels.cv}
         href={localePath(locale, 'cv')}
         variant="secondary"
         class="hm-hero__cta"
-      />
+      >
+        <FileText class="hm-hero__cta-icon" aria-hidden="true" />
+      </Button>
       <Button
         label={ctaLabels.contact}
         href={localePath(locale, 'contact')}
         variant="secondary"
         class="hm-hero__cta"
-      />
+      >
+        <Mail class="hm-hero__cta-icon" aria-hidden="true" />
+      </Button>
     </div>
 
     {

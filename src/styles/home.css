@@ -101,7 +101,7 @@
   gap: var(--space-3);
 }
 
-@media (min-width: 640px) {
+@media (min-width: 900px) {
   .hm-hero__actions {
     flex-direction: row;
     flex-wrap: wrap;
@@ -112,13 +112,18 @@
   inline-size: 100%;
 }
 
-@media (min-width: 640px) {
+.hm-hero__cta-icon {
+  inline-size: 1rem;
+  block-size: 1rem;
+}
+
+@media (min-width: 900px) {
   .hm-hero__cta {
     inline-size: auto;
   }
 }
 
-@media (max-width: 767px) {
+@media (max-width: 899px) {
   .hm-hero {
     display: grid;
     grid-template-rows: minmax(14rem, 38vw) auto;
@@ -217,9 +222,60 @@
 
 .hm-graph__canvas {
   position: relative;
-  inline-size: min(100%, 30rem);
+  inline-size: min(100%, 22rem);
+  aspect-ratio: 1;
 }
 
+.hm-graph__simple {
+  inline-size: 100%;
+  block-size: 100%;
+  color: var(--color-brand);
+}
+
+.hm-graph__brand-mark {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+  fill: var(--color-brand);
+}
+
+.hm-graph__nodes--simple {
+  position: absolute;
+  inset: 0;
+  padding: 0;
+  display: block;
+}
+
+.hm-graph__nodes--simple .hm-graph__node {
+  position: absolute;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  transform: translate(-50%, -50%);
+  max-inline-size: 8.5rem;
+}
+
+.hm-graph__node--simple-1 {
+  inset-block-start: 10%;
+  inset-inline-start: 50%;
+}
+
+.hm-graph__node--simple-2 {
+  inset-block-start: 72%;
+  inset-inline-start: 22%;
+}
+
+.hm-graph__node--simple-3 {
+  inset-block-start: 72%;
+  inset-inline-start: 78%;
+}
+
+.hm-graph__nodes--simple .hm-graph__node-label {
+  text-align: center;
+  font-size: var(--font-size-xs);
+}
+
+/* Legacy backplate styles retained for reference consumers — simple graph uses SVG. */
 .hm-graph__backplate {
   position: relative;
   aspect-ratio: 1;

@@ -33,6 +33,7 @@ const shared = {
   href ? (
     <a href={disabled ? undefined : href} {...shared} data-visual-id="Button">
       <span class="ui-button__label">{label}</span>
+      <slot />
       {loading ? <span class="ui-button__spinner" aria-hidden="true" /> : null}
     </a>
   ) : (
@@ -43,6 +44,7 @@ const shared = {
       data-visual-id="Button"
     >
       <span class="ui-button__label">{label}</span>
+      <slot />
       {loading ? <span class="ui-button__spinner" aria-hidden="true" /> : null}
     </button>
   )
