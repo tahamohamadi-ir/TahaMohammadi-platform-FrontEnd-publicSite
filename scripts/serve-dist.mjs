@@ -112,7 +112,18 @@ const server = createServer((request, response) => {
       MIME_TYPES[path.extname(filePath).toLowerCase()] ??
       'application/octet-stream',
   })
-  createReadStream(filePath).pipe(response)
+  const stream = createReadStream(filePath)
+  stream.on('error', (error) => {
+    if (!response.headersSent) {
+      const status =
+        error && 'code' in error && error.code === 'ENOENT' ? 404 : 500
+      response.writeHead(status, {
+        'Content-Type': 'text/plain; charset=utf-8',
+      })
+    }
+    response.end()
+  })
+  stream.pipe(response)
 })
 
 server.on('error', (error) => {

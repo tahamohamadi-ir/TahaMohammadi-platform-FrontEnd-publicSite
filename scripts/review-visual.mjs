@@ -26,7 +26,7 @@ const serve = process.argv.includes('--serve')
 const visualGrep =
   'PUBLIC-270|WP-40 home captures|WP-40 home and gateway capture'
 
-function spawnCommand(command, args) {
+function spawnCommand(command, args, env = process.env) {
   if (process.platform === 'win32') {
     return spawnSync(
       process.env.ComSpec ?? 'cmd.exe',
@@ -35,6 +35,7 @@ function spawnCommand(command, args) {
         cwd: repositoryRoot,
         stdio: 'inherit',
         shell: false,
+        env,
       },
     )
   }
@@ -43,12 +44,13 @@ function spawnCommand(command, args) {
     cwd: repositoryRoot,
     stdio: 'inherit',
     shell: false,
+    env,
   })
 }
 
-function runStep(label, command, args) {
+function runStep(label, command, args, env = process.env) {
   console.log(`\n▶ ${label}`)
-  const result = spawnCommand(command, args)
+  const result = spawnCommand(command, args, env)
 
   if (result.error) {
     console.error(result.error.message)
@@ -62,13 +64,15 @@ function runStep(label, command, args) {
 
 runStep('build', 'npm', ['run', 'build'])
 
-runStep('visual captures (PUBLIC-270 + WP-40 home/gateway)', 'npx', [
-  'playwright',
-  'test',
-  '--grep',
-  visualGrep,
-  '--workers=1',
-])
+runStep(
+  'visual captures (PUBLIC-270 + WP-40 home/gateway)',
+  'npx',
+  ['playwright', 'test', '--grep', visualGrep, '--workers=1'],
+  {
+    ...process.env,
+    TM_E2E_SKIP_BUILD: '1',
+  },
+)
 
 runStep('compare report', 'npm', ['run', 'report:visual-compare'])
 

@@ -22,15 +22,12 @@ describe('Playwright harness self-containment', () => {
 
   it('resolves the web server URL from the same dynamic base URL', () => {
     expect(config.webServer?.url).toBe(config.use?.baseURL)
-    const commandPort = config.webServer?.command?.match(/--port (\d+)/)?.[1]
     const urlPort = config.use?.baseURL?.match(/:(\d+)$/)?.[1]
-    expect(commandPort).toBeTruthy()
-    expect(commandPort).toBe(urlPort)
+    expect(config.webServer?.env?.TM_E2E_PORT).toBe(urlPort)
   })
 
   it('builds the normal static site, then serves it with the Playwright-owned server', () => {
-    expect(config.webServer?.command).toMatch(/run build/)
-    expect(config.webServer?.command).toMatch(/serve-dist\.mjs --port \d+/)
+    expect(config.webServer?.command).toMatch(/playwright-web-server\.mjs/)
   })
 
   it('never spawns a detached dev server', () => {

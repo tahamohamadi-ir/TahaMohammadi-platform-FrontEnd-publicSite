@@ -1,5 +1,4 @@
 import { createServer } from 'node:net'
-import { platform } from 'node:os'
 import type { AddressInfo } from 'node:net'
 import { defineConfig } from '@playwright/test'
 
@@ -35,7 +34,6 @@ async function resolveRunPort(): Promise<number> {
 
 const port = await resolveRunPort()
 const baseURL = `http://127.0.0.1:${port}`
-const npm = platform() === 'win32' ? 'npm.cmd' : 'npm'
 
 export default defineConfig({
   testDir: './tests/e2e',
@@ -46,9 +44,13 @@ export default defineConfig({
     browserName: 'chromium',
   },
   webServer: {
-    command: `${npm} run build --silent && node scripts/serve-dist.mjs --port ${port} --root dist`,
+    command: `node scripts/playwright-web-server.mjs`,
     url: baseURL,
     reuseExistingServer: false,
     timeout: 300_000,
+    env: {
+      ...process.env,
+      TM_E2E_PORT: String(port),
+    },
   },
 })
