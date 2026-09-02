@@ -1,5 +1,5 @@
 ---
-import { getCmsPlaceholderCopy } from '../../lib/page-family-empty-chrome'
+import { getPublicationsInterestItems } from '../../lib/page-family-empty-chrome'
 import type { Locale } from '../../lib/navigation'
 
 interface Props {
@@ -8,9 +8,9 @@ interface Props {
 }
 
 const { locale, class: className = '' } = Astro.props
-const placeholder = getCmsPlaceholderCopy(locale)
-const sectionLabel = locale === 'en' ? 'Related records' : 'رکوردهای مرتبط'
-const rows = [0, 1, 2] as const
+const interests = getPublicationsInterestItems(locale)
+const sectionLabel =
+  locale === 'en' ? 'Research interests' : 'علاقه‌مندی‌های پژوهشی'
 ---
 
 <aside
@@ -21,13 +21,22 @@ const rows = [0, 1, 2] as const
   <h2 class="pf-index-pub-sidebar__title">{sectionLabel}</h2>
   <ul class="pf-index-pub-sidebar__list">
     {
-      rows.map(() => (
+      interests.map((item) => (
         <li>
-          <article class="pf-index-pub-sidebar__card" aria-hidden="true">
-            <span class="pf-index-empty__line pf-index-empty__line--short" />
-            <span class="pf-index-empty__line pf-index-empty__line--medium" />
-            <p class="pf-index-pub-sidebar__placeholder">{placeholder}</p>
-          </article>
+          <button
+            type="button"
+            class="pf-index-pub-sidebar__interest"
+            disabled
+            aria-hidden="true"
+          >
+            <span
+              class={[
+                'pf-index-pub-sidebar__icon',
+                `pf-index-pub-sidebar__icon--${item.tone}`,
+              ].join(' ')}
+            />
+            <span class="pf-index-pub-sidebar__label">{item.label}</span>
+          </button>
         </li>
       ))
     }

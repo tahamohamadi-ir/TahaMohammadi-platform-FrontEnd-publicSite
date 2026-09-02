@@ -1,6 +1,6 @@
 ---
 import { getCmsPlaceholderCopy } from '../../lib/page-family-empty-chrome'
-import type { Locale } from '../../lib/navigation'
+import { localePath, type Locale } from '../../lib/navigation'
 
 interface Props {
   locale: Locale
@@ -12,6 +12,8 @@ const { locale, count = 2, class: className = '' } = Astro.props
 const placeholder = getCmsPlaceholderCopy(locale)
 const sectionLabel =
   locale === 'en' ? 'Selected publications' : 'انتشارات منتخب'
+const viewAllLabel =
+  locale === 'en' ? 'View all publications' : 'همهٔ انتشارات'
 const statusLabel = locale === 'en' ? 'Status pending' : 'وضعیت در انتظار'
 const cards = Array.from({ length: count }, (_, index) => index)
 ---
@@ -21,9 +23,17 @@ const cards = Array.from({ length: count }, (_, index) => index)
   data-visual-id="PageFamilySelectedPublicationsShell"
   aria-labelledby="pf-selected-pubs-title"
 >
-  <h2 id="pf-selected-pubs-title" class="pf-index-selected-pubs__title">
-    {sectionLabel}
-  </h2>
+  <div class="pf-index-selected-pubs__header">
+    <h2 id="pf-selected-pubs-title" class="pf-index-selected-pubs__title">
+      {sectionLabel}
+    </h2>
+    <a
+      class="pf-index-selected-pubs__view-all"
+      href={localePath(locale, 'publications')}
+    >
+      {viewAllLabel}
+    </a>
+  </div>
 
   <ul class="pf-index-selected-pubs__list">
     {

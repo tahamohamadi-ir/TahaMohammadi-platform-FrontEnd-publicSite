@@ -56,9 +56,10 @@ export function getPageFamilyHeroMedia(
   switch (family) {
     case 'creative':
       return {
-        kind: 'single',
-        assetId: HOME_RAIL_ASSET_BY_PATH.creative,
-        mediaSlot: 'home.rail.preview',
+        kind: 'theme',
+        lightAssetId: GATEWAY_ATMOSPHERE_ASSETS.light,
+        darkAssetId: GATEWAY_ATMOSPHERE_ASSETS.dark,
+        mediaSlot: 'gateway.atmosphere',
       }
     case 'writing':
       return {
@@ -82,14 +83,14 @@ export function getPageFamilyHeroMedia(
     case 'publications':
       return {
         kind: 'single',
-        assetId: HOME_RAIL_ASSET_BY_PATH.teaching,
+        assetId: HOME_RAIL_ASSET_BY_PATH.writing,
         mediaSlot: 'home.rail.preview',
       }
     case 'about':
     case 'cv':
       return {
         kind: 'single',
-        assetId: HOME_RAIL_ASSET_BY_PATH.writing,
+        assetId: HOME_RAIL_ASSET_BY_PATH.creative,
         mediaSlot: 'home.rail.preview',
       }
     case 'contact':
@@ -135,7 +136,7 @@ export function getPageFamilyPreviewAsset(family: PageFamilyChromeId): {
     case 'research':
     case 'publications':
       return {
-        assetId: HOME_RAIL_ASSET_BY_PATH.teaching,
+        assetId: HOME_RAIL_ASSET_BY_PATH.writing,
         mediaSlot: 'home.rail.preview',
       }
     case 'about':
@@ -545,6 +546,50 @@ export function getContactSendWorkflowStates(
       ]
 }
 
+/** Structural contact hero copy (PF-08) — UI chrome, not CMS records. */
+export function getContactHeroCopy(locale: Locale): {
+  eyebrow: string
+  title: string
+  summary: string
+  availabilityLabel: string
+} {
+  return locale === 'en'
+    ? {
+        eyebrow: 'Collaboration',
+        title: "Let's talk",
+        summary:
+          'For PhD supervision fit, research collaboration, technical opportunities, or selected creative work.',
+        availabilityLabel: 'Availability: from approved CMS record',
+      }
+    : {
+        eyebrow: 'همکاری',
+        title: 'گفتگو کنیم',
+        summary:
+          'برای تناسب دکتری، همکاری پژوهشی، فرصت‌های فنی یا کار خلاقه منتخب.',
+        availabilityLabel: 'دسترس‌پذیری: از رکورد تأییدشده CMS',
+      }
+}
+
+/** Structural contact topic cards (PF-08) — UI chrome, not CMS copy. */
+export function getContactTopicCards(
+  locale: Locale,
+): readonly { title: string; tone: string; description: string }[] {
+  const placeholder = getCmsPlaceholderCopy(locale)
+  return locale === 'en'
+    ? [
+        { title: 'PhD / Research', tone: 'phd', description: placeholder },
+        { title: 'Technical work', tone: 'technical', description: placeholder },
+        { title: 'Creative work', tone: 'creative', description: placeholder },
+        { title: 'Other', tone: 'other', description: placeholder },
+      ]
+    : [
+        { title: 'دکتری / پژوهش', tone: 'phd', description: placeholder },
+        { title: 'کار فنی', tone: 'technical', description: placeholder },
+        { title: 'کار خلاقه', tone: 'creative', description: placeholder },
+        { title: 'سایر', tone: 'other', description: placeholder },
+      ]
+}
+
 /** Structural hero CTA labels for profile/home shells — routes only, not CMS copy. */
 export function getProfileHeroCtaLabels(locale: Locale): {
   research: string
@@ -564,18 +609,204 @@ export function getProfileHeroCtaLabels(locale: Locale): {
       }
 }
 
+/** Approved structural role line for profile/research heroes — not CMS copy. */
+export function getGatewayRoleLine(locale: Locale): string {
+  return locale === 'en'
+    ? 'Researcher · Engineer · Designer'
+    : 'پژوهشگر · مهندس · طراح'
+}
+
+export type ConstellationLegendItem = {
+  label: string
+  tone: 'brand' | 'research' | 'context' | 'signature' | 'ink'
+}
+
+export type ConstellationDiagramNode = {
+  label: string
+  tone: ConstellationLegendItem['tone']
+  cx: number
+  cy: number
+}
+
+/** Structural constellation legend labels (PF-05) — UI chrome, not CMS records. */
+export function getResearchConstellationLegend(
+  locale: Locale,
+): readonly ConstellationLegendItem[] {
+  return locale === 'en'
+    ? [
+        { label: 'AI & Intelligence', tone: 'brand' },
+        { label: 'Data & Systems', tone: 'research' },
+        { label: 'Health & Society', tone: 'context' },
+        { label: 'Language & Culture', tone: 'signature' },
+        { label: 'Design & Communication', tone: 'ink' },
+      ]
+    : [
+        { label: 'هوش مصنوعی و شناخت', tone: 'brand' },
+        { label: 'داده و سامانه‌ها', tone: 'research' },
+        { label: 'سلامت و جامعه', tone: 'context' },
+        { label: 'زبان و فرهنگ', tone: 'signature' },
+        { label: 'طراحی و ارتباط', tone: 'ink' },
+      ]
+}
+
+/** Structural constellation diagram nodes (PF-05) — UI chrome, not CMS records. */
+export function getResearchConstellationNodes(
+  locale: Locale,
+): readonly ConstellationDiagramNode[] {
+  return locale === 'en'
+    ? [
+        { label: 'Human-Centered AI', tone: 'brand', cx: 200, cy: 200 },
+        { label: 'Systems Thinking', tone: 'research', cx: 200, cy: 72 },
+        { label: 'Digital Health', tone: 'context', cx: 318, cy: 132 },
+        { label: 'Fluid Communication', tone: 'signature', cx: 318, cy: 268 },
+        { label: 'Human NLP & Text-to-SQL', tone: 'ink', cx: 82, cy: 268 },
+        { label: 'Data Systems', tone: 'research', cx: 82, cy: 132 },
+      ]
+    : [
+        { label: 'هوش مصنوعی انسان‌محور', tone: 'brand', cx: 200, cy: 200 },
+        { label: 'تفکر سیستمی', tone: 'research', cx: 200, cy: 72 },
+        { label: 'سلامت دیجیتال', tone: 'context', cx: 318, cy: 132 },
+        { label: 'ارتباط سیال', tone: 'signature', cx: 318, cy: 268 },
+        { label: 'NLP و Text-to-SQL', tone: 'ink', cx: 82, cy: 268 },
+        { label: 'سامانه‌های داده', tone: 'research', cx: 82, cy: 132 },
+      ]
+}
+
+export type ResearchDirectionRow = {
+  title: string
+  tone: 'brand' | 'research' | 'context' | 'signature' | 'ink'
+}
+
+/** Structural research-direction row labels (PF-05) — UI chrome, not CMS records. */
+export function getResearchDirectionRows(
+  locale: Locale,
+): readonly ResearchDirectionRow[] {
+  return locale === 'en'
+    ? [
+        { title: 'Human-Centered AI', tone: 'brand' },
+        { title: 'Trustworthy & Controllable AI', tone: 'research' },
+        { title: 'Visual Analytics & Decision Support', tone: 'context' },
+        { title: 'Behavioral Data & Personalization', tone: 'signature' },
+        { title: 'Digital Health & Wearable AI', tone: 'ink' },
+      ]
+    : [
+        { title: 'هوش مصنوعی انسان‌محور', tone: 'brand' },
+        { title: 'هوش مصنوعی قابل‌اعتماد', tone: 'research' },
+        { title: 'تحلیل بصری و پشتیبانی تصمیم', tone: 'context' },
+        { title: 'داده رفتاری و شخصی‌سازی', tone: 'signature' },
+        { title: 'سلامت دیجیتال و پوشیدنی', tone: 'ink' },
+      ]
+}
+
+export type PublicationsInterestItem = {
+  label: string
+  tone: 'brand' | 'research' | 'context' | 'signature' | 'ink'
+}
+
+/** Structural publications sidebar interest labels (PF-05) — UI chrome, not CMS records. */
+export function getPublicationsInterestItems(
+  locale: Locale,
+): readonly PublicationsInterestItem[] {
+  return getResearchConstellationLegend(locale)
+}
+
+/** Structural action labels for research direction rows (PF-05). */
+export function getResearchDirectionActionLabels(locale: Locale): {
+  status: string
+  related: string
+} {
+  return locale === 'en'
+    ? { status: 'Publication status', related: 'Related records' }
+    : { status: 'وضعیت انتشار', related: 'رکوردهای مرتبط' }
+}
+
 /** Structural theme chip labels for explore band (PF-03) — UI chrome, not CMS records. */
 export function getPageFamilyThemeExploreLabels(
   locale: Locale,
   family: PageFamilyChromeId,
 ): readonly string[] | null {
+  const items = getPageFamilyThemeExploreItems(locale, family)
+  return items ? items.map((item) => item.label) : null
+}
+
+export type ThemeExploreItem = {
+  label: string
+  tone: 'essay' | 'note' | 'memory' | 'society' | 'archive'
+}
+
+/** Structural theme icon-card items for explore band (PF-03) — UI chrome, not CMS records. */
+export function getPageFamilyThemeExploreItems(
+  locale: Locale,
+  family: PageFamilyChromeId,
+): readonly ThemeExploreItem[] | null {
   if (!THEME_EXPLORE_FAMILIES.has(family)) {
     return null
   }
 
   if (locale === 'en') {
-    return ['Essays', 'Notes', 'Memories', 'Society', 'Archive']
+    return [
+      { label: 'Essays', tone: 'essay' },
+      { label: 'Notes', tone: 'note' },
+      { label: 'Memories', tone: 'memory' },
+      { label: 'Society', tone: 'society' },
+      { label: 'Archive', tone: 'archive' },
+    ]
   }
 
-  return ['مقالات', 'یادداشت‌ها', 'خاطرات', 'جامعه', 'آرشیو']
+  return [
+    { label: 'مقالات', tone: 'essay' },
+    { label: 'یادداشت‌ها', tone: 'note' },
+    { label: 'خاطرات', tone: 'memory' },
+    { label: 'جامعه', tone: 'society' },
+    { label: 'آرشیو', tone: 'archive' },
+  ]
+}
+
+/** Approved structural hero summary placeholders — not CMS record copy. */
+export function getPageFamilyHeroSummary(
+  locale: Locale,
+  family: PageFamilyChromeId,
+): string | undefined {
+  if (locale === 'en') {
+    switch (family) {
+      case 'creative':
+        return 'A curated collection of visual explorations, experiments, and creative studies. Where research meets form.'
+      case 'teaching':
+        return 'Notes, guides, tutorials, and resources—published when ready.'
+      case 'projects':
+        return 'Selected systems, prototypes, and research artifacts—sanitized for public review.'
+      default:
+        return undefined
+    }
+  }
+
+  switch (family) {
+    case 'creative':
+      return 'مجموعه‌ای گزینش‌شده از کاوش‌های بصری، آزمایش‌ها و مطالعات خلاقانه؛ جایی که پژوهش با فرم ملاقات می‌کند.'
+    case 'teaching':
+      return 'یادداشت‌ها، راهنماها، آموزش‌ها و منابع—هنگام آماده‌شدن منتشر می‌شوند.'
+    case 'projects':
+      return 'سامانه‌ها، نمونه‌های اولیه و آرتیفکت‌های پژوهشی منتخب—با داده‌های پاک‌سازی‌شده برای مرور عمومی.'
+    default:
+      return undefined
+  }
+}
+
+/** Structural view-path CTA for featured learning path (PF-06). */
+export function getTeachingViewPathLabel(locale: Locale): string {
+  return locale === 'en' ? 'View path' : 'مشاهده مسیر'
+}
+
+/** Structural browse-paths CTA label (PF-06) — route chrome, not CMS copy. */
+export function getTeachingBrowsePathsLabel(locale: Locale): string {
+  return locale === 'en' ? 'Browse paths' : 'مرور مسیرها'
+}
+
+/** Structural featured-path step labels (PF-06) — UI chrome, not CMS records. */
+export function getTeachingFeaturedPathSteps(
+  locale: Locale,
+): readonly string[] {
+  return locale === 'en'
+    ? ['01 Foundations', '02 Deepen', '03 Apply', '04 Expand']
+    : ['۰۱ مبانی', '۰۲ تعمیق', '۰۳ کاربرد', '۰۴ گسترش']
 }

@@ -5,6 +5,10 @@ import {
   getAboutSubNavLabels,
   getCmsPlaceholderCopy,
   getContactFaqItems,
+  getGatewayRoleLine,
+  getPublicationsInterestItems,
+  getResearchConstellationLegend,
+  getResearchDirectionRows,
   getPageFamilyFeaturedActionLabel,
   getPageFamilyFeaturedCardLabel,
   getPageFamilyFeaturedSectionLabel,
@@ -22,9 +26,10 @@ import {
 describe('page-family empty chrome', () => {
   it('maps hero media from promoted authority assets', () => {
     expect(getPageFamilyHeroMedia('creative')).toEqual({
-      kind: 'single',
-      assetId: 'gallery-ivory-forms',
-      mediaSlot: 'home.rail.preview',
+      kind: 'theme',
+      lightAssetId: 'portal-centered-light',
+      darkAssetId: 'portal-centered-dark',
+      mediaSlot: 'gateway.atmosphere',
     })
     expect(getPageFamilyHeroMedia('projects')).toEqual({
       kind: 'single',
@@ -33,7 +38,7 @@ describe('page-family empty chrome', () => {
     })
     expect(getPageFamilyHeroMedia('research')).toEqual({
       kind: 'single',
-      assetId: 'learning-sage-library',
+      assetId: 'blog-coral-stairs',
       mediaSlot: 'home.rail.preview',
     })
     expect(getPageFamilyHeroMedia('contact').kind).toBe('theme')
@@ -42,6 +47,14 @@ describe('page-family empty chrome', () => {
   it('exposes approved CMS placeholder copy per locale', () => {
     expect(getCmsPlaceholderCopy('en')).toBe('Awaiting approved CMS copy')
     expect(getCmsPlaceholderCopy('fa')).toContain('CMS')
+  })
+
+  it('exposes PF-05 structural research chrome labels', () => {
+    expect(getGatewayRoleLine('en')).toContain('Researcher')
+    expect(getGatewayRoleLine('fa')).toContain('پژوهشگر')
+    expect(getResearchConstellationLegend('en')).toHaveLength(5)
+    expect(getResearchDirectionRows('en')).toHaveLength(5)
+    expect(getPublicationsInterestItems('fa')).toHaveLength(5)
   })
 
   it('exposes About sub-nav and profile CTA structural labels', () => {

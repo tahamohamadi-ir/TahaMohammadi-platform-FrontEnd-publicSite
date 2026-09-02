@@ -1,0 +1,72 @@
+---
+import {
+  getCmsPlaceholderCopy,
+  getResearchDirectionActionLabels,
+  getResearchDirectionRows,
+} from '../../lib/page-family-empty-chrome'
+import type { Locale } from '../../lib/navigation'
+
+interface Props {
+  locale: Locale
+  class?: string
+}
+
+const { locale, class: className = '' } = Astro.props
+const placeholder = getCmsPlaceholderCopy(locale)
+const rows = getResearchDirectionRows(locale)
+const actions = getResearchDirectionActionLabels(locale)
+const sectionLabel =
+  locale === 'en' ? 'Research directions' : 'جهت‌های پژوهشی'
+---
+
+<section
+  class={['pf-index-research-directions', className].filter(Boolean).join(' ')}
+  data-visual-id="PageFamilyResearchDirectionsShell"
+  aria-labelledby="pf-research-directions-title"
+>
+  <h2 id="pf-research-directions-title" class="pf-index-research-directions__title">
+    {sectionLabel}
+  </h2>
+
+  <ul class="pf-index-research-directions__list">
+    {
+      rows.map((row) => (
+        <li>
+          <article class="pf-index-research-directions__row" aria-hidden="true">
+            <span
+              class={[
+                'pf-index-research-directions__icon',
+                `pf-index-research-directions__icon--${row.tone}`,
+              ].join(' ')}
+            />
+            <div class="pf-index-research-directions__body">
+              <h3 class="pf-index-research-directions__row-title">
+                {row.title}
+              </h3>
+              <p class="pf-index-research-directions__placeholder">
+                {placeholder}
+              </p>
+              <span class="pf-index-empty__line pf-index-empty__line--medium" />
+            </div>
+            <div class="pf-index-research-directions__actions">
+              <button
+                type="button"
+                class="pf-index-research-directions__action"
+                disabled
+              >
+                {actions.status}
+              </button>
+              <button
+                type="button"
+                class="pf-index-research-directions__action pf-index-research-directions__action--secondary"
+                disabled
+              >
+                {actions.related}
+              </button>
+            </div>
+          </article>
+        </li>
+      ))
+    }
+  </ul>
+</section>

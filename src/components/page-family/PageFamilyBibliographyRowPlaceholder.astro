@@ -23,7 +23,23 @@ const rows = Array.from({ length: count }, (_, index) => index)
   {
     rows.map((index) => (
       <div class="pf-index-bibliography__row">
-        <span class="pf-index-bibliography__icon" />
+        <span class="pf-index-bibliography__icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path
+              d="M8 4h8a2 2 0 0 1 2 2v14l-4-2-4 2-4-2-4 2V6a2 2 0 0 1 2-2Z"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M10 8h4M10 12h4"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
+          </svg>
+        </span>
         <div class="pf-index-bibliography__body">
           <span class="pf-index-bibliography__type">
             {typeLabels[index % typeLabels.length]}

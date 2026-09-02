@@ -1,47 +1,122 @@
 ---
 import ThemePicture from '../media/ThemePicture.astro'
-import PromotedPicture from '../media/PromotedPicture.astro'
 import {
-  HOME_GRAPH_BACKPLATE_ASSETS,
-  BRAND_MARK_ASSET_ID,
-} from '../../lib/media/promoted-media'
+  getResearchConstellationLegend,
+  getResearchConstellationNodes,
+} from '../../lib/page-family-empty-chrome'
+import { HOME_GRAPH_BACKPLATE_ASSETS } from '../../lib/media/promoted-media'
+import type { Locale } from '../../lib/navigation'
+
+interface Props {
+  locale: Locale
+  class?: string
+}
+
+const { locale, class: className = '' } = Astro.props
+const legend = getResearchConstellationLegend(locale)
+const nodes = getResearchConstellationNodes(locale)
+const centerNode = nodes[0]!
+const satelliteNodes = nodes.slice(1)
+const sectionLabel =
+  locale === 'en' ? 'Research constellation' : 'صورت‌فلکی پژوهشی'
 ---
 
 <div
-  class="pf-index-constellation"
+  class={['pf-index-constellation', className].filter(Boolean).join(' ')}
   data-visual-id="PageFamilyConstellationShell"
-  aria-hidden="true"
 >
-  <div class="pf-index-constellation__canvas">
-    <div class="pf-index-constellation__backplate">
-      <ThemePicture
-        lightAssetId={HOME_GRAPH_BACKPLATE_ASSETS.light}
-        darkAssetId={HOME_GRAPH_BACKPLATE_ASSETS.dark}
-        mediaSlot="home.graph.backplate"
-        imgClass="pf-index-constellation__backplate-img"
-      />
-    </div>
-    <div class="pf-index-constellation__center-mark">
-      <PromotedPicture
-        assetId={BRAND_MARK_ASSET_ID}
-        mediaSlot="brand.mark"
-        locale="en"
-        alt=""
-        imgClass="pf-index-constellation__mark"
-      />
-    </div>
-    <div class="pf-index-constellation__nodes">
-      <span class="pf-index-constellation__node pf-index-constellation__node--a"
-      ></span>
-      <span class="pf-index-constellation__node pf-index-constellation__node--b"
-      ></span>
-      <span
-        class="pf-index-constellation__node pf-index-constellation__node--center"
-      ></span>
-      <span class="pf-index-constellation__node pf-index-constellation__node--c"
-      ></span>
-      <span class="pf-index-constellation__node pf-index-constellation__node--d"
-      ></span>
+  <aside
+    class="pf-index-constellation__legend"
+    aria-label={sectionLabel}
+  >
+    <h2 class="pf-index-constellation__legend-title">{sectionLabel}</h2>
+    <ul class="pf-index-constellation__legend-list">
+      {
+        legend.map((item) => (
+          <li>
+            <span
+              class={[
+                'pf-index-constellation__legend-swatch',
+                `pf-index-constellation__legend-swatch--${item.tone}`,
+              ].join(' ')}
+              aria-hidden="true"
+            />
+            <span class="pf-index-constellation__legend-label">
+              {item.label}
+            </span>
+          </li>
+        ))
+      }
+    </ul>
+  </aside>
+
+  <div class="pf-index-constellation__diagram" aria-hidden="true">
+    <div class="pf-index-constellation__canvas">
+      <div class="pf-index-constellation__backplate">
+        <ThemePicture
+          lightAssetId={HOME_GRAPH_BACKPLATE_ASSETS.light}
+          darkAssetId={HOME_GRAPH_BACKPLATE_ASSETS.dark}
+          mediaSlot="home.graph.backplate"
+          imgClass="pf-index-constellation__backplate-img"
+        />
+      </div>
+
+      <svg
+        class="pf-index-constellation__svg"
+        viewBox="0 0 400 400"
+        role="img"
+        aria-label={sectionLabel}
+      >
+        <circle
+          class="pf-index-constellation__orbit pf-index-constellation__orbit--outer"
+          cx="200"
+          cy="200"
+          r="128"
+        />
+        <circle
+          class="pf-index-constellation__orbit pf-index-constellation__orbit--inner"
+          cx="200"
+          cy="200"
+          r="88"
+        />
+        {
+          satelliteNodes.map((node) => (
+            <line
+              class="pf-index-constellation__edge"
+              x1={centerNode.cx}
+              y1={centerNode.cy}
+              x2={node.cx}
+              y2={node.cy}
+            />
+          ))
+        }
+        {
+          nodes.map((node, index) => (
+            <g>
+              <circle
+                class={[
+                  'pf-index-constellation__node-dot',
+                  index === 0 ? 'pf-index-constellation__node-dot--center' : '',
+                  `pf-index-constellation__node-dot--${node.tone}`,
+                ]
+                  .filter(Boolean)
+                  .join(' ')}
+                cx={node.cx}
+                cy={node.cy}
+                r={index === 0 ? 14 : 8}
+              />
+              <text
+                class="pf-index-constellation__node-label"
+                x={node.cx}
+                y={node.cy + (index === 0 ? 28 : 22)}
+                text-anchor="middle"
+              >
+                {node.label}
+              </text>
+            </g>
+          ))
+        }
+      </svg>
     </div>
   </div>
 </div>

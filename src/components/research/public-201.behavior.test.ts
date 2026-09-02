@@ -27,10 +27,21 @@ describe('PUBLIC-201 research pages', () => {
     expect(html).toContain('Research')
     expect(html).toMatch(/<h1[\s>]/)
     expect(html).toMatch(/data-visual-id="PageFamilyIndexHero"/)
+    expect(html).toMatch(/Researcher · Engineer · Designer/)
+    expect(html).toMatch(/portal-orbit-light/)
+    expect(html).toMatch(/blog-coral-stairs/)
     expect(html).toMatch(/data-visual-id="PageFamilyConstellationShell"/)
+    expect(html).toMatch(/pf-index-constellation__legend/)
+    expect(html).toMatch(/pf-index-constellation__svg/)
     expect(html).toMatch(/data-visual-id="PageFamilyResearchFitShell"/)
-    expect(html).toMatch(/research-page__directions/)
-    expect(html).toMatch(/research-page__topics/)
+    expect(html).toMatch(
+      /data-visual-id="PageFamilyResearchDirectionsShell"/,
+    )
+    expect(html).toMatch(/data-visual-id="PageFamilySelectedPublicationsShell"/)
+    expect(html).toMatch(
+      /data-visual-id="PageFamilyBibliographyRowPlaceholder"/,
+    )
+    expect(html).toMatch(/research-page__band/)
   })
 
   it('renders topic cards when the index model is ready', async () => {

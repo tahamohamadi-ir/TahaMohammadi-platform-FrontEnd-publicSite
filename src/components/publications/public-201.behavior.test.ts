@@ -32,8 +32,11 @@ describe('PUBLIC-201 publications pages', () => {
       /data-visual-id="PageFamilyBibliographyRowPlaceholder"/,
     )
     expect(html).toMatch(/data-visual-id="PageFamilyPublicationsSidebarShell"/)
+    expect(html).toMatch(/Research interests/)
+    expect(html).toMatch(/pf-index-pub-sidebar__interest/)
     expect(html).toMatch(/data-visual-id="PageFamilySelectedPublicationsShell"/)
     expect(html).toMatch(/data-visual-id="PageFamilyCollaborateBandShell"/)
+    expect(html).toMatch(/collaborate on research/)
   })
 
   it('renders publication cards when the index model is ready', async () => {

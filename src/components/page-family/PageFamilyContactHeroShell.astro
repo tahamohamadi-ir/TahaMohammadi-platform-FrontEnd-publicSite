@@ -1,0 +1,75 @@
+---
+import ThemePicture from '../media/ThemePicture.astro'
+import { getContactHeroCopy } from '../../lib/page-family-empty-chrome'
+import {
+  GATEWAY_ATMOSPHERE_ASSETS,
+  HOME_HERO_ATMOSPHERE_ASSETS,
+} from '../../lib/media/project-mappings'
+import type { Locale } from '../../lib/navigation'
+
+interface Props {
+  locale: Locale
+  class?: string
+}
+
+const { locale, class: className = '' } = Astro.props
+const heroCopy = getContactHeroCopy(locale)
+---
+
+<section
+  class={['pf-index-contact-hero', className].filter(Boolean).join(' ')}
+  data-visual-id="PageFamilyContactHeroShell"
+  data-contact-portal-hero
+>
+  <div class="pf-index-contact-hero__copy">
+    <p class="pf-index-contact-hero__eyebrow">{heroCopy.eyebrow}</p>
+    <h1 class="pf-index-contact-hero__title">{heroCopy.title}</h1>
+    <p class="pf-index-contact-hero__summary">{heroCopy.summary}</p>
+    <p class="pf-index-contact-hero__availability">
+      <span class="pf-index-contact-hero__availability-icon" aria-hidden="true" />
+      <span>{heroCopy.availabilityLabel}</span>
+    </p>
+  </div>
+
+  <div class="pf-index-contact-hero__media" aria-hidden="true">
+    <div class="pf-index-contact-hero__orbit">
+      <ThemePicture
+        lightAssetId={HOME_HERO_ATMOSPHERE_ASSETS.light}
+        darkAssetId={HOME_HERO_ATMOSPHERE_ASSETS.dark}
+        mediaSlot="home.hero.atmosphere"
+        imgClass="pf-index-contact-hero__orbit-img"
+      />
+    </div>
+    <div class="pf-index-contact-hero__portal" data-contact-portal-pulse>
+      <ThemePicture
+        lightAssetId={GATEWAY_ATMOSPHERE_ASSETS.light}
+        darkAssetId={GATEWAY_ATMOSPHERE_ASSETS.dark}
+        mediaSlot="gateway.atmosphere"
+        imgClass="pf-index-contact-hero__portal-img"
+      />
+      <span class="pf-index-contact-hero__portal-glow pf-index-contact-hero__portal-glow--pulse" />
+    </div>
+  </div>
+</section>
+
+<script>
+  import gsap from 'gsap'
+
+  const portal = document.querySelector('[data-contact-portal-pulse]')
+  const glow = portal?.querySelector('.pf-index-contact-hero__portal-glow')
+
+  if (
+    portal &&
+    glow &&
+    !window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  ) {
+    gsap.to(glow, {
+      opacity: 0.35,
+      scale: 1.08,
+      duration: 2.4,
+      ease: 'sine.inOut',
+      yoyo: true,
+      repeat: -1,
+    })
+  }
+</script>

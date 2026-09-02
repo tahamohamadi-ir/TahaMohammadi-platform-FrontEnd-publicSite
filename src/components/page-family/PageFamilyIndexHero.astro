@@ -1,12 +1,15 @@
 ---
 import SectionLead from '../ui/SectionLead.astro'
+import Button from '../ui/Button.astro'
 import PromotedPicture from '../media/PromotedPicture.astro'
 import ThemePicture from '../media/ThemePicture.astro'
+import PageFamilyWireframeOverlay from './PageFamilyWireframeOverlay.astro'
 import {
   getPageFamilyHeroMedia,
   getPageFamilyDecorativeAlt,
   type PageFamilyChromeId,
 } from '../../lib/page-family-empty-chrome'
+import { HOME_HERO_ATMOSPHERE_ASSETS } from '../../lib/media/promoted-media'
 import type { Locale } from '../../lib/navigation'
 
 interface Props {
@@ -15,7 +18,10 @@ interface Props {
   eyebrow?: string
   title: string
   summary?: string
+  roleLine?: string
+  atmosphere?: boolean
   portal?: boolean
+  browseCtaLabel?: string
   class?: string
 }
 
@@ -25,7 +31,10 @@ const {
   eyebrow,
   title,
   summary,
+  roleLine,
+  atmosphere = false,
   portal = false,
+  browseCtaLabel,
   class: className = '',
 } = Astro.props
 const heroMedia = getPageFamilyHeroMedia(family)
@@ -36,6 +45,7 @@ const decorativeAlt = getPageFamilyDecorativeAlt(locale, family)
   class={[
     'pf-index-hero',
     portal ? 'pf-index-hero--portal' : '',
+    atmosphere ? 'pf-index-hero--atmosphere' : '',
     `pf-index-hero--${family}`,
     className,
   ]
@@ -45,6 +55,20 @@ const decorativeAlt = getPageFamilyDecorativeAlt(locale, family)
   data-page-family={family}
 >
   {
+    atmosphere ? (
+      <div class="pf-index-hero__atmosphere" aria-hidden="true">
+        <ThemePicture
+          lightAssetId={HOME_HERO_ATMOSPHERE_ASSETS.light}
+          darkAssetId={HOME_HERO_ATMOSPHERE_ASSETS.dark}
+          mediaSlot="home.hero.atmosphere"
+          imgClass="pf-index-hero__atmosphere-img"
+        />
+        <div class="pf-index-hero__scrim" />
+      </div>
+    ) : null
+  }
+
+  {
     portal && heroMedia.kind === 'theme' ? (
       <div class="pf-index-hero__media" aria-hidden="true">
         <ThemePicture
@@ -53,6 +77,7 @@ const decorativeAlt = getPageFamilyDecorativeAlt(locale, family)
           mediaSlot={heroMedia.mediaSlot}
           imgClass="pf-index-hero__image"
         />
+        {family === 'creative' ? <PageFamilyWireframeOverlay /> : null}
       </div>
     ) : null
   }
@@ -66,6 +91,17 @@ const decorativeAlt = getPageFamilyDecorativeAlt(locale, family)
       titleScale="display"
       class="pf-index-hero__lead"
     />
+    {roleLine ? <p class="pf-index-hero__role">{roleLine}</p> : null}
+    {
+      browseCtaLabel ? (
+        <Button
+          label={browseCtaLabel}
+          variant="secondary"
+          disabled
+          class="pf-index-hero__browse-cta"
+        />
+      ) : null
+    }
   </div>
 
   {

@@ -3,9 +3,15 @@ import CollectionIndexTemplate from '../templates/CollectionIndexTemplate.astro'
 import PageFamilyIndexHero from '../page-family/PageFamilyIndexHero.astro'
 import PageFamilyConstellationShell from '../page-family/PageFamilyConstellationShell.astro'
 import PageFamilyResearchFitShell from '../page-family/PageFamilyResearchFitShell.astro'
-import PageFamilyContentRowPlaceholder from '../page-family/PageFamilyContentRowPlaceholder.astro'
+import PageFamilyResearchDirectionsShell from '../page-family/PageFamilyResearchDirectionsShell.astro'
+import PageFamilySelectedPublicationsShell from '../page-family/PageFamilySelectedPublicationsShell.astro'
+import PageFamilyBibliographyRowPlaceholder from '../page-family/PageFamilyBibliographyRowPlaceholder.astro'
 import ContentState from '../state/ContentState.astro'
 import Link from '../ui/Link.astro'
+import {
+  getGatewayRoleLine,
+  getCmsPlaceholderCopy,
+} from '../../lib/page-family-empty-chrome'
 import {
   getResearchEmptyTopicsCopy,
   getResearchRouteTitle,
@@ -23,6 +29,8 @@ interface Props {
 const { locale, model } = Astro.props
 const routeTitle = getResearchRouteTitle(locale)
 const emptyCopy = getResearchUnavailableCopy(locale)
+const roleLine = getGatewayRoleLine(locale)
+const cmsPlaceholder = getCmsPlaceholderCopy(locale)
 const tabLabels =
   locale === 'en'
     ? {
@@ -52,6 +60,9 @@ const tabLabels =
         family="research"
         eyebrow={locale === 'en' ? 'Research profile' : 'پروفایل پژوهشی'}
         title={routeTitle}
+        summary={cmsPlaceholder}
+        roleLine={roleLine}
+        atmosphere
       />
 
       <div
@@ -63,7 +74,7 @@ const tabLabels =
       >
         <button
           type="button"
-          class="pf-index-empty__filter-chip"
+          class="pf-index-empty__filter-chip pf-index-empty__filter-chip--active"
           role="tab"
           aria-selected="true"
           disabled
@@ -106,57 +117,23 @@ const tabLabels =
 
       <div
         slot="records"
-        class="research-page__grid-shell pf-index-empty__shell"
+        class="research-page__sections pf-index-empty__shell"
       >
-        <section
-          class="research-page__constellation"
-          aria-labelledby="research-constellation-title"
-        >
-          <h2
-            id="research-constellation-title"
-            class="research-page__section-title"
-          >
-            {locale === 'en' ? 'Research constellation' : 'صورت‌فلکی پژوهشی'}
-          </h2>
-          <PageFamilyConstellationShell />
+        <section class="research-page__band research-page__band--constellation">
+          <PageFamilyConstellationShell locale={locale} />
         </section>
 
-        <PageFamilyResearchFitShell locale={locale} />
-
-        <section
-          class="research-page__directions"
-          aria-labelledby="research-directions-empty-title"
-        >
-          <h2
-            id="research-directions-empty-title"
-            class="research-page__section-title"
-          >
-            {locale === 'en' ? 'Research directions' : 'جهت‌های پژوهشی'}
-          </h2>
-          <PageFamilyContentRowPlaceholder
-            locale={locale}
-            family="research"
-            count={3}
-            variant="direction"
-          />
+        <section class="research-page__band research-page__band--fit">
+          <PageFamilyResearchFitShell locale={locale} />
         </section>
 
-        <section
-          class="research-page__topics"
-          aria-labelledby="research-topics-empty-title"
-        >
-          <h2
-            id="research-topics-empty-title"
-            class="research-page__section-title"
-          >
-            {locale === 'en' ? 'Focus areas' : 'حوزه‌های تمرکز'}
-          </h2>
-          <PageFamilyContentRowPlaceholder
-            locale={locale}
-            family="research"
-            count={2}
-            variant="direction"
-          />
+        <section class="research-page__band research-page__band--directions">
+          <PageFamilyResearchDirectionsShell locale={locale} />
+        </section>
+
+        <section class="research-page__band research-page__band--publications">
+          <PageFamilySelectedPublicationsShell locale={locale} count={3} />
+          <PageFamilyBibliographyRowPlaceholder locale={locale} count={3} />
         </section>
 
         <ContentState
@@ -177,12 +154,14 @@ const tabLabels =
         eyebrow={locale === 'en' ? 'Research profile' : 'پروفایل پژوهشی'}
         title={routeTitle}
         summary={model.statement?.title ?? undefined}
+        roleLine={roleLine}
+        atmosphere
       />
 
       {model.statement ? (
         <section
           slot="records"
-          class="research-page__statement"
+          class="research-page__statement research-page__band"
           aria-labelledby="research-statement-title"
         >
           <h2
@@ -202,7 +181,7 @@ const tabLabels =
       {model.topics.length ? (
         <section
           slot="records"
-          class="research-page__topics"
+          class="research-page__topics research-page__band"
           aria-labelledby="research-topics-title"
         >
           <h2 id="research-topics-title" class="research-page__section-title">
@@ -241,7 +220,7 @@ const tabLabels =
       {model.projects.length ? (
         <section
           slot="records"
-          class="research-page__systems"
+          class="research-page__systems research-page__band"
           aria-labelledby="research-systems-title"
         >
           <h2 id="research-systems-title" class="research-page__section-title">

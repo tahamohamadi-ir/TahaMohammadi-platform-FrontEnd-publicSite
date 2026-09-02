@@ -51,6 +51,7 @@ const filterLabels =
         family="publications"
         eyebrow={locale === 'en' ? 'Bibliography' : 'فهرست خروجی‌ها'}
         title={publicationsRouteTitle[locale]}
+        atmosphere
       />
 
       <div
@@ -99,6 +100,7 @@ const filterLabels =
           <PageFamilyCollaborateBandShell
             locale={locale}
             variant="collaborate-only"
+            context="publications"
           />
           <ContentState
             variant="empty"
@@ -118,6 +120,7 @@ const filterLabels =
         family="publications"
         eyebrow={locale === 'en' ? 'Bibliography' : 'فهرست خروجی‌ها'}
         title={publicationsRouteTitle[locale]}
+        atmosphere
       />
 
       <ul slot="records" class="publications-page__list">
