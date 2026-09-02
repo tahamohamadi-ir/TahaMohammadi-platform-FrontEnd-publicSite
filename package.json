@@ -24,6 +24,8 @@
     "test:nojs": "playwright test --grep @nojs",
     "test:smoke": "playwright test --config playwright.staging.config.ts --grep @smoke",
     "report:visual-compare": "node scripts/generate-visual-compare-report.mjs",
+    "report:signoff-hashes": "node scripts/extract-visual-signoff-hashes.mjs",
+    "extract:visual-hashes": "node scripts/extract-visual-signoff-hashes.mjs",
     "review:visual": "node scripts/review-visual.mjs",
     "build:atlas": "set \"DESIGN_ATLAS=1\"&& astro build"
   },

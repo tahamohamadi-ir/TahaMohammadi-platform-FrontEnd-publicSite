@@ -68,21 +68,24 @@ Compare each implementation screenshot against the matching concept at the same 
 | `src/public-270.page-family-visual.test.ts`        | Vitest guard: checklist exists and PF route map matches contract      |
 | `scripts/page-family-visual-compare.mjs`           | Canonical capture → concept reference mapping (PF-01..PF-08 + home)   |
 | `scripts/generate-visual-compare-report.mjs`       | HTML side-by-side owner compare report from existing PNGs             |
+| `scripts/extract-visual-signoff-hashes.mjs`        | Markdown/JSON/TSV SHA-256 table for QA §4 paste (does not auto-approve) |
 | `src/test-harness/responsive-matrix-widths.ts`     | Shared width constants for PUBLIC-270/280                             |
 | `npm run test:visual -- --grep PUBLIC-270`         | Runs only PUBLIC-270 capture stubs                                    |
 | `npm run report:visual-compare`                    | Generates `test-results/visual/compare-report.html` (no new captures) |
+| `npm run report:signoff-hashes`                    | Prints §4 sign-off markdown table from local PNGs (alias: `extract:visual-hashes`; add `-- --ready-only` for concept pairs) |
 
 ---
 
 ## Owner visual compare workflow (does not close PUBLIC-190)
 
-1. Regenerate captures (if missing or stale):
+1. Regenerate captures (if missing or stale). From repo root: `cd Front-End/public-site` first. When your shell is already in `Front-End/public-site`, run commands below directly (no nested `cd`):
 
    ```powershell
-   cd Front-End/public-site
    npm run build
    npm run test:visual -- --grep PUBLIC-270
    ```
+
+   One command (build + captures + compare report): `npm run review:visual`
 
 2. Optional home/gateway captures (WP-40):
 
@@ -98,7 +101,15 @@ Compare each implementation screenshot against the matching concept at the same 
 
    Open `test-results/visual/compare-report.html` in a browser. The report pairs each `public-270-*.png` capture with its concept reference under `Docs/references/frontend-design-authority/concepts/page-families/`, and WP-40 home captures with `concepts/home-*.png`. SHA-256 hashes are shown for owner sign-off in `Docs/10-tracking/PUBLIC-190-VISUAL-QA.md`.
 
-4. Override design authority root when not in the coordination workspace:
+4. Print §4 paste table (after manual review — does **not** change verdict):
+
+   ```powershell
+   npm run report:signoff-hashes
+   npm run report:signoff-hashes -- --ready-only
+   npm run report:signoff-hashes -- --from-report
+   ```
+
+5. Override design authority root when not in the coordination workspace:
 
    ```powershell
    $env:DESIGN_AUTHORITY_ROOT = "D:\path\to\frontend-design-authority"

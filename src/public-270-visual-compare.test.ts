@@ -14,6 +14,10 @@ const reportScriptPath = path.join(
   repositoryRoot,
   'scripts/generate-visual-compare-report.mjs',
 )
+const hashExtractScriptPath = path.join(
+  repositoryRoot,
+  'scripts/extract-visual-signoff-hashes.mjs',
+)
 const checklistPath = path.join(
   repositoryRoot,
   'docs/quality/PUBLIC-270-PAGE-FAMILY-VISUAL-EVIDENCE.md',
@@ -108,11 +112,21 @@ describe('PUBLIC-270 visual compare owner assist', () => {
     expect(source).toContain('buildHomeCompareRows')
   })
 
+  it('ships the SHA-256 extract helper without claiming acceptance', () => {
+    expect(existsSync(hashExtractScriptPath)).toBe(true)
+    const source = readFileSync(hashExtractScriptPath, 'utf8')
+    expect(source).toContain('Does NOT auto-approve')
+    expect(source).toContain('buildPublic270CompareRows')
+    expect(source).toContain('buildHomeCompareRows')
+  })
+
   it('documents the owner compare workflow in the evidence checklist', () => {
     expect(existsSync(checklistPath)).toBe(true)
     const checklist = readFileSync(checklistPath, 'utf8')
     expect(checklist).toContain('report:visual-compare')
+    expect(checklist).toContain('report:signoff-hashes')
     expect(checklist).toContain('generate-visual-compare-report.mjs')
+    expect(checklist).toContain('extract-visual-signoff-hashes.mjs')
     expect(checklist).toContain('does **not** close `PUBLIC-190`')
   })
 })
