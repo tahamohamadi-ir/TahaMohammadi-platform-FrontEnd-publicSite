@@ -15,22 +15,99 @@ interface Props {
 }
 
 const { locale, model } = Astro.props
-const homeHref = localePath(locale)
+const emptyCopy = getPublicationsUnavailableCopy(locale)
+const filterLabels =
+  locale === 'en'
+    ? {
+        region: 'Publication filters',
+        allOutputs: 'All outputs',
+        journal: 'Journal',
+        conference: 'Conference',
+        chapter: 'Book chapter',
+        report: 'Report',
+        search: 'Search publications…',
+      }
+    : {
+        region: 'پالایش خروجی‌ها',
+        allOutputs: 'همه خروجی‌ها',
+        journal: 'مجله',
+        conference: 'کنفرانس',
+        chapter: 'فصل کتاب',
+        report: 'گزارش',
+        search: 'جستجوی انتشارات…',
+      }
 ---
 
 {
   model.status === 'unavailable' ? (
-    <div class="publications-page publications-page--unavailable">
-      <ContentState
-        variant="unavailable"
-        locale={locale}
-        headingLevel="h1"
-        title={getPublicationsUnavailableCopy(locale).title}
-        message={getPublicationsUnavailableCopy(locale).message}
-        actionLabel={locale === 'en' ? 'Back to home' : 'بازگشت به صفحهٔ اصلی'}
-        actionHref={homeHref}
+    <CollectionIndexTemplate class="publications-page publications-page--empty">
+      <SectionLead
+        slot="lead"
+        eyebrow={locale === 'en' ? 'Bibliography' : 'فهرست خروجی‌ها'}
+        title={publicationsRouteTitle[locale]}
       />
-    </div>
+
+      <div
+        slot="filters"
+        class="publications-page__filters pf-index-empty__filters"
+        role="group"
+        aria-label={filterLabels.region}
+        aria-disabled="true"
+      >
+        <p class="publications-page__filters-active">
+          {filterLabels.allOutputs}
+        </p>
+        <div class="publications-page__filters-controls">
+          <button type="button" class="pf-index-empty__filter-chip" disabled>
+            {filterLabels.journal}
+          </button>
+          <button type="button" class="pf-index-empty__filter-chip" disabled>
+            {filterLabels.conference}
+          </button>
+          <button type="button" class="pf-index-empty__filter-chip" disabled>
+            {filterLabels.chapter}
+          </button>
+          <button type="button" class="pf-index-empty__filter-chip" disabled>
+            {filterLabels.report}
+          </button>
+        </div>
+        <input
+          type="search"
+          class="publications-page__search pf-index-empty__search"
+          placeholder={filterLabels.search}
+          disabled
+          aria-hidden="true"
+          tabindex="-1"
+        />
+      </div>
+
+      <div
+        slot="records"
+        class="publications-page__grid-shell pf-index-empty__shell"
+      >
+        <div class="pf-index-empty__list-placeholder" aria-hidden="true">
+          <span class="pf-index-empty__row-placeholder">
+            <span class="pf-index-empty__line pf-index-empty__line--short" />
+            <span class="pf-index-empty__line pf-index-empty__line--medium" />
+          </span>
+          <span class="pf-index-empty__row-placeholder">
+            <span class="pf-index-empty__line pf-index-empty__line--short" />
+            <span class="pf-index-empty__line pf-index-empty__line--medium" />
+          </span>
+          <span class="pf-index-empty__row-placeholder">
+            <span class="pf-index-empty__line pf-index-empty__line--short" />
+            <span class="pf-index-empty__line pf-index-empty__line--medium" />
+          </span>
+        </div>
+        <ContentState
+          variant="empty"
+          locale={locale}
+          headingLevel="h2"
+          title={emptyCopy.title}
+          message={emptyCopy.message}
+        />
+      </div>
+    </CollectionIndexTemplate>
   ) : (
     <CollectionIndexTemplate class="publications-page">
       <SectionLead

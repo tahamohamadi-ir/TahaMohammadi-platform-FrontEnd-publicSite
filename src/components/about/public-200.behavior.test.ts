@@ -16,15 +16,17 @@ async function render(
 }
 
 describe('PUBLIC-200 about page', () => {
-  it('renders unavailable ContentState when the profile is not published', async () => {
+  it('renders structural empty-state chrome when the profile is not published', async () => {
     const html = await render(AboutPageContent, {
       locale: 'en',
       model: { status: 'unavailable' },
     })
-    expect(html).toMatch(/data-state-variant="unavailable"/)
+    expect(html).toMatch(/data-visual-id="AboutContactUtilityTemplate"/)
+    expect(html).toMatch(/data-state-variant="empty"/)
     expect(html).toContain('About')
-    expect(html).toMatch(/href="\/en\/"/)
     expect(html).toMatch(/<h1[\s>]/)
+    expect(html).toMatch(/about-page__section/)
+    expect(html).toMatch(/pf-index-empty__timeline-placeholder/)
   })
 
   it('renders profile sections with anchor ids when ready', async () => {

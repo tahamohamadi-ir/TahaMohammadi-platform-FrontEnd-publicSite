@@ -14,7 +14,7 @@ import {
   parseContactFormState,
   type ContactPageModel,
 } from '../../lib/contact-content'
-import { localePath, type Locale } from '../../lib/navigation'
+import { type Locale } from '../../lib/navigation'
 
 interface Props {
   locale: Locale
@@ -22,25 +22,144 @@ interface Props {
 }
 
 const { locale, model } = Astro.props
-const homeHref = localePath(locale)
+const emptyCopy = getContactUnavailableCopy(locale)
 const formState = parseContactFormState(Astro.url.searchParams)
-const formAction = getContactFormActionUrl()
-const labels = contactFormCopy.detailLabels
+const topicLabels =
+  locale === 'en'
+    ? {
+        region: 'Discussion topics',
+        phd: 'PhD / Research',
+        technical: 'Technical work',
+        creative: 'Creative work',
+        other: 'Other',
+        details: 'Contact details',
+        email: 'Academic email',
+        linkedin: 'LinkedIn',
+        orcid: 'ORCID',
+      }
+    : {
+        region: 'موضوعات گفتگو',
+        phd: 'دکتری / پژوهش',
+        technical: 'کار فنی',
+        creative: 'کار خلاقه',
+        other: 'سایر',
+        details: 'اطلاعات تماس',
+        email: 'ایمیل آکادمیک',
+        linkedin: 'لینکدین',
+        orcid: 'ORCID',
+      }
 ---
 
 {
   model.status === 'unavailable' ? (
-    <div class="contact-page contact-page--unavailable">
-      <ContentState
-        variant="unavailable"
-        locale={locale}
-        headingLevel="h1"
-        title={getContactUnavailableCopy(locale).title}
-        message={getContactUnavailableCopy(locale).message}
-        actionLabel={locale === 'en' ? 'Back to home' : 'بازگشت به صفحهٔ اصلی'}
-        actionHref={homeHref}
+    <AboutContactUtilityTemplate class="contact-page contact-page--empty">
+      <SectionLead
+        slot="lead"
+        eyebrow={locale === 'en' ? 'Connect' : 'ارتباط'}
+        title={getContactRouteTitle(locale)}
       />
-    </div>
+
+      <div slot="records" class="contact-page__sections pf-index-empty__shell">
+        <div
+          class="contact-page__topics"
+          role="group"
+          aria-label={topicLabels.region}
+          aria-disabled="true"
+        >
+          <button type="button" class="pf-index-empty__topic-chip" disabled>
+            {topicLabels.phd}
+          </button>
+          <button type="button" class="pf-index-empty__topic-chip" disabled>
+            {topicLabels.technical}
+          </button>
+          <button type="button" class="pf-index-empty__topic-chip" disabled>
+            {topicLabels.creative}
+          </button>
+          <button type="button" class="pf-index-empty__topic-chip" disabled>
+            {topicLabels.other}
+          </button>
+        </div>
+
+        <section
+          class="contact-page__section"
+          aria-labelledby="contact-details-empty-title"
+        >
+          <h2
+            id="contact-details-empty-title"
+            class="contact-page__section-title"
+          >
+            {topicLabels.details}
+          </h2>
+          <dl class="contact-page__details pf-index-empty__details-placeholder">
+            <div class="contact-page__detail-row">
+              <dt>{topicLabels.email}</dt>
+              <dd>
+                <span class="pf-index-empty__line pf-index-empty__line--medium" />
+              </dd>
+            </div>
+            <div class="contact-page__detail-row">
+              <dt>{topicLabels.linkedin}</dt>
+              <dd>
+                <span class="pf-index-empty__line pf-index-empty__line--medium" />
+              </dd>
+            </div>
+            <div class="contact-page__detail-row">
+              <dt>{topicLabels.orcid}</dt>
+              <dd>
+                <span class="pf-index-empty__line pf-index-empty__line--medium" />
+              </dd>
+            </div>
+          </dl>
+        </section>
+
+        <section
+          class="contact-page__section"
+          aria-labelledby="contact-form-empty-title"
+        >
+          <h2 id="contact-form-empty-title" class="contact-page__section-title">
+            {contactFormCopy.formIntro[locale]}
+          </h2>
+
+          <form class="contact-page__form" aria-disabled="true">
+            <Input
+              id="contact-name-empty"
+              name="name"
+              label={contactFormCopy.nameLabel[locale]}
+              disabled
+            />
+            <Input
+              id="contact-email-empty"
+              name="email"
+              type="email"
+              label={contactFormCopy.emailLabel[locale]}
+              disabled
+            />
+            <Textarea
+              id="contact-message-empty"
+              name="message"
+              label={contactFormCopy.messageLabel[locale]}
+              rows={6}
+              disabled
+            />
+            <div class="contact-page__form-actions">
+              <Button
+                type="button"
+                label={contactFormCopy.sendLabel[locale]}
+                disabled
+              />
+            </div>
+          </form>
+        </section>
+
+        <ContentState
+          variant="empty"
+          locale={locale}
+          headingLevel="h2"
+          title={emptyCopy.title}
+          message={emptyCopy.message}
+        />
+      </div>
+    </AboutContactUtilityTemplate>
   ) : (
     <AboutContactUtilityTemplate class="contact-page">
       <SectionLead
@@ -87,7 +206,7 @@ const labels = contactFormCopy.detailLabels
             <dl class="contact-page__details">
               {model.contact.email ? (
                 <div class="contact-page__detail-row">
-                  <dt>{labels.email[locale]}</dt>
+                  <dt>{contactFormCopy.detailLabels.email[locale]}</dt>
                   <dd>
                     <a href={`mailto:${model.contact.email}`} dir="ltr">
                       {model.contact.email}
@@ -97,7 +216,7 @@ const labels = contactFormCopy.detailLabels
               ) : null}
               {model.contact.linkedin ? (
                 <div class="contact-page__detail-row">
-                  <dt>{labels.linkedin[locale]}</dt>
+                  <dt>{contactFormCopy.detailLabels.linkedin[locale]}</dt>
                   <dd>
                     <a
                       href={model.contact.linkedin}
@@ -111,7 +230,7 @@ const labels = contactFormCopy.detailLabels
               ) : null}
               {model.contact.orcid ? (
                 <div class="contact-page__detail-row">
-                  <dt>{labels.orcid[locale]}</dt>
+                  <dt>{contactFormCopy.detailLabels.orcid[locale]}</dt>
                   <dd>
                     <a
                       href={model.contact.orcid}
@@ -125,7 +244,7 @@ const labels = contactFormCopy.detailLabels
               ) : null}
               {model.contact.employer ? (
                 <div class="contact-page__detail-row">
-                  <dt>{labels.employer[locale]}</dt>
+                  <dt>{contactFormCopy.detailLabels.employer[locale]}</dt>
                   <dd>
                     {model.contact.employerUrl ? (
                       <a
@@ -142,7 +261,7 @@ const labels = contactFormCopy.detailLabels
               ) : null}
               {model.contact.location ? (
                 <div class="contact-page__detail-row">
-                  <dt>{labels.location[locale]}</dt>
+                  <dt>{contactFormCopy.detailLabels.location[locale]}</dt>
                   <dd>{model.contact.location}</dd>
                 </div>
               ) : null}
@@ -162,7 +281,7 @@ const labels = contactFormCopy.detailLabels
             <form
               class="contact-page__form"
               method="post"
-              action={formAction}
+              action={getContactFormActionUrl()}
               data-contact-form
               novalidate
             >

@@ -17,14 +17,17 @@ async function render(
 }
 
 describe('PUBLIC-220 teaching pages', () => {
-  it('renders unavailable ContentState on the teaching index', async () => {
+  it('renders structural empty-state chrome on the teaching index', async () => {
     const html = await render(TeachingPageContent, {
       locale: 'en',
       model: { status: 'unavailable' },
     })
-    expect(html).toMatch(/data-state-variant="unavailable"/)
+    expect(html).toMatch(/data-visual-id="CollectionIndexTemplate"/)
+    expect(html).toMatch(/data-state-variant="empty"/)
     expect(html).toContain('Teaching')
     expect(html).toMatch(/<h1[\s>]/)
+    expect(html).toMatch(/teaching-page__filters/)
+    expect(html).toMatch(/pf-index-empty__list-placeholder/)
   })
 
   it('renders course and talk cards when the index model is ready', async () => {

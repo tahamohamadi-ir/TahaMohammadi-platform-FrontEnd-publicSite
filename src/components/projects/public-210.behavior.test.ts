@@ -17,14 +17,18 @@ async function render(
 }
 
 describe('PUBLIC-210 projects pages', () => {
-  it('renders unavailable ContentState on the projects index', async () => {
+  it('renders structural empty-state chrome on the projects index', async () => {
     const html = await render(ProjectsPageContent, {
       locale: 'en',
       model: { status: 'unavailable' },
     })
-    expect(html).toMatch(/data-state-variant="unavailable"/)
+    expect(html).toMatch(/data-visual-id="CollectionIndexTemplate"/)
+    expect(html).toMatch(/data-state-variant="empty"/)
     expect(html).toContain('Projects')
     expect(html).toMatch(/<h1[\s>]/)
+    expect(html).toMatch(/projects-page__filters/)
+    expect(html).toMatch(/pf-index-empty__list-placeholder/)
+    expect(html).toContain('Published projects are not available yet.')
   })
 
   it('renders project cards when the index model is ready', async () => {

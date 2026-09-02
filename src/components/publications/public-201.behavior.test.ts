@@ -17,14 +17,17 @@ async function render(
 }
 
 describe('PUBLIC-201 publications pages', () => {
-  it('renders unavailable ContentState on the publications index', async () => {
+  it('renders structural empty-state chrome on the publications index', async () => {
     const html = await render(PublicationsPageContent, {
       locale: 'en',
       model: { status: 'unavailable' },
     })
-    expect(html).toMatch(/data-state-variant="unavailable"/)
+    expect(html).toMatch(/data-visual-id="CollectionIndexTemplate"/)
+    expect(html).toMatch(/data-state-variant="empty"/)
     expect(html).toContain('Research Outputs')
     expect(html).toMatch(/<h1[\s>]/)
+    expect(html).toMatch(/publications-page__filters/)
+    expect(html).toMatch(/pf-index-empty__list-placeholder/)
   })
 
   it('renders publication cards when the index model is ready', async () => {

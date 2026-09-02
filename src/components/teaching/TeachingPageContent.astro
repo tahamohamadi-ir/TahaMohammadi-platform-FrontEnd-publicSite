@@ -17,22 +17,102 @@ interface Props {
 }
 
 const { locale, model } = Astro.props
-const homeHref = localePath(locale)
+const emptyCopy = getTeachingUnavailableCopy(locale)
+const filterLabels =
+  locale === 'en'
+    ? {
+        region: 'Learning filters',
+        allPaths: 'All',
+        guides: 'Guides',
+        tutorials: 'Tutorials',
+        notes: 'Notes',
+        paths: 'Reading paths',
+        resources: 'Resources',
+        search: 'Search learning…',
+      }
+    : {
+        region: 'پالایش یادگیری',
+        allPaths: 'همه',
+        guides: 'راهنماها',
+        tutorials: 'آموزش‌ها',
+        notes: 'یادداشت‌ها',
+        paths: 'مسیرهای مطالعه',
+        resources: 'منابع',
+        search: 'جستجوی یادگیری…',
+      }
 ---
 
 {
   model.status === 'unavailable' ? (
-    <div class="teaching-page teaching-page--unavailable">
-      <ContentState
-        variant="unavailable"
-        locale={locale}
-        headingLevel="h1"
-        title={getTeachingUnavailableCopy(locale).title}
-        message={getTeachingUnavailableCopy(locale).message}
-        actionLabel={locale === 'en' ? 'Back to home' : 'بازگشت به صفحهٔ اصلی'}
-        actionHref={homeHref}
+    <CollectionIndexTemplate class="teaching-page teaching-page--empty">
+      <SectionLead
+        slot="lead"
+        eyebrow={locale === 'en' ? 'Courses & talks' : 'دوره‌ها و سخنرانی‌ها'}
+        title={getTeachingRouteTitle(locale)}
       />
-    </div>
+
+      <div
+        slot="filters"
+        class="teaching-page__filters pf-index-empty__filters"
+        role="group"
+        aria-label={filterLabels.region}
+        aria-disabled="true"
+      >
+        <p class="teaching-page__filters-active">{filterLabels.allPaths}</p>
+        <div class="teaching-page__filters-controls">
+          <button type="button" class="pf-index-empty__filter-chip" disabled>
+            {filterLabels.guides}
+          </button>
+          <button type="button" class="pf-index-empty__filter-chip" disabled>
+            {filterLabels.tutorials}
+          </button>
+          <button type="button" class="pf-index-empty__filter-chip" disabled>
+            {filterLabels.notes}
+          </button>
+          <button type="button" class="pf-index-empty__filter-chip" disabled>
+            {filterLabels.paths}
+          </button>
+          <button type="button" class="pf-index-empty__filter-chip" disabled>
+            {filterLabels.resources}
+          </button>
+        </div>
+        <input
+          type="search"
+          class="teaching-page__search pf-index-empty__search"
+          placeholder={filterLabels.search}
+          disabled
+          aria-hidden="true"
+          tabindex="-1"
+        />
+      </div>
+
+      <div
+        slot="records"
+        class="teaching-page__grid-shell pf-index-empty__shell"
+      >
+        <div class="pf-index-empty__list-placeholder" aria-hidden="true">
+          <span class="pf-index-empty__row-placeholder">
+            <span class="pf-index-empty__line pf-index-empty__line--short" />
+            <span class="pf-index-empty__line pf-index-empty__line--medium" />
+          </span>
+          <span class="pf-index-empty__row-placeholder">
+            <span class="pf-index-empty__line pf-index-empty__line--short" />
+            <span class="pf-index-empty__line pf-index-empty__line--medium" />
+          </span>
+          <span class="pf-index-empty__row-placeholder">
+            <span class="pf-index-empty__line pf-index-empty__line--short" />
+            <span class="pf-index-empty__line pf-index-empty__line--medium" />
+          </span>
+        </div>
+        <ContentState
+          variant="empty"
+          locale={locale}
+          headingLevel="h2"
+          title={emptyCopy.title}
+          message={emptyCopy.message}
+        />
+      </div>
+    </CollectionIndexTemplate>
   ) : (
     <CollectionIndexTemplate class="teaching-page">
       <SectionLead

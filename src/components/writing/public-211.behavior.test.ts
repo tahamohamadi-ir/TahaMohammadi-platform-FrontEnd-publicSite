@@ -17,14 +17,17 @@ async function render(
 }
 
 describe('PUBLIC-211/212 writing pages', () => {
-  it('renders unavailable ContentState on the writing index', async () => {
+  it('renders structural empty-state chrome on the writing index', async () => {
     const html = await render(WritingPageContent, {
       locale: 'en',
       model: { status: 'unavailable' },
     })
-    expect(html).toMatch(/data-state-variant="unavailable"/)
+    expect(html).toMatch(/data-visual-id="CollectionIndexTemplate"/)
+    expect(html).toMatch(/data-state-variant="empty"/)
     expect(html).toContain('Writing')
     expect(html).toMatch(/<h1[\s>]/)
+    expect(html).toMatch(/writing-page__filters/)
+    expect(html).toMatch(/pf-index-empty__list-placeholder/)
   })
 
   it('renders article and book sections when the index model is ready', async () => {

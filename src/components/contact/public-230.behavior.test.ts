@@ -17,14 +17,17 @@ async function render(
 }
 
 describe('PUBLIC-230 contact page', () => {
-  it('renders unavailable ContentState when contact details are absent', async () => {
+  it('renders structural empty-state chrome when contact details are absent', async () => {
     const html = await render(ContactPageContent, {
       locale: 'en',
       model: { status: 'unavailable' },
     })
-    expect(html).toMatch(/data-state-variant="unavailable"/)
+    expect(html).toMatch(/data-visual-id="AboutContactUtilityTemplate"/)
+    expect(html).toMatch(/data-state-variant="empty"/)
     expect(html).toContain('Contact')
     expect(html).toMatch(/<h1[\s>]/)
+    expect(html).toMatch(/contact-page__topics/)
+    expect(html).not.toMatch(/data-contact-form/)
   })
 
   it('renders owner-published contact details and noscript form fields', async () => {
@@ -76,14 +79,17 @@ describe('PUBLIC-230 contact page', () => {
 })
 
 describe('PUBLIC-230 cv page', () => {
-  it('renders unavailable ContentState when downloads are absent', async () => {
+  it('renders structural empty-state chrome when downloads are absent', async () => {
     const html = await render(CvPageContent, {
       locale: 'en',
       model: { status: 'unavailable' },
     })
-    expect(html).toMatch(/data-state-variant="unavailable"/)
+    expect(html).toMatch(/data-visual-id="AboutContactUtilityTemplate"/)
+    expect(html).toMatch(/data-state-variant="empty"/)
     expect(html).toContain('CV')
     expect(html).toMatch(/<h1[\s>]/)
+    expect(html).toMatch(/cv-page__section/)
+    expect(html).toMatch(/pf-index-empty__list-placeholder/)
   })
 
   it('renders download cards when the model is ready', async () => {

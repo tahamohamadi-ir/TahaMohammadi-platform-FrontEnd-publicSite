@@ -3,11 +3,12 @@ import AboutContactUtilityTemplate from '../templates/AboutContactUtilityTemplat
 import SectionLead from '../ui/SectionLead.astro'
 import ContentState from '../state/ContentState.astro'
 import {
+  getAboutRouteTitle,
   getAboutUnavailableCopy,
   splitBodyParagraphs,
   type AboutPageModel,
 } from '../../lib/about-profile'
-import { localePath, type Locale } from '../../lib/navigation'
+import { type Locale } from '../../lib/navigation'
 
 interface Props {
   locale: Locale
@@ -15,22 +16,100 @@ interface Props {
 }
 
 const { locale, model } = Astro.props
-const homeHref = localePath(locale)
+const emptyCopy = getAboutUnavailableCopy(locale)
+const sectionLabels =
+  locale === 'en'
+    ? {
+        intro: 'Introduction',
+        engineering: 'Engineering',
+        education: 'Education',
+        experience: 'Experience',
+      }
+    : {
+        intro: 'معرفی',
+        engineering: 'مهندسی',
+        education: 'تحصیلات',
+        experience: 'تجربه',
+      }
 ---
 
 {
   model.status === 'unavailable' ? (
-    <div class="about-page about-page--unavailable">
-      <ContentState
-        variant="unavailable"
-        locale={locale}
-        headingLevel="h1"
-        title={getAboutUnavailableCopy(locale).title}
-        message={getAboutUnavailableCopy(locale).message}
-        actionLabel={locale === 'en' ? 'Back to home' : 'بازگشت به صفحهٔ اصلی'}
-        actionHref={homeHref}
+    <AboutContactUtilityTemplate class="about-page about-page--empty">
+      <SectionLead
+        slot="lead"
+        eyebrow={locale === 'en' ? 'Profile' : 'پروفایل'}
+        title={getAboutRouteTitle(locale)}
       />
-    </div>
+
+      <div slot="records" class="about-page__sections pf-index-empty__shell">
+        <section
+          class="about-page__section"
+          aria-labelledby="about-intro-empty-title"
+        >
+          <h2 id="about-intro-empty-title" class="about-page__section-title">
+            {sectionLabels.intro}
+          </h2>
+          <div class="pf-index-empty__prose-placeholder" aria-hidden="true">
+            <span class="pf-index-empty__line pf-index-empty__line--medium" />
+            <span class="pf-index-empty__line" />
+            <span class="pf-index-empty__line pf-index-empty__line--short" />
+          </div>
+        </section>
+
+        <section
+          class="about-page__section"
+          aria-labelledby="about-education-empty-title"
+        >
+          <h2
+            id="about-education-empty-title"
+            class="about-page__section-title"
+          >
+            {sectionLabels.education}
+          </h2>
+          <div class="pf-index-empty__timeline-placeholder" aria-hidden="true">
+            <span class="pf-index-empty__row-placeholder">
+              <span class="pf-index-empty__line pf-index-empty__line--short" />
+              <span class="pf-index-empty__line pf-index-empty__line--medium" />
+            </span>
+            <span class="pf-index-empty__row-placeholder">
+              <span class="pf-index-empty__line pf-index-empty__line--short" />
+              <span class="pf-index-empty__line pf-index-empty__line--medium" />
+            </span>
+          </div>
+        </section>
+
+        <section
+          class="about-page__section"
+          aria-labelledby="about-experience-empty-title"
+        >
+          <h2
+            id="about-experience-empty-title"
+            class="about-page__section-title"
+          >
+            {sectionLabels.experience}
+          </h2>
+          <div class="pf-index-empty__timeline-placeholder" aria-hidden="true">
+            <span class="pf-index-empty__row-placeholder">
+              <span class="pf-index-empty__line pf-index-empty__line--short" />
+              <span class="pf-index-empty__line pf-index-empty__line--medium" />
+            </span>
+            <span class="pf-index-empty__row-placeholder">
+              <span class="pf-index-empty__line pf-index-empty__line--short" />
+              <span class="pf-index-empty__line pf-index-empty__line--medium" />
+            </span>
+          </div>
+        </section>
+
+        <ContentState
+          variant="empty"
+          locale={locale}
+          headingLevel="h2"
+          title={emptyCopy.title}
+          message={emptyCopy.message}
+        />
+      </div>
+    </AboutContactUtilityTemplate>
   ) : (
     <AboutContactUtilityTemplate class="about-page">
       <SectionLead
@@ -48,7 +127,7 @@ const homeHref = localePath(locale)
             aria-labelledby="about-intro-title"
           >
             <h2 id="about-intro-title" class="about-page__section-title">
-              {locale === 'en' ? 'Introduction' : 'معرفی'}
+              {sectionLabels.intro}
             </h2>
             <div class="about-page__prose">
               {splitBodyParagraphs(model.profile.body).map((paragraph) => (
@@ -65,8 +144,7 @@ const homeHref = localePath(locale)
             aria-labelledby="about-engineering-title"
           >
             <h2 id="about-engineering-title" class="about-page__section-title">
-              {model.profile.engineering_title ??
-                (locale === 'en' ? 'Engineering' : 'مهندسی')}
+              {model.profile.engineering_title ?? sectionLabels.engineering}
             </h2>
             <div class="about-page__prose">
               {splitBodyParagraphs(model.profile.engineering_body).map(
@@ -85,7 +163,7 @@ const homeHref = localePath(locale)
             aria-labelledby="about-education-title"
           >
             <h2 id="about-education-title" class="about-page__section-title">
-              {locale === 'en' ? 'Education' : 'تحصیلات'}
+              {sectionLabels.education}
             </h2>
             <ol class="about-page__timeline">
               {model.profile.education.map((entry) => (
@@ -115,7 +193,7 @@ const homeHref = localePath(locale)
             aria-labelledby="about-experience-title"
           >
             <h2 id="about-experience-title" class="about-page__section-title">
-              {locale === 'en' ? 'Experience' : 'تجربه'}
+              {sectionLabels.experience}
             </h2>
             <ol class="about-page__timeline">
               {model.profile.experience.map((entry) => (

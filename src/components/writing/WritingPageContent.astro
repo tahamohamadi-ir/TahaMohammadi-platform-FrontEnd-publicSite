@@ -17,22 +17,102 @@ interface Props {
 }
 
 const { locale, model } = Astro.props
-const homeHref = localePath(locale)
+const emptyCopy = getWritingUnavailableCopy(locale)
+const filterLabels =
+  locale === 'en'
+    ? {
+        region: 'Writing filters',
+        allWriting: 'All',
+        essays: 'Essays',
+        notes: 'Notes',
+        memories: 'Memories',
+        society: 'Society',
+        archive: 'Archive',
+        search: 'Search writing…',
+      }
+    : {
+        region: 'پالایش نوشته‌ها',
+        allWriting: 'همه',
+        essays: 'مقالات',
+        notes: 'یادداشت‌ها',
+        memories: 'خاطرات',
+        society: 'جامعه',
+        archive: 'آرشیو',
+        search: 'جستجوی نوشته‌ها…',
+      }
 ---
 
 {
   model.status === 'unavailable' ? (
-    <div class="writing-page writing-page--unavailable">
-      <ContentState
-        variant="unavailable"
-        locale={locale}
-        headingLevel="h1"
-        title={getWritingUnavailableCopy(locale).title}
-        message={getWritingUnavailableCopy(locale).message}
-        actionLabel={locale === 'en' ? 'Back to home' : 'بازگشت به صفحهٔ اصلی'}
-        actionHref={homeHref}
+    <CollectionIndexTemplate class="writing-page writing-page--empty">
+      <SectionLead
+        slot="lead"
+        eyebrow={locale === 'en' ? 'Essays & books' : 'مقالات و کتاب‌ها'}
+        title={getWritingRouteTitle(locale)}
       />
-    </div>
+
+      <div
+        slot="filters"
+        class="writing-page__filters pf-index-empty__filters"
+        role="group"
+        aria-label={filterLabels.region}
+        aria-disabled="true"
+      >
+        <p class="writing-page__filters-active">{filterLabels.allWriting}</p>
+        <div class="writing-page__filters-controls">
+          <button type="button" class="pf-index-empty__filter-chip" disabled>
+            {filterLabels.essays}
+          </button>
+          <button type="button" class="pf-index-empty__filter-chip" disabled>
+            {filterLabels.notes}
+          </button>
+          <button type="button" class="pf-index-empty__filter-chip" disabled>
+            {filterLabels.memories}
+          </button>
+          <button type="button" class="pf-index-empty__filter-chip" disabled>
+            {filterLabels.society}
+          </button>
+          <button type="button" class="pf-index-empty__filter-chip" disabled>
+            {filterLabels.archive}
+          </button>
+        </div>
+        <input
+          type="search"
+          class="writing-page__search pf-index-empty__search"
+          placeholder={filterLabels.search}
+          disabled
+          aria-hidden="true"
+          tabindex="-1"
+        />
+      </div>
+
+      <div
+        slot="records"
+        class="writing-page__grid-shell pf-index-empty__shell"
+      >
+        <div class="pf-index-empty__list-placeholder" aria-hidden="true">
+          <span class="pf-index-empty__row-placeholder">
+            <span class="pf-index-empty__line pf-index-empty__line--short" />
+            <span class="pf-index-empty__line pf-index-empty__line--medium" />
+          </span>
+          <span class="pf-index-empty__row-placeholder">
+            <span class="pf-index-empty__line pf-index-empty__line--short" />
+            <span class="pf-index-empty__line pf-index-empty__line--medium" />
+          </span>
+          <span class="pf-index-empty__row-placeholder">
+            <span class="pf-index-empty__line pf-index-empty__line--short" />
+            <span class="pf-index-empty__line pf-index-empty__line--medium" />
+          </span>
+        </div>
+        <ContentState
+          variant="empty"
+          locale={locale}
+          headingLevel="h2"
+          title={emptyCopy.title}
+          message={emptyCopy.message}
+        />
+      </div>
+    </CollectionIndexTemplate>
   ) : (
     <CollectionIndexTemplate class="writing-page">
       <SectionLead

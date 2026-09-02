@@ -55,6 +55,10 @@ const aboutRouteTitle: Record<Locale, string> = {
   fa: 'درباره',
 }
 
+export function getAboutRouteTitle(locale: Locale): string {
+  return aboutRouteTitle[locale]
+}
+
 /** Honest unavailable copy — state message only, not profile content. */
 export function getAboutUnavailableCopy(locale: Locale): {
   title: string

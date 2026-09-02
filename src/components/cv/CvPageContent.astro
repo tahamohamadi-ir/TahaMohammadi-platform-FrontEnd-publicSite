@@ -9,7 +9,7 @@ import {
   getCvUnavailableCopy,
   type CvPageModel,
 } from '../../lib/cv-content'
-import { localePath, type Locale } from '../../lib/navigation'
+import { type Locale } from '../../lib/navigation'
 
 interface Props {
   locale: Locale
@@ -17,22 +17,47 @@ interface Props {
 }
 
 const { locale, model } = Astro.props
-const homeHref = localePath(locale)
+const emptyCopy = getCvUnavailableCopy(locale)
 ---
 
 {
   model.status === 'unavailable' ? (
-    <div class="cv-page cv-page--unavailable">
-      <ContentState
-        variant="unavailable"
-        locale={locale}
-        headingLevel="h1"
-        title={getCvUnavailableCopy(locale).title}
-        message={getCvUnavailableCopy(locale).message}
-        actionLabel={locale === 'en' ? 'Back to home' : 'بازگشت به صفحهٔ اصلی'}
-        actionHref={homeHref}
+    <AboutContactUtilityTemplate class="cv-page cv-page--empty">
+      <SectionLead
+        slot="lead"
+        eyebrow={locale === 'en' ? 'Documents' : 'اسناد'}
+        title={getCvRouteTitle(locale)}
       />
-    </div>
+
+      <div slot="records" class="cv-page__sections pf-index-empty__shell">
+        <section
+          class="cv-page__section"
+          aria-labelledby="cv-downloads-empty-title"
+        >
+          <h2 id="cv-downloads-empty-title" class="cv-page__section-title">
+            {locale === 'en' ? 'Downloads' : 'دانلودها'}
+          </h2>
+          <div class="pf-index-empty__list-placeholder" aria-hidden="true">
+            <span class="pf-index-empty__row-placeholder">
+              <span class="pf-index-empty__line pf-index-empty__line--short" />
+              <span class="pf-index-empty__line pf-index-empty__line--medium" />
+            </span>
+            <span class="pf-index-empty__row-placeholder">
+              <span class="pf-index-empty__line pf-index-empty__line--short" />
+              <span class="pf-index-empty__line pf-index-empty__line--medium" />
+            </span>
+          </div>
+        </section>
+
+        <ContentState
+          variant="empty"
+          locale={locale}
+          headingLevel="h2"
+          title={emptyCopy.title}
+          message={emptyCopy.message}
+        />
+      </div>
+    </AboutContactUtilityTemplate>
   ) : (
     <AboutContactUtilityTemplate class="cv-page">
       <SectionLead

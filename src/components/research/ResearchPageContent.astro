@@ -18,23 +18,128 @@ interface Props {
 }
 
 const { locale, model } = Astro.props
-const homeHref = localePath(locale)
 const routeTitle = getResearchRouteTitle(locale)
+const emptyCopy = getResearchUnavailableCopy(locale)
+const tabLabels =
+  locale === 'en'
+    ? {
+        region: 'Research sections',
+        overview: 'Overview',
+        directions: 'Research directions',
+        publications: 'Publications',
+        statement: 'Statement',
+        collaborators: 'Collaborators',
+      }
+    : {
+        region: 'بخش‌های پژوهش',
+        overview: 'نمای کلی',
+        directions: 'جهت‌های پژوهشی',
+        publications: 'انتشارات',
+        statement: 'بیانیه',
+        collaborators: 'همکاران',
+      }
 ---
 
 {
   model.status === 'unavailable' ? (
-    <div class="research-page research-page--unavailable">
-      <ContentState
-        variant="unavailable"
-        locale={locale}
-        headingLevel="h1"
-        title={getResearchUnavailableCopy(locale).title}
-        message={getResearchUnavailableCopy(locale).message}
-        actionLabel={locale === 'en' ? 'Back to home' : 'بازگشت به صفحهٔ اصلی'}
-        actionHref={homeHref}
+    <CollectionIndexTemplate class="research-page research-page--empty">
+      <SectionLead
+        slot="lead"
+        eyebrow={locale === 'en' ? 'Research program' : 'برنامه پژوهشی'}
+        title={routeTitle}
       />
-    </div>
+
+      <div
+        slot="filters"
+        class="research-page__tabs pf-index-empty__filters"
+        role="tablist"
+        aria-label={tabLabels.region}
+        aria-disabled="true"
+      >
+        <button
+          type="button"
+          class="pf-index-empty__filter-chip"
+          role="tab"
+          aria-selected="true"
+          disabled
+        >
+          {tabLabels.overview}
+        </button>
+        <button
+          type="button"
+          class="pf-index-empty__filter-chip"
+          role="tab"
+          disabled
+        >
+          {tabLabels.directions}
+        </button>
+        <button
+          type="button"
+          class="pf-index-empty__filter-chip"
+          role="tab"
+          disabled
+        >
+          {tabLabels.publications}
+        </button>
+        <button
+          type="button"
+          class="pf-index-empty__filter-chip"
+          role="tab"
+          disabled
+        >
+          {tabLabels.statement}
+        </button>
+        <button
+          type="button"
+          class="pf-index-empty__filter-chip"
+          role="tab"
+          disabled
+        >
+          {tabLabels.collaborators}
+        </button>
+      </div>
+
+      <div
+        slot="records"
+        class="research-page__grid-shell pf-index-empty__shell"
+      >
+        <div class="research-page__graph-placeholder" aria-hidden="true">
+          <span class="research-page__graph-node" />
+          <span class="research-page__graph-node research-page__graph-node--center" />
+          <span class="research-page__graph-node" />
+        </div>
+
+        <section
+          class="research-page__topics"
+          aria-labelledby="research-topics-empty-title"
+        >
+          <h2
+            id="research-topics-empty-title"
+            class="research-page__section-title"
+          >
+            {locale === 'en' ? 'Focus areas' : 'حوزه‌های تمرکز'}
+          </h2>
+          <div class="pf-index-empty__list-placeholder" aria-hidden="true">
+            <span class="pf-index-empty__row-placeholder">
+              <span class="pf-index-empty__line pf-index-empty__line--short" />
+              <span class="pf-index-empty__line pf-index-empty__line--medium" />
+            </span>
+            <span class="pf-index-empty__row-placeholder">
+              <span class="pf-index-empty__line pf-index-empty__line--short" />
+              <span class="pf-index-empty__line pf-index-empty__line--medium" />
+            </span>
+          </div>
+        </section>
+
+        <ContentState
+          variant="empty"
+          locale={locale}
+          headingLevel="h2"
+          title={emptyCopy.title}
+          message={emptyCopy.message}
+        />
+      </div>
+    </CollectionIndexTemplate>
   ) : (
     <CollectionIndexTemplate class="research-page">
       <SectionLead
