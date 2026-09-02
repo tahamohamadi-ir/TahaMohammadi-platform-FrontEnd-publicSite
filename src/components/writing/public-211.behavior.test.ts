@@ -30,6 +30,8 @@ describe('PUBLIC-211/212 writing pages', () => {
     expect(html).toMatch(/data-visual-id="PageFamilyThemeExploreShell"/)
     expect(html).toMatch(/data-visual-id="PageFamilyPaginationShell"/)
     expect(html).toMatch(/pf-index-featured--writing/)
+    expect(html).toMatch(/pf-index-featured--copy-first/)
+    expect(html).toMatch(/pf-index-theme-explore__cards/)
   })
 
   it('renders article and book sections when the index model is ready', async () => {

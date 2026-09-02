@@ -133,6 +133,10 @@ html[data-theme='dark'] .pf-index-featured__card {
     align-items: center;
     gap: var(--space-8);
   }
+
+  .pf-index-featured--copy-first .pf-index-featured__card {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+  }
 }
 
 .pf-index-featured__media {
