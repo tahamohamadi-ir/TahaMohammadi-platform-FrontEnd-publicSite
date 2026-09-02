@@ -57,13 +57,12 @@ if (process.platform === 'win32') {
     rawCommand: `npx playwright test --grep "${visualGrep}" --workers=1`,
   })
 } else {
-  runStep('visual captures (PUBLIC-270 + WP-40 home/gateway)', 'npx', [
-    'playwright',
-    'test',
-    '--grep',
-    visualGrep,
-    '--workers=1',
-  ], { shell: false })
+  runStep(
+    'visual captures (PUBLIC-270 + WP-40 home/gateway)',
+    'npx',
+    ['playwright', 'test', '--grep', visualGrep, '--workers=1'],
+    { shell: false },
+  )
 }
 
 runStep('compare report', 'npm', ['run', 'report:visual-compare'])
