@@ -711,8 +711,8 @@
   aspect-ratio: 4 / 3;
 }
 
-.pf-index-list-cards__thumb :global(.pf-index-list-cards__image),
-.pf-index-list-cards__thumb :global(img) {
+.pf-index-list-cards__thumb .pf-index-list-cards__image,
+.pf-index-list-cards__thumb img {
   inline-size: 100%;
   block-size: 100%;
   object-fit: cover;

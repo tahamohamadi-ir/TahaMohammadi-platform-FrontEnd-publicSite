@@ -1,3 +1,4 @@
+import { existsSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -9,6 +10,36 @@ export const defaultDesignAuthorityRoot = path.resolve(
   repositoryRoot,
   '../../Docs/references/frontend-design-authority',
 )
+
+const pageFamilyConceptMarker = (root) =>
+  path.join(root, 'concepts', 'page-families')
+
+/**
+ * Concept PNGs live under `concepts/` at the visual authority root, not under
+ * `agent-kit/`. When `DESIGN_AUTHORITY_ROOT` (or manifest centralSourcePath)
+ * points at agent-kit, walk up one level so compare pairing still works.
+ *
+ * @param {string} root
+ */
+export function resolveVisualConceptAuthorityRoot(root) {
+  const normalized = path.resolve(root)
+  if (existsSync(pageFamilyConceptMarker(normalized))) {
+    return normalized
+  }
+
+  const parent = path.dirname(normalized)
+  if (existsSync(pageFamilyConceptMarker(parent))) {
+    return parent
+  }
+
+  return normalized
+}
+
+/** @param {NodeJS.ProcessEnv} [env] */
+export function resolveDesignAuthorityRootFromEnv(env = process.env) {
+  const requested = env.DESIGN_AUTHORITY_ROOT ?? defaultDesignAuthorityRoot
+  return resolveVisualConceptAuthorityRoot(requested)
+}
 
 export const captureOutputDir = path.join(repositoryRoot, 'test-results/visual')
 
@@ -261,6 +292,7 @@ export const HOME_VISUAL_ENTRIES = [
  * @returns {import('./page-family-visual-compare.mjs').CompareRow[]}
  */
 export function buildPublic270CompareRows(designAuthorityRoot) {
+  const conceptRoot = resolveVisualConceptAuthorityRoot(designAuthorityRoot)
   const rows = []
 
   for (const entry of PAGE_FAMILY_VISUAL_ENTRIES) {
@@ -274,7 +306,7 @@ export function buildPublic270CompareRows(designAuthorityRoot) {
           capturePath: path.join(captureOutputDir, captureFile),
           conceptFile: entry.concept,
           conceptPath: path.join(
-            designAuthorityRoot,
+            conceptRoot,
             entry.conceptDir,
             entry.concept,
           ),
@@ -295,7 +327,7 @@ export function buildPublic270CompareRows(designAuthorityRoot) {
         capturePath: path.join(captureOutputDir, captureFile),
         conceptFile: PAGE_FAMILY_PF02_OPTIONAL.concept,
         conceptPath: path.join(
-          designAuthorityRoot,
+          conceptRoot,
           PAGE_FAMILY_PF02_OPTIONAL.conceptDir,
           PAGE_FAMILY_PF02_OPTIONAL.concept,
         ),
@@ -312,6 +344,8 @@ export function buildPublic270CompareRows(designAuthorityRoot) {
  * @param {string} designAuthorityRoot
  */
 export function buildHomeCompareRows(designAuthorityRoot) {
+  const conceptRoot = resolveVisualConceptAuthorityRoot(designAuthorityRoot)
+
   return HOME_VISUAL_ENTRIES.map((entry) => {
     const resolved = resolveHomeConceptReference(entry)
 
@@ -322,7 +356,7 @@ export function buildHomeCompareRows(designAuthorityRoot) {
       captureViewport: entry.captureViewport,
       conceptFile: resolved?.concept ?? null,
       conceptPath: resolved
-        ? path.join(designAuthorityRoot, resolved.conceptDir, resolved.concept)
+        ? path.join(conceptRoot, resolved.conceptDir, resolved.concept)
         : null,
       conceptRelative: resolved
         ? `${resolved.conceptDir}/${resolved.concept}`

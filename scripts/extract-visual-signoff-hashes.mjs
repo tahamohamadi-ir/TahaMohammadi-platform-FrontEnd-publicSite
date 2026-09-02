@@ -21,7 +21,7 @@ import {
   buildHomeCompareRows,
   buildPublic270CompareRows,
   captureOutputDir,
-  defaultDesignAuthorityRoot,
+  resolveDesignAuthorityRootFromEnv,
 } from './page-family-visual-compare.mjs'
 
 const defaultReportPath = path.join(captureOutputDir, 'compare-report.html')
@@ -149,8 +149,7 @@ function main() {
   const reportArg = args.find((arg) => arg.startsWith('--report='))
   const reportPath = reportArg?.split('=')[1] ?? defaultReportPath
 
-  const designAuthorityRoot =
-    process.env.DESIGN_AUTHORITY_ROOT ?? defaultDesignAuthorityRoot
+  const designAuthorityRoot = resolveDesignAuthorityRootFromEnv()
 
   let rows = fromReport
     ? parseHashesFromReport(reportPath)

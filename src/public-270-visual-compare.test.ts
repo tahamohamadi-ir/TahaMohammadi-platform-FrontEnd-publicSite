@@ -54,6 +54,27 @@ describe('PUBLIC-270 visual compare owner assist', () => {
     ).toBe(true)
   })
 
+  it('resolves concept PNGs when DESIGN_AUTHORITY_ROOT points at agent-kit', async () => {
+    const {
+      buildPublic270CompareRows,
+      defaultDesignAuthorityRoot,
+      resolveVisualConceptAuthorityRoot,
+    } = await import(mappingModuleUrl)
+
+    const agentKitRoot = path.join(defaultDesignAuthorityRoot, 'agent-kit')
+    expect(resolveVisualConceptAuthorityRoot(agentKitRoot)).toBe(
+      defaultDesignAuthorityRoot,
+    )
+
+    const rows = buildPublic270CompareRows(agentKitRoot)
+    expect(rows[0]?.conceptPath).toBe(
+      path.join(
+        defaultDesignAuthorityRoot,
+        'concepts/page-families/creative-index-light.png',
+      ),
+    )
+  })
+
   it('maps home WP-40 captures to viewport-matched concept references', async () => {
     const {
       HOME_VISUAL_ENTRIES,

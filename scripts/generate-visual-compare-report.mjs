@@ -21,6 +21,8 @@ import {
   captureOutputDir,
   defaultDesignAuthorityRoot,
   repositoryRoot,
+  resolveDesignAuthorityRootFromEnv,
+  resolveVisualConceptAuthorityRoot,
 } from './page-family-visual-compare.mjs'
 
 const defaultOutput = path.join(
@@ -28,7 +30,8 @@ const defaultOutput = path.join(
   'test-results/visual/compare-report.html',
 )
 
-const designAuthorityRoot =
+const designAuthorityRoot = resolveDesignAuthorityRootFromEnv()
+const requestedDesignAuthorityRoot =
   process.env.DESIGN_AUTHORITY_ROOT ?? defaultDesignAuthorityRoot
 const outputPath = process.env.VISUAL_COMPARE_OUTPUT ?? defaultOutput
 
@@ -191,6 +194,15 @@ function main() {
   if (missingCaptures > 0) {
     console.log(
       `  Missing ${missingCaptures} capture(s) — run: npm run build && npm run test:visual -- --grep "PUBLIC-270|WP-40 home captures"`,
+    )
+  }
+  if (
+    requestedDesignAuthorityRoot !== designAuthorityRoot &&
+    resolveVisualConceptAuthorityRoot(requestedDesignAuthorityRoot) ===
+      designAuthorityRoot
+  ) {
+    console.warn(
+      `  Note: resolved concept root from ${requestedDesignAuthorityRoot} → ${designAuthorityRoot} (concept PNGs are not under agent-kit/).`,
     )
   }
   if (!existsSync(designAuthorityRoot)) {
