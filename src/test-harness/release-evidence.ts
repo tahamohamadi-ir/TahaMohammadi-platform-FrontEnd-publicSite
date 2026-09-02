@@ -10,7 +10,7 @@ import { STAGING_ENV_KEYS } from './staging-smoke'
  * Pin for the last recorded full gate sweep (PUBLIC-350 evidence only).
  * Does not imply `summarizeReleaseEvidence().ready === true`.
  */
-export const PUBLIC_RELEASE_GATE_SWEEP_SHA = 'cc4b851' as const
+export const PUBLIC_RELEASE_GATE_SWEEP_SHA = '572d6de' as const
 
 export type ReleaseEvidenceStatus = 'complete' | 'scaffold' | 'blocked' | 'open'
 
@@ -186,7 +186,7 @@ export const R8_PUBLIC_SLICES: readonly ReleaseEvidenceSlice[] = [
     description: 'Automated accessibility probes',
     status: 'scaffold',
     command: 'npm run test:a11y',
-    blocker: 'Keyboard/screen-reader manual matrix open',
+    blocker: 'Manual keyboard/screen-reader/zoom matrix open; automated WCAG crawl shipped',
   },
   {
     id: 'r8-owner-acceptance',
