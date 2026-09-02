@@ -147,7 +147,11 @@
 }
 
 .pf-index-featured--project .pf-index-featured__card {
-  border-color: color-mix(in srgb, var(--color-brand) 24%, var(--color-border-subtle));
+  border-color: color-mix(
+    in srgb,
+    var(--color-brand) 24%,
+    var(--color-border-subtle)
+  );
 }
 
 .pf-index-featured__tags,
@@ -191,7 +195,10 @@
   }
 
   .pf-index-row-placeholder--project .pf-index-row-placeholder__row {
-    grid-template-columns: auto minmax(7rem, 9rem) minmax(0, 1fr) minmax(5rem, 7rem);
+    grid-template-columns: auto minmax(7rem, 9rem) minmax(0, 1fr) minmax(
+        5rem,
+        7rem
+      );
     align-items: center;
   }
 
@@ -359,8 +366,7 @@
   border: 1px solid var(--color-border-subtle);
 }
 
-.pf-index-constellation__backplate
-  .pf-index-constellation__backplate-img,
+.pf-index-constellation__backplate .pf-index-constellation__backplate-img,
 .pf-index-constellation__backplate img,
 .pf-index-constellation__backplate .theme-picture,
 .pf-index-constellation__backplate .theme-picture__mount,
@@ -441,7 +447,11 @@
   block-size: 2.75rem;
   border-radius: var(--radius-md);
   border: 1px solid var(--color-border-subtle);
-  background: color-mix(in srgb, var(--color-brand-soft) 65%, var(--color-surface));
+  background: color-mix(
+    in srgb,
+    var(--color-brand-soft) 65%,
+    var(--color-surface)
+  );
 }
 
 .pf-index-bibliography__body {
@@ -523,11 +533,19 @@
 }
 
 .pf-index-research-fit__icon--compass {
-  background: color-mix(in srgb, var(--color-brand-soft) 70%, var(--color-surface));
+  background: color-mix(
+    in srgb,
+    var(--color-brand-soft) 70%,
+    var(--color-surface)
+  );
 }
 
 .pf-index-research-fit__icon--methods {
-  background: color-mix(in srgb, var(--color-border-subtle) 45%, var(--color-surface));
+  background: color-mix(
+    in srgb,
+    var(--color-border-subtle) 45%,
+    var(--color-surface)
+  );
 }
 
 .pf-index-research-fit__icon--impact {
@@ -776,7 +794,11 @@
   block-size: 0.75rem;
   margin-block-start: var(--space-2);
   border-radius: var(--radius-sm);
-  background: color-mix(in srgb, var(--color-brand) 45%, var(--color-border-subtle));
+  background: color-mix(
+    in srgb,
+    var(--color-brand) 45%,
+    var(--color-border-subtle)
+  );
 }
 
 /* PF-08 contact portal hero extension */
@@ -1365,7 +1387,11 @@
 .pf-index-empty__filter-chip--active {
   border-color: var(--primitive-coral-500);
   color: var(--primitive-coral-500);
-  background: color-mix(in srgb, var(--primitive-coral-500) 8%, var(--color-canvas));
+  background: color-mix(
+    in srgb,
+    var(--primitive-coral-500) 8%,
+    var(--color-canvas)
+  );
   font-weight: 600;
 }
 

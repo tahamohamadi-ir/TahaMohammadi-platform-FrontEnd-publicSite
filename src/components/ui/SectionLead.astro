@@ -1,8 +1,10 @@
 ---
 interface Props {
   eyebrow?: string
+  eyebrowTone?: 'brand' | 'coral'
   title: string
   summary?: string
+  titleScale?: 'default' | 'display'
   primaryAction?: { href: string; label: string }
   secondaryAction?: { href: string; label: string }
   class?: string
@@ -10,8 +12,10 @@ interface Props {
 
 const {
   eyebrow,
+  eyebrowTone = 'brand',
   title,
   summary,
+  titleScale = 'default',
   primaryAction,
   secondaryAction,
   class: className = '',
@@ -22,8 +26,26 @@ const {
   class={['ui-section-lead', className].filter(Boolean).join(' ')}
   data-visual-id="SectionLead"
 >
-  {eyebrow ? <p class="ui-section-lead__eyebrow">{eyebrow}</p> : null}
-  <h1 class="ui-section-lead__title">{title}</h1>
+  {
+    eyebrow ? (
+      <p
+        class:list={[
+          'ui-section-lead__eyebrow',
+          eyebrowTone === 'coral' && 'ui-section-lead__eyebrow--coral',
+        ]}
+      >
+        {eyebrow}
+      </p>
+    ) : null
+  }
+  <h1
+    class:list={[
+      'ui-section-lead__title',
+      titleScale === 'display' && 'ui-section-lead__title--display',
+    ]}
+  >
+    {title}
+  </h1>
   {summary ? <p class="ui-section-lead__summary">{summary}</p> : null}
   <div class="ui-section-lead__media">
     <slot name="media" />
@@ -68,6 +90,10 @@ const {
     text-transform: uppercase;
   }
 
+  .ui-section-lead__eyebrow--coral {
+    color: var(--primitive-coral-500);
+  }
+
   .ui-section-lead__title {
     margin: 0;
     font-family: var(--font-display);
@@ -78,6 +104,11 @@ const {
     );
     line-height: 1.15;
     color: var(--color-ink);
+  }
+
+  .ui-section-lead__title--display {
+    font-size: clamp(var(--font-size-3xl), 5.5vw, 3.75rem);
+    line-height: 1.08;
   }
 
   .ui-section-lead__summary {

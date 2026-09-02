@@ -33,7 +33,12 @@ const decorativeAlt = getPageFamilyDecorativeAlt(locale, family)
 ---
 
 <section
-  class={['pf-index-hero', portal ? 'pf-index-hero--portal' : '', className]
+  class={[
+    'pf-index-hero',
+    portal ? 'pf-index-hero--portal' : '',
+    `pf-index-hero--${family}`,
+    className,
+  ]
     .filter(Boolean)
     .join(' ')}
   data-visual-id="PageFamilyIndexHero"
@@ -55,8 +60,10 @@ const decorativeAlt = getPageFamilyDecorativeAlt(locale, family)
   <div class="pf-index-hero__copy">
     <SectionLead
       eyebrow={eyebrow}
+      eyebrowTone={family === 'writing' ? 'coral' : 'brand'}
       title={title}
       summary={summary}
+      titleScale="display"
       class="pf-index-hero__lead"
     />
   </div>

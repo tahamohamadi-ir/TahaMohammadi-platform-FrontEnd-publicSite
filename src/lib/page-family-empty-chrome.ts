@@ -1,11 +1,16 @@
 import type { RuntimeAssetId } from './media/authority-checksums'
 import {
   GATEWAY_ATMOSPHERE_ASSETS,
-  HOME_GRAPH_BACKPLATE_ASSETS,
+  HOME_PROJECT_ASSET_BY_SLUG,
   HOME_RAIL_ASSET_BY_PATH,
 } from './media/project-mappings'
 import type { MediaSlot } from './media/promoted-media-registry'
 import type { Locale } from './navigation'
+
+const PROJECT_ROW_PREVIEW_ASSETS = [
+  HOME_PROJECT_ASSET_BY_SLUG['pars-sql-vtd-edge'],
+  HOME_PROJECT_ASSET_BY_SLUG['organizational-dashboard-research'],
+] as const satisfies readonly RuntimeAssetId[]
 
 export type PageFamilyChromeId =
   | 'creative'
@@ -35,6 +40,7 @@ const FEATURED_FAMILIES = new Set<PageFamilyChromeId>([
   'creative',
   'writing',
   'teaching',
+  'projects',
 ])
 
 const PATH_FAMILIES = new Set<PageFamilyChromeId>(['teaching'])
@@ -69,16 +75,15 @@ export function getPageFamilyHeroMedia(
     case 'projects':
       return {
         kind: 'single',
-        assetId: HOME_RAIL_ASSET_BY_PATH.writing,
-        mediaSlot: 'home.rail.preview',
+        assetId: HOME_PROJECT_ASSET_BY_SLUG['pars-sql-vtd-edge'],
+        mediaSlot: 'home.project.preview',
       }
     case 'research':
     case 'publications':
       return {
-        kind: 'theme',
-        lightAssetId: HOME_GRAPH_BACKPLATE_ASSETS.light,
-        darkAssetId: HOME_GRAPH_BACKPLATE_ASSETS.dark,
-        mediaSlot: 'home.graph.backplate',
+        kind: 'single',
+        assetId: HOME_RAIL_ASSET_BY_PATH.teaching,
+        mediaSlot: 'home.rail.preview',
       }
     case 'about':
     case 'cv':
@@ -124,13 +129,13 @@ export function getPageFamilyPreviewAsset(family: PageFamilyChromeId): {
       }
     case 'projects':
       return {
-        assetId: HOME_RAIL_ASSET_BY_PATH.writing,
-        mediaSlot: 'home.rail.preview',
+        assetId: HOME_PROJECT_ASSET_BY_SLUG['pars-sql-vtd-edge'],
+        mediaSlot: 'home.project.preview',
       }
     case 'research':
     case 'publications':
       return {
-        assetId: HOME_RAIL_ASSET_BY_PATH.writing,
+        assetId: HOME_RAIL_ASSET_BY_PATH.teaching,
         mediaSlot: 'home.rail.preview',
       }
     case 'about':
@@ -210,7 +215,60 @@ export function getPageFamilyFeaturedSectionLabel(
     return null
   }
 
+  if (family === 'projects') {
+    return locale === 'en' ? 'Featured project' : 'پروژه برجسته'
+  }
+
   return locale === 'en' ? 'Featured' : 'برگزیده'
+}
+
+/** Decorative preview assets cycled across empty-state row shells. */
+export function getPageFamilyRowPreviewAssets(
+  family: PageFamilyChromeId,
+): ReadonlyArray<{ assetId: RuntimeAssetId; mediaSlot: MediaSlot }> {
+  switch (family) {
+    case 'projects':
+      return PROJECT_ROW_PREVIEW_ASSETS.map((assetId) => ({
+        assetId,
+        mediaSlot: 'home.project.preview' as const,
+      }))
+    case 'creative':
+      return [
+        {
+          assetId: HOME_RAIL_ASSET_BY_PATH.creative,
+          mediaSlot: 'home.rail.preview',
+        },
+      ]
+    case 'writing':
+      return [
+        {
+          assetId: HOME_RAIL_ASSET_BY_PATH.writing,
+          mediaSlot: 'home.rail.preview',
+        },
+      ]
+    case 'teaching':
+    case 'research':
+    case 'publications':
+      return [
+        {
+          assetId: HOME_RAIL_ASSET_BY_PATH.teaching,
+          mediaSlot: 'home.rail.preview',
+        },
+      ]
+    case 'about':
+    case 'cv':
+    case 'contact':
+      return [
+        {
+          assetId: HOME_RAIL_ASSET_BY_PATH.writing,
+          mediaSlot: 'home.rail.preview',
+        },
+      ]
+    default: {
+      const neverFamily: never = family
+      throw new Error(`Unknown page family chrome id: ${neverFamily}`)
+    }
+  }
 }
 
 /** Structural card eyebrow inside featured shell — UI chrome, not CMS record copy. */
@@ -230,6 +288,8 @@ export function getPageFamilyFeaturedCardLabel(
         return 'Featured'
       case 'teaching':
         return 'Featured course'
+      case 'projects':
+        return 'Featured project'
       default: {
         const neverFamily: never = family
         throw new Error(`Unknown page family chrome id: ${neverFamily}`)
@@ -244,6 +304,8 @@ export function getPageFamilyFeaturedCardLabel(
       return 'برگزیده'
     case 'teaching':
       return 'دوره برجسته'
+    case 'projects':
+      return 'پروژه برجسته'
     default: {
       const neverFamily: never = family
       throw new Error(`Unknown page family chrome id: ${neverFamily}`)
@@ -268,6 +330,8 @@ export function getPageFamilyFeaturedActionLabel(
         return 'Read article'
       case 'teaching':
         return 'View course'
+      case 'projects':
+        return 'View case study'
       default: {
         const neverFamily: never = family
         throw new Error(`Unknown page family chrome id: ${neverFamily}`)
@@ -282,6 +346,8 @@ export function getPageFamilyFeaturedActionLabel(
       return 'خواندن مقاله'
     case 'teaching':
       return 'مشاهده دوره'
+    case 'projects':
+      return 'مشاهده مطالعه موردی'
     default: {
       const neverFamily: never = family
       throw new Error(`Unknown page family chrome id: ${neverFamily}`)

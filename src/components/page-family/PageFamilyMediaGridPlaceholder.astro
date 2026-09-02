@@ -16,6 +16,28 @@ interface Props {
 const { locale, family, class: className = '' } = Astro.props
 const preview = getPageFamilyPreviewAsset(family)
 const decorativeAlt = getPageFamilyDecorativeAlt(locale, family)
+
+type GridCell = {
+  modifier?: 'tall' | 'wide' | 'portrait'
+  filled: boolean
+  eager?: boolean
+}
+
+/** Masonry rhythm aligned with PF-01 concept — decorative authority assets only. */
+const cells: GridCell[] = [
+  { modifier: 'tall', filled: true, eager: true },
+  { filled: true },
+  { filled: true },
+  { modifier: 'wide', filled: true },
+  { filled: true },
+  { modifier: 'tall', filled: true },
+  { filled: false },
+  { filled: true },
+  { modifier: 'wide', filled: true },
+  { filled: false },
+  { modifier: 'portrait', filled: true },
+  { filled: true },
+]
 ---
 
 <div
@@ -23,53 +45,28 @@ const decorativeAlt = getPageFamilyDecorativeAlt(locale, family)
   data-visual-id="PageFamilyMediaGridPlaceholder"
   aria-hidden="true"
 >
-  <div
-    class="pf-index-grid-placeholder__cell pf-index-grid-placeholder__cell--tall"
-  >
-    <PromotedPicture
-      assetId={preview.assetId}
-      mediaSlot={preview.mediaSlot}
-      locale={locale}
-      alt={decorativeAlt}
-      imgClass="pf-index-grid-placeholder__image"
-      loading="eager"
-    />
-  </div>
-  <div class="pf-index-grid-placeholder__cell">
-    <PromotedPicture
-      assetId={preview.assetId}
-      mediaSlot={preview.mediaSlot}
-      locale={locale}
-      alt={decorativeAlt}
-      imgClass="pf-index-grid-placeholder__image"
-    />
-  </div>
-  <div
-    class="pf-index-grid-placeholder__cell pf-index-grid-placeholder__cell--wide"
-  >
-    <PromotedPicture
-      assetId={preview.assetId}
-      mediaSlot={preview.mediaSlot}
-      locale={locale}
-      alt={decorativeAlt}
-      imgClass="pf-index-grid-placeholder__image"
-    />
-  </div>
-  <div
-    class="pf-index-grid-placeholder__cell pf-index-grid-placeholder__cell--tall"
-  >
-    <span class="pf-index-grid-placeholder__shell"></span>
-  </div>
-  <div class="pf-index-grid-placeholder__cell">
-    <span class="pf-index-grid-placeholder__shell"></span>
-  </div>
-  <div class="pf-index-grid-placeholder__cell">
-    <PromotedPicture
-      assetId={preview.assetId}
-      mediaSlot={preview.mediaSlot}
-      locale={locale}
-      alt={decorativeAlt}
-      imgClass="pf-index-grid-placeholder__image"
-    />
-  </div>
+  {
+    cells.map((cell) => (
+      <div
+        class:list={[
+          'pf-index-grid-placeholder__cell',
+          cell.modifier &&
+            `pf-index-grid-placeholder__cell--${cell.modifier}`,
+        ]}
+      >
+        {cell.filled ? (
+          <PromotedPicture
+            assetId={preview.assetId}
+            mediaSlot={preview.mediaSlot}
+            locale={locale}
+            alt={decorativeAlt}
+            imgClass="pf-index-grid-placeholder__image"
+            loading={cell.eager ? 'eager' : 'lazy'}
+          />
+        ) : (
+          <span class="pf-index-grid-placeholder__shell" />
+        )}
+      </div>
+    ))
+  }
 </div>

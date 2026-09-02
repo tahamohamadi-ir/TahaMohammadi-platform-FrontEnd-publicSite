@@ -1,6 +1,8 @@
 ---
 import PromotedPicture from '../media/PromotedPicture.astro'
 import {
+  getPageFamilyFeaturedActionLabel,
+  getPageFamilyFeaturedCardLabel,
   getPageFamilyFeaturedSectionLabel,
   getPageFamilyPreviewAsset,
   getPageFamilyDecorativeAlt,
@@ -16,14 +18,23 @@ interface Props {
 
 const { locale, family, class: className = '' } = Astro.props
 const sectionLabel = getPageFamilyFeaturedSectionLabel(locale, family)
+const cardLabel = getPageFamilyFeaturedCardLabel(locale, family)
+const actionLabel = getPageFamilyFeaturedActionLabel(locale, family)
 const preview = sectionLabel ? getPageFamilyPreviewAsset(family) : null
 const decorativeAlt = getPageFamilyDecorativeAlt(locale, family)
 ---
 
 {
-  sectionLabel && preview ? (
+  sectionLabel && preview && cardLabel ? (
     <section
-      class={['pf-index-featured', className].filter(Boolean).join(' ')}
+      class={[
+        'pf-index-featured',
+        family === 'writing' ? 'pf-index-featured--writing' : '',
+        family === 'creative' ? 'pf-index-featured--creative' : '',
+        className,
+      ]
+        .filter(Boolean)
+        .join(' ')}
       data-visual-id="PageFamilyFeaturedShell"
       aria-labelledby={`pf-featured-${family}-title`}
     >
@@ -42,9 +53,13 @@ const decorativeAlt = getPageFamilyDecorativeAlt(locale, family)
           />
         </div>
         <div class="pf-index-featured__copy">
+          <p class="pf-index-featured__card-label">{cardLabel}</p>
           <span class="pf-index-empty__line pf-index-empty__line--short" />
           <span class="pf-index-empty__line pf-index-empty__line--medium" />
           <span class="pf-index-empty__line" />
+          {actionLabel ? (
+            <span class="pf-index-featured__action">{actionLabel}</span>
+          ) : null}
         </div>
       </div>
     </section>

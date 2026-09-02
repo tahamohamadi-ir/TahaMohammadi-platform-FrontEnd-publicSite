@@ -14,14 +14,18 @@ interface Props {
   class?: string
 }
 
-const { locale, family, count = 3, class: className = '' } = Astro.props
+const { locale, family, count = 4, class: className = '' } = Astro.props
 const preview = getPageFamilyPreviewAsset(family)
 const decorativeAlt = getPageFamilyDecorativeAlt(locale, family)
 const rows = Array.from({ length: count }, (_, index) => index)
+const rowModifier =
+  family === 'writing' ? 'pf-index-row-placeholder--writing' : ''
 ---
 
 <div
-  class={['pf-index-row-placeholder', className].filter(Boolean).join(' ')}
+  class={['pf-index-row-placeholder', rowModifier, className]
+    .filter(Boolean)
+    .join(' ')}
   data-visual-id="PageFamilyContentRowPlaceholder"
   aria-hidden="true"
 >
@@ -39,10 +43,14 @@ const rows = Array.from({ length: count }, (_, index) => index)
           />
         </div>
         <div class="pf-index-row-placeholder__lines">
+          <span class="pf-index-row-placeholder__category" />
           <span class="pf-index-empty__line pf-index-empty__line--short" />
           <span class="pf-index-empty__line pf-index-empty__line--medium" />
           <span class="pf-index-empty__line" />
         </div>
+        <span class="pf-index-row-placeholder__arrow" aria-hidden="true">
+          →
+        </span>
       </div>
     ))
   }

@@ -61,20 +61,34 @@ const filterLabels =
 
       <div
         slot="filters"
-        class="creative-page__filters pf-index-empty__filters"
+        class="creative-page__filters pf-index-empty__filters pf-index-empty__filters--collection"
         role="group"
         aria-label={filterLabels.region}
         aria-disabled="true"
       >
-        <p class="creative-page__filters-active">{filterLabels.allWork}</p>
+        <p class="creative-page__filters-active pf-index-empty__filter-active">
+          {filterLabels.allWork}
+        </p>
         <div class="creative-page__filters-controls">
-          <button type="button" class="pf-index-empty__filter-chip" disabled>
+          <button
+            type="button"
+            class="pf-index-empty__filter-chip pf-index-empty__filter-chip--dropdown"
+            disabled
+          >
             {filterLabels.medium}
           </button>
-          <button type="button" class="pf-index-empty__filter-chip" disabled>
+          <button
+            type="button"
+            class="pf-index-empty__filter-chip pf-index-empty__filter-chip--dropdown"
+            disabled
+          >
             {filterLabels.year}
           </button>
-          <button type="button" class="pf-index-empty__filter-chip" disabled>
+          <button
+            type="button"
+            class="pf-index-empty__filter-chip pf-index-empty__filter-chip--dropdown"
+            disabled
+          >
             {filterLabels.role}
           </button>
         </div>
@@ -82,6 +96,7 @@ const filterLabels =
           href={localePath(locale, 'contact')}
           label={filterLabels.contact}
           variant="standalone"
+          class="creative-page__filters-contact"
         />
       </div>
 
