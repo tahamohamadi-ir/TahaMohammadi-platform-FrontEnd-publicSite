@@ -204,7 +204,8 @@
   border: 1px solid var(--color-border-subtle);
 }
 
-.pf-index-constellation__backplate :global(.pf-index-constellation__backplate-img),
+.pf-index-constellation__backplate
+  :global(.pf-index-constellation__backplate-img),
 .pf-index-constellation__backplate :global(img),
 .pf-index-constellation__backplate :global(.theme-picture),
 .pf-index-constellation__backplate :global(.theme-picture__mount),

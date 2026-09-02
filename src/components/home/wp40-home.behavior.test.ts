@@ -230,11 +230,12 @@ describe('WP-40 explore rails', () => {
 })
 
 describe('WP-40 collaboration CTA', () => {
-  it('renders unavailable contact and CV actions without anchors', async () => {
+  it('renders contact and CV navigation actions for both locales', async () => {
     for (const locale of ['en', 'fa'] as const) {
       const html = await render(HomeCollaborationCta, { locale })
-      expect(html).not.toMatch(/href="\/(en|fa)\/(contact|cv)\/"/)
-      expect(html.match(/<button[^>]*disabled/g)?.length).toBe(2)
+      expect(html).toMatch(new RegExp(`href="/${locale}/contact/"`))
+      expect(html).toMatch(new RegExp(`href="/${locale}/cv/"`))
+      expect(html).not.toMatch(/disabled/)
       expect(html).not.toMatch(/\/media\//)
     }
   })

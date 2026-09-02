@@ -46,7 +46,7 @@ Status: `[x]` done, `[ ]` open, `[~]` in progress.
 
 **After `PUBLIC-190` PASS (owner evidence only):** unfreezes visual acceptance for `PUBLIC-201` through `PUBLIC-221` (routes already implemented); allows `PUBLIC-350` release-evidence `ready` evaluation to proceed past owner-acceptance blocker; enables coordination R4 page-family adoption checklist and R8 quality closure sign-off per `docs/quality/PUBLIC-350-RELEASE-EVIDENCE.md`. Does **not** auto-complete PF-02 detail (still needs published API slug or honest preview shell), staging smoke (`PUBLIC-320`), or production telemetry (`PUBLIC-290`).
 
-- [~] **PUBLIC-190** Home `/{locale}/` — **structure complete; visual acceptance open**. No final acceptance claim; independent QA and owner approval remain required.
+- [~] **PUBLIC-190** Home `/{locale}/` — **structure complete; visual acceptance open**. PF empty-state chrome + home FA mobile CTAs + gateway spacing; CSS-first motion ADR (`ADR-ANIMATION.md`). Independent QA and owner approval remain required — **do not mark PASS**.
 - [x] **PUBLIC-200** About — profile sections; fetch only `/api/profiles/{locale}/about`. Unavailable ContentState when unpublished; anchor sections when API returns published profile.
 - [~] **PUBLIC-201** Research + publications indexes and details — implemented; frozen pending visual acceptance. Evidence: `public-201.behavior.test.ts`, `public-201.content.test.ts`, routes `/{locale}/research/`, `/{locale}/publications/`.
 - [~] **PUBLIC-210** Projects index + detail; sanitized media only — implemented; frozen pending visual acceptance. Evidence: `public-210.behavior.test.ts`, `public-210.content.test.ts`, routes `/{locale}/projects/`.

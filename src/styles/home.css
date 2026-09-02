@@ -589,4 +589,17 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-3);
+  inline-size: 100%;
+}
+
+@media (max-width: 479px) {
+  .hm-collab__actions :global(.ui-button) {
+    flex: 1 1 calc(50% - var(--space-2));
+    min-inline-size: 0;
+    padding-inline: var(--space-3);
+  }
+
+  [dir='rtl'] .hm-collab__actions {
+    justify-content: stretch;
+  }
 }

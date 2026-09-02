@@ -15,6 +15,7 @@ const ADR_FILES = [
   'docs/architecture/ADR-DEPLOYMENT.md',
   'docs/architecture/ADR-TESTING.md',
   'docs/architecture/ADR-BROWSER-SUPPORT.md',
+  'docs/architecture/ADR-ANIMATION.md',
 ] as const
 
 function readRepoFile(relativePath: string): string {

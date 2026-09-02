@@ -98,9 +98,10 @@ export function getPageFamilyHeroMedia(
 }
 
 /** List/grid decorative preview asset for empty-state row shells. */
-export function getPageFamilyPreviewAsset(
-  family: PageFamilyChromeId,
-): { assetId: RuntimeAssetId; mediaSlot: MediaSlot } {
+export function getPageFamilyPreviewAsset(family: PageFamilyChromeId): {
+  assetId: RuntimeAssetId
+  mediaSlot: MediaSlot
+} {
   switch (family) {
     case 'creative':
       return {

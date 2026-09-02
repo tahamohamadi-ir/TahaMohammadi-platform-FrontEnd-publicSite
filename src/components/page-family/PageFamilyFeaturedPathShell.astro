@@ -33,26 +33,24 @@ const steps = [0, 1, 2] as const
       </h2>
 
       <ol class="pf-index-path__track">
-        {
-          steps.map((index) => (
-            <li class="pf-index-path__step">
-              <div class="pf-index-path__thumb">
-                <PromotedPicture
-                  assetId={preview.assetId}
-                  mediaSlot={preview.mediaSlot}
-                  locale={locale}
-                  alt={decorativeAlt}
-                  imgClass="pf-index-path__image"
-                  loading={index === 0 ? 'eager' : 'lazy'}
-                />
-              </div>
-              <div class="pf-index-path__copy">
-                <span class="pf-index-empty__line pf-index-empty__line--short" />
-                <span class="pf-index-empty__line pf-index-empty__line--medium" />
-              </div>
-            </li>
-          ))
-        }
+        {steps.map((index) => (
+          <li class="pf-index-path__step">
+            <div class="pf-index-path__thumb">
+              <PromotedPicture
+                assetId={preview.assetId}
+                mediaSlot={preview.mediaSlot}
+                locale={locale}
+                alt={decorativeAlt}
+                imgClass="pf-index-path__image"
+                loading={index === 0 ? 'eager' : 'lazy'}
+              />
+            </div>
+            <div class="pf-index-path__copy">
+              <span class="pf-index-empty__line pf-index-empty__line--short" />
+              <span class="pf-index-empty__line pf-index-empty__line--medium" />
+            </div>
+          </li>
+        ))}
       </ol>
     </section>
   ) : null

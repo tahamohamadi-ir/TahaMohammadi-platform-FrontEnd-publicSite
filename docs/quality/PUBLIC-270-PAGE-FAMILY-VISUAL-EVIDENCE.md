@@ -144,6 +144,7 @@ Manual owner compare columns in the matrix above remain `[ ]` until explicit own
 
 ## Blockers and notes
 
+- **Structural chrome (2026-09-02 @ `6246b12+`):** PF empty states use shared page-family shells and promoted decorative media (`src/components/page-family/`, `src/lib/page-family-empty-chrome.ts`). Motion is CSS-first per `docs/architecture/ADR-ANIMATION.md` — no GSAP/Three.js. Regenerate captures before owner compare.
 - **PF-02 detail:** capture runs only when a published creative detail route exists in the static build; otherwise index/unavailable evidence is recorded and detail remains open.
 - **PUBLIC-190:** remains structure complete with visual acceptance **open** (`REVISE` at coordination `a17f3a5`); independent QA `PASS` and explicit owner approval still required. Do not mark PASS without owner evidence.
 - **PUBLIC-280:** scaffold added (`docs/quality/PUBLIC-280-RESPONSIVE-MATRIX-EVIDENCE.md`); PF-01 six-width stubs follow stable PUBLIC-270 captures.

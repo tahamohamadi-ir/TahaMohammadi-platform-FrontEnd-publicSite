@@ -3,7 +3,7 @@ import Button from '../ui/Button.astro'
 import PromotedPicture from '../media/PromotedPicture.astro'
 import { getHomeCollaborationContent } from '../../lib/home-content'
 import { BRAND_MARK_ASSET_ID } from '../../lib/media/promoted-media'
-import type { Locale } from '../../lib/navigation'
+import { localePath, type Locale } from '../../lib/navigation'
 
 interface Props {
   locale: Locale
@@ -29,8 +29,16 @@ const content = getHomeCollaborationContent(locale)
         {content.message}
       </h2>
       <div class="hm-collab__actions">
-        <Button label={content.connectLabel} variant="primary" disabled />
-        <Button label={content.cvLabel} variant="secondary" disabled />
+        <Button
+          label={content.connectLabel}
+          variant="primary"
+          href={localePath(locale, 'contact')}
+        />
+        <Button
+          label={content.cvLabel}
+          variant="secondary"
+          href={localePath(locale, 'cv')}
+        />
       </div>
     </div>
   </div>

@@ -9,5 +9,6 @@ Repository-local ADRs document implementation choices evidenced in this codebase
 | [ADR-DEPLOYMENT](ADR-DEPLOYMENT.md)           | Static `dist/` artifact                  | Accepted |
 | [ADR-TESTING](ADR-TESTING.md)                 | Vitest + Playwright tag matrix           | Accepted |
 | [ADR-BROWSER-SUPPORT](ADR-BROWSER-SUPPORT.md) | Chromium automation + WCAG 2.2 AA target | Accepted |
+| [ADR-ANIMATION](ADR-ANIMATION.md)             | CSS-first motion; no GSAP/Three.js       | Accepted |
 
 See also [ARCHITECTURE.md](ARCHITECTURE.md) for layer overview.

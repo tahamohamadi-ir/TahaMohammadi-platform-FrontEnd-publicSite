@@ -33,11 +33,7 @@ const decorativeAlt = getPageFamilyDecorativeAlt(locale, family)
 ---
 
 <section
-  class={[
-    'pf-index-hero',
-    portal ? 'pf-index-hero--portal' : '',
-    className,
-  ]
+  class={['pf-index-hero', portal ? 'pf-index-hero--portal' : '', className]
     .filter(Boolean)
     .join(' ')}
   data-visual-id="PageFamilyIndexHero"
@@ -79,11 +75,11 @@ const decorativeAlt = getPageFamilyDecorativeAlt(locale, family)
       ) : (
         <div class="pf-index-hero__media" aria-hidden="true">
           <PromotedPicture
-          assetId={heroMedia.assetId}
-          mediaSlot={heroMedia.mediaSlot}
-          locale={locale}
-          alt={decorativeAlt}
-          imgClass="pf-index-hero__image"
+            assetId={heroMedia.assetId}
+            mediaSlot={heroMedia.mediaSlot}
+            locale={locale}
+            alt={decorativeAlt}
+            imgClass="pf-index-hero__image"
           />
         </div>
       )
