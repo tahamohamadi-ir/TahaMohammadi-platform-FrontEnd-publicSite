@@ -28,6 +28,7 @@ describe('PUBLIC-210 projects pages', () => {
     expect(html).toMatch(/<h1[\s>]/)
     expect(html).toMatch(/projects-page__filters/)
     expect(html).toMatch(/data-visual-id="PageFamilyIndexHero"/)
+    expect(html).toMatch(/data-visual-id="PageFamilyFeaturedShell"/)
     expect(html).toMatch(/data-visual-id="PageFamilyContentRowPlaceholder"/)
   })
 

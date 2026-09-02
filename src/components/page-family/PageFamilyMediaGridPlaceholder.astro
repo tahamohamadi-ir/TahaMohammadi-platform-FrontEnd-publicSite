@@ -50,8 +50,7 @@ const cells: GridCell[] = [
       <div
         class:list={[
           'pf-index-grid-placeholder__cell',
-          cell.modifier &&
-            `pf-index-grid-placeholder__cell--${cell.modifier}`,
+          cell.modifier && `pf-index-grid-placeholder__cell--${cell.modifier}`,
         ]}
       >
         {cell.filled ? (

@@ -1,7 +1,7 @@
 ---
 import CollectionIndexTemplate from '../templates/CollectionIndexTemplate.astro'
 import PageFamilyIndexHero from '../page-family/PageFamilyIndexHero.astro'
-import PageFamilyContentRowPlaceholder from '../page-family/PageFamilyContentRowPlaceholder.astro'
+import PageFamilyBibliographyRowPlaceholder from '../page-family/PageFamilyBibliographyRowPlaceholder.astro'
 import ContentState from '../state/ContentState.astro'
 import {
   getPublicationsUnavailableCopy,
@@ -88,10 +88,7 @@ const filterLabels =
         slot="records"
         class="publications-page__grid-shell pf-index-empty__shell"
       >
-        <PageFamilyContentRowPlaceholder
-          locale={locale}
-          family="publications"
-        />
+        <PageFamilyBibliographyRowPlaceholder locale={locale} count={3} />
         <ContentState
           variant="empty"
           locale={locale}

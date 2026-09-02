@@ -1,0 +1,54 @@
+---
+import type { Locale } from '../../lib/navigation'
+
+interface Props {
+  locale: Locale
+  class?: string
+}
+
+const { locale, class: className = '' } = Astro.props
+const cards =
+  locale === 'en'
+    ? [
+        { title: 'Research questions', tone: 'compass' },
+        { title: 'Methods', tone: 'methods' },
+        { title: 'Impact', tone: 'impact' },
+      ]
+    : [
+        { title: 'پرسش‌های پژوهشی', tone: 'compass' },
+        { title: 'روش‌ها', tone: 'methods' },
+        { title: 'اثر', tone: 'impact' },
+      ]
+---
+
+<section
+  class={['pf-index-research-fit', className].filter(Boolean).join(' ')}
+  data-visual-id="PageFamilyResearchFitShell"
+  aria-labelledby="pf-research-fit-title"
+>
+  <h2 id="pf-research-fit-title" class="pf-index-research-fit__title">
+    {
+      locale === 'en'
+        ? 'Interconnected themes. Unified by human impact.'
+        : 'موضوعات به‌هم‌پیوسته. یکپارچه با اثر انسانی.'
+    }
+  </h2>
+
+  <div class="pf-index-research-fit__grid" aria-hidden="true">
+    {
+      cards.map((card) => (
+        <article class="pf-index-research-fit__card">
+          <span
+            class={[
+              'pf-index-research-fit__icon',
+              `pf-index-research-fit__icon--${card.tone}`,
+            ].join(' ')}
+          />
+          <h3 class="pf-index-research-fit__card-title">{card.title}</h3>
+          <span class="pf-index-empty__line pf-index-empty__line--medium" />
+          <span class="pf-index-empty__line pf-index-empty__line--short" />
+        </article>
+      ))
+    }
+  </div>
+</section>

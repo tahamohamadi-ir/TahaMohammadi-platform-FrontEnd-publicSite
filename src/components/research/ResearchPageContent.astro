@@ -2,6 +2,7 @@
 import CollectionIndexTemplate from '../templates/CollectionIndexTemplate.astro'
 import PageFamilyIndexHero from '../page-family/PageFamilyIndexHero.astro'
 import PageFamilyConstellationShell from '../page-family/PageFamilyConstellationShell.astro'
+import PageFamilyResearchFitShell from '../page-family/PageFamilyResearchFitShell.astro'
 import PageFamilyContentRowPlaceholder from '../page-family/PageFamilyContentRowPlaceholder.astro'
 import ContentState from '../state/ContentState.astro'
 import Link from '../ui/Link.astro'
@@ -49,7 +50,7 @@ const tabLabels =
         slot="lead"
         locale={locale}
         family="research"
-        eyebrow={locale === 'en' ? 'Research program' : 'برنامه پژوهشی'}
+        eyebrow={locale === 'en' ? 'Research profile' : 'پروفایل پژوهشی'}
         title={routeTitle}
       />
 
@@ -107,7 +108,38 @@ const tabLabels =
         slot="records"
         class="research-page__grid-shell pf-index-empty__shell"
       >
-        <PageFamilyConstellationShell />
+        <section
+          class="research-page__constellation"
+          aria-labelledby="research-constellation-title"
+        >
+          <h2
+            id="research-constellation-title"
+            class="research-page__section-title"
+          >
+            {locale === 'en' ? 'Research constellation' : 'صورت‌فلکی پژوهشی'}
+          </h2>
+          <PageFamilyConstellationShell />
+        </section>
+
+        <PageFamilyResearchFitShell locale={locale} />
+
+        <section
+          class="research-page__directions"
+          aria-labelledby="research-directions-empty-title"
+        >
+          <h2
+            id="research-directions-empty-title"
+            class="research-page__section-title"
+          >
+            {locale === 'en' ? 'Research directions' : 'جهت‌های پژوهشی'}
+          </h2>
+          <PageFamilyContentRowPlaceholder
+            locale={locale}
+            family="research"
+            count={3}
+            variant="direction"
+          />
+        </section>
 
         <section
           class="research-page__topics"
@@ -123,6 +155,7 @@ const tabLabels =
             locale={locale}
             family="research"
             count={2}
+            variant="direction"
           />
         </section>
 
@@ -141,7 +174,7 @@ const tabLabels =
         slot="lead"
         locale={locale}
         family="research"
-        eyebrow={locale === 'en' ? 'Research program' : 'برنامه پژوهشی'}
+        eyebrow={locale === 'en' ? 'Research profile' : 'پروفایل پژوهشی'}
         title={routeTitle}
         summary={model.statement?.title ?? undefined}
       />

@@ -19,7 +19,8 @@ const { locale, family, count = 3, class: className = '' } = Astro.props
 const sectionLabel = getPageFamilyListSectionLabel(locale, family)
 const preview = sectionLabel ? getPageFamilyPreviewAsset(family) : null
 const decorativeAlt = getPageFamilyDecorativeAlt(locale, family)
-const cards = sectionLabel && preview ? Array.from({ length: count }, (_, i) => i) : null
+const cards =
+  sectionLabel && preview ? Array.from({ length: count }, (_, i) => i) : null
 ---
 
 {

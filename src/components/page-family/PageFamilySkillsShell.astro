@@ -25,7 +25,10 @@ const groups =
   sectionLabel !== null
     ? Array.from({ length: groupCount }, (_, groupIndex) => ({
         id: groupIndex,
-        chips: Array.from({ length: chipsPerGroup }, (_, chipIndex) => chipIndex),
+        chips: Array.from(
+          { length: chipsPerGroup },
+          (_, chipIndex) => chipIndex,
+        ),
       }))
     : null
 ---
