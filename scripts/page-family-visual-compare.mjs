@@ -101,63 +101,158 @@ export const PAGE_FAMILY_PF02_OPTIONAL = {
   optional: true,
 }
 
+/**
+ * Home concept references with WP-40 / templates.json viewport authority.
+ * PNG exports are 853px wide; `referenceViewport` is the design-frame width.
+ */
+export const HOME_CONCEPT_REFERENCES = {
+  desktopLight: {
+    concept: 'home-light-concept-v3-final.png',
+    conceptDir: 'concepts',
+    referenceViewport: 1440,
+    locales: ['en'],
+    themes: ['light'],
+  },
+  desktopDark: {
+    concept: 'home-dark-concept-v3-final.png',
+    conceptDir: 'concepts',
+    referenceViewport: 1440,
+    locales: ['en'],
+    themes: ['dark'],
+  },
+  mobileFaLight: {
+    concept: 'home-mobile-fa-light-concept-v1.png',
+    conceptDir: 'concepts',
+    referenceViewport: 390,
+    locales: ['fa'],
+    themes: ['light'],
+  },
+  gatewayDark: {
+    concept: 'language-gateway-dark-concept-v1.png',
+    conceptDir: 'concepts',
+    referenceViewport: 1440,
+    locales: ['neutral'],
+    themes: ['dark'],
+  },
+}
+
+/** @param {typeof HOME_CONCEPT_REFERENCES[keyof typeof HOME_CONCEPT_REFERENCES]} ref */
+function homeConceptEntry(ref) {
+  return {
+    concept: ref.concept,
+    conceptDir: ref.conceptDir,
+    referenceViewport: ref.referenceViewport,
+  }
+}
+
+/**
+ * Pick a concept only when capture viewport matches authority (same width or
+ * nearest mobile reflow reference). Avoids pairing 768px tablet captures with
+ * 1440 desktop composition references.
+ *
+ * @param {{ captureViewport: number, locale: string, theme: string, target?: string }} capture
+ */
+export function resolveHomeConceptReference(capture) {
+  if (capture.target === 'gateway') {
+    return homeConceptEntry(HOME_CONCEPT_REFERENCES.gatewayDark)
+  }
+
+  const candidates = Object.values(HOME_CONCEPT_REFERENCES).filter(
+    (ref) =>
+      ref.locales.includes(capture.locale) &&
+      ref.themes.includes(capture.theme),
+  )
+
+  if (candidates.length === 0) {
+    return null
+  }
+
+  const sorted = [...candidates].sort(
+    (left, right) =>
+      Math.abs(left.referenceViewport - capture.captureViewport) -
+      Math.abs(right.referenceViewport - capture.captureViewport),
+  )
+  const best = sorted[0]
+  const widthDelta = Math.abs(best.referenceViewport - capture.captureViewport)
+
+  // WP-40: compare at the same viewport. Allow one breakpoint step for mobile
+  // reflow (390 concept vs 768 tablet capture for FA only).
+  const maxDelta =
+    capture.locale === 'fa' && best.referenceViewport === 390 ? 400 : 0
+
+  if (widthDelta > maxDelta) {
+    return null
+  }
+
+  return homeConceptEntry(best)
+}
+
 /** Home / gateway captures from wp40-home.e2e.ts (supplement PUBLIC-270). */
 export const HOME_VISUAL_ENTRIES = [
   {
     label: 'Home EN light (768)',
     captureFile: 'wp40-home-en-768-light.png',
-    concept: 'home-light-concept-v3-final.png',
-    conceptDir: 'concepts',
-    note: '768px reflow evidence; compare hierarchy at nearest concept width.',
+    captureViewport: 768,
+    locale: 'en',
+    theme: 'light',
+    note: '768px tablet reflow — no EN tablet concept in authority; review capture without side-by-side concept.',
   },
   {
     label: 'Home EN dark (768)',
     captureFile: 'wp40-home-en-768-dark.png',
-    concept: 'home-dark-concept-v3-final.png',
-    conceptDir: 'concepts',
-    note: '768px reflow evidence; compare hierarchy at nearest concept width.',
+    captureViewport: 768,
+    locale: 'en',
+    theme: 'dark',
+    note: '768px tablet reflow — no EN tablet/dark narrow concept; review capture only.',
   },
   {
     label: 'Home FA light (768)',
     captureFile: 'wp40-home-fa-768-light.png',
-    concept: 'home-mobile-fa-light-concept-v1.png',
-    conceptDir: 'concepts',
-    note: 'FA narrow layout reference; 768px implementation capture.',
+    captureViewport: 768,
+    locale: 'fa',
+    theme: 'light',
+    note: '768px tablet reflow paired with 390 RTL mobile concept (nearest narrow authority).',
   },
   {
     label: 'Home FA dark (768)',
     captureFile: 'wp40-home-fa-768-dark.png',
-    concept: 'home-dark-concept-v3-final.png',
-    conceptDir: 'concepts',
-    note: 'No dedicated FA dark concept; use EN dark for hierarchy review.',
+    captureViewport: 768,
+    locale: 'fa',
+    theme: 'dark',
+    note: '768px tablet reflow — no FA dark mobile concept in authority; review capture only.',
   },
   {
     label: 'Home EN light (200% zoom)',
     captureFile: 'wp40-home-en-200pct-light.png',
-    concept: 'home-light-concept-v3-final.png',
-    conceptDir: 'concepts',
-    note: 'Accessibility zoom evidence — not a pixel-perfect width match.',
+    captureViewport: 720,
+    locale: 'en',
+    theme: 'light',
+    note: 'Accessibility zoom evidence (720px viewport) — no width-matched EN concept; review readability only.',
   },
   {
     label: 'Home EN dark (200% zoom)',
     captureFile: 'wp40-home-en-200pct-dark.png',
-    concept: 'home-dark-concept-v3-final.png',
-    conceptDir: 'concepts',
-    note: 'Accessibility zoom evidence — not a pixel-perfect width match.',
+    captureViewport: 720,
+    locale: 'en',
+    theme: 'dark',
+    note: 'Accessibility zoom evidence (720px viewport) — no width-matched EN concept; review readability only.',
   },
   {
     label: 'Home FA light (200% zoom)',
     captureFile: 'wp40-home-fa-200pct-light.png',
-    concept: 'home-mobile-fa-light-concept-v1.png',
-    conceptDir: 'concepts',
-    note: 'Accessibility zoom evidence — not a pixel-perfect width match.',
+    captureViewport: 720,
+    locale: 'fa',
+    theme: 'light',
+    note: 'Accessibility zoom evidence paired with 390 RTL mobile concept (nearest narrow authority).',
   },
   {
     label: 'Gateway (200% zoom)',
     captureFile: 'wp40-gateway-200pct-light.png',
-    concept: null,
-    conceptDir: null,
-    note: 'Language gateway — no single concept reference; review route choice and readability.',
+    captureViewport: 720,
+    locale: 'neutral',
+    theme: 'light',
+    target: 'gateway',
+    note: 'Gateway layout vs dark concept reference — capture is light theme; compare language-choice affordance and scale only.',
   },
 ]
 
@@ -217,17 +312,23 @@ export function buildPublic270CompareRows(designAuthorityRoot) {
  * @param {string} designAuthorityRoot
  */
 export function buildHomeCompareRows(designAuthorityRoot) {
-  return HOME_VISUAL_ENTRIES.map((entry) => ({
-    label: entry.label,
-    captureFile: entry.captureFile,
-    capturePath: path.join(captureOutputDir, entry.captureFile),
-    conceptFile: entry.concept,
-    conceptPath: entry.concept
-      ? path.join(designAuthorityRoot, entry.conceptDir, entry.concept)
-      : null,
-    conceptRelative: entry.concept
-      ? `${entry.conceptDir}/${entry.concept}`
-      : null,
-    note: entry.note,
-  }))
+  return HOME_VISUAL_ENTRIES.map((entry) => {
+    const resolved = resolveHomeConceptReference(entry)
+
+    return {
+      label: entry.label,
+      captureFile: entry.captureFile,
+      capturePath: path.join(captureOutputDir, entry.captureFile),
+      captureViewport: entry.captureViewport,
+      conceptFile: resolved?.concept ?? null,
+      conceptPath: resolved
+        ? path.join(designAuthorityRoot, resolved.conceptDir, resolved.concept)
+        : null,
+      conceptRelative: resolved
+        ? `${resolved.conceptDir}/${resolved.concept}`
+        : null,
+      conceptViewport: resolved?.referenceViewport ?? null,
+      note: entry.note,
+    }
+  })
 }

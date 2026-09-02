@@ -118,9 +118,14 @@ Compare each implementation screenshot against the matching concept at the same 
 | `public-270-pf07-about-*-light.png`        | `concepts/page-families/about-cv-light.png`                    |
 | `public-270-pf07-cv-*-light.png`           | `concepts/page-families/about-cv-light.png`                    |
 | `public-270-pf08-*-dark.png`               | `concepts/page-families/contact-dark.png`                      |
-| `wp40-home-en-768-light.png`               | `concepts/home-light-concept-v3-final.png`                     |
-| `wp40-home-en-768-dark.png`                | `concepts/home-dark-concept-v3-final.png`                      |
-| `wp40-home-fa-768-light.png`               | `concepts/home-mobile-fa-light-concept-v1.png`                 |
+| `wp40-home-en-768-light.png`               | _(none — no EN tablet concept)_                                |
+| `wp40-home-en-768-dark.png`                | _(none — no EN tablet/dark narrow concept)_                    |
+| `wp40-home-fa-768-light.png`               | `concepts/home-mobile-fa-light-concept-v1.png` (390 mobile)    |
+| `wp40-home-fa-768-dark.png`                | _(none — no FA dark mobile concept)_                           |
+| `wp40-home-fa-200pct-light.png`            | `concepts/home-mobile-fa-light-concept-v1.png` (390 mobile)    |
+| `wp40-gateway-200pct-light.png`            | `concepts/language-gateway-dark-concept-v1.png` (layout only)  |
+
+768px EN captures no longer pair with 1440 desktop concepts. Pairing uses `resolveHomeConceptReference()` in `scripts/page-family-visual-compare.mjs`.
 
 Manual owner compare columns in the matrix above remain `[ ]` until explicit owner approval.
 

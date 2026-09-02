@@ -99,7 +99,7 @@ function buildHtml({ pfRows, homeRows, generatedAt }) {
       return `<section class="compare ${status}" id="${row.captureFile}">
   <header>
     <h2>${row.label}</h2>
-    <p class="meta"><code>${row.captureFile}</code>${row.conceptRelative ? ` ↔ <code>${row.conceptRelative}</code>` : ''}</p>
+    <p class="meta"><code>${row.captureFile}</code>${row.conceptRelative ? ` ↔ <code>${row.conceptRelative}</code>` : ''}${row.captureViewport ? ` · capture ${row.captureViewport}px` : ''}${row.conceptViewport ? ` · concept @${row.conceptViewport}px` : ''}</p>
     ${row.note ? `<p class="note">${row.note}</p>` : ''}
   </header>
   <div class="panels">

@@ -50,21 +50,54 @@ describe('PUBLIC-270 visual compare owner assist', () => {
     ).toBe(true)
   })
 
-  it('maps home WP-40 captures to concept references under concepts/', async () => {
-    const { buildHomeCompareRows, defaultDesignAuthorityRoot } = await import(
-      mappingModuleUrl
-    )
+  it('maps home WP-40 captures to viewport-matched concept references', async () => {
+    const {
+      HOME_VISUAL_ENTRIES,
+      buildHomeCompareRows,
+      defaultDesignAuthorityRoot,
+      resolveHomeConceptReference,
+    } = await import(mappingModuleUrl)
 
     const rows = buildHomeCompareRows(defaultDesignAuthorityRoot)
-    expect(rows.length).toBeGreaterThanOrEqual(7)
+    expect(rows.length).toBe(HOME_VISUAL_ENTRIES.length)
+
+    const en768 = rows.filter((row) => row.captureFile.includes('en-768'))
+    expect(en768).toHaveLength(2)
+    expect(en768.every((row) => row.conceptRelative === null)).toBe(true)
+
+    const fa768Light = rows.find(
+      (row) => row.captureFile === 'wp40-home-fa-768-light.png',
+    )
+    expect(fa768Light?.conceptRelative).toBe(
+      'concepts/home-mobile-fa-light-concept-v1.png',
+    )
+    expect(fa768Light?.conceptViewport).toBe(390)
+
+    const fa768Dark = rows.find(
+      (row) => row.captureFile === 'wp40-home-fa-768-dark.png',
+    )
+    expect(fa768Dark?.conceptRelative).toBeNull()
+
+    const en200 = rows.filter((row) => row.captureFile.includes('en-200pct'))
+    expect(en200.every((row) => row.conceptRelative === null)).toBe(true)
+
+    const gateway = rows.find((row) => row.captureFile.includes('gateway'))
+    expect(gateway?.conceptRelative).toBe(
+      'concepts/language-gateway-dark-concept-v1.png',
+    )
+
+    for (const entry of HOME_VISUAL_ENTRIES) {
+      const resolved = resolveHomeConceptReference(entry)
+      const row = rows.find(
+        (candidate) => candidate.captureFile === entry.captureFile,
+      )
+      expect(row?.conceptFile).toBe(resolved?.concept ?? null)
+    }
 
     const withConcept = rows.filter((row) => row.conceptRelative)
     expect(
       withConcept.every((row) => row.conceptRelative.startsWith('concepts/')),
     ).toBe(true)
-
-    const gateway = rows.find((row) => row.captureFile.includes('gateway'))
-    expect(gateway?.conceptRelative).toBeNull()
   })
 
   it('ships the HTML report generator without claiming acceptance', () => {
