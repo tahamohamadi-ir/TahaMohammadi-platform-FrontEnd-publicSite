@@ -13,6 +13,11 @@ import {
   getTeachingUnavailableCopy,
   type TeachingIndexModel,
 } from '../../lib/teaching-content'
+import PageFamilyTeachingFilterDropdowns from '../page-family/PageFamilyTeachingFilterDropdowns.astro'
+import {
+  getPageFamilyHeroSummary,
+  getTeachingBrowsePathsLabel,
+} from '../../lib/page-family-empty-chrome'
 import { localePath, type Locale } from '../../lib/navigation'
 
 interface Props {
@@ -48,13 +53,15 @@ const filterLabels =
 
 {
   model.status === 'unavailable' ? (
-    <EditorialIndexTemplate class="teaching-page teaching-page--empty">
+    <EditorialIndexTemplate class="teaching-page teaching-page--empty teaching-page--grid">
       <PageFamilyIndexHero
         slot="lead"
         locale={locale}
         family="teaching"
         eyebrow={locale === 'en' ? 'Courses & talks' : 'دوره‌ها و سخنرانی‌ها'}
         title={getTeachingRouteTitle(locale)}
+        summary={getPageFamilyHeroSummary(locale, 'teaching')}
+        browseCtaLabel={getTeachingBrowsePathsLabel(locale)}
       />
 
       <PageFamilyFeaturedPathShell
@@ -72,19 +79,39 @@ const filterLabels =
       >
         <p class="teaching-page__filters-active">{filterLabels.allPaths}</p>
         <div class="teaching-page__filters-controls">
-          <button type="button" class="pf-index-empty__filter-chip" disabled>
+          <button
+            type="button"
+            class="pf-index-empty__filter-chip pf-index-empty__filter-chip--rect"
+            disabled
+          >
             {filterLabels.guides}
           </button>
-          <button type="button" class="pf-index-empty__filter-chip" disabled>
+          <button
+            type="button"
+            class="pf-index-empty__filter-chip pf-index-empty__filter-chip--rect"
+            disabled
+          >
             {filterLabels.tutorials}
           </button>
-          <button type="button" class="pf-index-empty__filter-chip" disabled>
+          <button
+            type="button"
+            class="pf-index-empty__filter-chip pf-index-empty__filter-chip--rect"
+            disabled
+          >
             {filterLabels.notes}
           </button>
-          <button type="button" class="pf-index-empty__filter-chip" disabled>
+          <button
+            type="button"
+            class="pf-index-empty__filter-chip pf-index-empty__filter-chip--rect"
+            disabled
+          >
             {filterLabels.paths}
           </button>
-          <button type="button" class="pf-index-empty__filter-chip" disabled>
+          <button
+            type="button"
+            class="pf-index-empty__filter-chip pf-index-empty__filter-chip--rect"
+            disabled
+          >
             {filterLabels.resources}
           </button>
         </div>
@@ -96,6 +123,7 @@ const filterLabels =
           aria-hidden="true"
           tabindex="-1"
         />
+        <PageFamilyTeachingFilterDropdowns locale={locale} />
       </div>
 
       <div

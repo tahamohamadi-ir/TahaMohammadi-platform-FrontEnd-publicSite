@@ -1,4 +1,5 @@
 ---
+import Button from '../ui/Button.astro'
 import { getCmsPlaceholderCopy } from '../../lib/page-family-empty-chrome'
 import type { Locale } from '../../lib/navigation'
 
@@ -83,8 +84,6 @@ const cards = Array.from({ length: count }, (_, index) => index)
   </div>
 
   <p class="pf-index-split-timeline__cta">
-    <button type="button" class="pf-index-split-timeline__cta-btn" disabled>
-      {viewAllLabel}
-    </button>
+    <Button label={viewAllLabel} variant="secondary" disabled />
   </p>
 </section>

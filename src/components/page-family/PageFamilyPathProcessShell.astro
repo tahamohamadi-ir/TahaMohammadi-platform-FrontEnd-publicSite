@@ -8,9 +8,50 @@ interface Props {
 }
 
 const { locale, class: className = '' } = Astro.props
-const steps = getTeachingPathProcessSteps(locale)
 const sectionLabel =
   locale === 'en' ? 'How a path works' : 'مسیر یادگیری چگونه کار می‌کند'
+const steps =
+  locale === 'en'
+    ? [
+        {
+          label: 'Overview',
+          description: 'What the path covers and who it is for.',
+        },
+        {
+          label: 'Lessons',
+          description: 'Ordered modules with checkpoints and practice.',
+        },
+        {
+          label: 'Resources',
+          description: 'Downloads, references, and supporting material.',
+        },
+        {
+          label: 'References',
+          description: 'Further reading and related research links.',
+        },
+      ]
+    : [
+        {
+          label: 'نمای کلی',
+          description: 'پوشش مسیر و مخاطب هدف.',
+        },
+        {
+          label: 'درس‌ها',
+          description: 'ماژول‌های مرتب‌شده با تمرین و ارزیابی.',
+        },
+        {
+          label: 'منابع',
+          description: 'دانلودها، مراجع و مطالب تکمیلی.',
+        },
+        {
+          label: 'مراجع',
+          description: 'مطالعه بیشتر و پیوندهای پژوهشی مرتبط.',
+        },
+      ]
+
+if (steps.length !== getTeachingPathProcessSteps(locale).length) {
+  throw new Error('Teaching path process step count mismatch')
+}
 ---
 
 <section
@@ -24,13 +65,13 @@ const sectionLabel =
 
   <ol class="pf-index-path-process__track" aria-hidden="true">
     {
-      steps.map((step, index) => (
+      steps.map((step) => (
         <li class="pf-index-path-process__step">
           <span class="pf-index-path-process__icon" />
-          <span class="pf-index-path-process__label">{step}</span>
-          {index < steps.length - 1 ? (
-            <span class="pf-index-path-process__arrow">→</span>
-          ) : null}
+          <div class="pf-index-path-process__copy">
+            <span class="pf-index-path-process__label">{step.label}</span>
+            <span class="pf-index-path-process__desc">{step.description}</span>
+          </div>
         </li>
       ))
     }

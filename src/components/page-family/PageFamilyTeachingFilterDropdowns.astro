@@ -1,0 +1,46 @@
+---
+import type { Locale } from '../../lib/navigation'
+
+interface Props {
+  locale: Locale
+  class?: string
+}
+
+const { locale, class: className = '' } = Astro.props
+const labels =
+  locale === 'en'
+    ? {
+        region: 'Learning refinements',
+        level: 'Level: All',
+        topic: 'Topic: All',
+        sort: 'Sort: Latest',
+      }
+    : {
+        region: 'پالایش‌های یادگیری',
+        level: 'سطح: همه',
+        topic: 'موضوع: همه',
+        sort: 'مرتب‌سازی: جدیدترین',
+      }
+---
+
+<div
+  class={['pf-index-filter-dropdowns', className].filter(Boolean).join(' ')}
+  data-visual-id="PageFamilyTeachingFilterDropdowns"
+  role="group"
+  aria-label={labels.region}
+  aria-disabled="true"
+>
+  <button type="button" class="pf-index-filter-dropdowns__control" disabled>
+    {labels.level}
+  </button>
+  <button type="button" class="pf-index-filter-dropdowns__control" disabled>
+    {labels.topic}
+  </button>
+  <button
+    type="button"
+    class="pf-index-filter-dropdowns__control pf-index-filter-dropdowns__control--sort"
+    disabled
+  >
+    {labels.sort}
+  </button>
+</div>

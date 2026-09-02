@@ -1,6 +1,6 @@
 ---
 import {
-  getPageFamilyThemeExploreLabels,
+  getPageFamilyThemeExploreItems,
   getPageFamilyThemeExploreSectionLabel,
   type PageFamilyChromeId,
 } from '../../lib/page-family-empty-chrome'
@@ -14,11 +14,11 @@ interface Props {
 
 const { locale, family, class: className = '' } = Astro.props
 const sectionLabel = getPageFamilyThemeExploreSectionLabel(locale, family)
-const themeLabels = getPageFamilyThemeExploreLabels(locale, family)
+const themeItems = getPageFamilyThemeExploreItems(locale, family)
 ---
 
 {
-  sectionLabel && themeLabels ? (
+  sectionLabel && themeItems ? (
     <section
       class={['pf-index-theme-explore', className].filter(Boolean).join(' ')}
       data-visual-id="PageFamilyThemeExploreShell"
@@ -30,10 +30,18 @@ const themeLabels = getPageFamilyThemeExploreLabels(locale, family)
       >
         {sectionLabel}
       </h2>
-      <ul class="pf-index-theme-explore__chips" aria-hidden="true">
-        {themeLabels.map((label) => (
+      <ul class="pf-index-theme-explore__cards" aria-hidden="true">
+        {themeItems.map((item) => (
           <li>
-            <span class="pf-index-theme-explore__chip">{label}</span>
+            <div class="pf-index-theme-explore__card">
+              <span
+                class={[
+                  'pf-index-theme-explore__icon',
+                  `pf-index-theme-explore__icon--${item.tone}`,
+                ].join(' ')}
+              />
+              <span class="pf-index-theme-explore__label">{item.label}</span>
+            </div>
           </li>
         ))}
       </ul>

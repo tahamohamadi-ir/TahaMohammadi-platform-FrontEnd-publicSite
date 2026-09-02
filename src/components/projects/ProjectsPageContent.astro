@@ -12,6 +12,9 @@ import {
   getProjectsUnavailableCopy,
   type ProjectsIndexModel,
 } from '../../lib/projects-content'
+import {
+  getPageFamilyHeroSummary,
+} from '../../lib/page-family-empty-chrome'
 import { localePath, type Locale } from '../../lib/navigation'
 
 interface Props {
@@ -47,13 +50,15 @@ const filterLabels =
 
 {
   model.status === 'unavailable' ? (
-    <CollectionIndexTemplate class="projects-page projects-page--empty">
+    <CollectionIndexTemplate class="projects-page projects-page--empty projects-page--grid">
       <PageFamilyIndexHero
         slot="lead"
         locale={locale}
         family="projects"
+        atmosphere
         eyebrow={locale === 'en' ? 'Selected evidence' : 'شواهد منتخب'}
         title={getProjectsRouteTitle(locale)}
+        summary={getPageFamilyHeroSummary(locale, 'projects')}
       />
 
       <PageFamilyFeaturedShell
@@ -71,19 +76,39 @@ const filterLabels =
       >
         <p class="projects-page__filters-active">{filterLabels.allProjects}</p>
         <div class="projects-page__filters-controls">
-          <button type="button" class="pf-index-empty__filter-chip" disabled>
+          <button
+            type="button"
+            class="pf-index-empty__filter-chip pf-index-empty__filter-chip--rect"
+            disabled
+          >
             {filterLabels.research}
           </button>
-          <button type="button" class="pf-index-empty__filter-chip" disabled>
+          <button
+            type="button"
+            class="pf-index-empty__filter-chip pf-index-empty__filter-chip--rect"
+            disabled
+          >
             {filterLabels.ai}
           </button>
-          <button type="button" class="pf-index-empty__filter-chip" disabled>
+          <button
+            type="button"
+            class="pf-index-empty__filter-chip pf-index-empty__filter-chip--rect"
+            disabled
+          >
             {filterLabels.dataSystems}
           </button>
-          <button type="button" class="pf-index-empty__filter-chip" disabled>
+          <button
+            type="button"
+            class="pf-index-empty__filter-chip pf-index-empty__filter-chip--rect"
+            disabled
+          >
             {filterLabels.software}
           </button>
-          <button type="button" class="pf-index-empty__filter-chip" disabled>
+          <button
+            type="button"
+            class="pf-index-empty__filter-chip pf-index-empty__filter-chip--rect"
+            disabled
+          >
             {filterLabels.design}
           </button>
         </div>

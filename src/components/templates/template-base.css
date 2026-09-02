@@ -13,6 +13,7 @@
   box-sizing: border-box;
   width: 100%;
   max-inline-size: min(var(--layout-page), 100%);
+  min-block-size: 12rem;
   margin-inline: auto;
   padding-inline: var(--space-6);
   padding-block: var(--space-8);

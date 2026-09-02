@@ -12,6 +12,7 @@ import {
   getCreativeRouteTitle,
   type CreativeIndexModel,
 } from '../../lib/creative-content'
+import { getPageFamilyHeroSummary } from '../../lib/page-family-empty-chrome'
 import { localePath, type Locale } from '../../lib/navigation'
 
 interface Props {
@@ -48,10 +49,12 @@ const filterLabels =
         slot="lead"
         locale={locale}
         family="creative"
+        portal
         eyebrow={
           locale === 'en' ? 'Visual & creative work' : 'آثار بصری و خلاقه'
         }
         title={getCreativeRouteTitle(locale)}
+        summary={getPageFamilyHeroSummary(locale, 'creative')}
       />
 
       <PageFamilyFeaturedShell
@@ -123,10 +126,12 @@ const filterLabels =
         slot="lead"
         locale={locale}
         family="creative"
+        portal
         eyebrow={
           locale === 'en' ? 'Visual & creative work' : 'آثار بصری و خلاقه'
         }
         title={getCreativeRouteTitle(locale)}
+        summary={getPageFamilyHeroSummary(locale, 'creative')}
       />
 
       <ul slot="records" class="creative-page__list">

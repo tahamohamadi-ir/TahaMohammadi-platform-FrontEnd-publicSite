@@ -4,6 +4,8 @@ import {
   getPageFamilyPathSectionLabel,
   getPageFamilyPreviewAsset,
   getPageFamilyDecorativeAlt,
+  getTeachingFeaturedPathSteps,
+  getTeachingViewPathLabel,
   type PageFamilyChromeId,
 } from '../../lib/page-family-empty-chrome'
 import type { Locale } from '../../lib/navigation'
@@ -18,17 +20,20 @@ const { locale, family, class: className = '' } = Astro.props
 const sectionLabel = getPageFamilyPathSectionLabel(locale, family)
 const preview = sectionLabel ? getPageFamilyPreviewAsset(family) : null
 const decorativeAlt = getPageFamilyDecorativeAlt(locale, family)
-const steps = [0, 1, 2, 3] as const
-const stepLabels =
+const pathSteps = getTeachingFeaturedPathSteps(locale)
+const viewPathLabel = getTeachingViewPathLabel(locale)
+const placeholderCopy =
   locale === 'en'
-    ? ['01 Overview', '02 Lessons', '03 Resources', '04 References']
-    : ['۰۱ نمای کلی', '۰۲ درس‌ها', '۰۳ منابع', '۰۴ مراجع']
+    ? 'Awaiting approved CMS copy'
+    : 'در انتظار متن تأییدشده از سامانه محتوا'
 ---
 
 {
   sectionLabel && preview ? (
     <section
-      class={['pf-index-path', className].filter(Boolean).join(' ')}
+      class={['pf-index-path', 'pf-index-path--featured', className]
+        .filter(Boolean)
+        .join(' ')}
       data-visual-id="PageFamilyFeaturedPathShell"
       aria-labelledby={`pf-path-${family}-title`}
     >
@@ -36,27 +41,27 @@ const stepLabels =
         {sectionLabel}
       </h2>
 
-      <ol class="pf-index-path__track">
-        {steps.map((index) => (
-          <li class="pf-index-path__step">
-            <p class="pf-index-path__step-label">{stepLabels[index]}</p>
-            <div class="pf-index-path__thumb">
-              <PromotedPicture
-                assetId={preview.assetId}
-                mediaSlot={preview.mediaSlot}
-                locale={locale}
-                alt={decorativeAlt}
-                imgClass="pf-index-path__image"
-                loading={index === 0 ? 'eager' : 'lazy'}
-              />
-            </div>
-            <div class="pf-index-path__copy">
-              <span class="pf-index-empty__line pf-index-empty__line--short" />
-              <span class="pf-index-empty__line pf-index-empty__line--medium" />
-            </div>
-          </li>
-        ))}
-      </ol>
+      <div class="pf-index-path__featured-card" aria-hidden="true">
+        <div class="pf-index-path__thumb pf-index-path__thumb--featured">
+          <PromotedPicture
+            assetId={preview.assetId}
+            mediaSlot={preview.mediaSlot}
+            locale={locale}
+            alt={decorativeAlt}
+            imgClass="pf-index-path__image"
+            loading="eager"
+          />
+        </div>
+        <div class="pf-index-path__featured-copy">
+          <p class="pf-index-path__featured-placeholder">{placeholderCopy}</p>
+          <span class="pf-index-path__featured-action">{viewPathLabel} →</span>
+          <ol class="pf-index-path__step-row">
+            {pathSteps.map((step) => (
+              <li class="pf-index-path__step-pill">{step}</li>
+            ))}
+          </ol>
+        </div>
+      </div>
     </section>
   ) : null
 }
