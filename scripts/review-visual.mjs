@@ -26,19 +26,29 @@ const serve = process.argv.includes('--serve')
 const visualGrep =
   'PUBLIC-270|WP-40 home captures|WP-40 home and gateway capture'
 
-function runStep(label, command, args, options = {}) {
+function spawnCommand(command, args) {
+  if (process.platform === 'win32') {
+    return spawnSync(
+      process.env.ComSpec ?? 'cmd.exe',
+      ['/d', '/s', '/c', command, ...args],
+      {
+        cwd: repositoryRoot,
+        stdio: 'inherit',
+        shell: false,
+      },
+    )
+  }
+
+  return spawnSync(command, args, {
+    cwd: repositoryRoot,
+    stdio: 'inherit',
+    shell: false,
+  })
+}
+
+function runStep(label, command, args) {
   console.log(`\n▶ ${label}`)
-  const result = options.rawCommand
-    ? spawnSync(options.rawCommand, {
-        cwd: repositoryRoot,
-        stdio: 'inherit',
-        shell: true,
-      })
-    : spawnSync(command, args, {
-        cwd: repositoryRoot,
-        stdio: 'inherit',
-        shell: options.shell ?? process.platform === 'win32',
-      })
+  const result = spawnCommand(command, args)
 
   if (result.error) {
     console.error(result.error.message)
@@ -52,18 +62,13 @@ function runStep(label, command, args, options = {}) {
 
 runStep('build', 'npm', ['run', 'build'])
 
-if (process.platform === 'win32') {
-  runStep('visual captures (PUBLIC-270 + WP-40 home/gateway)', null, null, {
-    rawCommand: `npx playwright test --grep "${visualGrep}" --workers=1`,
-  })
-} else {
-  runStep(
-    'visual captures (PUBLIC-270 + WP-40 home/gateway)',
-    'npx',
-    ['playwright', 'test', '--grep', visualGrep, '--workers=1'],
-    { shell: false },
-  )
-}
+runStep('visual captures (PUBLIC-270 + WP-40 home/gateway)', 'npx', [
+  'playwright',
+  'test',
+  '--grep',
+  visualGrep,
+  '--workers=1',
+])
 
 runStep('compare report', 'npm', ['run', 'report:visual-compare'])
 
