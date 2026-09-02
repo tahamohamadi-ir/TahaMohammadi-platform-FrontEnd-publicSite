@@ -578,9 +578,10 @@
 .hm-collab__title {
   margin: 0;
   font-family: var(--font-display);
-  font-size: clamp(1.15rem, 2.4vw, 1.5rem);
-  font-weight: 500;
-  line-height: 1.45;
+  font-size: clamp(1.25rem, 4.5vw, 1.75rem);
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
   color: var(--color-ink);
   max-inline-size: var(--layout-prose);
 }
@@ -592,11 +593,33 @@
   inline-size: 100%;
 }
 
+.hm-collab__actions .ui-button,
+.hm-collab__actions .hm-collab__btn {
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+}
+
 @media (max-width: 479px) {
-  .hm-collab__actions :global(.ui-button) {
+  .hm-collab__inner {
+    padding: var(--space-6);
+    gap: var(--space-5);
+  }
+
+  .hm-collab__mark {
+    inline-size: 4rem;
+    block-size: 4rem;
+  }
+
+  .hm-collab__title {
+    font-size: clamp(1.15rem, 5.5vw, 1.45rem);
+  }
+
+  .hm-collab__actions .ui-button,
+  .hm-collab__actions .hm-collab__btn {
     flex: 1 1 calc(50% - var(--space-2));
     min-inline-size: 0;
     padding-inline: var(--space-3);
+    min-height: calc(var(--layout-touch-target-min) + var(--space-1));
   }
 
   [dir='rtl'] .hm-collab__actions {

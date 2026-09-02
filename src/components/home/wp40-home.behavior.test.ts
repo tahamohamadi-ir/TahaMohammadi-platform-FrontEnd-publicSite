@@ -235,6 +235,7 @@ describe('WP-40 collaboration CTA', () => {
       const html = await render(HomeCollaborationCta, { locale })
       expect(html).toMatch(new RegExp(`href="/${locale}/contact/"`))
       expect(html).toMatch(new RegExp(`href="/${locale}/cv/"`))
+      expect(html).toMatch(/hm-collab__btn/)
       expect(html).not.toMatch(/disabled/)
       expect(html).not.toMatch(/\/media\//)
     }

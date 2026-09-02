@@ -7,11 +7,11 @@
   isolation: isolate;
   min-height: 100svh;
   display: grid;
-  grid-template-rows: auto 1fr auto;
-  padding: var(--space-6) var(--space-6)
-    clamp(var(--space-10), 8vh, var(--space-16));
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  padding: var(--space-5) var(--space-6) var(--space-8);
   text-align: center;
-  gap: var(--space-4);
+  gap: var(--space-2);
+  align-content: center;
 }
 
 /* Decorative centered-portal atmosphere (ThemePicture resolves one theme). */
@@ -67,8 +67,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: var(--space-3);
-  padding-block: clamp(var(--space-6), 10vh, var(--space-12));
+  gap: var(--space-2);
+  padding-block: clamp(var(--space-3), 4vh, var(--space-6));
   max-inline-size: 72rem;
   margin-inline: auto;
   inline-size: 100%;
@@ -118,9 +118,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-4);
+  gap: var(--space-3);
   margin-block-start: auto;
-  padding-block: var(--space-4) var(--space-6);
+  padding-block: var(--space-2) var(--space-4);
 }
 
 .gw__prompt {
@@ -134,7 +134,7 @@
   flex-wrap: wrap;
   justify-content: center;
   gap: var(--space-4);
-  margin-block-start: var(--space-4);
+  margin-block-start: var(--space-2);
 }
 
 .gw__locale {
