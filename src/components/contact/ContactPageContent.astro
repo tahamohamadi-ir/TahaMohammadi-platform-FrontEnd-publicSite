@@ -1,6 +1,6 @@
 ---
 import AboutContactUtilityTemplate from '../templates/AboutContactUtilityTemplate.astro'
-import PageFamilyIndexHero from '../page-family/PageFamilyIndexHero.astro'
+import PageFamilyContactHeroShell from '../page-family/PageFamilyContactHeroShell.astro'
 import PageFamilyContactSidebarShell from '../page-family/PageFamilyContactSidebarShell.astro'
 import PageFamilyTopicCardsShell from '../page-family/PageFamilyTopicCardsShell.astro'
 import PageFamilyFaqShell from '../page-family/PageFamilyFaqShell.astro'
@@ -13,11 +13,11 @@ import {
   contactFormCopy,
   formatExternalLinkLabel,
   getContactFormActionUrl,
-  getContactRouteTitle,
   getContactUnavailableCopy,
   parseContactFormState,
   type ContactPageModel,
 } from '../../lib/contact-content'
+import { getContactTopicCards } from '../../lib/page-family-empty-chrome'
 import { type Locale } from '../../lib/navigation'
 
 interface Props {
@@ -28,51 +28,37 @@ interface Props {
 const { locale, model } = Astro.props
 const emptyCopy = getContactUnavailableCopy(locale)
 const formState = parseContactFormState(Astro.url.searchParams)
+const topicCards = getContactTopicCards(locale)
 const topicLabels =
   locale === 'en'
     ? {
-        region: 'Discussion topics',
-        phd: 'PhD / Research',
-        technical: 'Technical work',
-        creative: 'Creative work',
-        other: 'Other',
-        details: 'Contact details',
+        region: 'Topics to discuss',
         methods: 'Contact methods',
         email: 'Academic email',
         linkedin: 'LinkedIn',
         orcid: 'ORCID',
+        topicField: 'Topic / purpose',
+        subjectField: 'Subject',
+        replyCheckbox: 'Yes, I would like to receive a reply',
+        antiSpam: 'Anti-spam check',
       }
     : {
         region: 'موضوعات گفتگو',
-        phd: 'دکتری / پژوهش',
-        technical: 'کار فنی',
-        creative: 'کار خلاقه',
-        other: 'سایر',
-        details: 'اطلاعات تماس',
         methods: 'روش‌های تماس',
         email: 'ایمیل آکادمیک',
         linkedin: 'لینکدین',
         orcid: 'ORCID',
+        topicField: 'موضوع / هدف',
+        subjectField: 'عنوان',
+        replyCheckbox: 'بله، مایل به دریافت پاسخ هستم',
+        antiSpam: 'بررسی ضد هرزنامه',
       }
-const topicCards = [
-  { title: topicLabels.phd, tone: 'phd' },
-  { title: topicLabels.technical, tone: 'technical' },
-  { title: topicLabels.creative, tone: 'creative' },
-  { title: topicLabels.other, tone: 'other' },
-] as const
 ---
 
 {
   model.status === 'unavailable' ? (
     <AboutContactUtilityTemplate class="contact-page contact-page--empty">
-      <PageFamilyIndexHero
-        slot="lead"
-        locale={locale}
-        family="contact"
-        portal
-        eyebrow={locale === 'en' ? 'Connect' : 'ارتباط'}
-        title={getContactRouteTitle(locale)}
-      />
+      <PageFamilyContactHeroShell slot="lead" locale={locale} />
 
       <div slot="records" class="contact-page__layout pf-index-empty__shell">
         <PageFamilyContactSidebarShell locale={locale} />
@@ -96,18 +82,25 @@ const topicCards = [
             </h2>
             <div class="contact-page__method-cards" aria-hidden="true">
               <article class="contact-page__method-card">
-                <span class="contact-page__method-icon" />
+                <span class="contact-page__method-icon contact-page__method-icon--email" />
+                <span class="contact-page__method-label">{topicLabels.email}</span>
                 <span class="pf-index-empty__line pf-index-empty__line--medium" />
               </article>
               <article class="contact-page__method-card">
-                <span class="contact-page__method-icon" />
+                <span class="contact-page__method-icon contact-page__method-icon--linkedin" />
+                <span class="contact-page__method-label">{topicLabels.linkedin}</span>
+                <span class="pf-index-empty__line pf-index-empty__line--medium" />
+              </article>
+              <article class="contact-page__method-card">
+                <span class="contact-page__method-icon contact-page__method-icon--orcid" />
+                <span class="contact-page__method-label">{topicLabels.orcid}</span>
                 <span class="pf-index-empty__line pf-index-empty__line--medium" />
               </article>
             </div>
           </section>
 
           <section
-            class="contact-page__section"
+            class="contact-page__section contact-page__panel contact-page__panel--form"
             aria-labelledby="contact-form-empty-title"
           >
             <h2
@@ -118,29 +111,33 @@ const topicCards = [
             </h2>
 
             <form class="contact-page__form" aria-disabled="true">
-              <Input
-                id="contact-topic-empty"
-                name="topic"
-                label={locale === 'en' ? 'Topic' : 'موضوع'}
-                disabled
-              />
+              <div class="contact-page__form-row">
+                <Input
+                  id="contact-name-empty"
+                  name="name"
+                  label={contactFormCopy.nameLabel[locale]}
+                  disabled
+                />
+                <Input
+                  id="contact-email-empty"
+                  name="email"
+                  type="email"
+                  label={contactFormCopy.emailLabel[locale]}
+                  disabled
+                />
+              </div>
+              <label class="contact-page__select-field">
+                <span class="contact-page__select-label">
+                  {topicLabels.topicField}
+                </span>
+                <select class="contact-page__select" disabled>
+                  <option>{topicCards[0]?.title}</option>
+                </select>
+              </label>
               <Input
                 id="contact-subject-empty"
                 name="subject"
-                label={locale === 'en' ? 'Subject' : 'عنوان'}
-                disabled
-              />
-              <Input
-                id="contact-name-empty"
-                name="name"
-                label={contactFormCopy.nameLabel[locale]}
-                disabled
-              />
-              <Input
-                id="contact-email-empty"
-                name="email"
-                type="email"
-                label={contactFormCopy.emailLabel[locale]}
+                label={topicLabels.subjectField}
                 disabled
               />
               <Textarea
@@ -150,6 +147,16 @@ const topicCards = [
                 rows={6}
                 disabled
               />
+              <label class="contact-page__checkbox">
+                <input type="checkbox" disabled />
+                <span>{topicLabels.replyCheckbox}</span>
+              </label>
+              <div class="contact-page__anti-spam" aria-hidden="true">
+                <span class="contact-page__anti-spam-label">
+                  {topicLabels.antiSpam}
+                </span>
+                <span class="pf-index-empty__line pf-index-empty__line--short" />
+              </div>
               <div class="contact-page__form-actions">
                 <Button
                   type="button"
@@ -175,189 +182,191 @@ const topicCards = [
     </AboutContactUtilityTemplate>
   ) : (
     <AboutContactUtilityTemplate class="contact-page">
-      <PageFamilyIndexHero
-        slot="lead"
-        locale={locale}
-        family="contact"
-        portal
-        eyebrow={locale === 'en' ? 'Connect' : 'ارتباط'}
-        title={getContactRouteTitle(locale)}
-      />
+      <PageFamilyContactHeroShell slot="lead" locale={locale} />
 
-      <div slot="records" class="contact-page__sections">
-        <PageFamilyTopicCardsShell
-          locale={locale}
-          labels={topicCards}
-          regionLabel={topicLabels.region}
-        />
+      <div slot="records" class="contact-page__layout">
+        <PageFamilyContactSidebarShell locale={locale} />
 
-        {formState.sent ? (
-          <div
-            class="contact-page__status contact-page__status--success"
-            role="status"
-          >
-            <h2 class="contact-page__status-title">
-              {contactFormCopy.sentHeading[locale]}
-            </h2>
-          </div>
-        ) : null}
+        <div class="contact-page__main">
+          <PageFamilyTopicCardsShell
+            locale={locale}
+            labels={topicCards}
+            regionLabel={topicLabels.region}
+          />
 
-        {formState.failed ? (
-          <div
-            class="contact-page__status contact-page__status--error"
-            role="alert"
-          >
-            <h2 class="contact-page__status-title">
-              {contactFormCopy.errorHeading[locale]}
-            </h2>
-          </div>
-        ) : null}
-
-        {model.contact.email ||
-        model.contact.linkedin ||
-        model.contact.orcid ||
-        model.contact.employer ||
-        model.contact.location ? (
-          <section
-            class="contact-page__section contact-page__panel"
-            aria-labelledby="contact-details-title"
-          >
-            <h2 id="contact-details-title" class="contact-page__section-title">
-              {locale === 'en' ? 'Contact details' : 'اطلاعات تماس'}
-            </h2>
-            <dl class="contact-page__details">
-              {model.contact.email ? (
-                <div class="contact-page__detail-row">
-                  <dt>{contactFormCopy.detailLabels.email[locale]}</dt>
-                  <dd>
-                    <a href={`mailto:${model.contact.email}`} dir="ltr">
-                      {model.contact.email}
-                    </a>
-                  </dd>
-                </div>
-              ) : null}
-              {model.contact.linkedin ? (
-                <div class="contact-page__detail-row">
-                  <dt>{contactFormCopy.detailLabels.linkedin[locale]}</dt>
-                  <dd>
-                    <a
-                      href={model.contact.linkedin}
-                      rel="noopener noreferrer"
-                      dir="ltr"
-                    >
-                      {formatExternalLinkLabel(model.contact.linkedin)}
-                    </a>
-                  </dd>
-                </div>
-              ) : null}
-              {model.contact.orcid ? (
-                <div class="contact-page__detail-row">
-                  <dt>{contactFormCopy.detailLabels.orcid[locale]}</dt>
-                  <dd>
-                    <a
-                      href={model.contact.orcid}
-                      rel="noopener noreferrer"
-                      dir="ltr"
-                    >
-                      {formatExternalLinkLabel(model.contact.orcid)}
-                    </a>
-                  </dd>
-                </div>
-              ) : null}
-              {model.contact.employer ? (
-                <div class="contact-page__detail-row">
-                  <dt>{contactFormCopy.detailLabels.employer[locale]}</dt>
-                  <dd>
-                    {model.contact.employerUrl ? (
-                      <a
-                        href={model.contact.employerUrl}
-                        rel="noopener noreferrer"
-                      >
-                        {model.contact.employer}
-                      </a>
-                    ) : (
-                      model.contact.employer
-                    )}
-                  </dd>
-                </div>
-              ) : null}
-              {model.contact.location ? (
-                <div class="contact-page__detail-row">
-                  <dt>{contactFormCopy.detailLabels.location[locale]}</dt>
-                  <dd>{model.contact.location}</dd>
-                </div>
-              ) : null}
-            </dl>
-          </section>
-        ) : null}
-
-        {model.formEnabled ? (
-          <section
-            class="contact-page__section contact-page__panel contact-page__panel--form"
-            aria-labelledby="contact-form-title"
-          >
-            <h2 id="contact-form-title" class="contact-page__section-title">
-              {contactFormCopy.formIntro[locale]}
-            </h2>
-
-            <form
-              class="contact-page__form"
-              method="post"
-              action={getContactFormActionUrl()}
-              data-contact-form
-              novalidate
+          {formState.sent ? (
+            <div
+              class="contact-page__status contact-page__status--success"
+              role="status"
             >
-              <input type="hidden" name="locale" value={locale} />
-              <div class="contact-page__honeypot" aria-hidden="true">
-                <label for="contact-website">Website</label>
-                <input
-                  id="contact-website"
-                  name="website"
-                  type="text"
-                  tabindex="-1"
-                  autocomplete="off"
+              <h2 class="contact-page__status-title">
+                {contactFormCopy.sentHeading[locale]}
+              </h2>
+            </div>
+          ) : null}
+
+          {formState.failed ? (
+            <div
+              class="contact-page__status contact-page__status--error"
+              role="alert"
+            >
+              <h2 class="contact-page__status-title">
+                {contactFormCopy.errorHeading[locale]}
+              </h2>
+            </div>
+          ) : null}
+
+          {model.contact.email ||
+          model.contact.linkedin ||
+          model.contact.orcid ||
+          model.contact.employer ||
+          model.contact.location ? (
+            <section
+              class="contact-page__section contact-page__panel"
+              aria-labelledby="contact-details-title"
+            >
+              <h2 id="contact-details-title" class="contact-page__section-title">
+                {locale === 'en' ? 'Contact details' : 'اطلاعات تماس'}
+              </h2>
+              <dl class="contact-page__details">
+                {model.contact.email ? (
+                  <div class="contact-page__detail-row">
+                    <dt>{contactFormCopy.detailLabels.email[locale]}</dt>
+                    <dd>
+                      <a href={`mailto:${model.contact.email}`} dir="ltr">
+                        {model.contact.email}
+                      </a>
+                    </dd>
+                  </div>
+                ) : null}
+                {model.contact.linkedin ? (
+                  <div class="contact-page__detail-row">
+                    <dt>{contactFormCopy.detailLabels.linkedin[locale]}</dt>
+                    <dd>
+                      <a
+                        href={model.contact.linkedin}
+                        rel="noopener noreferrer"
+                        dir="ltr"
+                      >
+                        {formatExternalLinkLabel(model.contact.linkedin)}
+                      </a>
+                    </dd>
+                  </div>
+                ) : null}
+                {model.contact.orcid ? (
+                  <div class="contact-page__detail-row">
+                    <dt>{contactFormCopy.detailLabels.orcid[locale]}</dt>
+                    <dd>
+                      <a
+                        href={model.contact.orcid}
+                        rel="noopener noreferrer"
+                        dir="ltr"
+                      >
+                        {formatExternalLinkLabel(model.contact.orcid)}
+                      </a>
+                    </dd>
+                  </div>
+                ) : null}
+                {model.contact.employer ? (
+                  <div class="contact-page__detail-row">
+                    <dt>{contactFormCopy.detailLabels.employer[locale]}</dt>
+                    <dd>
+                      {model.contact.employerUrl ? (
+                        <a
+                          href={model.contact.employerUrl}
+                          rel="noopener noreferrer"
+                        >
+                          {model.contact.employer}
+                        </a>
+                      ) : (
+                        model.contact.employer
+                      )}
+                    </dd>
+                  </div>
+                ) : null}
+                {model.contact.location ? (
+                  <div class="contact-page__detail-row">
+                    <dt>{contactFormCopy.detailLabels.location[locale]}</dt>
+                    <dd>{model.contact.location}</dd>
+                  </div>
+                ) : null}
+              </dl>
+            </section>
+          ) : null}
+
+          {model.formEnabled ? (
+            <section
+              class="contact-page__section contact-page__panel contact-page__panel--form"
+              aria-labelledby="contact-form-title"
+            >
+              <h2 id="contact-form-title" class="contact-page__section-title">
+                {contactFormCopy.formIntro[locale]}
+              </h2>
+
+              <form
+                class="contact-page__form"
+                method="post"
+                action={getContactFormActionUrl()}
+                data-contact-form
+                novalidate
+              >
+                <input type="hidden" name="locale" value={locale} />
+                <div class="contact-page__honeypot" aria-hidden="true">
+                  <label for="contact-website">Website</label>
+                  <input
+                    id="contact-website"
+                    name="website"
+                    type="text"
+                    tabindex="-1"
+                    autocomplete="off"
+                  />
+                </div>
+
+                <div class="contact-page__form-row">
+                  <Input
+                    id="contact-name"
+                    name="name"
+                    label={contactFormCopy.nameLabel[locale]}
+                    value={formState.values.name}
+                    autocomplete="name"
+                  />
+                  <Input
+                    id="contact-email"
+                    name="email"
+                    type="email"
+                    label={contactFormCopy.emailLabel[locale]}
+                    value={formState.values.email}
+                    autocomplete="email"
+                  />
+                </div>
+                <Textarea
+                  id="contact-message"
+                  name="message"
+                  label={contactFormCopy.messageLabel[locale]}
+                  value={formState.values.message}
+                  rows={6}
+                  maxlength={4000}
                 />
-              </div>
 
-              <Input
-                id="contact-name"
-                name="name"
-                label={contactFormCopy.nameLabel[locale]}
-                value={formState.values.name}
-                autocomplete="name"
-              />
-              <Input
-                id="contact-email"
-                name="email"
-                type="email"
-                label={contactFormCopy.emailLabel[locale]}
-                value={formState.values.email}
-                autocomplete="email"
-              />
-              <Textarea
-                id="contact-message"
-                name="message"
-                label={contactFormCopy.messageLabel[locale]}
-                value={formState.values.message}
-                rows={6}
-                maxlength={4000}
-              />
+                <div class="contact-page__form-actions">
+                  <Button
+                    type="submit"
+                    label={contactFormCopy.sendLabel[locale]}
+                  />
+                </div>
 
-              <div class="contact-page__form-actions">
-                <Button
-                  type="submit"
-                  label={contactFormCopy.sendLabel[locale]}
+                <p
+                  class="contact-page__form-note"
+                  id="contact-form-status"
+                  hidden
                 />
-              </div>
+              </form>
+            </section>
+          ) : null}
 
-              <p
-                class="contact-page__form-note"
-                id="contact-form-status"
-                hidden
-              />
-            </form>
-          </section>
-        ) : null}
+          <PageFamilySendWorkflowShell locale={locale} />
+          <PageFamilyFaqShell locale={locale} />
+        </div>
       </div>
     </AboutContactUtilityTemplate>
   )

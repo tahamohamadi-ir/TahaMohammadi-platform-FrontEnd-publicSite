@@ -1,7 +1,6 @@
 ---
 import AboutContactUtilityTemplate from '../templates/AboutContactUtilityTemplate.astro'
 import PageFamilyProfileHeroShell from '../page-family/PageFamilyProfileHeroShell.astro'
-import PageFamilyIndexHero from '../page-family/PageFamilyIndexHero.astro'
 import PageFamilySubNavShell from '../page-family/PageFamilySubNavShell.astro'
 import PageFamilyHowIWorkShell from '../page-family/PageFamilyHowIWorkShell.astro'
 import PageFamilyJourneyFlowShell from '../page-family/PageFamilyJourneyFlowShell.astro'
@@ -64,7 +63,8 @@ const sectionLabels =
         <PageFamilyDownloadListShell locale={locale} />
         <PageFamilyCollaborateBandShell
           locale={locale}
-          variant="collaborate-only"
+          variant="dual"
+          context="about"
         />
 
         <ContentState
@@ -78,7 +78,7 @@ const sectionLabels =
     </AboutContactUtilityTemplate>
   ) : (
     <AboutContactUtilityTemplate class="about-page">
-      <PageFamilyIndexHero
+      <PageFamilyProfileHeroShell
         slot="lead"
         locale={locale}
         family="about"

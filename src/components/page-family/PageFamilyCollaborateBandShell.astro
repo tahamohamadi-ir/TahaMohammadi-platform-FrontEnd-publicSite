@@ -5,25 +5,71 @@ import { localePath, type Locale } from '../../lib/navigation'
 interface Props {
   locale: Locale
   variant?: 'dual' | 'collaborate-only'
+  context?: 'about' | 'publications' | 'teaching'
   class?: string
 }
 
-const { locale, variant = 'dual', class: className = '' } = Astro.props
-const updatesTitle =
+const {
+  locale,
+  variant = 'dual',
+  context = 'teaching',
+  class: className = '',
+} = Astro.props
+
+const teachingPrimaryTitle =
   locale === 'en' ? 'Optional updates' : 'به‌روزرسانی اختیاری'
-const updatesCopy =
+const teachingPrimaryCopy =
   locale === 'en'
     ? 'Follow when new teaching paths or resources are published.'
     : 'وقتی مسیرها یا منابع جدید منتشر شد، مطلع شوید.'
-const updatesAction =
+const teachingPrimaryAction =
   locale === 'en' ? 'Follow updates' : 'دنبال کردن به‌روزرسانی‌ها'
-const collaborateTitle =
+
+const aboutPrimaryTitle =
+  locale === 'en' ? 'Curriculum Vitae' : 'رزومه آکادمیک'
+const aboutPrimaryCopy =
+  locale === 'en'
+    ? 'Download the latest approved academic CV files.'
+    : 'دانلود آخرین فایل‌های رزومه آکادمیک تأییدشده.'
+const aboutPrimaryAction = locale === 'en' ? 'Download CV' : 'دانلود رزومه'
+
+const teachingCollaborateTitle =
   locale === 'en' ? "Let's collaborate on teaching" : 'همکاری در تدریس'
-const collaborateCopy =
+const teachingCollaborateCopy =
   locale === 'en'
     ? 'Course design, workshops, and structured learning paths.'
     : 'طراحی دوره، کارگاه و مسیرهای یادگیری ساختاریافته.'
-const collaborateAction = locale === 'en' ? "Let's Connect" : 'ارتباط بگیریم'
+const aboutCollaborateTitle =
+  locale === 'en' ? "Let's collaborate" : 'همکاری کنیم'
+const aboutCollaborateCopy =
+  locale === 'en'
+    ? 'Research fit, technical work, and selected creative projects.'
+    : 'تناسب پژوهشی، کار فنی و پروژه‌های خلاقه منتخب.'
+const publicationsCollaborateTitle =
+  locale === 'en' ? "Let's collaborate on research" : 'همکاری پژوهشی'
+const publicationsCollaborateCopy =
+  locale === 'en'
+    ? 'Co-authored outputs, datasets, and evidence-led project work.'
+    : 'خروجی‌های مشترک، مجموعه‌داده‌ها و پروژه‌های مبتنی بر شواهد.'
+const collaborateAction = locale === 'en' ? 'Get in touch' : 'ارتباط بگیرید'
+
+const primaryTitle =
+  context === 'about' ? aboutPrimaryTitle : teachingPrimaryTitle
+const primaryCopy = context === 'about' ? aboutPrimaryCopy : teachingPrimaryCopy
+const primaryAction =
+  context === 'about' ? aboutPrimaryAction : teachingPrimaryAction
+const collaborateTitle =
+  context === 'about'
+    ? aboutCollaborateTitle
+    : context === 'publications'
+      ? publicationsCollaborateTitle
+      : teachingCollaborateTitle
+const collaborateCopy =
+  context === 'about'
+    ? aboutCollaborateCopy
+    : context === 'publications'
+      ? publicationsCollaborateCopy
+      : teachingCollaborateCopy
 ---
 
 <section
@@ -35,12 +81,25 @@ const collaborateAction = locale === 'en' ? "Let's Connect" : 'ارتباط بگ
     variant === 'dual' ? (
       <article class="pf-index-collaborate-band__card">
         <span
-          class="pf-index-collaborate-band__icon pf-index-collaborate-band__icon--mail"
+          class={[
+            'pf-index-collaborate-band__icon',
+            context === 'about'
+              ? 'pf-index-collaborate-band__icon--cv'
+              : 'pf-index-collaborate-band__icon--mail',
+          ].join(' ')}
           aria-hidden="true"
         />
-        <h2 class="pf-index-collaborate-band__title">{updatesTitle}</h2>
-        <p class="pf-index-collaborate-band__copy">{updatesCopy}</p>
-        <Button label={updatesAction} variant="secondary" disabled />
+        <h2 class="pf-index-collaborate-band__title">{primaryTitle}</h2>
+        <p class="pf-index-collaborate-band__copy">{primaryCopy}</p>
+        {context === 'about' ? (
+          <Button
+            label={primaryAction}
+            href={localePath(locale, 'cv')}
+            variant="secondary"
+          />
+        ) : (
+          <Button label={primaryAction} variant="secondary" disabled />
+        )}
       </article>
     ) : null
   }
@@ -48,7 +107,8 @@ const collaborateAction = locale === 'en' ? "Let's Connect" : 'ارتباط بگ
   <article class="pf-index-collaborate-band__card">
     <span
       class="pf-index-collaborate-band__icon pf-index-collaborate-band__icon--group"
-      aria-hidden="true"></span>
+      aria-hidden="true"
+    />
     <h2 class="pf-index-collaborate-band__title">{collaborateTitle}</h2>
     <p class="pf-index-collaborate-band__copy">{collaborateCopy}</p>
     <Button

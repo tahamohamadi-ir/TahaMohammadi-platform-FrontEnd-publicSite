@@ -3,7 +3,11 @@ import type { Locale } from '../../lib/navigation'
 
 interface Props {
   locale: Locale
-  labels: readonly { title: string; tone: string }[]
+  labels: readonly {
+    title: string
+    tone: string
+    description?: string
+  }[]
   regionLabel: string
   class?: string
 }
@@ -29,7 +33,14 @@ const { locale, labels, regionLabel, class: className = '' } = Astro.props
           ].join(' ')}
           aria-hidden="true"
         />
-        <span class="pf-index-topic-cards__label">{item.title}</span>
+        <span class="pf-index-topic-cards__copy">
+          <span class="pf-index-topic-cards__label">{item.title}</span>
+          {item.description ? (
+            <span class="pf-index-topic-cards__description">
+              {item.description}
+            </span>
+          ) : null}
+        </span>
       </button>
     ))
   }

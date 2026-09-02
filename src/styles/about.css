@@ -4,8 +4,6 @@
 
 .about-page--unavailable {
   padding-block: var(--space-10);
-  max-width: var(--layout-content-max, 48rem);
-  margin-inline: auto;
 }
 
 .about-page__sections {

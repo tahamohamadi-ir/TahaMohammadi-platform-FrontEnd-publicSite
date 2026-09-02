@@ -7,28 +7,36 @@ import {
   getPageFamilyDecorativeAlt,
   getCmsPlaceholderCopy,
   getProfileHeroCtaLabels,
+  getGatewayRoleLine,
   type PageFamilyChromeId,
 } from '../../lib/page-family-empty-chrome'
-import {
-  GATEWAY_ROLE_LINE,
-  localePath,
-  shellCopy,
-  type Locale,
-} from '../../lib/navigation'
+import { localePath, shellCopy, type Locale } from '../../lib/navigation'
 
 interface Props {
   locale: Locale
   family: PageFamilyChromeId
   eyebrow?: string
+  title?: string
+  summary?: string
   class?: string
 }
 
-const { locale, family, eyebrow, class: className = '' } = Astro.props
+const {
+  locale,
+  family,
+  eyebrow,
+  title,
+  summary,
+  class: className = '',
+} = Astro.props
 const heroMedia = getPageFamilyHeroMedia(family)
 const decorativeAlt = getPageFamilyDecorativeAlt(locale, family)
 const placeholder = getCmsPlaceholderCopy(locale)
 const ctaLabels = getProfileHeroCtaLabels(locale)
-const displayName = shellCopy.brandName[locale]
+const displayName = title ?? shellCopy.brandName[locale]
+const displaySummary = summary ?? placeholder
+const portraitLabel =
+  locale === 'en' ? 'Portrait from approved CMS record' : 'پرتره از رکورد تأییدشده CMS'
 ---
 
 <section
@@ -40,11 +48,11 @@ const displayName = shellCopy.brandName[locale]
     <SectionLead
       eyebrow={eyebrow ?? (locale === 'en' ? 'Profile' : 'پروفایل')}
       title={displayName}
-      summary={placeholder}
+      summary={displaySummary}
       titleScale="display"
       class="pf-index-profile-hero__lead"
     />
-    <p class="pf-index-profile-hero__role">{GATEWAY_ROLE_LINE}</p>
+    <p class="pf-index-profile-hero__role">{getGatewayRoleLine(locale)}</p>
 
     <div class="pf-index-profile-hero__actions">
       <Button
@@ -67,14 +75,21 @@ const displayName = shellCopy.brandName[locale]
 
   {
     heroMedia.kind === 'single' ? (
-      <div class="pf-index-profile-hero__media" aria-hidden="true">
-        <PromotedPicture
-          assetId={heroMedia.assetId}
-          mediaSlot={heroMedia.mediaSlot}
-          locale={locale}
-          alt={decorativeAlt}
-          imgClass="pf-index-profile-hero__image"
-        />
+      <div class="pf-index-profile-hero__media">
+        <div class="pf-index-profile-hero__arch" aria-hidden="true">
+          <PromotedPicture
+            assetId={heroMedia.assetId}
+            mediaSlot={heroMedia.mediaSlot}
+            locale={locale}
+            alt={decorativeAlt}
+            imgClass="pf-index-profile-hero__image"
+          />
+        </div>
+        <div class="pf-index-profile-hero__portrait-slot" aria-hidden="true">
+          <span class="pf-index-profile-hero__portrait-label">
+            {portraitLabel}
+          </span>
+        </div>
       </div>
     ) : null
   }

@@ -25,18 +25,13 @@ const sectionLabel =
     {journey.headline}
   </h2>
 
-  <ol class="pf-index-journey-flow__track" aria-hidden="true">
+  <ol class="pf-index-journey-flow__track">
     {
-      journey.milestones.map((milestone, index) => (
+      journey.milestones.map((milestone) => (
         <li class="pf-index-journey-flow__step">
-          <span class="pf-index-journey-flow__icon" />
+          <span class="pf-index-journey-flow__icon" aria-hidden="true" />
           <span class="pf-index-journey-flow__label">{milestone.title}</span>
           <span class="pf-index-journey-flow__desc">{placeholder}</span>
-          {index < journey.milestones.length - 1 ? (
-            <span class="pf-index-journey-flow__arrow" aria-hidden="true">
-              →
-            </span>
-          ) : null}
         </li>
       ))
     }
