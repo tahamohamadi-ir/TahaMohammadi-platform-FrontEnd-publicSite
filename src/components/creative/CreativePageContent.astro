@@ -3,6 +3,7 @@ import CollectionIndexTemplate from '../templates/CollectionIndexTemplate.astro'
 import PageFamilyIndexHero from '../page-family/PageFamilyIndexHero.astro'
 import PageFamilyFeaturedShell from '../page-family/PageFamilyFeaturedShell.astro'
 import PageFamilyMediaGridPlaceholder from '../page-family/PageFamilyMediaGridPlaceholder.astro'
+import PageFamilyPaginationShell from '../page-family/PageFamilyPaginationShell.astro'
 import ContentState from '../state/ContentState.astro'
 import Link from '../ui/Link.astro'
 import {
@@ -113,6 +114,8 @@ const filterLabels =
           message={emptyCopy.message}
         />
       </div>
+
+      <PageFamilyPaginationShell slot="pagination" locale={locale} />
     </CollectionIndexTemplate>
   ) : (
     <CollectionIndexTemplate class="creative-page">

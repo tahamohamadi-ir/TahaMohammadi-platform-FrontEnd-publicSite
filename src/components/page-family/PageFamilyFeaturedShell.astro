@@ -31,6 +31,7 @@ const decorativeAlt = getPageFamilyDecorativeAlt(locale, family)
         'pf-index-featured',
         family === 'writing' ? 'pf-index-featured--writing' : '',
         family === 'creative' ? 'pf-index-featured--creative' : '',
+        family === 'projects' ? 'pf-index-featured--project' : '',
         className,
       ]
         .filter(Boolean)
@@ -57,6 +58,14 @@ const decorativeAlt = getPageFamilyDecorativeAlt(locale, family)
           <span class="pf-index-empty__line pf-index-empty__line--short" />
           <span class="pf-index-empty__line pf-index-empty__line--medium" />
           <span class="pf-index-empty__line" />
+          {family === 'projects' ? (
+            <div class="pf-index-featured__tags">
+              <span class="pf-index-empty__tag" />
+              <span class="pf-index-empty__tag" />
+              <span class="pf-index-empty__tag" />
+              <span class="pf-index-empty__tag pf-index-empty__tag--accent" />
+            </div>
+          ) : null}
           {actionLabel ? (
             <span class="pf-index-featured__action">{actionLabel}</span>
           ) : null}

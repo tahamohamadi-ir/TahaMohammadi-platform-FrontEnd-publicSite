@@ -27,6 +27,9 @@ describe('PUBLIC-211/212 writing pages', () => {
     expect(html).toMatch(/data-visual-id="PageFamilyIndexHero"/)
     expect(html).toMatch(/data-visual-id="PageFamilyFeaturedShell"/)
     expect(html).toMatch(/data-visual-id="PageFamilyContentRowPlaceholder"/)
+    expect(html).toMatch(/data-visual-id="PageFamilyThemeExploreShell"/)
+    expect(html).toMatch(/data-visual-id="PageFamilyPaginationShell"/)
+    expect(html).toMatch(/pf-index-featured--writing/)
   })
 
   it('renders article and book sections when the index model is ready', async () => {

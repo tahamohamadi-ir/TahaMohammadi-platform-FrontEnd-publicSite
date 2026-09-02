@@ -8,7 +8,7 @@
 
 @media (min-width: 768px) {
   .pf-index-hero {
-    grid-template-columns: minmax(0, 1fr) minmax(16rem, 38%);
+    grid-template-columns: minmax(0, 1fr) minmax(18rem, 42%);
     gap: var(--space-10);
     padding-inline: 0;
   }
@@ -32,7 +32,7 @@
   border-radius: var(--radius-xl);
   border: 1px solid var(--color-border-subtle);
   background: var(--color-surface-muted, var(--color-surface));
-  min-block-size: clamp(14rem, 34vw, 24rem);
+  min-block-size: clamp(16rem, 38vw, 28rem);
   box-shadow: 0 1px 0 color-mix(in srgb, var(--color-ink) 4%, transparent);
 }
 
@@ -72,6 +72,33 @@
   border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-xl);
   background: var(--color-surface);
+}
+
+.pf-index-featured--creative .pf-index-featured__card {
+  border-color: color-mix(in srgb, var(--color-brand) 18%, var(--color-border-subtle));
+  background: color-mix(in srgb, var(--color-canvas) 92%, var(--color-surface));
+}
+
+.pf-index-featured--writing .pf-index-featured__card {
+  border-color: color-mix(
+    in srgb,
+    var(--primitive-coral-500) 22%,
+    var(--color-border-subtle)
+  );
+  background: color-mix(
+    in srgb,
+    var(--primitive-coral-500) 6%,
+    var(--color-canvas)
+  );
+}
+
+.pf-index-featured--project .pf-index-featured__card {
+  border-color: color-mix(
+    in srgb,
+    var(--color-brand) 28%,
+    var(--color-border-subtle)
+  );
+  background: color-mix(in srgb, var(--color-brand) 6%, var(--color-surface));
 }
 
 @media (min-width: 768px) {
@@ -158,12 +185,8 @@
   color: var(--color-brand);
 }
 
-.pf-index-featured--project .pf-index-featured__card {
-  border-color: color-mix(
-    in srgb,
-    var(--color-brand) 24%,
-    var(--color-border-subtle)
-  );
+.pf-index-empty__tag--accent {
+  background: color-mix(in srgb, var(--color-brand) 35%, var(--color-border-subtle));
 }
 
 .pf-index-featured__tags,
@@ -179,6 +202,102 @@
   block-size: 1.5rem;
   border-radius: var(--radius-pill);
   background: color-mix(in srgb, var(--color-border-subtle) 55%, transparent);
+}
+
+/* PF index pagination shell — decorative chrome, no invented records */
+.pf-index-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3) var(--space-4);
+  margin-block-start: var(--space-4);
+  padding-block: var(--space-4);
+}
+
+.pf-index-pagination__pages {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pf-index-pagination__control,
+.pf-index-pagination__page {
+  min-height: var(--layout-touch-target-min);
+  padding-inline: var(--space-4);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--color-canvas);
+  color: var(--color-ink-muted);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  cursor: not-allowed;
+}
+
+.pf-index-pagination__page {
+  inline-size: 2.25rem;
+  padding-inline: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-pill);
+}
+
+.pf-index-pagination__page--active {
+  border-color: color-mix(in srgb, var(--color-brand) 45%, var(--color-border-subtle));
+  color: var(--color-brand);
+  font-weight: 700;
+}
+
+.pf-index-pagination__ellipsis {
+  color: var(--color-ink-muted);
+  font-size: var(--font-size-sm);
+  padding-inline: var(--space-1);
+}
+
+/* PF-03 explore-by-theme band */
+.pf-index-theme-explore {
+  display: grid;
+  gap: var(--space-4);
+  margin-block-start: var(--space-2);
+  padding-block: var(--space-6);
+  border-block-start: 1px solid var(--color-border-subtle);
+}
+
+.pf-index-theme-explore__title {
+  margin: 0;
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-ink-muted);
+}
+
+.pf-index-theme-explore__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pf-index-theme-explore__chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--layout-touch-target-min);
+  padding-inline: var(--space-5);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-ink-secondary);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
 }
 
 .pf-index-row-placeholder {
@@ -305,6 +424,8 @@
   display: grid;
   gap: var(--space-4);
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-flow: dense;
+  grid-auto-rows: minmax(8rem, auto);
 }
 
 @media (min-width: 768px) {

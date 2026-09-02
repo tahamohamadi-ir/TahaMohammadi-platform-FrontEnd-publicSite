@@ -390,3 +390,33 @@ export function getPageFamilySkillsSectionLabel(
 
   return locale === 'en' ? 'Skills' : 'مهارت‌ها'
 }
+
+const THEME_EXPLORE_FAMILIES = new Set<PageFamilyChromeId>(['writing'])
+
+/** Structural section label for explore-by-theme band (PF-03) — not CMS record copy. */
+export function getPageFamilyThemeExploreSectionLabel(
+  locale: Locale,
+  family: PageFamilyChromeId,
+): string | null {
+  if (!THEME_EXPLORE_FAMILIES.has(family)) {
+    return null
+  }
+
+  return locale === 'en' ? 'Explore by theme' : 'کاوش بر اساس موضوع'
+}
+
+/** Structural theme chip labels for explore band (PF-03) — UI chrome, not CMS records. */
+export function getPageFamilyThemeExploreLabels(
+  locale: Locale,
+  family: PageFamilyChromeId,
+): readonly string[] | null {
+  if (!THEME_EXPLORE_FAMILIES.has(family)) {
+    return null
+  }
+
+  if (locale === 'en') {
+    return ['Essays', 'Notes', 'Memories', 'Society', 'Archive']
+  }
+
+  return ['مقالات', 'یادداشت‌ها', 'خاطرات', 'جامعه', 'آرشیو']
+}

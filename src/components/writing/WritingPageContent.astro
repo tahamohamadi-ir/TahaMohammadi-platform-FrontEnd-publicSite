@@ -3,6 +3,8 @@ import EditorialIndexTemplate from '../templates/EditorialIndexTemplate.astro'
 import PageFamilyIndexHero from '../page-family/PageFamilyIndexHero.astro'
 import PageFamilyFeaturedShell from '../page-family/PageFamilyFeaturedShell.astro'
 import PageFamilyContentRowPlaceholder from '../page-family/PageFamilyContentRowPlaceholder.astro'
+import PageFamilyPaginationShell from '../page-family/PageFamilyPaginationShell.astro'
+import PageFamilyThemeExploreShell from '../page-family/PageFamilyThemeExploreShell.astro'
 import ContentState from '../state/ContentState.astro'
 import {
   formatArticleCardMeta,
@@ -114,7 +116,10 @@ const filterLabels =
           title={emptyCopy.title}
           message={emptyCopy.message}
         />
+        <PageFamilyThemeExploreShell locale={locale} family="writing" />
       </div>
+
+      <PageFamilyPaginationShell slot="pagination" locale={locale} />
     </EditorialIndexTemplate>
   ) : (
     <EditorialIndexTemplate class="writing-page">

@@ -9,6 +9,8 @@ import {
   getPageFamilyPreviewAsset,
   getPageFamilyRowPreviewAssets,
   getPageFamilySkillsSectionLabel,
+  getPageFamilyThemeExploreLabels,
+  getPageFamilyThemeExploreSectionLabel,
 } from './page-family-empty-chrome'
 
 describe('page-family empty chrome', () => {
@@ -69,5 +71,20 @@ describe('page-family empty chrome', () => {
     expect(getPageFamilyListSectionLabel('fa', 'writing')).toBeNull()
     expect(getPageFamilySkillsSectionLabel('en', 'about')).toBe('Skills')
     expect(getPageFamilySkillsSectionLabel('fa', 'cv')).toBeNull()
+  })
+
+  it('exposes PF-03 explore-by-theme structural labels', () => {
+    expect(getPageFamilyThemeExploreSectionLabel('en', 'writing')).toBe(
+      'Explore by theme',
+    )
+    expect(getPageFamilyThemeExploreSectionLabel('fa', 'creative')).toBeNull()
+    expect(getPageFamilyThemeExploreLabels('en', 'writing')).toEqual([
+      'Essays',
+      'Notes',
+      'Memories',
+      'Society',
+      'Archive',
+    ])
+    expect(getPageFamilyThemeExploreLabels('fa', 'writing')).toHaveLength(5)
   })
 })

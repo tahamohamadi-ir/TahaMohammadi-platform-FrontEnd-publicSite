@@ -1,0 +1,42 @@
+---
+import {
+  getPageFamilyThemeExploreLabels,
+  getPageFamilyThemeExploreSectionLabel,
+  type PageFamilyChromeId,
+} from '../../lib/page-family-empty-chrome'
+import type { Locale } from '../../lib/navigation'
+
+interface Props {
+  locale: Locale
+  family: PageFamilyChromeId
+  class?: string
+}
+
+const { locale, family, class: className = '' } = Astro.props
+const sectionLabel = getPageFamilyThemeExploreSectionLabel(locale, family)
+const themeLabels = getPageFamilyThemeExploreLabels(locale, family)
+---
+
+{
+  sectionLabel && themeLabels ? (
+    <section
+      class={['pf-index-theme-explore', className].filter(Boolean).join(' ')}
+      data-visual-id="PageFamilyThemeExploreShell"
+      aria-labelledby={`pf-theme-explore-${family}-title`}
+    >
+      <h2
+        id={`pf-theme-explore-${family}-title`}
+        class="pf-index-theme-explore__title"
+      >
+        {sectionLabel}
+      </h2>
+      <ul class="pf-index-theme-explore__chips" aria-hidden="true">
+        {themeLabels.map((label) => (
+          <li>
+            <span class="pf-index-theme-explore__chip">{label}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  ) : null
+}

@@ -27,6 +27,8 @@ describe('PUBLIC-221 creative pages', () => {
     expect(html).toMatch(/data-visual-id="PageFamilyIndexHero"/)
     expect(html).toMatch(/data-visual-id="PageFamilyFeaturedShell"/)
     expect(html).toMatch(/data-visual-id="PageFamilyMediaGridPlaceholder"/)
+    expect(html).toMatch(/data-visual-id="PageFamilyPaginationShell"/)
+    expect(html).toMatch(/pf-index-featured--creative/)
     expect(html).toContain('Creative')
     expect(html).toMatch(/<h1[\s>]/)
     expect(html).toMatch(/creative-page__filters/)

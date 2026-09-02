@@ -1,0 +1,49 @@
+---
+import type { Locale } from '../../lib/navigation'
+
+interface Props {
+  locale: Locale
+  class?: string
+}
+
+const { locale, class: className = '' } = Astro.props
+const prevLabel = locale === 'en' ? 'Previous page' : 'صفحه قبل'
+const nextLabel = locale === 'en' ? 'Next page' : 'صفحه بعد'
+---
+
+<nav
+  class={['pf-index-pagination', className].filter(Boolean).join(' ')}
+  data-visual-id="PageFamilyPaginationShell"
+  aria-label={locale === 'en' ? 'Pagination' : 'صفحه‌بندی'}
+  aria-hidden="true"
+>
+  <button type="button" class="pf-index-pagination__control" disabled>
+    {prevLabel}
+  </button>
+  <ol class="pf-index-pagination__pages">
+    <li>
+      <button
+        type="button"
+        class="pf-index-pagination__page pf-index-pagination__page--active"
+        disabled
+        aria-current="page"
+      >
+        1
+      </button>
+    </li>
+    <li>
+      <button type="button" class="pf-index-pagination__page" disabled>
+        2
+      </button>
+    </li>
+    <li>
+      <button type="button" class="pf-index-pagination__page" disabled>
+        3
+      </button>
+    </li>
+    <li class="pf-index-pagination__ellipsis" aria-hidden="true">…</li>
+  </ol>
+  <button type="button" class="pf-index-pagination__control" disabled>
+    {nextLabel}
+  </button>
+</nav>

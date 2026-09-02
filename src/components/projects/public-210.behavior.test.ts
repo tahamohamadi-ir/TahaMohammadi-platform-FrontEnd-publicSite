@@ -30,6 +30,8 @@ describe('PUBLIC-210 projects pages', () => {
     expect(html).toMatch(/data-visual-id="PageFamilyIndexHero"/)
     expect(html).toMatch(/data-visual-id="PageFamilyFeaturedShell"/)
     expect(html).toMatch(/data-visual-id="PageFamilyContentRowPlaceholder"/)
+    expect(html).toMatch(/data-visual-id="PageFamilyPaginationShell"/)
+    expect(html).toMatch(/pf-index-featured--project/)
   })
 
   it('renders project cards when the index model is ready', async () => {
