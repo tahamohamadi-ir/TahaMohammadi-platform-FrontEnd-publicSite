@@ -1,0 +1,42 @@
+---
+import { getContactSendWorkflowStates } from '../../lib/page-family-empty-chrome'
+import type { Locale } from '../../lib/navigation'
+
+interface Props {
+  locale: Locale
+  class?: string
+}
+
+const { locale, class: className = '' } = Astro.props
+const states = getContactSendWorkflowStates(locale)
+const sectionLabel =
+  locale === 'en'
+    ? 'What happens after you click send'
+    : 'پس از کلیک روی ارسال چه می‌شود'
+---
+
+<section
+  class={['pf-index-send-workflow', className].filter(Boolean).join(' ')}
+  data-visual-id="PageFamilySendWorkflowShell"
+  aria-labelledby="pf-send-workflow-title"
+>
+  <h2 id="pf-send-workflow-title" class="pf-index-send-workflow__title">
+    {sectionLabel}
+  </h2>
+
+  <ol class="pf-index-send-workflow__track" aria-hidden="true">
+    {
+      states.map((state) => (
+        <li class="pf-index-send-workflow__state">
+          <span
+            class={[
+              'pf-index-send-workflow__badge',
+              `pf-index-send-workflow__badge--${state.tone}`,
+            ].join(' ')}
+          />
+          <span class="pf-index-send-workflow__label">{state.title}</span>
+        </li>
+      ))
+    }
+  </ol>
+</section>

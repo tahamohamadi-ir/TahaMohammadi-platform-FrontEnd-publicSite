@@ -3,6 +3,7 @@ import CollectionIndexTemplate from '../templates/CollectionIndexTemplate.astro'
 import PageFamilyIndexHero from '../page-family/PageFamilyIndexHero.astro'
 import PageFamilyFeaturedShell from '../page-family/PageFamilyFeaturedShell.astro'
 import PageFamilyContentRowPlaceholder from '../page-family/PageFamilyContentRowPlaceholder.astro'
+import PageFamilySortShell from '../page-family/PageFamilySortShell.astro'
 import PageFamilyPaginationShell from '../page-family/PageFamilyPaginationShell.astro'
 import ContentState from '../state/ContentState.astro'
 import {
@@ -94,6 +95,7 @@ const filterLabels =
           aria-hidden="true"
           tabindex="-1"
         />
+        <PageFamilySortShell locale={locale} />
       </div>
 
       <div

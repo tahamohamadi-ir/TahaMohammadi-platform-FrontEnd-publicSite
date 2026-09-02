@@ -28,7 +28,10 @@ describe('PUBLIC-230 contact page', () => {
     expect(html).toMatch(/<h1[\s>]/)
     expect(html).toMatch(/data-visual-id="PageFamilyIndexHero"/)
     expect(html).toMatch(/pf-index-hero--portal/)
-    expect(html).toMatch(/contact-page__topics/)
+    expect(html).toMatch(/data-visual-id="PageFamilyTopicCardsShell"/)
+    expect(html).toMatch(/data-visual-id="PageFamilyContactSidebarShell"/)
+    expect(html).toMatch(/data-visual-id="PageFamilyFaqShell"/)
+    expect(html).toMatch(/data-visual-id="PageFamilySendWorkflowShell"/)
     expect(html).not.toMatch(/data-contact-form/)
   })
 
@@ -50,7 +53,7 @@ describe('PUBLIC-230 contact page', () => {
       },
     })
     expect(html).toMatch(/pf-index-hero--portal/)
-    expect(html).toMatch(/contact-page__topic-chip/)
+    expect(html).toMatch(/data-visual-id="PageFamilyTopicCardsShell"/)
     expect(html).toMatch(/contact-page__panel--form/)
     expect(html).toMatch(/href="mailto:owner@example.com"/)
     expect(html).toMatch(/href="https:\/\/linkedin.com\/in\/example"/)
@@ -93,9 +96,10 @@ describe('PUBLIC-230 cv page', () => {
     expect(html).toMatch(/data-state-variant="empty"/)
     expect(html).toContain('CV')
     expect(html).toMatch(/<h1[\s>]/)
-    expect(html).toMatch(/cv-page__section/)
-    expect(html).toMatch(/data-visual-id="PageFamilyIndexHero"/)
+    expect(html).toMatch(/data-visual-id="PageFamilyProfileHeroShell"/)
     expect(html).toMatch(/data-visual-id="PageFamilyDownloadListShell"/)
+    expect(html).toMatch(/data-visual-id="PageFamilySkillsGridShell"/)
+    expect(html).toMatch(/data-visual-id="PageFamilySelectedOutputsShell"/)
   })
 
   it('renders download cards when the model is ready', async () => {

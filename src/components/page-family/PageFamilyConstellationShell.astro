@@ -1,6 +1,10 @@
 ---
 import ThemePicture from '../media/ThemePicture.astro'
-import { HOME_GRAPH_BACKPLATE_ASSETS } from '../../lib/media/promoted-media'
+import PromotedPicture from '../media/PromotedPicture.astro'
+import {
+  HOME_GRAPH_BACKPLATE_ASSETS,
+  BRAND_MARK_ASSET_ID,
+} from '../../lib/media/promoted-media'
 ---
 
 <div
@@ -15,6 +19,15 @@ import { HOME_GRAPH_BACKPLATE_ASSETS } from '../../lib/media/promoted-media'
         darkAssetId={HOME_GRAPH_BACKPLATE_ASSETS.dark}
         mediaSlot="home.graph.backplate"
         imgClass="pf-index-constellation__backplate-img"
+      />
+    </div>
+    <div class="pf-index-constellation__center-mark">
+      <PromotedPicture
+        assetId={BRAND_MARK_ASSET_ID}
+        mediaSlot="brand.mark"
+        locale="en"
+        alt=""
+        imgClass="pf-index-constellation__mark"
       />
     </div>
     <div class="pf-index-constellation__nodes">

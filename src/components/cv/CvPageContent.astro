@@ -1,15 +1,19 @@
 ---
 import AboutContactUtilityTemplate from '../templates/AboutContactUtilityTemplate.astro'
-import PageFamilyIndexHero from '../page-family/PageFamilyIndexHero.astro'
+import PageFamilyProfileHeroShell from '../page-family/PageFamilyProfileHeroShell.astro'
+import PageFamilySubNavShell from '../page-family/PageFamilySubNavShell.astro'
+import PageFamilySkillsGridShell from '../page-family/PageFamilySkillsGridShell.astro'
+import PageFamilySelectedOutputsShell from '../page-family/PageFamilySelectedOutputsShell.astro'
 import PageFamilyDownloadListShell from '../page-family/PageFamilyDownloadListShell.astro'
+import PageFamilyCollaborateBandShell from '../page-family/PageFamilyCollaborateBandShell.astro'
 import ContentState from '../state/ContentState.astro'
 import Link from '../ui/Link.astro'
 import {
   formatDownloadMeta,
-  getCvRouteTitle,
   getCvUnavailableCopy,
   type CvPageModel,
 } from '../../lib/cv-content'
+import { getAboutSubNavLabels } from '../../lib/page-family-empty-chrome'
 import { type Locale } from '../../lib/navigation'
 
 interface Props {
@@ -19,21 +23,34 @@ interface Props {
 
 const { locale, model } = Astro.props
 const emptyCopy = getCvUnavailableCopy(locale)
+const subNavLabels = getAboutSubNavLabels(locale)
+const tabRegion = locale === 'en' ? 'CV sections' : 'بخش‌های رزومه'
 ---
 
 {
   model.status === 'unavailable' ? (
     <AboutContactUtilityTemplate class="cv-page cv-page--empty">
-      <PageFamilyIndexHero
+      <PageFamilyProfileHeroShell
         slot="lead"
         locale={locale}
         family="cv"
         eyebrow={locale === 'en' ? 'Documents' : 'اسناد'}
-        title={getCvRouteTitle(locale)}
       />
 
       <div slot="records" class="cv-page__sections pf-index-empty__shell">
-        <PageFamilyDownloadListShell locale={locale} />
+        <PageFamilySubNavShell
+          locale={locale}
+          labels={subNavLabels}
+          regionLabel={tabRegion}
+          activeIndex={5}
+        />
+        <PageFamilySkillsGridShell locale={locale} />
+        <PageFamilySelectedOutputsShell locale={locale} />
+        <PageFamilyDownloadListShell locale={locale} count={3} />
+        <PageFamilyCollaborateBandShell
+          locale={locale}
+          variant="collaborate-only"
+        />
 
         <ContentState
           variant="empty"
@@ -46,12 +63,11 @@ const emptyCopy = getCvUnavailableCopy(locale)
     </AboutContactUtilityTemplate>
   ) : (
     <AboutContactUtilityTemplate class="cv-page">
-      <PageFamilyIndexHero
+      <PageFamilyProfileHeroShell
         slot="lead"
         locale={locale}
         family="cv"
         eyebrow={locale === 'en' ? 'Documents' : 'اسناد'}
-        title={getCvRouteTitle(locale)}
       />
 
       <div slot="records" class="cv-page__sections">

@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest'
 
 import {
+  getAboutHowIWorkPillars,
+  getAboutSubNavLabels,
+  getCmsPlaceholderCopy,
+  getContactFaqItems,
   getPageFamilyFeaturedActionLabel,
   getPageFamilyFeaturedCardLabel,
   getPageFamilyFeaturedSectionLabel,
@@ -11,6 +15,8 @@ import {
   getPageFamilySkillsSectionLabel,
   getPageFamilyThemeExploreLabels,
   getPageFamilyThemeExploreSectionLabel,
+  getProfileHeroCtaLabels,
+  getTeachingPathProcessSteps,
 } from './page-family-empty-chrome'
 
 describe('page-family empty chrome', () => {
@@ -31,6 +37,18 @@ describe('page-family empty chrome', () => {
       mediaSlot: 'home.rail.preview',
     })
     expect(getPageFamilyHeroMedia('contact').kind).toBe('theme')
+  })
+
+  it('exposes approved CMS placeholder copy per locale', () => {
+    expect(getCmsPlaceholderCopy('en')).toBe('Awaiting approved CMS copy')
+    expect(getCmsPlaceholderCopy('fa')).toContain('CMS')
+  })
+
+  it('exposes About sub-nav and profile CTA structural labels', () => {
+    expect(getAboutSubNavLabels('en')).toHaveLength(7)
+    expect(getProfileHeroCtaLabels('fa').research).toBeTruthy()
+    expect(getAboutHowIWorkPillars('en')).toHaveLength(4)
+    expect(getTeachingPathProcessSteps('en')).toHaveLength(4)
   })
 
   it('exposes featured labels for editorial and project families', () => {
@@ -86,5 +104,9 @@ describe('page-family empty chrome', () => {
       'Archive',
     ])
     expect(getPageFamilyThemeExploreLabels('fa', 'writing')).toHaveLength(5)
+  })
+
+  it('exposes PF-08 FAQ structural rows', () => {
+    expect(getContactFaqItems('en')).toHaveLength(3)
   })
 })

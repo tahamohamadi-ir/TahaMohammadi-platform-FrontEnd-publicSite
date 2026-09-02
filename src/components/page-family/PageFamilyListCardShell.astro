@@ -4,6 +4,7 @@ import {
   getPageFamilyListSectionLabel,
   getPageFamilyPreviewAsset,
   getPageFamilyDecorativeAlt,
+  getCmsPlaceholderCopy,
   type PageFamilyChromeId,
 } from '../../lib/page-family-empty-chrome'
 import type { Locale } from '../../lib/navigation'
@@ -19,8 +20,19 @@ const { locale, family, count = 3, class: className = '' } = Astro.props
 const sectionLabel = getPageFamilyListSectionLabel(locale, family)
 const preview = sectionLabel ? getPageFamilyPreviewAsset(family) : null
 const decorativeAlt = getPageFamilyDecorativeAlt(locale, family)
+const placeholder = getCmsPlaceholderCopy(locale)
 const cards =
   sectionLabel && preview ? Array.from({ length: count }, (_, i) => i) : null
+const cardTypes =
+  locale === 'en'
+    ? ['Reading path', 'Resource', 'Guide']
+    : ['مسیر مطالعه', 'منبع', 'راهنما']
+const levelLabel = locale === 'en' ? 'Level' : 'سطح'
+const durationLabel = locale === 'en' ? 'Duration' : 'مدت'
+const tagLabels =
+  locale === 'en'
+    ? ['Society', 'Language & Culture', 'Digital Health']
+    : ['جامعه', 'زبان و فرهنگ', 'سلامت دیجیتال']
 ---
 
 {
@@ -37,7 +49,7 @@ const cards =
       <ul class="pf-index-list-cards__list">
         {cards.map((index) => (
           <li>
-            <article class="pf-index-list-cards__card" aria-hidden="true">
+            <article class="pf-index-list-cards__card">
               <div class="pf-index-list-cards__thumb">
                 <PromotedPicture
                   assetId={preview.assetId}
@@ -49,10 +61,29 @@ const cards =
                 />
               </div>
               <div class="pf-index-list-cards__body">
-                <span class="pf-index-empty__line pf-index-empty__line--short" />
-                <span class="pf-index-empty__line pf-index-empty__line--medium" />
-                <span class="pf-index-empty__line" />
+                <p class="pf-index-list-cards__type">
+                  {cardTypes[index % cardTypes.length]}
+                </p>
+                <p class="pf-index-list-cards__placeholder">{placeholder}</p>
+                <div class="pf-index-list-cards__tags">
+                  {tagLabels.map((tag) => (
+                    <span class="pf-index-list-cards__tag">{tag}</span>
+                  ))}
+                </div>
+                <dl class="pf-index-list-cards__meta">
+                  <div>
+                    <dt>{levelLabel}</dt>
+                    <dd>—</dd>
+                  </div>
+                  <div>
+                    <dt>{durationLabel}</dt>
+                    <dd>—</dd>
+                  </div>
+                </dl>
               </div>
+              <span class="pf-index-list-cards__arrow" aria-hidden="true">
+                →
+              </span>
             </article>
           </li>
         ))}

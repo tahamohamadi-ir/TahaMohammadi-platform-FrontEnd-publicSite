@@ -1,0 +1,63 @@
+---
+import {
+  getAboutSkillsCategories,
+  getCmsPlaceholderCopy,
+} from '../../lib/page-family-empty-chrome'
+import type { Locale } from '../../lib/navigation'
+
+interface Props {
+  locale: Locale
+  class?: string
+}
+
+const { locale, class: className = '' } = Astro.props
+const categories = getAboutSkillsCategories(locale)
+const placeholder = getCmsPlaceholderCopy(locale)
+const sectionLabel = locale === 'en' ? 'Skills & expertise' : 'مهارت‌ها و تخصص'
+const viewAll = locale === 'en' ? 'View all skills →' : 'مشاهده همه مهارت‌ها →'
+const skillRows = [0, 1, 2, 3] as const
+---
+
+<section
+  class={['pf-index-skills-grid', className].filter(Boolean).join(' ')}
+  data-visual-id="PageFamilySkillsGridShell"
+  aria-labelledby="pf-skills-grid-title"
+>
+  <h2 id="pf-skills-grid-title" class="pf-index-skills-grid__title">
+    {sectionLabel}
+  </h2>
+
+  <div class="pf-index-skills-grid__columns">
+    {
+      categories.map((category, columnIndex) => (
+        <article class="pf-index-skills-grid__column">
+          <span
+            class={[
+              'pf-index-skills-grid__icon',
+              `pf-index-skills-grid__icon--${columnIndex}`,
+            ].join(' ')}
+            aria-hidden="true"
+          />
+          <h3 class="pf-index-skills-grid__column-title">{category}</h3>
+          <ul class="pf-index-skills-grid__items">
+            {skillRows.map((row) => (
+              <li class="pf-index-skills-grid__item">
+                {row === 0 ? (
+                  placeholder
+                ) : (
+                  <span class="pf-index-empty__line pf-index-empty__line--medium" />
+                )}
+              </li>
+            ))}
+          </ul>
+        </article>
+      ))
+    }
+  </div>
+
+  <p class="pf-index-skills-grid__cta">
+    <button type="button" class="pf-index-skills-grid__cta-btn" disabled>
+      {viewAll}
+    </button>
+  </p>
+</section>

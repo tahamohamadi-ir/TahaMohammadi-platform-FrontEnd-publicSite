@@ -31,6 +31,7 @@ describe('PUBLIC-210 projects pages', () => {
     expect(html).toMatch(/data-visual-id="PageFamilyFeaturedShell"/)
     expect(html).toMatch(/data-visual-id="PageFamilyContentRowPlaceholder"/)
     expect(html).toMatch(/data-visual-id="PageFamilyPaginationShell"/)
+    expect(html).toMatch(/data-visual-id="PageFamilySortShell"/)
     expect(html).toMatch(/pf-index-featured--project/)
   })
 

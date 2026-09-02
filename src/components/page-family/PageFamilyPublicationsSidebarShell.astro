@@ -1,0 +1,35 @@
+---
+import { getCmsPlaceholderCopy } from '../../lib/page-family-empty-chrome'
+import type { Locale } from '../../lib/navigation'
+
+interface Props {
+  locale: Locale
+  class?: string
+}
+
+const { locale, class: className = '' } = Astro.props
+const placeholder = getCmsPlaceholderCopy(locale)
+const sectionLabel = locale === 'en' ? 'Related records' : 'رکوردهای مرتبط'
+const rows = [0, 1, 2] as const
+---
+
+<aside
+  class={['pf-index-pub-sidebar', className].filter(Boolean).join(' ')}
+  data-visual-id="PageFamilyPublicationsSidebarShell"
+  aria-label={sectionLabel}
+>
+  <h2 class="pf-index-pub-sidebar__title">{sectionLabel}</h2>
+  <ul class="pf-index-pub-sidebar__list">
+    {
+      rows.map(() => (
+        <li>
+          <article class="pf-index-pub-sidebar__card" aria-hidden="true">
+            <span class="pf-index-empty__line pf-index-empty__line--short" />
+            <span class="pf-index-empty__line pf-index-empty__line--medium" />
+            <p class="pf-index-pub-sidebar__placeholder">{placeholder}</p>
+          </article>
+        </li>
+      ))
+    }
+  </ul>
+</aside>

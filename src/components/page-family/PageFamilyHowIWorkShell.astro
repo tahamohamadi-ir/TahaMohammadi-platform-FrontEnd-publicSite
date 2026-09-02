@@ -1,0 +1,50 @@
+---
+import {
+  getAboutHowIWorkPillars,
+  getCmsPlaceholderCopy,
+} from '../../lib/page-family-empty-chrome'
+import type { Locale } from '../../lib/navigation'
+
+interface Props {
+  locale: Locale
+  class?: string
+}
+
+const { locale, class: className = '' } = Astro.props
+const pillars = getAboutHowIWorkPillars(locale)
+const placeholder = getCmsPlaceholderCopy(locale)
+const sectionLabel = locale === 'en' ? 'How I work' : 'چگونه کار می‌کنم'
+const headline =
+  locale === 'en'
+    ? 'Principled practice across disciplines.'
+    : 'عمل حرفه‌ای اصولی در میان‌رشته‌ها.'
+---
+
+<section
+  class={['pf-index-how-i-work', className].filter(Boolean).join(' ')}
+  data-visual-id="PageFamilyHowIWorkShell"
+  aria-labelledby="pf-how-i-work-title"
+>
+  <p class="pf-index-how-i-work__eyebrow">{sectionLabel}</p>
+  <h2 id="pf-how-i-work-title" class="pf-index-how-i-work__headline">
+    {headline}
+  </h2>
+
+  <div class="pf-index-how-i-work__grid">
+    {
+      pillars.map((pillar) => (
+        <article class="pf-index-how-i-work__card">
+          <span
+            class={[
+              'pf-index-how-i-work__icon',
+              `pf-index-how-i-work__icon--${pillar.tone}`,
+            ].join(' ')}
+            aria-hidden="true"
+          />
+          <h3 class="pf-index-how-i-work__card-title">{pillar.title}</h3>
+          <p class="pf-index-how-i-work__card-copy">{placeholder}</p>
+        </article>
+      ))
+    }
+  </div>
+</section>

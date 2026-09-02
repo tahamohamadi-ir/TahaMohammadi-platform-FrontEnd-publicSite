@@ -1,0 +1,60 @@
+---
+import Button from '../ui/Button.astro'
+import { localePath, type Locale } from '../../lib/navigation'
+
+interface Props {
+  locale: Locale
+  variant?: 'dual' | 'collaborate-only'
+  class?: string
+}
+
+const { locale, variant = 'dual', class: className = '' } = Astro.props
+const updatesTitle =
+  locale === 'en' ? 'Optional updates' : 'به‌روزرسانی اختیاری'
+const updatesCopy =
+  locale === 'en'
+    ? 'Follow when new teaching paths or resources are published.'
+    : 'وقتی مسیرها یا منابع جدید منتشر شد، مطلع شوید.'
+const updatesAction =
+  locale === 'en' ? 'Follow updates' : 'دنبال کردن به‌روزرسانی‌ها'
+const collaborateTitle =
+  locale === 'en' ? "Let's collaborate on teaching" : 'همکاری در تدریس'
+const collaborateCopy =
+  locale === 'en'
+    ? 'Course design, workshops, and structured learning paths.'
+    : 'طراحی دوره، کارگاه و مسیرهای یادگیری ساختاریافته.'
+const collaborateAction = locale === 'en' ? "Let's Connect" : 'ارتباط بگیریم'
+---
+
+<section
+  class={['pf-index-collaborate-band', className].filter(Boolean).join(' ')}
+  data-visual-id="PageFamilyCollaborateBandShell"
+  aria-label={locale === 'en' ? 'Collaboration options' : 'گزینه‌های همکاری'}
+>
+  {
+    variant === 'dual' ? (
+      <article class="pf-index-collaborate-band__card">
+        <span
+          class="pf-index-collaborate-band__icon pf-index-collaborate-band__icon--mail"
+          aria-hidden="true"
+        />
+        <h2 class="pf-index-collaborate-band__title">{updatesTitle}</h2>
+        <p class="pf-index-collaborate-band__copy">{updatesCopy}</p>
+        <Button label={updatesAction} variant="secondary" disabled />
+      </article>
+    ) : null
+  }
+
+  <article class="pf-index-collaborate-band__card">
+    <span
+      class="pf-index-collaborate-band__icon pf-index-collaborate-band__icon--group"
+      aria-hidden="true"></span>
+    <h2 class="pf-index-collaborate-band__title">{collaborateTitle}</h2>
+    <p class="pf-index-collaborate-band__copy">{collaborateCopy}</p>
+    <Button
+      label={collaborateAction}
+      href={localePath(locale, 'contact')}
+      variant="primary"
+    />
+  </article>
+</section>

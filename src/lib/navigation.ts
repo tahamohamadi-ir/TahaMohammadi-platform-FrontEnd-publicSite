@@ -11,6 +11,25 @@ export interface NavItem {
   label: Record<Locale, string>
 }
 
+/** Footer resource links — structural navigation, not CMS records. */
+export const footerResourceNav: NavItem[] = [
+  {
+    slug: 'cv',
+    pathSegment: 'cv',
+    label: { en: 'Academic CV', fa: 'رزومه آکادمیک' },
+  },
+  {
+    slug: 'publications',
+    pathSegment: 'publications',
+    label: { en: 'Publications', fa: 'انتشارات' },
+  },
+  {
+    slug: 'teaching',
+    pathSegment: 'teaching',
+    label: { en: 'Teaching', fa: 'تدریس' },
+  },
+]
+
 export const primaryNav: NavItem[] = [
   { slug: 'about', pathSegment: 'about', label: { en: 'About', fa: 'درباره' } },
   {
@@ -89,7 +108,15 @@ export const shellCopy = {
     fa: 'برای فرصت‌های پژوهشی و دکترای دارای تأمین مالی در سال ۲۰۲۷ در حوزه‌های هوش مصنوعی انسان‌محور، تعامل انسان و هوش مصنوعی، هوش مصنوعی قابل‌اعتماد، تحلیل بصری، سامانه‌های هوشمند داده و سلامت دیجیتال آماده گفت‌وگو و همکاری هستم.',
   },
   footerExplore: { en: 'Explore', fa: 'بخش‌ها' },
+  footerResources: { en: 'Resources', fa: 'منابع' },
   footerConnect: { en: 'Connect', fa: 'ارتباط' },
+  footerSocialGithub: { en: 'GitHub', fa: 'گیت‌هاب' },
+  footerSocialLinkedin: { en: 'LinkedIn', fa: 'لینکدین' },
+  footerSocialEmail: { en: 'Email', fa: 'ایمیل' },
+  footerFromCmsNote: {
+    en: 'From approved CMS record',
+    fa: 'از رکورد تأییدشده CMS',
+  },
   contact: { en: 'Contact', fa: 'تماس' },
   cv: { en: 'CV', fa: 'رزومه' },
   brandName: { en: 'Taha Mohammadi', fa: 'طه محمدی' },

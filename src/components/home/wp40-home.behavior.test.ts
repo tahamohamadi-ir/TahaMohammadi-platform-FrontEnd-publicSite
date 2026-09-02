@@ -53,11 +53,13 @@ describe('WP-40 home hero', () => {
     expect(fa).not.toMatch(/Researcher/)
   })
 
-  it('renders one H1 name and no unavailable hero CTAs', async () => {
+  it('renders profile hero CTAs linking to built routes', async () => {
     for (const locale of ['en', 'fa'] as const) {
       const html = await render(HomeHero, { locale })
       expect(html.match(/<h1[\s>]/g)?.length).toBe(1)
-      expect(html).not.toMatch(/href="\/(en|fa)\/(research|cv|contact)\/"/)
+      expect(html).toMatch(
+        new RegExp(`href="/${locale}/(research|cv|contact)/"`),
+      )
       expect(html.match(/class="ui-chip ui-chip--neutral"/g)?.length).toBe(5)
     }
   })

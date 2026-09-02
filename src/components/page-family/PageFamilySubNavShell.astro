@@ -1,0 +1,45 @@
+---
+import type { Locale } from '../../lib/navigation'
+
+interface Props {
+  locale: Locale
+  labels: readonly string[]
+  regionLabel: string
+  activeIndex?: number
+  class?: string
+}
+
+const {
+  locale,
+  labels,
+  regionLabel,
+  activeIndex = 0,
+  class: className = '',
+} = Astro.props
+---
+
+<div
+  class={['pf-index-subnav', className].filter(Boolean).join(' ')}
+  data-visual-id="PageFamilySubNavShell"
+  role="tablist"
+  aria-label={regionLabel}
+  aria-disabled="true"
+  lang={locale}
+>
+  {
+    labels.map((label, index) => (
+      <button
+        type="button"
+        class:list={[
+          'pf-index-subnav__tab',
+          index === activeIndex && 'pf-index-subnav__tab--active',
+        ]}
+        role="tab"
+        aria-selected={index === activeIndex ? 'true' : 'false'}
+        disabled
+      >
+        {label}
+      </button>
+    ))
+  }
+</div>

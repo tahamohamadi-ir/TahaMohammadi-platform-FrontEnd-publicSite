@@ -3,11 +3,14 @@ import ContactCTA from './ui/ContactCTA.astro'
 import Link from './ui/Link.astro'
 import PromotedPicture from './media/PromotedPicture.astro'
 import {
+  GATEWAY_ROLE_LINE,
   localePath,
+  footerResourceNav,
   primaryNav,
   shellCopy,
   type Locale,
 } from '../lib/navigation'
+import { getHomeHeroContent } from '../lib/home-content'
 import { BRAND_MARK_ASSET_ID } from '../lib/media/promoted-media'
 
 interface Props {
@@ -19,6 +22,11 @@ const { locale, hidePromo = false } = Astro.props
 const homeHref = localePath(locale)
 const contactHref = localePath(locale, 'contact')
 const cvHref = localePath(locale, 'cv')
+const heroContent = getHomeHeroContent(locale)
+const brandNameDisplay =
+  locale === 'en'
+    ? shellCopy.brandName.en.toUpperCase()
+    : shellCopy.brandName.fa
 ---
 
 <footer class="site-footer" data-visual-id="Footer">
@@ -36,7 +44,7 @@ const cvHref = localePath(locale, 'cv')
   }
 
   <div class="site-footer__grid">
-    <div class="site-footer__brand">
+    <div class="site-footer__brand-block">
       <a href={homeHref} class="site-footer__brand-link">
         <PromotedPicture
           assetId={BRAND_MARK_ASSET_ID}
@@ -45,8 +53,36 @@ const cvHref = localePath(locale, 'cv')
           alt=""
           imgClass="site-footer__mark"
         />
-        <span>{shellCopy.brandName[locale]}</span>
+        <span class="site-footer__brand-name">{brandNameDisplay}</span>
       </a>
+      <p class="site-footer__brand-role">{GATEWAY_ROLE_LINE}</p>
+      <p class="site-footer__brand-bio">{heroContent.intro}</p>
+      <ul
+        class="site-footer__social"
+        aria-label={shellCopy.footerConnect[locale]}
+      >
+        <li>
+          <span
+            class="site-footer__social-link site-footer__social-link--placeholder"
+          >
+            {shellCopy.footerSocialGithub[locale]}
+          </span>
+        </li>
+        <li>
+          <span
+            class="site-footer__social-link site-footer__social-link--placeholder"
+          >
+            {shellCopy.footerSocialLinkedin[locale]}
+          </span>
+        </li>
+        <li>
+          <Link
+            href={contactHref}
+            label={shellCopy.footerSocialEmail[locale]}
+            variant="inline"
+          />
+        </li>
+      </ul>
     </div>
 
     <nav class="site-footer__nav" aria-label={shellCopy.footerExplore[locale]}>
@@ -54,6 +90,26 @@ const cvHref = localePath(locale, 'cv')
       <ul class="site-footer__nav-list">
         {
           primaryNav.map((item) => (
+            <li>
+              <Link
+                href={localePath(locale, item.pathSegment)}
+                label={item.label[locale]}
+                variant="inline"
+              />
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <nav
+      class="site-footer__nav"
+      aria-label={shellCopy.footerResources[locale]}
+    >
+      <p class="site-footer__nav-title">{shellCopy.footerResources[locale]}</p>
+      <ul class="site-footer__nav-list">
+        {
+          footerResourceNav.map((item) => (
             <li>
               <Link
                 href={localePath(locale, item.pathSegment)}
@@ -80,14 +136,25 @@ const cvHref = localePath(locale, 'cv')
           <Link href={cvHref} label={shellCopy.cv[locale]} variant="inline" />
         </li>
       </ul>
+      <p class="site-footer__cms-note">{shellCopy.footerFromCmsNote[locale]}</p>
     </nav>
   </div>
 
-  <p class="site-footer__legal">
-    {
-      locale === 'fa'
-        ? `© ${new Date().getFullYear()} ${shellCopy.brandName.fa}`
-        : `© ${new Date().getFullYear()} ${shellCopy.brandName.en}`
-    }
-  </p>
+  <div class="site-footer__legal-row">
+    <p class="site-footer__legal">
+      {
+        locale === 'fa'
+          ? `© ${new Date().getFullYear()} ${shellCopy.brandName.fa}. All rights reserved.`
+          : `© ${new Date().getFullYear()} ${shellCopy.brandName.en}. All rights reserved.`
+      }
+    </p>
+    <PromotedPicture
+      assetId={BRAND_MARK_ASSET_ID}
+      mediaSlot="brand.mark"
+      locale={locale}
+      alt=""
+      imgClass="site-footer__legal-mark"
+      aria-hidden="true"
+    />
+  </div>
 </footer>

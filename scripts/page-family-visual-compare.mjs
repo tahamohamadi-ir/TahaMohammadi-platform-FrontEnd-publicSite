@@ -305,11 +305,7 @@ export function buildPublic270CompareRows(designAuthorityRoot) {
           captureFile,
           capturePath: path.join(captureOutputDir, captureFile),
           conceptFile: entry.concept,
-          conceptPath: path.join(
-            conceptRoot,
-            entry.conceptDir,
-            entry.concept,
-          ),
+          conceptPath: path.join(conceptRoot, entry.conceptDir, entry.concept),
           conceptRelative: `${entry.conceptDir}/${entry.concept}`,
           optional: false,
         })

@@ -1,0 +1,42 @@
+---
+import { getCmsPlaceholderCopy } from '../../lib/page-family-empty-chrome'
+import type { Locale } from '../../lib/navigation'
+
+interface Props {
+  locale: Locale
+  count?: number
+  class?: string
+}
+
+const { locale, count = 2, class: className = '' } = Astro.props
+const placeholder = getCmsPlaceholderCopy(locale)
+const sectionLabel =
+  locale === 'en' ? 'Selected publications' : 'انتشارات منتخب'
+const statusLabel = locale === 'en' ? 'Status pending' : 'وضعیت در انتظار'
+const cards = Array.from({ length: count }, (_, index) => index)
+---
+
+<section
+  class={['pf-index-selected-pubs', className].filter(Boolean).join(' ')}
+  data-visual-id="PageFamilySelectedPublicationsShell"
+  aria-labelledby="pf-selected-pubs-title"
+>
+  <h2 id="pf-selected-pubs-title" class="pf-index-selected-pubs__title">
+    {sectionLabel}
+  </h2>
+
+  <ul class="pf-index-selected-pubs__list">
+    {
+      cards.map(() => (
+        <li>
+          <article class="pf-index-selected-pubs__card" aria-hidden="true">
+            <span class="pf-index-selected-pubs__badge">{statusLabel}</span>
+            <p class="pf-index-selected-pubs__title-line">{placeholder}</p>
+            <span class="pf-index-empty__line pf-index-empty__line--medium" />
+            <span class="pf-index-empty__line" />
+          </article>
+        </li>
+      ))
+    }
+  </ul>
+</section>

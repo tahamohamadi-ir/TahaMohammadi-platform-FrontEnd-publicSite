@@ -1,0 +1,45 @@
+---
+import {
+  getContactFaqItems,
+  getCmsPlaceholderCopy,
+} from '../../lib/page-family-empty-chrome'
+import type { Locale } from '../../lib/navigation'
+
+interface Props {
+  locale: Locale
+  class?: string
+}
+
+const { locale, class: className = '' } = Astro.props
+const items = getContactFaqItems(locale)
+const placeholder = getCmsPlaceholderCopy(locale)
+const sectionLabel = locale === 'en' ? 'Frequently asked' : 'پرسش‌های رایج'
+---
+
+<section
+  class={['pf-index-faq', className].filter(Boolean).join(' ')}
+  data-visual-id="PageFamilyFaqShell"
+  aria-labelledby="pf-faq-title"
+>
+  <h2 id="pf-faq-title" class="pf-index-faq__title">{sectionLabel}</h2>
+
+  <div class="pf-index-faq__list">
+    {
+      items.map((item) => (
+        <details class="pf-index-faq__item">
+          <summary class="pf-index-faq__summary">
+            <span
+              class={[
+                'pf-index-faq__icon',
+                `pf-index-faq__icon--${item.tone}`,
+              ].join(' ')}
+              aria-hidden="true"
+            />
+            <span class="pf-index-faq__question">{item.title}</span>
+          </summary>
+          <p class="pf-index-faq__answer">{placeholder}</p>
+        </details>
+      ))
+    }
+  </div>
+</section>

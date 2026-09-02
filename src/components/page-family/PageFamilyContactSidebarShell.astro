@@ -1,0 +1,61 @@
+---
+import Button from '../ui/Button.astro'
+import {
+  getContactBeforeYouWriteItems,
+  getCmsPlaceholderCopy,
+} from '../../lib/page-family-empty-chrome'
+import { localePath, type Locale } from '../../lib/navigation'
+
+interface Props {
+  locale: Locale
+  class?: string
+}
+
+const { locale, class: className = '' } = Astro.props
+const items = getContactBeforeYouWriteItems(locale)
+const placeholder = getCmsPlaceholderCopy(locale)
+const sectionLabel = locale === 'en' ? 'Before you write' : 'پیش از نوشتن'
+const cvCardTitle =
+  locale === 'en'
+    ? 'Prefer a structured overview?'
+    : 'ترجیح می‌دهید نمای کلی ساختاریافته؟'
+const cvAction = locale === 'en' ? 'Download CV' : 'دانلود رزومه'
+---
+
+<aside
+  class={['pf-index-contact-sidebar', className].filter(Boolean).join(' ')}
+  data-visual-id="PageFamilyContactSidebarShell"
+  aria-label={sectionLabel}
+>
+  <section class="pf-index-contact-sidebar__block">
+    <h2 class="pf-index-contact-sidebar__title">{sectionLabel}</h2>
+    <ul class="pf-index-contact-sidebar__checklist">
+      {
+        items.map((item) => (
+          <li class="pf-index-contact-sidebar__check-item">
+            <span
+              class={[
+                'pf-index-contact-sidebar__check-icon',
+                `pf-index-contact-sidebar__check-icon--${item.tone}`,
+              ].join(' ')}
+              aria-hidden="true"
+            />
+            <div class="pf-index-contact-sidebar__check-copy">
+              <p class="pf-index-contact-sidebar__check-title">{item.title}</p>
+              <p class="pf-index-contact-sidebar__check-desc">{placeholder}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <section class="pf-index-contact-sidebar__cv-card">
+    <h2 class="pf-index-contact-sidebar__cv-title">{cvCardTitle}</h2>
+    <Button
+      label={cvAction}
+      href={localePath(locale, 'cv')}
+      variant="secondary"
+    />
+  </section>
+</aside>

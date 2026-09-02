@@ -1,0 +1,24 @@
+---
+import type { Locale } from '../../lib/navigation'
+
+interface Props {
+  locale: Locale
+  class?: string
+}
+
+const { locale, class: className = '' } = Astro.props
+const label = locale === 'en' ? 'Sort by' : 'مرتب‌سازی'
+const active = locale === 'en' ? 'Recently updated' : 'به‌روزرسانی اخیر'
+---
+
+<div
+  class={['pf-index-sort', className].filter(Boolean).join(' ')}
+  data-visual-id="PageFamilySortShell"
+  aria-label={label}
+  aria-disabled="true"
+>
+  <span class="pf-index-sort__label">{label}</span>
+  <button type="button" class="pf-index-sort__control" disabled>
+    {active}
+  </button>
+</div>

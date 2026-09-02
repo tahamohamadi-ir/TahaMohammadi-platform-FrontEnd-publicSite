@@ -405,6 +405,165 @@ export function getPageFamilyThemeExploreSectionLabel(
   return locale === 'en' ? 'Explore by theme' : 'کاوش بر اساس موضوع'
 }
 
+/** Approved placeholder when concept shows CMS copy slots — not invented records. */
+export function getCmsPlaceholderCopy(locale: Locale): string {
+  return locale === 'en'
+    ? 'Awaiting approved CMS copy'
+    : 'در انتظار تأیید محتوای CMS'
+}
+
+/** Structural About sub-navigation tabs — UI chrome, not CMS sections. */
+export function getAboutSubNavLabels(locale: Locale): readonly string[] {
+  return locale === 'en'
+    ? [
+        'Overview',
+        'Experience',
+        'Education',
+        'Skills',
+        'Research',
+        'Publications',
+        'Certificates',
+      ]
+    : [
+        'نمای کلی',
+        'تجربه',
+        'تحصیلات',
+        'مهارت‌ها',
+        'پژوهش',
+        'انتشارات',
+        'گواهینامه‌ها',
+      ]
+}
+
+/** Structural How I Work pillars (PF-07) — UI chrome, not CMS copy. */
+export function getAboutHowIWorkPillars(
+  locale: Locale,
+): readonly { title: string; tone: string }[] {
+  return locale === 'en'
+    ? [
+        { title: 'Human-centered', tone: 'human' },
+        { title: 'Systems thinking', tone: 'systems' },
+        { title: 'Evidence-led', tone: 'evidence' },
+        { title: 'Visual clarity', tone: 'visual' },
+      ]
+    : [
+        { title: 'انسان‌محور', tone: 'human' },
+        { title: 'تفکر سیستمی', tone: 'systems' },
+        { title: 'مبتنی بر شواهد', tone: 'evidence' },
+        { title: 'وضوح بصری', tone: 'visual' },
+      ]
+}
+
+/** Structural skills category labels (PF-07) — UI chrome, not CMS skill records. */
+export function getAboutSkillsCategories(locale: Locale): readonly string[] {
+  return locale === 'en'
+    ? ['Research', 'Engineering', 'Data / AI', 'Design']
+    : ['پژوهش', 'مهندسی', 'داده / هوش مصنوعی', 'طراحی']
+}
+
+/** Structural selected-output category labels (PF-07) — UI chrome, not CMS records. */
+export function getAboutSelectedOutputCategories(
+  locale: Locale,
+): readonly { title: string; tone: string }[] {
+  return locale === 'en'
+    ? [
+        { title: 'Research projects', tone: 'projects' },
+        { title: 'Publications', tone: 'publications' },
+        { title: 'Certificates', tone: 'certificates' },
+        { title: 'Resources', tone: 'resources' },
+      ]
+    : [
+        { title: 'پروژه‌های پژوهشی', tone: 'projects' },
+        { title: 'انتشارات', tone: 'publications' },
+        { title: 'گواهینامه‌ها', tone: 'certificates' },
+        { title: 'منابع', tone: 'resources' },
+      ]
+}
+
+/** Structural teaching path process steps (PF-06) — UI chrome, not CMS records. */
+export function getTeachingPathProcessSteps(locale: Locale): readonly string[] {
+  return locale === 'en'
+    ? ['Overview', 'Lessons', 'Resources', 'References']
+    : ['نمای کلی', 'درس‌ها', 'منابع', 'مراجع']
+}
+
+/** Structural contact before-you-write checklist (PF-08) — UI chrome, not CMS copy. */
+export function getContactBeforeYouWriteItems(
+  locale: Locale,
+): readonly { title: string; tone: string }[] {
+  return locale === 'en'
+    ? [
+        { title: 'Research fit', tone: 'fit' },
+        { title: 'Context', tone: 'context' },
+        { title: 'Requested next step', tone: 'step' },
+        { title: 'Links / attachments', tone: 'links' },
+      ]
+    : [
+        { title: 'تناسب پژوهشی', tone: 'fit' },
+        { title: 'زمینه', tone: 'context' },
+        { title: 'گام بعدی درخواستی', tone: 'step' },
+        { title: 'پیوندها / پیوست‌ها', tone: 'links' },
+      ]
+}
+
+/** Structural contact FAQ rows (PF-08) — UI chrome, not CMS copy. */
+export function getContactFaqItems(
+  locale: Locale,
+): readonly { title: string; tone: string }[] {
+  return locale === 'en'
+    ? [
+        {
+          title: 'How long does it take to receive a response?',
+          tone: 'response',
+        },
+        { title: 'Do you take new PhD students?', tone: 'phd' },
+        { title: 'How should I share materials or links?', tone: 'materials' },
+      ]
+    : [
+        { title: 'پاسخ‌دهی چقدر طول می‌کشد؟', tone: 'response' },
+        { title: 'آیا دانشجوی دکتری جدید می‌پذیرید؟', tone: 'phd' },
+        { title: 'چگونه مطالب یا پیوندها را ارسال کنم؟', tone: 'materials' },
+      ]
+}
+
+/** Structural send workflow states (PF-08) — UI chrome, not live form state. */
+export function getContactSendWorkflowStates(
+  locale: Locale,
+): readonly { title: string; tone: string }[] {
+  return locale === 'en'
+    ? [
+        { title: 'Ready', tone: 'ready' },
+        { title: 'Sending', tone: 'sending' },
+        { title: 'Sent', tone: 'sent' },
+        { title: 'Could not send', tone: 'error' },
+      ]
+    : [
+        { title: 'آماده', tone: 'ready' },
+        { title: 'در حال ارسال', tone: 'sending' },
+        { title: 'ارسال شد', tone: 'sent' },
+        { title: 'ارسال نشد', tone: 'error' },
+      ]
+}
+
+/** Structural hero CTA labels for profile/home shells — routes only, not CMS copy. */
+export function getProfileHeroCtaLabels(locale: Locale): {
+  research: string
+  cv: string
+  contact: string
+} {
+  return locale === 'en'
+    ? {
+        research: 'Research profile',
+        cv: 'Academic CV',
+        contact: 'Contact',
+      }
+    : {
+        research: 'پروفایل پژوهشی',
+        cv: 'رزومه آکادمیک',
+        contact: 'تماس',
+      }
+}
+
 /** Structural theme chip labels for explore band (PF-03) — UI chrome, not CMS records. */
 export function getPageFamilyThemeExploreLabels(
   locale: Locale,

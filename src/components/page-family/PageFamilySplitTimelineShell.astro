@@ -1,0 +1,90 @@
+---
+import { getCmsPlaceholderCopy } from '../../lib/page-family-empty-chrome'
+import type { Locale } from '../../lib/navigation'
+
+interface Props {
+  locale: Locale
+  count?: number
+  class?: string
+}
+
+const { locale, count = 3, class: className = '' } = Astro.props
+const placeholder = getCmsPlaceholderCopy(locale)
+const experienceLabel = locale === 'en' ? 'Experience' : 'تجربه'
+const educationLabel = locale === 'en' ? 'Education' : 'تحصیلات'
+const viewAllLabel =
+  locale === 'en'
+    ? 'View full experience & education →'
+    : 'مشاهده تجربه و تحصیلات کامل →'
+const cards = Array.from({ length: count }, (_, index) => index)
+---
+
+<section
+  class={['pf-index-split-timeline', className].filter(Boolean).join(' ')}
+  data-visual-id="PageFamilySplitTimelineShell"
+  aria-labelledby="pf-split-timeline-title"
+>
+  <h2 id="pf-split-timeline-title" class="pf-index-split-timeline__sr-only">
+    {experienceLabel} / {educationLabel}
+  </h2>
+
+  <div class="pf-index-split-timeline__grid">
+    <div class="pf-index-split-timeline__column">
+      <h3 class="pf-index-split-timeline__column-title">{experienceLabel}</h3>
+      <ul class="pf-index-split-timeline__list">
+        {
+          cards.map(() => (
+            <li>
+              <article class="pf-index-split-timeline__card">
+                <p class="pf-index-split-timeline__card-title">{placeholder}</p>
+                <p class="pf-index-split-timeline__card-meta">
+                  {locale === 'en' ? 'Role / Position' : 'نقش / سمت'}
+                </p>
+                <span class="pf-index-split-timeline__link">
+                  {locale === 'en'
+                    ? 'View full record →'
+                    : 'مشاهده رکورد کامل →'}
+                </span>
+              </article>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <div class="pf-index-split-timeline__rail" aria-hidden="true">
+      {cards.map(() => <span class="pf-index-split-timeline__node" />)}
+    </div>
+
+    <div class="pf-index-split-timeline__column">
+      <h3 class="pf-index-split-timeline__column-title">{educationLabel}</h3>
+      <ul class="pf-index-split-timeline__list">
+        {
+          cards.map(() => (
+            <li>
+              <article class="pf-index-split-timeline__card">
+                <p class="pf-index-split-timeline__card-title">{placeholder}</p>
+                <p class="pf-index-split-timeline__card-meta">
+                  {locale === 'en'
+                    ? 'Institution / Organization'
+                    : 'مؤسسه / سازمان'}
+                </p>
+                <span class="pf-index-split-timeline__link">
+                  {locale === 'en'
+                    ? 'View full record →'
+                    : 'مشاهده رکورد کامل →'}
+                </span>
+              </article>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+
+  <p class="pf-index-split-timeline__cta">
+    <button type="button" class="pf-index-split-timeline__cta-btn" disabled>
+      {viewAllLabel}
+    </button>
+  </p>
+</section>

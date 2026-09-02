@@ -1,6 +1,10 @@
 ---
 import AboutContactUtilityTemplate from '../templates/AboutContactUtilityTemplate.astro'
 import PageFamilyIndexHero from '../page-family/PageFamilyIndexHero.astro'
+import PageFamilyContactSidebarShell from '../page-family/PageFamilyContactSidebarShell.astro'
+import PageFamilyTopicCardsShell from '../page-family/PageFamilyTopicCardsShell.astro'
+import PageFamilyFaqShell from '../page-family/PageFamilyFaqShell.astro'
+import PageFamilySendWorkflowShell from '../page-family/PageFamilySendWorkflowShell.astro'
 import ContentState from '../state/ContentState.astro'
 import Input from '../ui/Input.astro'
 import Textarea from '../ui/Textarea.astro'
@@ -33,6 +37,7 @@ const topicLabels =
         creative: 'Creative work',
         other: 'Other',
         details: 'Contact details',
+        methods: 'Contact methods',
         email: 'Academic email',
         linkedin: 'LinkedIn',
         orcid: 'ORCID',
@@ -44,10 +49,17 @@ const topicLabels =
         creative: 'کار خلاقه',
         other: 'سایر',
         details: 'اطلاعات تماس',
+        methods: 'روش‌های تماس',
         email: 'ایمیل آکادمیک',
         linkedin: 'لینکدین',
         orcid: 'ORCID',
       }
+const topicCards = [
+  { title: topicLabels.phd, tone: 'phd' },
+  { title: topicLabels.technical, tone: 'technical' },
+  { title: topicLabels.creative, tone: 'creative' },
+  { title: topicLabels.other, tone: 'other' },
+] as const
 ---
 
 {
@@ -62,105 +74,103 @@ const topicLabels =
         title={getContactRouteTitle(locale)}
       />
 
-      <div slot="records" class="contact-page__sections pf-index-empty__shell">
-        <div
-          class="contact-page__topics"
-          role="group"
-          aria-label={topicLabels.region}
-          aria-disabled="true"
-        >
-          <button type="button" class="pf-index-empty__topic-chip" disabled>
-            {topicLabels.phd}
-          </button>
-          <button type="button" class="pf-index-empty__topic-chip" disabled>
-            {topicLabels.technical}
-          </button>
-          <button type="button" class="pf-index-empty__topic-chip" disabled>
-            {topicLabels.creative}
-          </button>
-          <button type="button" class="pf-index-empty__topic-chip" disabled>
-            {topicLabels.other}
-          </button>
-        </div>
+      <div slot="records" class="contact-page__layout pf-index-empty__shell">
+        <PageFamilyContactSidebarShell locale={locale} />
 
-        <section
-          class="contact-page__section"
-          aria-labelledby="contact-details-empty-title"
-        >
-          <h2
-            id="contact-details-empty-title"
-            class="contact-page__section-title"
+        <div class="contact-page__main">
+          <PageFamilyTopicCardsShell
+            locale={locale}
+            labels={topicCards}
+            regionLabel={topicLabels.region}
+          />
+
+          <section
+            class="contact-page__section"
+            aria-labelledby="contact-methods-empty-title"
           >
-            {topicLabels.details}
-          </h2>
-          <dl class="contact-page__details pf-index-empty__details-placeholder">
-            <div class="contact-page__detail-row">
-              <dt>{topicLabels.email}</dt>
-              <dd>
+            <h2
+              id="contact-methods-empty-title"
+              class="contact-page__section-title"
+            >
+              {topicLabels.methods}
+            </h2>
+            <div class="contact-page__method-cards" aria-hidden="true">
+              <article class="contact-page__method-card">
+                <span class="contact-page__method-icon" />
                 <span class="pf-index-empty__line pf-index-empty__line--medium" />
-              </dd>
-            </div>
-            <div class="contact-page__detail-row">
-              <dt>{topicLabels.linkedin}</dt>
-              <dd>
+              </article>
+              <article class="contact-page__method-card">
+                <span class="contact-page__method-icon" />
                 <span class="pf-index-empty__line pf-index-empty__line--medium" />
-              </dd>
+              </article>
             </div>
-            <div class="contact-page__detail-row">
-              <dt>{topicLabels.orcid}</dt>
-              <dd>
-                <span class="pf-index-empty__line pf-index-empty__line--medium" />
-              </dd>
-            </div>
-          </dl>
-        </section>
+          </section>
 
-        <section
-          class="contact-page__section"
-          aria-labelledby="contact-form-empty-title"
-        >
-          <h2 id="contact-form-empty-title" class="contact-page__section-title">
-            {contactFormCopy.formIntro[locale]}
-          </h2>
+          <section
+            class="contact-page__section"
+            aria-labelledby="contact-form-empty-title"
+          >
+            <h2
+              id="contact-form-empty-title"
+              class="contact-page__section-title"
+            >
+              {contactFormCopy.formIntro[locale]}
+            </h2>
 
-          <form class="contact-page__form" aria-disabled="true">
-            <Input
-              id="contact-name-empty"
-              name="name"
-              label={contactFormCopy.nameLabel[locale]}
-              disabled
-            />
-            <Input
-              id="contact-email-empty"
-              name="email"
-              type="email"
-              label={contactFormCopy.emailLabel[locale]}
-              disabled
-            />
-            <Textarea
-              id="contact-message-empty"
-              name="message"
-              label={contactFormCopy.messageLabel[locale]}
-              rows={6}
-              disabled
-            />
-            <div class="contact-page__form-actions">
-              <Button
-                type="button"
-                label={contactFormCopy.sendLabel[locale]}
+            <form class="contact-page__form" aria-disabled="true">
+              <Input
+                id="contact-topic-empty"
+                name="topic"
+                label={locale === 'en' ? 'Topic' : 'موضوع'}
                 disabled
               />
-            </div>
-          </form>
-        </section>
+              <Input
+                id="contact-subject-empty"
+                name="subject"
+                label={locale === 'en' ? 'Subject' : 'عنوان'}
+                disabled
+              />
+              <Input
+                id="contact-name-empty"
+                name="name"
+                label={contactFormCopy.nameLabel[locale]}
+                disabled
+              />
+              <Input
+                id="contact-email-empty"
+                name="email"
+                type="email"
+                label={contactFormCopy.emailLabel[locale]}
+                disabled
+              />
+              <Textarea
+                id="contact-message-empty"
+                name="message"
+                label={contactFormCopy.messageLabel[locale]}
+                rows={6}
+                disabled
+              />
+              <div class="contact-page__form-actions">
+                <Button
+                  type="button"
+                  label={contactFormCopy.sendLabel[locale]}
+                  disabled
+                />
+              </div>
+            </form>
+          </section>
 
-        <ContentState
-          variant="empty"
-          locale={locale}
-          headingLevel="h2"
-          title={emptyCopy.title}
-          message={emptyCopy.message}
-        />
+          <PageFamilySendWorkflowShell locale={locale} />
+          <PageFamilyFaqShell locale={locale} />
+
+          <ContentState
+            variant="empty"
+            locale={locale}
+            headingLevel="h2"
+            title={emptyCopy.title}
+            message={emptyCopy.message}
+          />
+        </div>
       </div>
     </AboutContactUtilityTemplate>
   ) : (
@@ -175,16 +185,11 @@ const topicLabels =
       />
 
       <div slot="records" class="contact-page__sections">
-        <div
-          class="contact-page__topics"
-          role="group"
-          aria-label={topicLabels.region}
-        >
-          <span class="contact-page__topic-chip">{topicLabels.phd}</span>
-          <span class="contact-page__topic-chip">{topicLabels.technical}</span>
-          <span class="contact-page__topic-chip">{topicLabels.creative}</span>
-          <span class="contact-page__topic-chip">{topicLabels.other}</span>
-        </div>
+        <PageFamilyTopicCardsShell
+          locale={locale}
+          labels={topicCards}
+          regionLabel={topicLabels.region}
+        />
 
         {formState.sent ? (
           <div

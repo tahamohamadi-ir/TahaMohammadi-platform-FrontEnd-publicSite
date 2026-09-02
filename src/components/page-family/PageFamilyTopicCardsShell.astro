@@ -1,0 +1,36 @@
+---
+import type { Locale } from '../../lib/navigation'
+
+interface Props {
+  locale: Locale
+  labels: readonly { title: string; tone: string }[]
+  regionLabel: string
+  class?: string
+}
+
+const { locale, labels, regionLabel, class: className = '' } = Astro.props
+---
+
+<div
+  class={['pf-index-topic-cards', className].filter(Boolean).join(' ')}
+  data-visual-id="PageFamilyTopicCardsShell"
+  role="group"
+  aria-label={regionLabel}
+  aria-disabled="true"
+  lang={locale}
+>
+  {
+    labels.map((item) => (
+      <button type="button" class="pf-index-topic-cards__card" disabled>
+        <span
+          class={[
+            'pf-index-topic-cards__icon',
+            `pf-index-topic-cards__icon--${item.tone}`,
+          ].join(' ')}
+          aria-hidden="true"
+        />
+        <span class="pf-index-topic-cards__label">{item.title}</span>
+      </button>
+    ))
+  }
+</div>

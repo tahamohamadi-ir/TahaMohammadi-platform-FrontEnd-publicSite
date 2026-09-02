@@ -95,6 +95,66 @@
   inline-size: min(100%, 38rem);
 }
 
+.hm-hero__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+@media (min-width: 640px) {
+  .hm-hero__actions {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+}
+
+.hm-hero__cta {
+  inline-size: 100%;
+}
+
+@media (min-width: 640px) {
+  .hm-hero__cta {
+    inline-size: auto;
+  }
+}
+
+@media (max-width: 767px) {
+  .hm-hero {
+    display: grid;
+    grid-template-rows: minmax(14rem, 38vw) auto;
+    align-items: stretch;
+    padding: 0;
+    min-height: auto;
+  }
+
+  .hm-hero__atmosphere {
+    position: relative;
+    min-height: 14rem;
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  }
+
+  .hm-hero__scrim {
+    background: linear-gradient(
+      180deg,
+      transparent 55%,
+      color-mix(in srgb, var(--color-canvas) 88%, transparent) 100%
+    );
+  }
+
+  .hm-hero__inner {
+    padding: var(--space-6) var(--space-5) var(--space-8);
+    inline-size: 100%;
+    background: var(--color-canvas);
+    border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+    border: 1px solid var(--color-border-subtle);
+    border-block-start: 0;
+  }
+
+  .hm-hero__focus {
+    order: 3;
+  }
+}
+
 .hm-hero__focus {
   display: flex;
   flex-direction: column;

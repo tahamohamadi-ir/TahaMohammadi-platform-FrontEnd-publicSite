@@ -2,6 +2,9 @@
 import CollectionIndexTemplate from '../templates/CollectionIndexTemplate.astro'
 import PageFamilyIndexHero from '../page-family/PageFamilyIndexHero.astro'
 import PageFamilyBibliographyRowPlaceholder from '../page-family/PageFamilyBibliographyRowPlaceholder.astro'
+import PageFamilyPublicationsSidebarShell from '../page-family/PageFamilyPublicationsSidebarShell.astro'
+import PageFamilySelectedPublicationsShell from '../page-family/PageFamilySelectedPublicationsShell.astro'
+import PageFamilyCollaborateBandShell from '../page-family/PageFamilyCollaborateBandShell.astro'
 import ContentState from '../state/ContentState.astro'
 import {
   getPublicationsUnavailableCopy,
@@ -86,16 +89,25 @@ const filterLabels =
 
       <div
         slot="records"
-        class="publications-page__grid-shell pf-index-empty__shell"
+        class="publications-page__layout pf-index-empty__shell"
       >
-        <PageFamilyBibliographyRowPlaceholder locale={locale} count={3} />
-        <ContentState
-          variant="empty"
-          locale={locale}
-          headingLevel="h2"
-          title={emptyCopy.title}
-          message={emptyCopy.message}
-        />
+        <PageFamilyPublicationsSidebarShell locale={locale} />
+
+        <div class="publications-page__main">
+          <PageFamilySelectedPublicationsShell locale={locale} />
+          <PageFamilyBibliographyRowPlaceholder locale={locale} count={3} />
+          <PageFamilyCollaborateBandShell
+            locale={locale}
+            variant="collaborate-only"
+          />
+          <ContentState
+            variant="empty"
+            locale={locale}
+            headingLevel="h2"
+            title={emptyCopy.title}
+            message={emptyCopy.message}
+          />
+        </div>
       </div>
     </CollectionIndexTemplate>
   ) : (

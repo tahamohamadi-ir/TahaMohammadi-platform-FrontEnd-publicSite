@@ -94,6 +94,9 @@ describe('PUBLIC-150 behavior', () => {
     const html = await renderComponent(Footer, { locale: 'en' })
     expect(html).toMatch(/data-visual-id="ContactCTA"/)
     expect(html).toMatch(/data-visual-id="Link"/)
+    expect(html).toContain('Resources')
+    expect(html).toMatch(/site-footer__brand-bio/)
+    expect(html).toMatch(/site-footer__legal-row/)
   })
 
   it('extracts shell styles with logical direction, theme parity hooks, and 44px targets', () => {

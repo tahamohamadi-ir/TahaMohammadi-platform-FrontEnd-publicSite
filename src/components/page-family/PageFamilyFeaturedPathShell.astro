@@ -18,7 +18,11 @@ const { locale, family, class: className = '' } = Astro.props
 const sectionLabel = getPageFamilyPathSectionLabel(locale, family)
 const preview = sectionLabel ? getPageFamilyPreviewAsset(family) : null
 const decorativeAlt = getPageFamilyDecorativeAlt(locale, family)
-const steps = [0, 1, 2] as const
+const steps = [0, 1, 2, 3] as const
+const stepLabels =
+  locale === 'en'
+    ? ['01 Overview', '02 Lessons', '03 Resources', '04 References']
+    : ['۰۱ نمای کلی', '۰۲ درس‌ها', '۰۳ منابع', '۰۴ مراجع']
 ---
 
 {
@@ -35,6 +39,7 @@ const steps = [0, 1, 2] as const
       <ol class="pf-index-path__track">
         {steps.map((index) => (
           <li class="pf-index-path__step">
+            <p class="pf-index-path__step-label">{stepLabels[index]}</p>
             <div class="pf-index-path__thumb">
               <PromotedPicture
                 assetId={preview.assetId}

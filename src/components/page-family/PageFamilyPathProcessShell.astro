@@ -1,0 +1,38 @@
+---
+import { getTeachingPathProcessSteps } from '../../lib/page-family-empty-chrome'
+import type { Locale } from '../../lib/navigation'
+
+interface Props {
+  locale: Locale
+  class?: string
+}
+
+const { locale, class: className = '' } = Astro.props
+const steps = getTeachingPathProcessSteps(locale)
+const sectionLabel =
+  locale === 'en' ? 'How a path works' : 'مسیر یادگیری چگونه کار می‌کند'
+---
+
+<section
+  class={['pf-index-path-process', className].filter(Boolean).join(' ')}
+  data-visual-id="PageFamilyPathProcessShell"
+  aria-labelledby="pf-path-process-title"
+>
+  <h2 id="pf-path-process-title" class="pf-index-path-process__title">
+    {sectionLabel}
+  </h2>
+
+  <ol class="pf-index-path-process__track" aria-hidden="true">
+    {
+      steps.map((step, index) => (
+        <li class="pf-index-path-process__step">
+          <span class="pf-index-path-process__icon" />
+          <span class="pf-index-path-process__label">{step}</span>
+          {index < steps.length - 1 ? (
+            <span class="pf-index-path-process__arrow">→</span>
+          ) : null}
+        </li>
+      ))
+    }
+  </ol>
+</section>

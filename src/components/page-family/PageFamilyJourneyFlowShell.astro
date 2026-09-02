@@ -1,0 +1,44 @@
+---
+import { getHomeJourneyContent } from '../../lib/home-content'
+import { getCmsPlaceholderCopy } from '../../lib/page-family-empty-chrome'
+import type { Locale } from '../../lib/navigation'
+
+interface Props {
+  locale: Locale
+  class?: string
+}
+
+const { locale, class: className = '' } = Astro.props
+const journey = getHomeJourneyContent(locale)
+const placeholder = getCmsPlaceholderCopy(locale)
+const sectionLabel =
+  locale === 'en' ? 'Interdisciplinary journey' : 'مسیر میان‌رشته‌ای'
+---
+
+<section
+  class={['pf-index-journey-flow', className].filter(Boolean).join(' ')}
+  data-visual-id="PageFamilyJourneyFlowShell"
+  aria-labelledby="pf-journey-flow-title"
+>
+  <p class="pf-index-journey-flow__eyebrow">{sectionLabel}</p>
+  <h2 id="pf-journey-flow-title" class="pf-index-journey-flow__headline">
+    {journey.headline}
+  </h2>
+
+  <ol class="pf-index-journey-flow__track" aria-hidden="true">
+    {
+      journey.milestones.map((milestone, index) => (
+        <li class="pf-index-journey-flow__step">
+          <span class="pf-index-journey-flow__icon" />
+          <span class="pf-index-journey-flow__label">{milestone.title}</span>
+          <span class="pf-index-journey-flow__desc">{placeholder}</span>
+          {index < journey.milestones.length - 1 ? (
+            <span class="pf-index-journey-flow__arrow" aria-hidden="true">
+              →
+            </span>
+          ) : null}
+        </li>
+      ))
+    }
+  </ol>
+</section>

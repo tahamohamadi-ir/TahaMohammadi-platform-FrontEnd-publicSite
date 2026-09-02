@@ -1,0 +1,52 @@
+---
+import {
+  getAboutSelectedOutputCategories,
+  getCmsPlaceholderCopy,
+} from '../../lib/page-family-empty-chrome'
+import type { Locale } from '../../lib/navigation'
+
+interface Props {
+  locale: Locale
+  class?: string
+}
+
+const { locale, class: className = '' } = Astro.props
+const categories = getAboutSelectedOutputCategories(locale)
+const placeholder = getCmsPlaceholderCopy(locale)
+const sectionLabel = locale === 'en' ? 'Selected outputs' : 'خروجی‌های منتخب'
+---
+
+<section
+  class={['pf-index-selected-outputs', className].filter(Boolean).join(' ')}
+  data-visual-id="PageFamilySelectedOutputsShell"
+  aria-labelledby="pf-selected-outputs-title"
+>
+  <h2 id="pf-selected-outputs-title" class="pf-index-selected-outputs__title">
+    {sectionLabel}
+  </h2>
+
+  <div class="pf-index-selected-outputs__grid">
+    {
+      categories.map((category) => (
+        <article class="pf-index-selected-outputs__card">
+          <span
+            class={[
+              'pf-index-selected-outputs__icon',
+              `pf-index-selected-outputs__icon--${category.tone}`,
+            ].join(' ')}
+            aria-hidden="true"
+          />
+          <h3 class="pf-index-selected-outputs__card-title">
+            {category.title}
+          </h3>
+          <p class="pf-index-selected-outputs__card-copy">{placeholder}</p>
+          <span class="pf-index-selected-outputs__link">
+            {locale === 'en'
+              ? `View all ${category.title.toLowerCase()} →`
+              : `مشاهده همه →`}
+          </span>
+        </article>
+      ))
+    }
+  </div>
+</section>
