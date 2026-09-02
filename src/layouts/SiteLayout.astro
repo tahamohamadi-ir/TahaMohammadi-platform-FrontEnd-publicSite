@@ -15,7 +15,7 @@ interface Props {
   pathSegment?: string
   /** Whether the alternate locale has a published equivalent record. */
   alternateAvailable?: boolean
-  /** Hide footer promo band when the page already shows an equivalent CTA (e.g. home collab). */
+  /** Hide footer promo band when the page already shows an equivalent CTA (default: compact footer). */
   hideFooterPromo?: boolean
 }
 
@@ -24,7 +24,7 @@ const {
   locale,
   pathSegment,
   alternateAvailable = false,
-  hideFooterPromo = false,
+  hideFooterPromo = true,
 } = Astro.props
 const currentPath = Astro.url.pathname
 const dir = getDir(locale)

@@ -2,6 +2,7 @@
 import ContactCTA from './ui/ContactCTA.astro'
 import Link from './ui/Link.astro'
 import PromotedPicture from './media/PromotedPicture.astro'
+import { Github, Linkedin, Mail } from 'lucide-astro'
 import {
   GATEWAY_ROLE_LINE,
   localePath,
@@ -15,10 +16,11 @@ import { BRAND_MARK_ASSET_ID } from '../lib/media/promoted-media'
 
 interface Props {
   locale: Locale
+  /** Show optional footer promo band; default compact footer only (Phase 0). */
   hidePromo?: boolean
 }
 
-const { locale, hidePromo = false } = Astro.props
+const { locale, hidePromo = true } = Astro.props
 const homeHref = localePath(locale)
 const contactHref = localePath(locale, 'contact')
 const cvHref = localePath(locale, 'cv')
@@ -62,25 +64,35 @@ const brandNameDisplay =
         aria-label={shellCopy.footerConnect[locale]}
       >
         <li>
-          <span
-            class="site-footer__social-link site-footer__social-link--placeholder"
+          <button
+            type="button"
+            class="site-footer__social-btn site-footer__social-btn--placeholder"
+            disabled
+            aria-disabled="true"
+            aria-label={`${shellCopy.footerSocialGithub[locale]} — ${shellCopy.footerSocialPendingNote[locale]}`}
           >
-            {shellCopy.footerSocialGithub[locale]}
-          </span>
+            <Github size={18} aria-hidden="true" />
+          </button>
         </li>
         <li>
-          <span
-            class="site-footer__social-link site-footer__social-link--placeholder"
+          <button
+            type="button"
+            class="site-footer__social-btn site-footer__social-btn--placeholder"
+            disabled
+            aria-disabled="true"
+            aria-label={`${shellCopy.footerSocialLinkedin[locale]} — ${shellCopy.footerSocialPendingNote[locale]}`}
           >
-            {shellCopy.footerSocialLinkedin[locale]}
-          </span>
+            <Linkedin size={18} aria-hidden="true" />
+          </button>
         </li>
         <li>
-          <Link
+          <a
             href={contactHref}
-            label={shellCopy.footerSocialEmail[locale]}
-            variant="inline"
-          />
+            class="site-footer__social-btn"
+            aria-label={shellCopy.footerSocialEmail[locale]}
+          >
+            <Mail size={18} aria-hidden="true" />
+          </a>
         </li>
       </ul>
     </div>
@@ -136,7 +148,16 @@ const brandNameDisplay =
           <Link href={cvHref} label={shellCopy.cv[locale]} variant="inline" />
         </li>
       </ul>
-      <p class="site-footer__cms-note">{shellCopy.footerFromCmsNote[locale]}</p>
+      <dl class="site-footer__contact-meta">
+        <div class="site-footer__contact-meta-row">
+          <dt>{shellCopy.footerSocialEmail[locale]}</dt>
+          <dd>{shellCopy.footerContactEmailPlaceholder[locale]}</dd>
+        </div>
+        <div class="site-footer__contact-meta-row">
+          <dt>{shellCopy.footerLocation[locale]}</dt>
+          <dd>{shellCopy.footerContactLocationPlaceholder[locale]}</dd>
+        </div>
+      </dl>
     </nav>
   </div>
 

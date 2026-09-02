@@ -113,9 +113,18 @@ export const shellCopy = {
   footerSocialGithub: { en: 'GitHub', fa: 'گیت‌هاب' },
   footerSocialLinkedin: { en: 'LinkedIn', fa: 'لینکدین' },
   footerSocialEmail: { en: 'Email', fa: 'ایمیل' },
-  footerFromCmsNote: {
-    en: 'From approved CMS record',
-    fa: 'از رکورد تأییدشده CMS',
+  footerContactEmailPlaceholder: {
+    en: 'Email — pending CMS publication',
+    fa: 'ایمیل — منتظر انتشار CMS',
+  },
+  footerContactLocationPlaceholder: {
+    en: 'Location — pending CMS publication',
+    fa: 'موقعیت — منتظر انتشار CMS',
+  },
+  footerLocation: { en: 'Location', fa: 'موقعیت' },
+  footerSocialPendingNote: {
+    en: 'Social links pending CMS publication',
+    fa: 'پیوندهای اجتماعی منتظر انتشار CMS',
   },
   contact: { en: 'Contact', fa: 'تماس' },
   cv: { en: 'CV', fa: 'رزومه' },

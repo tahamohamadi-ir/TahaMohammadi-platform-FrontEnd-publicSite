@@ -91,12 +91,21 @@ describe('PUBLIC-150 behavior', () => {
     expect(footerSource).toContain("import Link from './ui/Link.astro'")
     expect(footerSource).not.toContain('site-footer__button')
 
-    const html = await renderComponent(Footer, { locale: 'en' })
-    expect(html).toMatch(/data-visual-id="ContactCTA"/)
-    expect(html).toMatch(/data-visual-id="Link"/)
-    expect(html).toContain('Resources')
-    expect(html).toMatch(/site-footer__brand-bio/)
-    expect(html).toMatch(/site-footer__legal-row/)
+    const compactHtml = await renderComponent(Footer, { locale: 'en' })
+    expect(compactHtml).not.toMatch(/data-visual-id="ContactCTA"/)
+    expect(compactHtml).toMatch(/data-visual-id="Link"/)
+    expect(compactHtml).toContain('Resources')
+    expect(compactHtml).toMatch(/site-footer__brand-bio/)
+    expect(compactHtml).toMatch(/site-footer__legal-row/)
+    expect(compactHtml).toMatch(/site-footer__social-btn/)
+    expect(compactHtml).toMatch(/pending CMS publication/)
+    expect(compactHtml).toMatch(/site-footer__contact-meta/)
+
+    const promoHtml = await renderComponent(Footer, {
+      locale: 'en',
+      hidePromo: false,
+    })
+    expect(promoHtml).toMatch(/data-visual-id="ContactCTA"/)
   })
 
   it('extracts shell styles with logical direction, theme parity hooks, and 44px targets', () => {
@@ -116,5 +125,8 @@ describe('PUBLIC-150 behavior', () => {
     expect(shell).not.toMatch(/\.site-main:focus[\s\S]*outline:\s*none/)
     expect(shell).not.toMatch(/\bleft:/)
     expect(shell).not.toMatch(/\bright:/)
+    expect(shell).toMatch(/grid-template-columns: 1\.4fr 1fr 1fr 1fr/)
+    expect(shell).toMatch(/var\(--gradient-section-surface-light\)/)
+    expect(shell).toMatch(/site-footer__social-btn/)
   })
 })

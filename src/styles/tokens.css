@@ -91,6 +91,27 @@
   --control-focus: var(--color-focus);
   --shell-canvas: var(--color-canvas);
   --shell-ink: var(--color-ink);
+  --shell-canvas-warm: #f3ede3;
+  --color-ink-muted: var(--color-ink-tertiary);
+  --color-accent-gold: var(--primitive-gold-500);
+  --color-accent-gold-soft: var(--color-signature-soft);
+  --shadow-atlas-glow: 0 1px 0 color-mix(in srgb, var(--color-ink) 4%, transparent),
+    0 16px 48px color-mix(in srgb, var(--color-brand) 6%, transparent);
+  --shadow-atlas-glow-strong: 0 0 0 1px color-mix(in srgb, var(--color-brand) 14%, transparent),
+    0 20px 56px color-mix(in srgb, var(--color-brand) 12%, transparent),
+    0 0 80px color-mix(in srgb, var(--color-accent-gold) 6%, transparent);
+  --gradient-section-surface-light: linear-gradient(
+    180deg,
+    var(--shell-canvas-warm) 0%,
+    var(--color-canvas) 42%,
+    color-mix(in srgb, var(--color-signature-soft) 28%, var(--color-canvas)) 100%
+  );
+  --gradient-section-surface-dark: linear-gradient(
+    180deg,
+    var(--color-canvas) 0%,
+    color-mix(in srgb, var(--color-brand) 5%, var(--color-surface-muted)) 55%,
+    color-mix(in srgb, var(--color-accent-gold) 4%, var(--color-canvas)) 100%
+  );
 }
 
 :root,
