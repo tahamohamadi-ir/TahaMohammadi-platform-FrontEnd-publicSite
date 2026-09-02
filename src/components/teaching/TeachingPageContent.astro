@@ -1,6 +1,8 @@
 ---
-import CollectionIndexTemplate from '../templates/CollectionIndexTemplate.astro'
-import SectionLead from '../ui/SectionLead.astro'
+import EditorialIndexTemplate from '../templates/EditorialIndexTemplate.astro'
+import PageFamilyIndexHero from '../page-family/PageFamilyIndexHero.astro'
+import PageFamilyFeaturedPathShell from '../page-family/PageFamilyFeaturedPathShell.astro'
+import PageFamilyContentRowPlaceholder from '../page-family/PageFamilyContentRowPlaceholder.astro'
 import ContentState from '../state/ContentState.astro'
 import {
   formatCourseCardMeta,
@@ -44,12 +46,16 @@ const filterLabels =
 
 {
   model.status === 'unavailable' ? (
-    <CollectionIndexTemplate class="teaching-page teaching-page--empty">
-      <SectionLead
+    <EditorialIndexTemplate class="teaching-page teaching-page--empty">
+      <PageFamilyIndexHero
         slot="lead"
+        locale={locale}
+        family="teaching"
         eyebrow={locale === 'en' ? 'Courses & talks' : 'دوره‌ها و سخنرانی‌ها'}
         title={getTeachingRouteTitle(locale)}
       />
+
+      <PageFamilyFeaturedPathShell slot="featured" locale={locale} family="teaching" />
 
       <div
         slot="filters"
@@ -90,20 +96,7 @@ const filterLabels =
         slot="records"
         class="teaching-page__grid-shell pf-index-empty__shell"
       >
-        <div class="pf-index-empty__list-placeholder" aria-hidden="true">
-          <span class="pf-index-empty__row-placeholder">
-            <span class="pf-index-empty__line pf-index-empty__line--short" />
-            <span class="pf-index-empty__line pf-index-empty__line--medium" />
-          </span>
-          <span class="pf-index-empty__row-placeholder">
-            <span class="pf-index-empty__line pf-index-empty__line--short" />
-            <span class="pf-index-empty__line pf-index-empty__line--medium" />
-          </span>
-          <span class="pf-index-empty__row-placeholder">
-            <span class="pf-index-empty__line pf-index-empty__line--short" />
-            <span class="pf-index-empty__line pf-index-empty__line--medium" />
-          </span>
-        </div>
+        <PageFamilyContentRowPlaceholder locale={locale} family="teaching" />
         <ContentState
           variant="empty"
           locale={locale}
@@ -112,11 +105,13 @@ const filterLabels =
           message={emptyCopy.message}
         />
       </div>
-    </CollectionIndexTemplate>
+    </EditorialIndexTemplate>
   ) : (
-    <CollectionIndexTemplate class="teaching-page">
-      <SectionLead
+    <EditorialIndexTemplate class="teaching-page">
+      <PageFamilyIndexHero
         slot="lead"
+        locale={locale}
+        family="teaching"
         eyebrow={locale === 'en' ? 'Courses & talks' : 'دوره‌ها و سخنرانی‌ها'}
         title={getTeachingRouteTitle(locale)}
       />
@@ -190,6 +185,6 @@ const filterLabels =
           </section>
         ) : null}
       </div>
-    </CollectionIndexTemplate>
+    </EditorialIndexTemplate>
   )
 }

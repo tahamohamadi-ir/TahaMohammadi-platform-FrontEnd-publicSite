@@ -1,0 +1,92 @@
+---
+import SectionLead from '../ui/SectionLead.astro'
+import PromotedPicture from '../media/PromotedPicture.astro'
+import ThemePicture from '../media/ThemePicture.astro'
+import {
+  getPageFamilyHeroMedia,
+  getPageFamilyDecorativeAlt,
+  type PageFamilyChromeId,
+} from '../../lib/page-family-empty-chrome'
+import type { Locale } from '../../lib/navigation'
+
+interface Props {
+  locale: Locale
+  family: PageFamilyChromeId
+  eyebrow?: string
+  title: string
+  summary?: string
+  portal?: boolean
+  class?: string
+}
+
+const {
+  locale,
+  family,
+  eyebrow,
+  title,
+  summary,
+  portal = false,
+  class: className = '',
+} = Astro.props
+const heroMedia = getPageFamilyHeroMedia(family)
+const decorativeAlt = getPageFamilyDecorativeAlt(locale, family)
+---
+
+<section
+  class={[
+    'pf-index-hero',
+    portal ? 'pf-index-hero--portal' : '',
+    className,
+  ]
+    .filter(Boolean)
+    .join(' ')}
+  data-visual-id="PageFamilyIndexHero"
+  data-page-family={family}
+>
+  {
+    portal && heroMedia.kind === 'theme' ? (
+      <div class="pf-index-hero__media" aria-hidden="true">
+        <ThemePicture
+          lightAssetId={heroMedia.lightAssetId}
+          darkAssetId={heroMedia.darkAssetId}
+          mediaSlot={heroMedia.mediaSlot}
+          imgClass="pf-index-hero__image"
+        />
+      </div>
+    ) : null
+  }
+
+  <div class="pf-index-hero__copy">
+    <SectionLead
+      eyebrow={eyebrow}
+      title={title}
+      summary={summary}
+      class="pf-index-hero__lead"
+    />
+  </div>
+
+  {
+    !portal ? (
+      heroMedia.kind === 'theme' ? (
+        <div class="pf-index-hero__media" aria-hidden="true">
+          <ThemePicture
+            lightAssetId={heroMedia.lightAssetId}
+            darkAssetId={heroMedia.darkAssetId}
+            mediaSlot={heroMedia.mediaSlot}
+            imgClass="pf-index-hero__image"
+          />
+        </div>
+      ) : (
+        <div class="pf-index-hero__media" aria-hidden="true">
+          <PromotedPicture
+          assetId={heroMedia.assetId}
+          mediaSlot={heroMedia.mediaSlot}
+          locale={locale}
+          alt={decorativeAlt}
+          imgClass="pf-index-hero__image"
+          />
+        </div>
+      )
+    ) : null
+  }
+</section>

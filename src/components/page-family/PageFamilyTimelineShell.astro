@@ -1,0 +1,28 @@
+---
+interface Props {
+  count?: number
+  class?: string
+}
+
+const { count = 3, class: className = '' } = Astro.props
+const entries = Array.from({ length: count }, (_, index) => index)
+---
+
+<div
+  class={['pf-index-timeline', className].filter(Boolean).join(' ')}
+  data-visual-id="PageFamilyTimelineShell"
+  aria-hidden="true"
+>
+  {
+    entries.map((index) => (
+      <div class="pf-index-timeline__entry">
+        <span class="pf-index-timeline__marker" />
+        <div class="pf-index-timeline__body">
+          <span class="pf-index-empty__line pf-index-empty__line--short" />
+          <span class="pf-index-empty__line pf-index-empty__line--medium" />
+          <span class="pf-index-empty__line" />
+        </div>
+      </div>
+    ))
+  }
+</div>

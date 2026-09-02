@@ -25,8 +25,8 @@ describe('PUBLIC-200 about page', () => {
     expect(html).toMatch(/data-state-variant="empty"/)
     expect(html).toContain('About')
     expect(html).toMatch(/<h1[\s>]/)
-    expect(html).toMatch(/about-page__section/)
-    expect(html).toMatch(/pf-index-empty__timeline-placeholder/)
+    expect(html).toMatch(/data-visual-id="PageFamilyIndexHero"/)
+    expect(html).toMatch(/data-visual-id="PageFamilyTimelineShell"/)
   })
 
   it('renders profile sections with anchor ids when ready', async () => {

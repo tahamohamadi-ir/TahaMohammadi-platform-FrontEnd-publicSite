@@ -22,12 +22,14 @@ describe('PUBLIC-220 teaching pages', () => {
       locale: 'en',
       model: { status: 'unavailable' },
     })
-    expect(html).toMatch(/data-visual-id="CollectionIndexTemplate"/)
+    expect(html).toMatch(/data-visual-id="EditorialIndexTemplate"/)
     expect(html).toMatch(/data-state-variant="empty"/)
+    expect(html).toMatch(/data-visual-id="PageFamilyIndexHero"/)
+    expect(html).toMatch(/data-visual-id="PageFamilyFeaturedPathShell"/)
+    expect(html).toMatch(/data-visual-id="PageFamilyContentRowPlaceholder"/)
     expect(html).toContain('Teaching')
     expect(html).toMatch(/<h1[\s>]/)
     expect(html).toMatch(/teaching-page__filters/)
-    expect(html).toMatch(/pf-index-empty__list-placeholder/)
   })
 
   it('renders course and talk cards when the index model is ready', async () => {

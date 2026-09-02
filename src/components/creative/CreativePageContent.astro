@@ -1,6 +1,8 @@
 ---
 import CollectionIndexTemplate from '../templates/CollectionIndexTemplate.astro'
-import SectionLead from '../ui/SectionLead.astro'
+import PageFamilyIndexHero from '../page-family/PageFamilyIndexHero.astro'
+import PageFamilyFeaturedShell from '../page-family/PageFamilyFeaturedShell.astro'
+import PageFamilyMediaGridPlaceholder from '../page-family/PageFamilyMediaGridPlaceholder.astro'
 import ContentState from '../state/ContentState.astro'
 import Link from '../ui/Link.astro'
 import {
@@ -41,30 +43,34 @@ const filterLabels =
 {
   model.status === 'empty' ? (
     <CollectionIndexTemplate class="creative-page creative-page--empty">
-      <SectionLead
+      <PageFamilyIndexHero
         slot="lead"
+        locale={locale}
+        family="creative"
         eyebrow={
           locale === 'en' ? 'Visual & creative work' : 'آثار بصری و خلاقه'
         }
         title={getCreativeRouteTitle(locale)}
       />
 
+      <PageFamilyFeaturedShell slot="featured" locale={locale} family="creative" />
+
       <div
         slot="filters"
-        class="creative-page__filters"
+        class="creative-page__filters pf-index-empty__filters"
         role="group"
         aria-label={filterLabels.region}
         aria-disabled="true"
       >
         <p class="creative-page__filters-active">{filterLabels.allWork}</p>
         <div class="creative-page__filters-controls">
-          <button type="button" class="creative-page__filter-control" disabled>
+          <button type="button" class="pf-index-empty__filter-chip" disabled>
             {filterLabels.medium}
           </button>
-          <button type="button" class="creative-page__filter-control" disabled>
+          <button type="button" class="pf-index-empty__filter-chip" disabled>
             {filterLabels.year}
           </button>
-          <button type="button" class="creative-page__filter-control" disabled>
+          <button type="button" class="pf-index-empty__filter-chip" disabled>
             {filterLabels.role}
           </button>
         </div>
@@ -75,15 +81,8 @@ const filterLabels =
         />
       </div>
 
-      <div slot="records" class="creative-page__grid-shell">
-        <div class="creative-page__grid-placeholder" aria-hidden="true">
-          <span class="creative-page__grid-cell creative-page__grid-cell--tall" />
-          <span class="creative-page__grid-cell" />
-          <span class="creative-page__grid-cell creative-page__grid-cell--wide" />
-          <span class="creative-page__grid-cell" />
-          <span class="creative-page__grid-cell creative-page__grid-cell--tall" />
-          <span class="creative-page__grid-cell" />
-        </div>
+      <div slot="records" class="creative-page__grid-shell pf-index-empty__shell">
+        <PageFamilyMediaGridPlaceholder locale={locale} family="creative" />
         <ContentState
           variant="empty"
           locale={locale}
@@ -95,8 +94,10 @@ const filterLabels =
     </CollectionIndexTemplate>
   ) : (
     <CollectionIndexTemplate class="creative-page">
-      <SectionLead
+      <PageFamilyIndexHero
         slot="lead"
+        locale={locale}
+        family="creative"
         eyebrow={
           locale === 'en' ? 'Visual & creative work' : 'آثار بصری و خلاقه'
         }

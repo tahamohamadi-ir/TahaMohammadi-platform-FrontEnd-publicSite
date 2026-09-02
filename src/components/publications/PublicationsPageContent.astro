@@ -1,6 +1,7 @@
 ---
 import CollectionIndexTemplate from '../templates/CollectionIndexTemplate.astro'
-import SectionLead from '../ui/SectionLead.astro'
+import PageFamilyIndexHero from '../page-family/PageFamilyIndexHero.astro'
+import PageFamilyContentRowPlaceholder from '../page-family/PageFamilyContentRowPlaceholder.astro'
 import ContentState from '../state/ContentState.astro'
 import {
   getPublicationsUnavailableCopy,
@@ -41,8 +42,10 @@ const filterLabels =
 {
   model.status === 'unavailable' ? (
     <CollectionIndexTemplate class="publications-page publications-page--empty">
-      <SectionLead
+      <PageFamilyIndexHero
         slot="lead"
+        locale={locale}
+        family="publications"
         eyebrow={locale === 'en' ? 'Bibliography' : 'فهرست خروجی‌ها'}
         title={publicationsRouteTitle[locale]}
       />
@@ -85,20 +88,7 @@ const filterLabels =
         slot="records"
         class="publications-page__grid-shell pf-index-empty__shell"
       >
-        <div class="pf-index-empty__list-placeholder" aria-hidden="true">
-          <span class="pf-index-empty__row-placeholder">
-            <span class="pf-index-empty__line pf-index-empty__line--short" />
-            <span class="pf-index-empty__line pf-index-empty__line--medium" />
-          </span>
-          <span class="pf-index-empty__row-placeholder">
-            <span class="pf-index-empty__line pf-index-empty__line--short" />
-            <span class="pf-index-empty__line pf-index-empty__line--medium" />
-          </span>
-          <span class="pf-index-empty__row-placeholder">
-            <span class="pf-index-empty__line pf-index-empty__line--short" />
-            <span class="pf-index-empty__line pf-index-empty__line--medium" />
-          </span>
-        </div>
+        <PageFamilyContentRowPlaceholder locale={locale} family="publications" />
         <ContentState
           variant="empty"
           locale={locale}
@@ -110,8 +100,10 @@ const filterLabels =
     </CollectionIndexTemplate>
   ) : (
     <CollectionIndexTemplate class="publications-page">
-      <SectionLead
+      <PageFamilyIndexHero
         slot="lead"
+        locale={locale}
+        family="publications"
         eyebrow={locale === 'en' ? 'Bibliography' : 'فهرست خروجی‌ها'}
         title={publicationsRouteTitle[locale]}
       />

@@ -27,7 +27,8 @@ describe('PUBLIC-201 publications pages', () => {
     expect(html).toContain('Research Outputs')
     expect(html).toMatch(/<h1[\s>]/)
     expect(html).toMatch(/publications-page__filters/)
-    expect(html).toMatch(/pf-index-empty__list-placeholder/)
+    expect(html).toMatch(/data-visual-id="PageFamilyIndexHero"/)
+    expect(html).toMatch(/data-visual-id="PageFamilyContentRowPlaceholder"/)
   })
 
   it('renders publication cards when the index model is ready', async () => {

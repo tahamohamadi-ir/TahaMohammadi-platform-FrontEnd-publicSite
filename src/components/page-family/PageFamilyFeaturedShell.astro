@@ -1,0 +1,52 @@
+---
+import PromotedPicture from '../media/PromotedPicture.astro'
+import {
+  getPageFamilyFeaturedSectionLabel,
+  getPageFamilyPreviewAsset,
+  getPageFamilyDecorativeAlt,
+  type PageFamilyChromeId,
+} from '../../lib/page-family-empty-chrome'
+import type { Locale } from '../../lib/navigation'
+
+interface Props {
+  locale: Locale
+  family: PageFamilyChromeId
+  class?: string
+}
+
+const { locale, family, class: className = '' } = Astro.props
+const sectionLabel = getPageFamilyFeaturedSectionLabel(locale, family)
+const preview = sectionLabel ? getPageFamilyPreviewAsset(family) : null
+const decorativeAlt = getPageFamilyDecorativeAlt(locale, family)
+---
+
+{
+  sectionLabel && preview ? (
+    <section
+      class={['pf-index-featured', className].filter(Boolean).join(' ')}
+      data-visual-id="PageFamilyFeaturedShell"
+      aria-labelledby={`pf-featured-${family}-title`}
+    >
+      <h2 id={`pf-featured-${family}-title`} class="pf-index-featured__title">
+        {sectionLabel}
+      </h2>
+
+      <div class="pf-index-featured__card" aria-hidden="true">
+        <div class="pf-index-featured__media">
+          <PromotedPicture
+            assetId={preview.assetId}
+            mediaSlot={preview.mediaSlot}
+            locale={locale}
+            alt={decorativeAlt}
+            imgClass="pf-index-featured__image"
+          />
+        </div>
+        <div class="pf-index-featured__copy">
+          <span class="pf-index-empty__line pf-index-empty__line--short" />
+          <span class="pf-index-empty__line pf-index-empty__line--medium" />
+          <span class="pf-index-empty__line" />
+        </div>
+      </div>
+    </section>
+  ) : null
+}

@@ -1,0 +1,69 @@
+---
+import PromotedPicture from '../media/PromotedPicture.astro'
+import {
+  getPageFamilyPreviewAsset,
+  getPageFamilyDecorativeAlt,
+  type PageFamilyChromeId,
+} from '../../lib/page-family-empty-chrome'
+import type { Locale } from '../../lib/navigation'
+
+interface Props {
+  locale: Locale
+  family: PageFamilyChromeId
+  class?: string
+}
+
+const { locale, family, class: className = '' } = Astro.props
+const preview = getPageFamilyPreviewAsset(family)
+const decorativeAlt = getPageFamilyDecorativeAlt(locale, family)
+---
+
+<div
+  class={['pf-index-grid-placeholder', className].filter(Boolean).join(' ')}
+  data-visual-id="PageFamilyMediaGridPlaceholder"
+  aria-hidden="true"
+>
+  <div class="pf-index-grid-placeholder__cell pf-index-grid-placeholder__cell--tall">
+    <PromotedPicture
+      assetId={preview.assetId}
+      mediaSlot={preview.mediaSlot}
+      locale={locale}
+      alt={decorativeAlt}
+      imgClass="pf-index-grid-placeholder__image"
+      loading="eager"
+    />
+  </div>
+  <div class="pf-index-grid-placeholder__cell">
+    <PromotedPicture
+      assetId={preview.assetId}
+      mediaSlot={preview.mediaSlot}
+      locale={locale}
+      alt={decorativeAlt}
+      imgClass="pf-index-grid-placeholder__image"
+    />
+  </div>
+  <div class="pf-index-grid-placeholder__cell pf-index-grid-placeholder__cell--wide">
+    <PromotedPicture
+      assetId={preview.assetId}
+      mediaSlot={preview.mediaSlot}
+      locale={locale}
+      alt={decorativeAlt}
+      imgClass="pf-index-grid-placeholder__image"
+    />
+  </div>
+  <div class="pf-index-grid-placeholder__cell pf-index-grid-placeholder__cell--tall">
+    <span class="pf-index-grid-placeholder__shell" />
+  </div>
+  <div class="pf-index-grid-placeholder__cell">
+    <span class="pf-index-grid-placeholder__shell" />
+  </div>
+  <div class="pf-index-grid-placeholder__cell">
+    <PromotedPicture
+      assetId={preview.assetId}
+      mediaSlot={preview.mediaSlot}
+      locale={locale}
+      alt={decorativeAlt}
+      imgClass="pf-index-grid-placeholder__image"
+    />
+  </div>
+</div>

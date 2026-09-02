@@ -22,6 +22,13 @@ const { class: className = '' } = Astro.props
       <div class="tm-collection-index-template__h1-region">
         <slot name="lead" />
       </div>
+      {
+        Astro.slots.has('featured') ? (
+          <div class="tm-template__section tm-template__section--optional">
+            <slot name="featured" />
+          </div>
+        ) : null
+      }
       <slot name="filters" />
     </div>
 

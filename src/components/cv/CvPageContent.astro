@@ -1,6 +1,7 @@
 ---
 import AboutContactUtilityTemplate from '../templates/AboutContactUtilityTemplate.astro'
-import SectionLead from '../ui/SectionLead.astro'
+import PageFamilyIndexHero from '../page-family/PageFamilyIndexHero.astro'
+import PageFamilyTimelineShell from '../page-family/PageFamilyTimelineShell.astro'
 import ContentState from '../state/ContentState.astro'
 import Link from '../ui/Link.astro'
 import {
@@ -23,8 +24,10 @@ const emptyCopy = getCvUnavailableCopy(locale)
 {
   model.status === 'unavailable' ? (
     <AboutContactUtilityTemplate class="cv-page cv-page--empty">
-      <SectionLead
+      <PageFamilyIndexHero
         slot="lead"
+        locale={locale}
+        family="cv"
         eyebrow={locale === 'en' ? 'Documents' : 'اسناد'}
         title={getCvRouteTitle(locale)}
       />
@@ -37,16 +40,7 @@ const emptyCopy = getCvUnavailableCopy(locale)
           <h2 id="cv-downloads-empty-title" class="cv-page__section-title">
             {locale === 'en' ? 'Downloads' : 'دانلودها'}
           </h2>
-          <div class="pf-index-empty__list-placeholder" aria-hidden="true">
-            <span class="pf-index-empty__row-placeholder">
-              <span class="pf-index-empty__line pf-index-empty__line--short" />
-              <span class="pf-index-empty__line pf-index-empty__line--medium" />
-            </span>
-            <span class="pf-index-empty__row-placeholder">
-              <span class="pf-index-empty__line pf-index-empty__line--short" />
-              <span class="pf-index-empty__line pf-index-empty__line--medium" />
-            </span>
-          </div>
+          <PageFamilyTimelineShell count={2} />
         </section>
 
         <ContentState
@@ -60,8 +54,10 @@ const emptyCopy = getCvUnavailableCopy(locale)
     </AboutContactUtilityTemplate>
   ) : (
     <AboutContactUtilityTemplate class="cv-page">
-      <SectionLead
+      <PageFamilyIndexHero
         slot="lead"
+        locale={locale}
+        family="cv"
         eyebrow={locale === 'en' ? 'Documents' : 'اسناد'}
         title={getCvRouteTitle(locale)}
       />

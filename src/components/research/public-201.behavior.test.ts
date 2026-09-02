@@ -26,7 +26,8 @@ describe('PUBLIC-201 research pages', () => {
     expect(html).toMatch(/data-state-variant="empty"/)
     expect(html).toContain('Research')
     expect(html).toMatch(/<h1[\s>]/)
-    expect(html).toMatch(/research-page__graph-placeholder/)
+    expect(html).toMatch(/data-visual-id="PageFamilyIndexHero"/)
+    expect(html).toMatch(/data-visual-id="PageFamilyConstellationShell"/)
     expect(html).toMatch(/research-page__topics/)
   })
 

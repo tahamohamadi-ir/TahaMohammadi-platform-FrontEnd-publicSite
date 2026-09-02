@@ -1,6 +1,8 @@
 ---
-import CollectionIndexTemplate from '../templates/CollectionIndexTemplate.astro'
-import SectionLead from '../ui/SectionLead.astro'
+import EditorialIndexTemplate from '../templates/EditorialIndexTemplate.astro'
+import PageFamilyIndexHero from '../page-family/PageFamilyIndexHero.astro'
+import PageFamilyFeaturedShell from '../page-family/PageFamilyFeaturedShell.astro'
+import PageFamilyContentRowPlaceholder from '../page-family/PageFamilyContentRowPlaceholder.astro'
 import ContentState from '../state/ContentState.astro'
 import {
   formatArticleCardMeta,
@@ -44,12 +46,16 @@ const filterLabels =
 
 {
   model.status === 'unavailable' ? (
-    <CollectionIndexTemplate class="writing-page writing-page--empty">
-      <SectionLead
+    <EditorialIndexTemplate class="writing-page writing-page--empty">
+      <PageFamilyIndexHero
         slot="lead"
+        locale={locale}
+        family="writing"
         eyebrow={locale === 'en' ? 'Essays & books' : 'مقالات و کتاب‌ها'}
         title={getWritingRouteTitle(locale)}
       />
+
+      <PageFamilyFeaturedShell slot="featured" locale={locale} family="writing" />
 
       <div
         slot="filters"
@@ -90,20 +96,7 @@ const filterLabels =
         slot="records"
         class="writing-page__grid-shell pf-index-empty__shell"
       >
-        <div class="pf-index-empty__list-placeholder" aria-hidden="true">
-          <span class="pf-index-empty__row-placeholder">
-            <span class="pf-index-empty__line pf-index-empty__line--short" />
-            <span class="pf-index-empty__line pf-index-empty__line--medium" />
-          </span>
-          <span class="pf-index-empty__row-placeholder">
-            <span class="pf-index-empty__line pf-index-empty__line--short" />
-            <span class="pf-index-empty__line pf-index-empty__line--medium" />
-          </span>
-          <span class="pf-index-empty__row-placeholder">
-            <span class="pf-index-empty__line pf-index-empty__line--short" />
-            <span class="pf-index-empty__line pf-index-empty__line--medium" />
-          </span>
-        </div>
+        <PageFamilyContentRowPlaceholder locale={locale} family="writing" />
         <ContentState
           variant="empty"
           locale={locale}
@@ -112,11 +105,13 @@ const filterLabels =
           message={emptyCopy.message}
         />
       </div>
-    </CollectionIndexTemplate>
+    </EditorialIndexTemplate>
   ) : (
-    <CollectionIndexTemplate class="writing-page">
-      <SectionLead
+    <EditorialIndexTemplate class="writing-page">
+      <PageFamilyIndexHero
         slot="lead"
+        locale={locale}
+        family="writing"
         eyebrow={locale === 'en' ? 'Essays & books' : 'مقالات و کتاب‌ها'}
         title={getWritingRouteTitle(locale)}
       />
@@ -183,6 +178,6 @@ const filterLabels =
           </section>
         ) : null}
       </div>
-    </CollectionIndexTemplate>
+    </EditorialIndexTemplate>
   )
 }

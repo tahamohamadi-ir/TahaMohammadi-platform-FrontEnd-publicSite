@@ -26,6 +26,8 @@ describe('PUBLIC-230 contact page', () => {
     expect(html).toMatch(/data-state-variant="empty"/)
     expect(html).toContain('Contact')
     expect(html).toMatch(/<h1[\s>]/)
+    expect(html).toMatch(/data-visual-id="PageFamilyIndexHero"/)
+    expect(html).toMatch(/data-visual-id="PageFamilyIndexHero"/)
     expect(html).toMatch(/contact-page__topics/)
     expect(html).not.toMatch(/data-contact-form/)
   })
@@ -89,7 +91,8 @@ describe('PUBLIC-230 cv page', () => {
     expect(html).toContain('CV')
     expect(html).toMatch(/<h1[\s>]/)
     expect(html).toMatch(/cv-page__section/)
-    expect(html).toMatch(/pf-index-empty__list-placeholder/)
+    expect(html).toMatch(/data-visual-id="PageFamilyIndexHero"/)
+    expect(html).toMatch(/data-visual-id="PageFamilyTimelineShell"/)
   })
 
   it('renders download cards when the model is ready', async () => {

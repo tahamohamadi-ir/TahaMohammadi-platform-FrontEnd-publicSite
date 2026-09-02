@@ -22,12 +22,11 @@ describe('PUBLIC-211/212 writing pages', () => {
       locale: 'en',
       model: { status: 'unavailable' },
     })
-    expect(html).toMatch(/data-visual-id="CollectionIndexTemplate"/)
+    expect(html).toMatch(/data-visual-id="EditorialIndexTemplate"/)
     expect(html).toMatch(/data-state-variant="empty"/)
-    expect(html).toContain('Writing')
-    expect(html).toMatch(/<h1[\s>]/)
-    expect(html).toMatch(/writing-page__filters/)
-    expect(html).toMatch(/pf-index-empty__list-placeholder/)
+    expect(html).toMatch(/data-visual-id="PageFamilyIndexHero"/)
+    expect(html).toMatch(/data-visual-id="PageFamilyFeaturedShell"/)
+    expect(html).toMatch(/data-visual-id="PageFamilyContentRowPlaceholder"/)
   })
 
   it('renders article and book sections when the index model is ready', async () => {

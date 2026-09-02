@@ -27,8 +27,8 @@ describe('PUBLIC-210 projects pages', () => {
     expect(html).toContain('Projects')
     expect(html).toMatch(/<h1[\s>]/)
     expect(html).toMatch(/projects-page__filters/)
-    expect(html).toMatch(/pf-index-empty__list-placeholder/)
-    expect(html).toContain('Published projects are not available yet.')
+    expect(html).toMatch(/data-visual-id="PageFamilyIndexHero"/)
+    expect(html).toMatch(/data-visual-id="PageFamilyContentRowPlaceholder"/)
   })
 
   it('renders project cards when the index model is ready', async () => {

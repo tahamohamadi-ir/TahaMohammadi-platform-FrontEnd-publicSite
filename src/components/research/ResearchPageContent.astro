@@ -1,6 +1,8 @@
 ---
 import CollectionIndexTemplate from '../templates/CollectionIndexTemplate.astro'
-import SectionLead from '../ui/SectionLead.astro'
+import PageFamilyIndexHero from '../page-family/PageFamilyIndexHero.astro'
+import PageFamilyConstellationShell from '../page-family/PageFamilyConstellationShell.astro'
+import PageFamilyContentRowPlaceholder from '../page-family/PageFamilyContentRowPlaceholder.astro'
 import ContentState from '../state/ContentState.astro'
 import Link from '../ui/Link.astro'
 import {
@@ -43,8 +45,10 @@ const tabLabels =
 {
   model.status === 'unavailable' ? (
     <CollectionIndexTemplate class="research-page research-page--empty">
-      <SectionLead
+      <PageFamilyIndexHero
         slot="lead"
+        locale={locale}
+        family="research"
         eyebrow={locale === 'en' ? 'Research program' : 'برنامه پژوهشی'}
         title={routeTitle}
       />
@@ -103,11 +107,7 @@ const tabLabels =
         slot="records"
         class="research-page__grid-shell pf-index-empty__shell"
       >
-        <div class="research-page__graph-placeholder" aria-hidden="true">
-          <span class="research-page__graph-node" />
-          <span class="research-page__graph-node research-page__graph-node--center" />
-          <span class="research-page__graph-node" />
-        </div>
+        <PageFamilyConstellationShell />
 
         <section
           class="research-page__topics"
@@ -119,16 +119,11 @@ const tabLabels =
           >
             {locale === 'en' ? 'Focus areas' : 'حوزه‌های تمرکز'}
           </h2>
-          <div class="pf-index-empty__list-placeholder" aria-hidden="true">
-            <span class="pf-index-empty__row-placeholder">
-              <span class="pf-index-empty__line pf-index-empty__line--short" />
-              <span class="pf-index-empty__line pf-index-empty__line--medium" />
-            </span>
-            <span class="pf-index-empty__row-placeholder">
-              <span class="pf-index-empty__line pf-index-empty__line--short" />
-              <span class="pf-index-empty__line pf-index-empty__line--medium" />
-            </span>
-          </div>
+          <PageFamilyContentRowPlaceholder
+            locale={locale}
+            family="research"
+            count={2}
+          />
         </section>
 
         <ContentState
@@ -142,8 +137,10 @@ const tabLabels =
     </CollectionIndexTemplate>
   ) : (
     <CollectionIndexTemplate class="research-page">
-      <SectionLead
+      <PageFamilyIndexHero
         slot="lead"
+        locale={locale}
+        family="research"
         eyebrow={locale === 'en' ? 'Research program' : 'برنامه پژوهشی'}
         title={routeTitle}
         summary={model.statement?.title ?? undefined}

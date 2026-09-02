@@ -1,0 +1,49 @@
+---
+import PromotedPicture from '../media/PromotedPicture.astro'
+import {
+  getPageFamilyPreviewAsset,
+  getPageFamilyDecorativeAlt,
+  type PageFamilyChromeId,
+} from '../../lib/page-family-empty-chrome'
+import type { Locale } from '../../lib/navigation'
+
+interface Props {
+  locale: Locale
+  family: PageFamilyChromeId
+  count?: number
+  class?: string
+}
+
+const { locale, family, count = 3, class: className = '' } = Astro.props
+const preview = getPageFamilyPreviewAsset(family)
+const decorativeAlt = getPageFamilyDecorativeAlt(locale, family)
+const rows = Array.from({ length: count }, (_, index) => index)
+---
+
+<div
+  class={['pf-index-row-placeholder', className].filter(Boolean).join(' ')}
+  data-visual-id="PageFamilyContentRowPlaceholder"
+  aria-hidden="true"
+>
+  {
+    rows.map((index) => (
+      <div class="pf-index-row-placeholder__row">
+        <div class="pf-index-row-placeholder__thumb">
+          <PromotedPicture
+            assetId={preview.assetId}
+            mediaSlot={preview.mediaSlot}
+            locale={locale}
+            alt={decorativeAlt}
+            imgClass="pf-index-row-placeholder__image"
+            loading={index === 0 ? 'eager' : 'lazy'}
+          />
+        </div>
+        <div class="pf-index-row-placeholder__lines">
+          <span class="pf-index-empty__line pf-index-empty__line--short" />
+          <span class="pf-index-empty__line pf-index-empty__line--medium" />
+          <span class="pf-index-empty__line" />
+        </div>
+      </div>
+    ))
+  }
+</div>

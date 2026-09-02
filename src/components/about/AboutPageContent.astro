@@ -1,6 +1,7 @@
 ---
 import AboutContactUtilityTemplate from '../templates/AboutContactUtilityTemplate.astro'
-import SectionLead from '../ui/SectionLead.astro'
+import PageFamilyIndexHero from '../page-family/PageFamilyIndexHero.astro'
+import PageFamilyTimelineShell from '../page-family/PageFamilyTimelineShell.astro'
 import ContentState from '../state/ContentState.astro'
 import {
   getAboutRouteTitle,
@@ -36,8 +37,10 @@ const sectionLabels =
 {
   model.status === 'unavailable' ? (
     <AboutContactUtilityTemplate class="about-page about-page--empty">
-      <SectionLead
+      <PageFamilyIndexHero
         slot="lead"
+        locale={locale}
+        family="about"
         eyebrow={locale === 'en' ? 'Profile' : 'پروفایل'}
         title={getAboutRouteTitle(locale)}
       />
@@ -67,16 +70,7 @@ const sectionLabels =
           >
             {sectionLabels.education}
           </h2>
-          <div class="pf-index-empty__timeline-placeholder" aria-hidden="true">
-            <span class="pf-index-empty__row-placeholder">
-              <span class="pf-index-empty__line pf-index-empty__line--short" />
-              <span class="pf-index-empty__line pf-index-empty__line--medium" />
-            </span>
-            <span class="pf-index-empty__row-placeholder">
-              <span class="pf-index-empty__line pf-index-empty__line--short" />
-              <span class="pf-index-empty__line pf-index-empty__line--medium" />
-            </span>
-          </div>
+          <PageFamilyTimelineShell count={2} />
         </section>
 
         <section
@@ -89,16 +83,7 @@ const sectionLabels =
           >
             {sectionLabels.experience}
           </h2>
-          <div class="pf-index-empty__timeline-placeholder" aria-hidden="true">
-            <span class="pf-index-empty__row-placeholder">
-              <span class="pf-index-empty__line pf-index-empty__line--short" />
-              <span class="pf-index-empty__line pf-index-empty__line--medium" />
-            </span>
-            <span class="pf-index-empty__row-placeholder">
-              <span class="pf-index-empty__line pf-index-empty__line--short" />
-              <span class="pf-index-empty__line pf-index-empty__line--medium" />
-            </span>
-          </div>
+          <PageFamilyTimelineShell count={2} />
         </section>
 
         <ContentState
@@ -112,8 +97,10 @@ const sectionLabels =
     </AboutContactUtilityTemplate>
   ) : (
     <AboutContactUtilityTemplate class="about-page">
-      <SectionLead
+      <PageFamilyIndexHero
         slot="lead"
+        locale={locale}
+        family="about"
         eyebrow={locale === 'en' ? 'Profile' : 'پروفایل'}
         title={model.profile.title}
         summary={model.profile.excerpt ?? undefined}

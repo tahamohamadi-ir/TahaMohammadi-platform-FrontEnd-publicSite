@@ -1,6 +1,6 @@
 ---
 import AboutContactUtilityTemplate from '../templates/AboutContactUtilityTemplate.astro'
-import SectionLead from '../ui/SectionLead.astro'
+import PageFamilyIndexHero from '../page-family/PageFamilyIndexHero.astro'
 import ContentState from '../state/ContentState.astro'
 import Input from '../ui/Input.astro'
 import Textarea from '../ui/Textarea.astro'
@@ -53,8 +53,11 @@ const topicLabels =
 {
   model.status === 'unavailable' ? (
     <AboutContactUtilityTemplate class="contact-page contact-page--empty">
-      <SectionLead
+      <PageFamilyIndexHero
         slot="lead"
+        locale={locale}
+        family="contact"
+        portal
         eyebrow={locale === 'en' ? 'Connect' : 'ارتباط'}
         title={getContactRouteTitle(locale)}
       />
@@ -162,8 +165,10 @@ const topicLabels =
     </AboutContactUtilityTemplate>
   ) : (
     <AboutContactUtilityTemplate class="contact-page">
-      <SectionLead
+      <PageFamilyIndexHero
         slot="lead"
+        locale={locale}
+        family="contact"
         eyebrow={locale === 'en' ? 'Connect' : 'ارتباط'}
         title={getContactRouteTitle(locale)}
       />
