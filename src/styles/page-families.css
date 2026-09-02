@@ -115,7 +115,11 @@
 }
 
 .pf-index-featured--writing .pf-index-featured__card-label {
-  color: var(--primitive-coral-500);
+  color: color-mix(
+    in srgb,
+    var(--primitive-coral-500) 58%,
+    var(--primitive-navy-950)
+  );
 }
 
 .pf-index-featured__action {
@@ -134,8 +138,16 @@
 }
 
 .pf-index-featured--writing .pf-index-featured__action {
-  border-color: var(--primitive-coral-500);
-  color: var(--primitive-coral-500);
+  border-color: color-mix(
+    in srgb,
+    var(--primitive-coral-500) 58%,
+    var(--primitive-navy-950)
+  );
+  color: color-mix(
+    in srgb,
+    var(--primitive-coral-500) 58%,
+    var(--primitive-navy-950)
+  );
 }
 
 .pf-index-featured--project .pf-index-featured__title {
@@ -1385,8 +1397,16 @@
 }
 
 .pf-index-empty__filter-chip--active {
-  border-color: var(--primitive-coral-500);
-  color: var(--primitive-coral-500);
+  border-color: color-mix(
+    in srgb,
+    var(--primitive-coral-500) 58%,
+    var(--primitive-navy-950)
+  );
+  color: color-mix(
+    in srgb,
+    var(--primitive-coral-500) 58%,
+    var(--primitive-navy-950)
+  );
   background: color-mix(
     in srgb,
     var(--primitive-coral-500) 8%,
