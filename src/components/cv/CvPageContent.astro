@@ -1,7 +1,7 @@
 ---
 import AboutContactUtilityTemplate from '../templates/AboutContactUtilityTemplate.astro'
 import PageFamilyIndexHero from '../page-family/PageFamilyIndexHero.astro'
-import PageFamilyTimelineShell from '../page-family/PageFamilyTimelineShell.astro'
+import PageFamilyDownloadListShell from '../page-family/PageFamilyDownloadListShell.astro'
 import ContentState from '../state/ContentState.astro'
 import Link from '../ui/Link.astro'
 import {
@@ -33,15 +33,7 @@ const emptyCopy = getCvUnavailableCopy(locale)
       />
 
       <div slot="records" class="cv-page__sections pf-index-empty__shell">
-        <section
-          class="cv-page__section"
-          aria-labelledby="cv-downloads-empty-title"
-        >
-          <h2 id="cv-downloads-empty-title" class="cv-page__section-title">
-            {locale === 'en' ? 'Downloads' : 'دانلودها'}
-          </h2>
-          <PageFamilyTimelineShell count={2} />
-        </section>
+        <PageFamilyDownloadListShell locale={locale} />
 
         <ContentState
           variant="empty"

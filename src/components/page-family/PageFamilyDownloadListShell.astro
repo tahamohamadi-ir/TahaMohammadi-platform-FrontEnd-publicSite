@@ -1,0 +1,38 @@
+---
+import type { Locale } from '../../lib/navigation'
+
+interface Props {
+  locale: Locale
+  count?: number
+  class?: string
+}
+
+const { locale, count = 2, class: className = '' } = Astro.props
+const sectionLabel = locale === 'en' ? 'Downloads' : 'دانلودها'
+const cards = Array.from({ length: count }, (_, index) => index)
+---
+
+<section
+  class={['pf-index-download-list', className].filter(Boolean).join(' ')}
+  data-visual-id="PageFamilyDownloadListShell"
+  aria-labelledby="pf-download-list-title"
+>
+  <h2 id="pf-download-list-title" class="pf-index-download-list__title">
+    {sectionLabel}
+  </h2>
+
+  <ul class="pf-index-download-list__list">
+    {
+      cards.map(() => (
+        <li>
+          <article class="pf-index-download-list__card" aria-hidden="true">
+            <span class="pf-index-empty__line pf-index-empty__line--short" />
+            <span class="pf-index-empty__line pf-index-empty__line--medium" />
+            <span class="pf-index-empty__line" />
+            <span class="pf-index-download-list__action" />
+          </article>
+        </li>
+      ))
+    }
+  </ul>
+</section>

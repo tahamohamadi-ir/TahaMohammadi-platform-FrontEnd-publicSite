@@ -39,6 +39,10 @@ const FEATURED_FAMILIES = new Set<PageFamilyChromeId>([
 
 const PATH_FAMILIES = new Set<PageFamilyChromeId>(['teaching'])
 
+const LIST_CARD_FAMILIES = new Set<PageFamilyChromeId>(['teaching'])
+
+const SKILLS_FAMILIES = new Set<PageFamilyChromeId>(['about'])
+
 /** Decorative hero media per page family — authority assets only, no CMS copy. */
 export function getPageFamilyHeroMedia(
   family: PageFamilyChromeId,
@@ -209,6 +213,82 @@ export function getPageFamilyFeaturedSectionLabel(
   return locale === 'en' ? 'Featured' : 'برگزیده'
 }
 
+/** Structural card eyebrow inside featured shell — UI chrome, not CMS record copy. */
+export function getPageFamilyFeaturedCardLabel(
+  locale: Locale,
+  family: PageFamilyChromeId,
+): string | null {
+  if (!FEATURED_FAMILIES.has(family)) {
+    return null
+  }
+
+  if (locale === 'en') {
+    switch (family) {
+      case 'creative':
+        return 'Selected visual work'
+      case 'writing':
+        return 'Featured'
+      case 'teaching':
+        return 'Featured course'
+      default: {
+        const neverFamily: never = family
+        throw new Error(`Unknown page family chrome id: ${neverFamily}`)
+      }
+    }
+  }
+
+  switch (family) {
+    case 'creative':
+      return 'اثر بصری برگزیده'
+    case 'writing':
+      return 'برگزیده'
+    case 'teaching':
+      return 'دوره برجسته'
+    default: {
+      const neverFamily: never = family
+      throw new Error(`Unknown page family chrome id: ${neverFamily}`)
+    }
+  }
+}
+
+/** Structural disabled CTA label for featured empty shell — not CMS record copy. */
+export function getPageFamilyFeaturedActionLabel(
+  locale: Locale,
+  family: PageFamilyChromeId,
+): string | null {
+  if (!FEATURED_FAMILIES.has(family)) {
+    return null
+  }
+
+  if (locale === 'en') {
+    switch (family) {
+      case 'creative':
+        return 'View work'
+      case 'writing':
+        return 'Read article'
+      case 'teaching':
+        return 'View course'
+      default: {
+        const neverFamily: never = family
+        throw new Error(`Unknown page family chrome id: ${neverFamily}`)
+      }
+    }
+  }
+
+  switch (family) {
+    case 'creative':
+      return 'مشاهده اثر'
+    case 'writing':
+      return 'خواندن مقاله'
+    case 'teaching':
+      return 'مشاهده دوره'
+    default: {
+      const neverFamily: never = family
+      throw new Error(`Unknown page family chrome id: ${neverFamily}`)
+    }
+  }
+}
+
 /** Structural section label for learning-path shell (PF-06) — not CMS record copy. */
 export function getPageFamilyPathSectionLabel(
   locale: Locale,
@@ -219,4 +299,28 @@ export function getPageFamilyPathSectionLabel(
   }
 
   return locale === 'en' ? 'Featured path' : 'مسیر برجسته'
+}
+
+/** Structural section label for list-card shell (PF-06) — not CMS record copy. */
+export function getPageFamilyListSectionLabel(
+  locale: Locale,
+  family: PageFamilyChromeId,
+): string | null {
+  if (!LIST_CARD_FAMILIES.has(family)) {
+    return null
+  }
+
+  return locale === 'en' ? 'Learning library' : 'کتابخانه یادگیری'
+}
+
+/** Structural section label for skills shell (PF-07 About) — not CMS record copy. */
+export function getPageFamilySkillsSectionLabel(
+  locale: Locale,
+  family: PageFamilyChromeId,
+): string | null {
+  if (!SKILLS_FAMILIES.has(family)) {
+    return null
+  }
+
+  return locale === 'en' ? 'Skills' : 'مهارت‌ها'
 }

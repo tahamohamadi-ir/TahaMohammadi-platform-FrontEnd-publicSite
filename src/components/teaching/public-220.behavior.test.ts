@@ -26,7 +26,7 @@ describe('PUBLIC-220 teaching pages', () => {
     expect(html).toMatch(/data-state-variant="empty"/)
     expect(html).toMatch(/data-visual-id="PageFamilyIndexHero"/)
     expect(html).toMatch(/data-visual-id="PageFamilyFeaturedPathShell"/)
-    expect(html).toMatch(/data-visual-id="PageFamilyContentRowPlaceholder"/)
+    expect(html).toMatch(/data-visual-id="PageFamilyListCardShell"/)
     expect(html).toContain('Teaching')
     expect(html).toMatch(/<h1[\s>]/)
     expect(html).toMatch(/teaching-page__filters/)

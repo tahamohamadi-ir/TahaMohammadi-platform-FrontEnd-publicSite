@@ -1,0 +1,61 @@
+---
+import PromotedPicture from '../media/PromotedPicture.astro'
+import {
+  getPageFamilyListSectionLabel,
+  getPageFamilyPreviewAsset,
+  getPageFamilyDecorativeAlt,
+  type PageFamilyChromeId,
+} from '../../lib/page-family-empty-chrome'
+import type { Locale } from '../../lib/navigation'
+
+interface Props {
+  locale: Locale
+  family: PageFamilyChromeId
+  count?: number
+  class?: string
+}
+
+const { locale, family, count = 3, class: className = '' } = Astro.props
+const sectionLabel = getPageFamilyListSectionLabel(locale, family)
+const preview = sectionLabel ? getPageFamilyPreviewAsset(family) : null
+const decorativeAlt = getPageFamilyDecorativeAlt(locale, family)
+const cards = sectionLabel && preview ? Array.from({ length: count }, (_, i) => i) : null
+---
+
+{
+  sectionLabel && preview && cards ? (
+    <section
+      class={['pf-index-list-cards', className].filter(Boolean).join(' ')}
+      data-visual-id="PageFamilyListCardShell"
+      aria-labelledby={`pf-list-${family}-title`}
+    >
+      <h2 id={`pf-list-${family}-title`} class="pf-index-list-cards__title">
+        {sectionLabel}
+      </h2>
+
+      <ul class="pf-index-list-cards__list">
+        {cards.map((index) => (
+          <li>
+            <article class="pf-index-list-cards__card" aria-hidden="true">
+              <div class="pf-index-list-cards__thumb">
+                <PromotedPicture
+                  assetId={preview.assetId}
+                  mediaSlot={preview.mediaSlot}
+                  locale={locale}
+                  alt={decorativeAlt}
+                  imgClass="pf-index-list-cards__image"
+                  loading={index === 0 ? 'eager' : 'lazy'}
+                />
+              </div>
+              <div class="pf-index-list-cards__body">
+                <span class="pf-index-empty__line pf-index-empty__line--short" />
+                <span class="pf-index-empty__line pf-index-empty__line--medium" />
+                <span class="pf-index-empty__line" />
+              </div>
+            </article>
+          </li>
+        ))}
+      </ul>
+    </section>
+  ) : null
+}

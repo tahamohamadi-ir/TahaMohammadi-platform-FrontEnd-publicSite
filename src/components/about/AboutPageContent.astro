@@ -2,6 +2,7 @@
 import AboutContactUtilityTemplate from '../templates/AboutContactUtilityTemplate.astro'
 import PageFamilyIndexHero from '../page-family/PageFamilyIndexHero.astro'
 import PageFamilyTimelineShell from '../page-family/PageFamilyTimelineShell.astro'
+import PageFamilySkillsShell from '../page-family/PageFamilySkillsShell.astro'
 import ContentState from '../state/ContentState.astro'
 import {
   getAboutRouteTitle,
@@ -59,6 +60,24 @@ const sectionLabels =
             <span class="pf-index-empty__line pf-index-empty__line--short" />
           </div>
         </section>
+
+        <section
+          class="about-page__section"
+          aria-labelledby="about-engineering-empty-title"
+        >
+          <h2
+            id="about-engineering-empty-title"
+            class="about-page__section-title"
+          >
+            {sectionLabels.engineering}
+          </h2>
+          <div class="pf-index-empty__prose-placeholder" aria-hidden="true">
+            <span class="pf-index-empty__line pf-index-empty__line--medium" />
+            <span class="pf-index-empty__line" />
+          </div>
+        </section>
+
+        <PageFamilySkillsShell locale={locale} family="about" />
 
         <section
           class="about-page__section"

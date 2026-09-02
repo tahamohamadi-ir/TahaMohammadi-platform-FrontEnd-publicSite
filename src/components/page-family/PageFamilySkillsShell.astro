@@ -1,0 +1,58 @@
+---
+import {
+  getPageFamilySkillsSectionLabel,
+  type PageFamilyChromeId,
+} from '../../lib/page-family-empty-chrome'
+import type { Locale } from '../../lib/navigation'
+
+interface Props {
+  locale: Locale
+  family: PageFamilyChromeId
+  groupCount?: number
+  chipsPerGroup?: number
+  class?: string
+}
+
+const {
+  locale,
+  family,
+  groupCount = 2,
+  chipsPerGroup = 4,
+  class: className = '',
+} = Astro.props
+const sectionLabel = getPageFamilySkillsSectionLabel(locale, family)
+const groups =
+  sectionLabel !== null
+    ? Array.from({ length: groupCount }, (_, groupIndex) => ({
+        id: groupIndex,
+        chips: Array.from({ length: chipsPerGroup }, (_, chipIndex) => chipIndex),
+      }))
+    : null
+---
+
+{
+  sectionLabel && groups ? (
+    <section
+      class={['pf-index-skills', className].filter(Boolean).join(' ')}
+      data-visual-id="PageFamilySkillsShell"
+      aria-labelledby={`pf-skills-${family}-title`}
+    >
+      <h2 id={`pf-skills-${family}-title`} class="pf-index-skills__title">
+        {sectionLabel}
+      </h2>
+
+      <div class="pf-index-skills__groups" aria-hidden="true">
+        {groups.map((group) => (
+          <div class="pf-index-skills__group">
+            <span class="pf-index-empty__line pf-index-empty__line--short pf-index-skills__group-label" />
+            <div class="pf-index-skills__chips">
+              {group.chips.map(() => (
+                <span class="pf-index-skills__chip" />
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  ) : null
+}

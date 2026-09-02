@@ -1,9 +1,13 @@
 import { describe, expect, it } from 'vitest'
 
 import {
+  getPageFamilyFeaturedActionLabel,
+  getPageFamilyFeaturedCardLabel,
   getPageFamilyFeaturedSectionLabel,
   getPageFamilyHeroMedia,
+  getPageFamilyListSectionLabel,
   getPageFamilyPreviewAsset,
+  getPageFamilySkillsSectionLabel,
 } from './page-family-empty-chrome'
 
 describe('page-family empty chrome', () => {
@@ -26,5 +30,14 @@ describe('page-family empty chrome', () => {
     expect(getPageFamilyPreviewAsset('projects').assetId).toBe(
       'blog-coral-stairs',
     )
+  })
+
+  it('exposes PF-06 list and PF-07 skills section labels', () => {
+    expect(getPageFamilyListSectionLabel('en', 'teaching')).toBe(
+      'Learning library',
+    )
+    expect(getPageFamilyListSectionLabel('fa', 'writing')).toBeNull()
+    expect(getPageFamilySkillsSectionLabel('en', 'about')).toBe('Skills')
+    expect(getPageFamilySkillsSectionLabel('fa', 'cv')).toBeNull()
   })
 })

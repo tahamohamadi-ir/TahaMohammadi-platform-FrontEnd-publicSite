@@ -2,7 +2,7 @@
 import EditorialIndexTemplate from '../templates/EditorialIndexTemplate.astro'
 import PageFamilyIndexHero from '../page-family/PageFamilyIndexHero.astro'
 import PageFamilyFeaturedPathShell from '../page-family/PageFamilyFeaturedPathShell.astro'
-import PageFamilyContentRowPlaceholder from '../page-family/PageFamilyContentRowPlaceholder.astro'
+import PageFamilyListCardShell from '../page-family/PageFamilyListCardShell.astro'
 import ContentState from '../state/ContentState.astro'
 import {
   formatCourseCardMeta,
@@ -100,7 +100,7 @@ const filterLabels =
         slot="records"
         class="teaching-page__grid-shell pf-index-empty__shell"
       >
-        <PageFamilyContentRowPlaceholder locale={locale} family="teaching" />
+        <PageFamilyListCardShell locale={locale} family="teaching" />
         <ContentState
           variant="empty"
           locale={locale}

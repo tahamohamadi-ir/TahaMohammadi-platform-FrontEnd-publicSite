@@ -27,6 +27,8 @@ describe('PUBLIC-200 about page', () => {
     expect(html).toMatch(/<h1[\s>]/)
     expect(html).toMatch(/data-visual-id="PageFamilyIndexHero"/)
     expect(html).toMatch(/data-visual-id="PageFamilyTimelineShell"/)
+    expect(html).toMatch(/data-visual-id="PageFamilySkillsShell"/)
+    expect(html).toContain('Engineering')
   })
 
   it('renders profile sections with anchor ids when ready', async () => {
