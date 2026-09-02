@@ -85,9 +85,7 @@ console.log(`  Open: ${fileUrl}`)
 console.log(
   '\nOwner assist only — record SHA-256 hashes in Docs/10-tracking/PUBLIC-190-VISUAL-QA.md after manual review.',
 )
-console.log(
-  '  Paste helper: npm run report:signoff-hashes [-- --ready-only]',
-)
+console.log('  Paste helper: npm run report:signoff-hashes [-- --ready-only]')
 
 if (serve) {
   const port = process.env.VISUAL_COMPARE_PORT ?? '4173'

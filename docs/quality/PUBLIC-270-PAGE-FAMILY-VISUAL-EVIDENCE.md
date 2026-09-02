@@ -62,16 +62,16 @@ Compare each implementation screenshot against the matching concept at the same 
 
 ## Automated scaffold
 
-| Artifact                                           | Role                                                                  |
-| -------------------------------------------------- | --------------------------------------------------------------------- |
-| `tests/e2e/public-270-page-families.visual.e2e.ts` | Playwright `@visual` capture stubs at 1440/390 for built index routes |
-| `src/public-270.page-family-visual.test.ts`        | Vitest guard: checklist exists and PF route map matches contract      |
-| `scripts/page-family-visual-compare.mjs`           | Canonical capture → concept reference mapping (PF-01..PF-08 + home)   |
-| `scripts/generate-visual-compare-report.mjs`       | HTML side-by-side owner compare report from existing PNGs             |
-| `scripts/extract-visual-signoff-hashes.mjs`        | Markdown/JSON/TSV SHA-256 table for QA §4 paste (does not auto-approve) |
-| `src/test-harness/responsive-matrix-widths.ts`     | Shared width constants for PUBLIC-270/280                             |
-| `npm run test:visual -- --grep PUBLIC-270`         | Runs only PUBLIC-270 capture stubs                                    |
-| `npm run report:visual-compare`                    | Generates `test-results/visual/compare-report.html` (no new captures) |
+| Artifact                                           | Role                                                                                                                        |
+| -------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `tests/e2e/public-270-page-families.visual.e2e.ts` | Playwright `@visual` capture stubs at 1440/390 for built index routes                                                       |
+| `src/public-270.page-family-visual.test.ts`        | Vitest guard: checklist exists and PF route map matches contract                                                            |
+| `scripts/page-family-visual-compare.mjs`           | Canonical capture → concept reference mapping (PF-01..PF-08 + home)                                                         |
+| `scripts/generate-visual-compare-report.mjs`       | HTML side-by-side owner compare report from existing PNGs                                                                   |
+| `scripts/extract-visual-signoff-hashes.mjs`        | Markdown/JSON/TSV SHA-256 table for QA §4 paste (does not auto-approve)                                                     |
+| `src/test-harness/responsive-matrix-widths.ts`     | Shared width constants for PUBLIC-270/280                                                                                   |
+| `npm run test:visual -- --grep PUBLIC-270`         | Runs only PUBLIC-270 capture stubs                                                                                          |
+| `npm run report:visual-compare`                    | Generates `test-results/visual/compare-report.html` (no new captures)                                                       |
 | `npm run report:signoff-hashes`                    | Prints §4 sign-off markdown table from local PNGs (alias: `extract:visual-hashes`; add `-- --ready-only` for concept pairs) |
 
 ---

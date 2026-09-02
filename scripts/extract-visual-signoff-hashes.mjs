@@ -24,10 +24,7 @@ import {
   defaultDesignAuthorityRoot,
 } from './page-family-visual-compare.mjs'
 
-const defaultReportPath = path.join(
-  captureOutputDir,
-  'compare-report.html',
-)
+const defaultReportPath = path.join(captureOutputDir, 'compare-report.html')
 
 function sha256File(filePath) {
   return createHash('sha256').update(readFileSync(filePath)).digest('hex')
@@ -114,9 +111,7 @@ function formatMarkdown(rows) {
 
   for (const row of rows) {
     const hash = row.sha256 ?? '_(missing — re-run review:visual)_'
-    lines.push(
-      `| \`${row.captureFile}\` | \`${hash}\` | ${row.status} | [ ] |`,
-    )
+    lines.push(`| \`${row.captureFile}\` | \`${hash}\` | ${row.status} | [ ] |`)
   }
 
   return lines.join('\n')
@@ -139,9 +134,7 @@ function formatJson(rows) {
 function formatTsv(rows) {
   const lines = ['capture_file\tsha256\tpair_status\taccepted']
   for (const row of rows) {
-    lines.push(
-      `${row.captureFile}\t${row.sha256 ?? ''}\t${row.status}\t`,
-    )
+    lines.push(`${row.captureFile}\t${row.sha256 ?? ''}\t${row.status}\t`)
   }
   return lines.join('\n')
 }
