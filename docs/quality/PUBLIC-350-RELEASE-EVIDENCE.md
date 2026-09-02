@@ -110,6 +110,23 @@ Fill `Docs/templates/RELEASE-REPORT-TEMPLATE.md` only after R7 staging and owner
 
 ---
 
+## After PUBLIC-190 PASS (owner evidence only)
+
+When `Docs/10-tracking/PUBLIC-190-VISUAL-QA.md` records owner sign-off and verdict `PASS`:
+
+| Unlocks                                     | Notes                                                                                                                                     |
+| ------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `PUBLIC-201`–`PUBLIC-221` visual acceptance | Routes and behavior tests already shipped; freeze lifts for owner compare on research, projects, writing, teaching, creative, CV families |
+| `PUBLIC-350` owner-acceptance slice         | `summarizeReleaseEvidence()` may mark owner blocker cleared; `ready` still false until staging smoke + remaining R8 slices                |
+| Coordination R4 adoption                    | MASTER-TASK-LIST PF adoption and frozen route checklist may advance per release gates                                                     |
+| PF-02 creative detail                       | **Still open** until a published API slug exists in static build or an honest preview shell ships                                         |
+| `PUBLIC-320` staging smoke                  | Still blocked on `BACKEND-180` + `PUBLIC_STAGING_SITE_URL`                                                                                |
+| `PUBLIC-290` production telemetry           | Still open — local probes do not close budget                                                                                             |
+
+Owner one-command review assist: `npm run review:visual` (build → captures → compare report → prints `file://` path).
+
+---
+
 ## Follow-on
 
 | Task       | Notes                                                       |
