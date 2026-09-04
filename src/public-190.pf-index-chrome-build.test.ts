@@ -14,8 +14,32 @@ const PF_INDEX_CHROME_ROUTES = [
     markers: [
       'CollectionIndexTemplate',
       'PageFamilyIndexHero',
+      'PageFamilySubNavShell',
       'PageFamilyPublicationsSidebarShell',
       'PageFamilySelectedPublicationsShell',
+      'PageFamilyBibliographyRowPlaceholder',
+      'page-families',
+    ],
+  },
+  {
+    route: 'en/research/index.html',
+    markers: [
+      'CollectionIndexTemplate',
+      'PageFamilyIndexHero',
+      'PageFamilySubNavShell',
+      'PageFamilyConstellationShell',
+      'PageFamilyResearchDirectionsShell',
+      'PageFamilyResearchFitShell',
+      'PageFamilySelectedPublicationsShell',
+      'page-families',
+    ],
+  },
+  {
+    route: 'en/contact/index.html',
+    markers: [
+      'PageFamilyContactHeroShell',
+      'PageFamilyTopicCardsShell',
+      'PageFamilyContactSidebarShell',
       'page-families',
     ],
   },

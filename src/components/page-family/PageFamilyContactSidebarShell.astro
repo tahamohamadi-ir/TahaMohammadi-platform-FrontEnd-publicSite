@@ -1,6 +1,7 @@
 ---
 import Button from '../ui/Button.astro'
 import {
+  getApprovedCmsRecordLabel,
   getContactBeforeYouWriteItems,
   getCmsPlaceholderCopy,
 } from '../../lib/page-family-empty-chrome'
@@ -8,13 +9,28 @@ import { localePath, type Locale } from '../../lib/navigation'
 
 interface Props {
   locale: Locale
+  showMethods?: boolean
   class?: string
 }
 
-const { locale, class: className = '' } = Astro.props
+const { locale, showMethods = true, class: className = '' } = Astro.props
 const items = getContactBeforeYouWriteItems(locale)
 const placeholder = getCmsPlaceholderCopy(locale)
+const cmsRecordLabel = getApprovedCmsRecordLabel(locale)
 const sectionLabel = locale === 'en' ? 'Before you write' : 'پیش از نوشتن'
+const methodsLabel = locale === 'en' ? 'Contact methods' : 'روش‌های تماس'
+const methodCards =
+  locale === 'en'
+    ? [
+        { title: 'Academic email', tone: 'email' },
+        { title: 'LinkedIn', tone: 'linkedin' },
+        { title: 'ORCID', tone: 'orcid' },
+      ]
+    : [
+        { title: 'ایمیل آکادمیک', tone: 'email' },
+        { title: 'لینکدین', tone: 'linkedin' },
+        { title: 'ORCID', tone: 'orcid' },
+      ]
 const cvCardTitle =
   locale === 'en'
     ? 'Prefer a structured overview?'
@@ -27,6 +43,105 @@ const cvAction = locale === 'en' ? 'Download CV' : 'دانلود رزومه'
   data-visual-id="PageFamilyContactSidebarShell"
   aria-label={sectionLabel}
 >
+  {
+    showMethods ? (
+      <section
+        class="pf-index-contact-sidebar__block"
+        aria-labelledby="pf-contact-methods-title"
+      >
+        <h2
+          id="pf-contact-methods-title"
+          class="pf-index-contact-sidebar__title"
+        >
+          {methodsLabel}
+        </h2>
+        <div class="pf-index-contact-sidebar__methods" aria-hidden="true">
+          {methodCards.map((method) => (
+            <article class="pf-index-contact-sidebar__method">
+              <span
+                class={[
+                  'pf-index-contact-sidebar__method-icon',
+                  `pf-index-contact-sidebar__method-icon--${method.tone}`,
+                ].join(' ')}
+              >
+                {method.tone === 'email' ? (
+                  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <rect
+                      x="3.5"
+                      y="6"
+                      width="17"
+                      height="12"
+                      rx="2"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.5"
+                    />
+                    <path
+                      d="m4.5 7.5 7.5 6 7.5-6"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                ) : null}
+                {method.tone === 'linkedin' ? (
+                  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <rect
+                      x="4"
+                      y="4"
+                      width="16"
+                      height="16"
+                      rx="2"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.5"
+                    />
+                    <path
+                      d="M8 10.5V16M8 7.8v.2M12 16v-3.4c0-1.2.8-2.1 2-2.1s2 .9 2 2.1V16"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                ) : null}
+                {method.tone === 'orcid' ? (
+                  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <circle
+                      cx="12"
+                      cy="12"
+                      r="8"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.5"
+                    />
+                    <path
+                      d="M9 8.5v7M12 11.2c.8-.7 1.6-1 2.5-1 1.7 0 2.8 1.2 2.8 3.1S16.2 16.5 14.5 16.5c-.9 0-1.7-.3-2.5-1"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                ) : null}
+              </span>
+              <div class="pf-index-contact-sidebar__method-copy">
+                <p class="pf-index-contact-sidebar__method-label">
+                  {method.title}
+                </p>
+                <p class="pf-index-contact-sidebar__method-value">
+                  {cmsRecordLabel}
+                </p>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+    ) : null
+  }
+
   <section class="pf-index-contact-sidebar__block">
     <h2 class="pf-index-contact-sidebar__title">{sectionLabel}</h2>
     <ul class="pf-index-contact-sidebar__checklist">
@@ -39,7 +154,61 @@ const cvAction = locale === 'en' ? 'Download CV' : 'دانلود رزومه'
                 `pf-index-contact-sidebar__check-icon--${item.tone}`,
               ].join(' ')}
               aria-hidden="true"
-            />
+            >
+              {item.tone === 'fit' ? (
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="8"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                  />
+                  <circle cx="12" cy="12" r="2.2" fill="currentColor" />
+                </svg>
+              ) : null}
+              {item.tone === 'context' ? (
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path
+                    d="M7 4h7l5 5v11a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                  />
+                  <path
+                    d="M14 4v5h5M8.5 13h7M8.5 16.5h5"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                  />
+                </svg>
+              ) : null}
+              {item.tone === 'step' ? (
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path
+                    d="M5 12h11.5M13 7.5 17.5 12 13 16.5"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              ) : null}
+              {item.tone === 'links' ? (
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path
+                    d="M9.5 14.5 14.5 9.5M8.2 11.2l-1.4 1.4a3.2 3.2 0 0 0 4.5 4.5l1.4-1.4M12.8 12.8l1.4-1.4a3.2 3.2 0 1 0-4.5-4.5l-1.4 1.4"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                  />
+                </svg>
+              ) : null}
+            </span>
             <div class="pf-index-contact-sidebar__check-copy">
               <p class="pf-index-contact-sidebar__check-title">{item.title}</p>
               <p class="pf-index-contact-sidebar__check-desc">{placeholder}</p>

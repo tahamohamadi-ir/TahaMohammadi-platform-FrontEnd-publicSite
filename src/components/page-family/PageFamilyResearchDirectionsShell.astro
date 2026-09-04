@@ -23,6 +23,7 @@ const sectionLabel = locale === 'en' ? 'Research directions' : 'جهت‌های 
   data-visual-id="PageFamilyResearchDirectionsShell"
   aria-labelledby="pf-research-directions-title"
 >
+  <p class="pf-index-research-directions__eyebrow">{sectionLabel}</p>
   <h2
     id="pf-research-directions-title"
     class="pf-index-research-directions__title"
@@ -48,22 +49,18 @@ const sectionLabel = locale === 'en' ? 'Research directions' : 'جهت‌های 
               <p class="pf-index-research-directions__placeholder">
                 {placeholder}
               </p>
-              <span class="pf-index-empty__line pf-index-empty__line--medium" />
+              <span class="pf-index-research-directions__status">
+                {actions.status}
+              </span>
             </div>
             <div class="pf-index-research-directions__actions">
-              <button
-                type="button"
-                class="pf-index-research-directions__action"
-                disabled
-              >
-                {actions.status}
-              </button>
               <button
                 type="button"
                 class="pf-index-research-directions__action pf-index-research-directions__action--secondary"
                 disabled
               >
                 {actions.related}
+                <span aria-hidden="true"> →</span>
               </button>
             </div>
           </article>

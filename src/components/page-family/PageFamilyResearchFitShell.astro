@@ -1,4 +1,5 @@
 ---
+import { getCmsPlaceholderCopy } from '../../lib/page-family-empty-chrome'
 import type { Locale } from '../../lib/navigation'
 
 interface Props {
@@ -7,6 +8,8 @@ interface Props {
 }
 
 const { locale, class: className = '' } = Astro.props
+const placeholder = getCmsPlaceholderCopy(locale)
+const sectionLabel = locale === 'en' ? 'Research fit' : 'تناسب پژوهشی'
 const cards =
   locale === 'en'
     ? [
@@ -26,12 +29,9 @@ const cards =
   data-visual-id="PageFamilyResearchFitShell"
   aria-labelledby="pf-research-fit-title"
 >
-  <h2 id="pf-research-fit-title" class="pf-index-research-fit__title">
-    {
-      locale === 'en'
-        ? 'Interconnected themes. Unified by human impact.'
-        : 'موضوعات به‌هم‌پیوسته. یکپارچه با اثر انسانی.'
-    }
+  <p class="pf-index-research-fit__eyebrow">{sectionLabel}</p>
+  <h2 id="pf-research-fit-title" class="pf-index-research-fit__title sr-only">
+    {sectionLabel}
   </h2>
 
   <div class="pf-index-research-fit__grid">
@@ -90,8 +90,10 @@ const cards =
             ) : null}
           </span>
           <h3 class="pf-index-research-fit__card-title">{card.title}</h3>
-          <span class="pf-index-empty__line pf-index-empty__line--medium" />
-          <span class="pf-index-empty__line pf-index-empty__line--short" />
+          <p class="pf-index-research-fit__placeholder">
+            <span>{placeholder}</span>
+            <span aria-hidden="true"> →</span>
+          </p>
         </article>
       ))
     }

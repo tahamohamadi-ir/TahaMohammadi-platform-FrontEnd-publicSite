@@ -9,10 +9,17 @@ interface Props {
     description?: string
   }[]
   regionLabel: string
+  activeIndex?: number
   class?: string
 }
 
-const { locale, labels, regionLabel, class: className = '' } = Astro.props
+const {
+  locale,
+  labels,
+  regionLabel,
+  activeIndex = 0,
+  class: className = '',
+} = Astro.props
 ---
 
 <div
@@ -24,15 +31,92 @@ const { locale, labels, regionLabel, class: className = '' } = Astro.props
   lang={locale}
 >
   {
-    labels.map((item) => (
-      <button type="button" class="pf-index-topic-cards__card" disabled>
+    labels.map((item, index) => (
+      <button
+        type="button"
+        class:list={[
+          'pf-index-topic-cards__card',
+          index === activeIndex && 'pf-index-topic-cards__card--selected',
+        ]}
+        disabled
+        aria-pressed={index === activeIndex ? 'true' : 'false'}
+      >
         <span
           class={[
             'pf-index-topic-cards__icon',
             `pf-index-topic-cards__icon--${item.tone}`,
           ].join(' ')}
           aria-hidden="true"
-        />
+        >
+          {item.tone === 'phd' ? (
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path
+                d="M3 10.5 12 6l9 4.5-9 4.5-9-4.5Z"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M7 12.5v4.2c0 .7 2.2 2.3 5 2.3s5-1.6 5-2.3v-4.2"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+              />
+              <path
+                d="M20 11.2v5.3"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+              />
+            </svg>
+          ) : null}
+          {item.tone === 'technical' ? (
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path
+                d="M8 8.5 4.5 12 8 15.5M16 8.5 19.5 12 16 15.5M13.2 6.5 10.8 17.5"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          ) : null}
+          {item.tone === 'creative' ? (
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path
+                d="M12 4.5c2.8 2.4 4.5 4.7 4.5 7.2a4.5 4.5 0 1 1-9 0c0-2.5 1.7-4.8 4.5-7.2Z"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+              />
+              <path
+                d="M9.5 15.5h5"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+              />
+            </svg>
+          ) : null}
+          {item.tone === 'other' ? (
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path
+                d="M5 8.5h10.5a2 2 0 0 1 2 2V16H9.2L5 18.8V8.5Z"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linejoin="round"
+              />
+              <circle cx="9" cy="12.5" r="0.9" fill="currentColor" />
+              <circle cx="12" cy="12.5" r="0.9" fill="currentColor" />
+              <circle cx="15" cy="12.5" r="0.9" fill="currentColor" />
+            </svg>
+          ) : null}
+        </span>
         <span class="pf-index-topic-cards__copy">
           <span class="pf-index-topic-cards__label">{item.title}</span>
           {item.description ? (

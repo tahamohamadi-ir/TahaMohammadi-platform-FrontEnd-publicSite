@@ -1,4 +1,8 @@
 ---
+import {
+  getCmsPlaceholderCopy,
+  getPublicationStatusFromCmsLabel,
+} from '../../lib/page-family-empty-chrome'
 import type { Locale } from '../../lib/navigation'
 
 interface Props {
@@ -8,10 +12,22 @@ interface Props {
 }
 
 const { locale, count = 3, class: className = '' } = Astro.props
-const typeLabels =
+const placeholder = getCmsPlaceholderCopy(locale)
+const statusLabel = getPublicationStatusFromCmsLabel(locale)
+const typeRows =
   locale === 'en'
-    ? ['Journal article', 'Conference paper', 'Book chapter']
-    : ['مقاله مجله', 'مقاله کنفرانس', 'فصل کتاب']
+    ? [
+        { label: 'Journal article', tone: 'journal' },
+        { label: 'Conference paper', tone: 'conference' },
+        { label: 'Book chapter', tone: 'chapter' },
+        { label: 'Technical report', tone: 'report' },
+      ]
+    : [
+        { label: 'مقاله مجله', tone: 'journal' },
+        { label: 'مقاله کنفرانس', tone: 'conference' },
+        { label: 'فصل کتاب', tone: 'chapter' },
+        { label: 'گزارش فنی', tone: 'report' },
+      ]
 const rows = Array.from({ length: count }, (_, index) => index)
 ---
 
@@ -21,41 +37,61 @@ const rows = Array.from({ length: count }, (_, index) => index)
   aria-hidden="true"
 >
   {
-    rows.map((index) => (
-      <div class="pf-index-bibliography__row">
-        <span class="pf-index-bibliography__icon">
-          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-            <path
-              d="M8 4h8a2 2 0 0 1 2 2v14l-4-2-4 2-4-2-4 2V6a2 2 0 0 1 2-2Z"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.5"
-              stroke-linejoin="round"
-            />
-            <path
-              d="M10 8h4M10 12h4"
-              stroke="currentColor"
-              stroke-width="1.5"
-              stroke-linecap="round"
-            />
-          </svg>
-        </span>
-        <div class="pf-index-bibliography__body">
-          <span class="pf-index-bibliography__type">
-            {typeLabels[index % typeLabels.length]}
+    rows.map((index) => {
+      const type = typeRows[index % typeRows.length]!
+      return (
+        <div class="pf-index-bibliography__row">
+          <span class="pf-index-bibliography__icon">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path
+                d="M8 4h8a2 2 0 0 1 2 2v14l-4-2-4 2-4-2-4 2V6a2 2 0 0 1 2-2Z"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M10 8h4M10 12h4"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+              />
+            </svg>
           </span>
-          <span class="pf-index-empty__line pf-index-empty__line--medium" />
-          <span class="pf-index-empty__line pf-index-empty__line--short" />
+          <div class="pf-index-bibliography__body">
+            <div class="pf-index-bibliography__meta">
+              <span
+                class={[
+                  'pf-index-bibliography__type',
+                  `pf-index-bibliography__type--${type.tone}`,
+                ].join(' ')}
+              >
+                {type.label}
+              </span>
+              <span class="pf-index-bibliography__status">{statusLabel}</span>
+            </div>
+            <p class="pf-index-bibliography__title">{placeholder}</p>
+            <span class="pf-index-empty__line pf-index-empty__line--medium" />
+            <span class="pf-index-empty__line pf-index-empty__line--short" />
+          </div>
+          <div class="pf-index-bibliography__actions">
+            <button
+              type="button"
+              class="pf-index-bibliography__action"
+              disabled
+            >
+              {locale === 'en' ? 'Details' : 'جزئیات'}
+            </button>
+            <button
+              type="button"
+              class="pf-index-bibliography__action"
+              disabled
+            >
+              {locale === 'en' ? 'Available files' : 'فایل‌های موجود'}
+            </button>
+          </div>
         </div>
-        <div class="pf-index-bibliography__actions">
-          <button type="button" class="pf-index-bibliography__action" disabled>
-            {locale === 'en' ? 'Details' : 'جزئیات'}
-          </button>
-          <button type="button" class="pf-index-bibliography__action" disabled>
-            {locale === 'en' ? 'Available files' : 'فایل‌های موجود'}
-          </button>
-        </div>
-      </div>
-    ))
+      )
+    })
   }
 </div>

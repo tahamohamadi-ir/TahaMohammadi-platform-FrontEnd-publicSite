@@ -1,5 +1,5 @@
 ---
-import { getCmsPlaceholderCopy } from '../../lib/page-family-empty-chrome'
+import PageFamilyBibliographyRowPlaceholder from './PageFamilyBibliographyRowPlaceholder.astro'
 import { localePath, type Locale } from '../../lib/navigation'
 
 interface Props {
@@ -8,13 +8,14 @@ interface Props {
   class?: string
 }
 
-const { locale, count = 2, class: className = '' } = Astro.props
-const placeholder = getCmsPlaceholderCopy(locale)
+const { locale, count = 4, class: className = '' } = Astro.props
 const sectionLabel =
   locale === 'en' ? 'Selected publications' : 'انتشارات منتخب'
 const viewAllLabel = locale === 'en' ? 'View all publications' : 'همهٔ انتشارات'
-const statusLabel = locale === 'en' ? 'Status pending' : 'وضعیت در انتظار'
-const cards = Array.from({ length: count }, (_, index) => index)
+const notice =
+  locale === 'en'
+    ? 'Some items may be in draft or under review. Publication status is shown from the approved CMS record.'
+    : 'برخی موارد ممکن است پیش‌نویس یا در حال داوری باشند. وضعیت انتشار از رکورد تأییدشده CMS نمایش داده می‌شود.'
 ---
 
 <section
@@ -31,21 +32,30 @@ const cards = Array.from({ length: count }, (_, index) => index)
       href={localePath(locale, 'publications')}
     >
       {viewAllLabel}
+      <span aria-hidden="true"> →</span>
     </a>
   </div>
 
-  <ul class="pf-index-selected-pubs__list">
-    {
-      cards.map(() => (
-        <li>
-          <article class="pf-index-selected-pubs__card" aria-hidden="true">
-            <span class="pf-index-selected-pubs__badge">{statusLabel}</span>
-            <p class="pf-index-selected-pubs__title-line">{placeholder}</p>
-            <span class="pf-index-empty__line pf-index-empty__line--medium" />
-            <span class="pf-index-empty__line" />
-          </article>
-        </li>
-      ))
-    }
-  </ul>
+  <PageFamilyBibliographyRowPlaceholder locale={locale} count={count} />
+
+  <p class="pf-index-selected-pubs__notice">
+    <span class="pf-index-selected-pubs__notice-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" focusable="false">
+        <circle
+          cx="12"
+          cy="12"
+          r="8"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"></circle>
+        <path
+          d="M12 10.5V16M12 7.8v.2"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"></path>
+      </svg>
+    </span>
+    <span>{notice}</span>
+  </p>
 </section>

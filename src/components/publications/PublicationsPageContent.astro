@@ -1,7 +1,7 @@
 ---
 import CollectionIndexTemplate from '../templates/CollectionIndexTemplate.astro'
 import PageFamilyIndexHero from '../page-family/PageFamilyIndexHero.astro'
-import PageFamilyBibliographyRowPlaceholder from '../page-family/PageFamilyBibliographyRowPlaceholder.astro'
+import PageFamilySubNavShell from '../page-family/PageFamilySubNavShell.astro'
 import PageFamilyPublicationsSidebarShell from '../page-family/PageFamilyPublicationsSidebarShell.astro'
 import PageFamilySelectedPublicationsShell from '../page-family/PageFamilySelectedPublicationsShell.astro'
 import PageFamilyCollaborateBandShell from '../page-family/PageFamilyCollaborateBandShell.astro'
@@ -11,6 +11,7 @@ import {
   publicationsRouteTitle,
   type PublicationsIndexModel,
 } from '../../lib/publications-content'
+import { getResearchSubNavLabels } from '../../lib/page-family-empty-chrome'
 import { localePath, type Locale } from '../../lib/navigation'
 
 interface Props {
@@ -20,6 +21,8 @@ interface Props {
 
 const { locale, model } = Astro.props
 const emptyCopy = getPublicationsUnavailableCopy(locale)
+const subNavLabels = getResearchSubNavLabels(locale)
+const tabRegion = locale === 'en' ? 'Research sections' : 'بخش‌های پژوهش'
 const filterLabels =
   locale === 'en'
     ? {
@@ -54,38 +57,46 @@ const filterLabels =
         atmosphere
       />
 
-      <div
-        slot="filters"
-        class="publications-page__filters pf-index-empty__filters"
-        role="group"
-        aria-label={filterLabels.region}
-        aria-disabled="true"
-      >
-        <p class="publications-page__filters-active">
-          {filterLabels.allOutputs}
-        </p>
-        <div class="publications-page__filters-controls">
-          <button type="button" class="pf-index-empty__filter-chip" disabled>
-            {filterLabels.journal}
-          </button>
-          <button type="button" class="pf-index-empty__filter-chip" disabled>
-            {filterLabels.conference}
-          </button>
-          <button type="button" class="pf-index-empty__filter-chip" disabled>
-            {filterLabels.chapter}
-          </button>
-          <button type="button" class="pf-index-empty__filter-chip" disabled>
-            {filterLabels.report}
-          </button>
-        </div>
-        <input
-          type="search"
-          class="publications-page__search pf-index-empty__search"
-          placeholder={filterLabels.search}
-          disabled
-          aria-hidden="true"
-          tabindex="-1"
+      <div slot="filters" class="publications-page__nav-stack">
+        <PageFamilySubNavShell
+          locale={locale}
+          labels={subNavLabels}
+          regionLabel={tabRegion}
+          activeIndex={2}
+          class="publications-page__tabs"
         />
+        <div
+          class="publications-page__filters pf-index-empty__filters"
+          role="group"
+          aria-label={filterLabels.region}
+          aria-disabled="true"
+        >
+          <p class="publications-page__filters-active">
+            {filterLabels.allOutputs}
+          </p>
+          <div class="publications-page__filters-controls">
+            <button type="button" class="pf-index-empty__filter-chip" disabled>
+              {filterLabels.journal}
+            </button>
+            <button type="button" class="pf-index-empty__filter-chip" disabled>
+              {filterLabels.conference}
+            </button>
+            <button type="button" class="pf-index-empty__filter-chip" disabled>
+              {filterLabels.chapter}
+            </button>
+            <button type="button" class="pf-index-empty__filter-chip" disabled>
+              {filterLabels.report}
+            </button>
+          </div>
+          <input
+            type="search"
+            class="publications-page__search pf-index-empty__search"
+            placeholder={filterLabels.search}
+            disabled
+            aria-hidden="true"
+            tabindex="-1"
+          />
+        </div>
       </div>
 
       <div
@@ -95,8 +106,7 @@ const filterLabels =
         <PageFamilyPublicationsSidebarShell locale={locale} />
 
         <div class="publications-page__main">
-          <PageFamilySelectedPublicationsShell locale={locale} />
-          <PageFamilyBibliographyRowPlaceholder locale={locale} count={3} />
+          <PageFamilySelectedPublicationsShell locale={locale} count={4} />
           <PageFamilyCollaborateBandShell
             locale={locale}
             variant="collaborate-only"

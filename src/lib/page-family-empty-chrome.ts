@@ -434,6 +434,44 @@ export function getCmsPlaceholderCopy(locale: Locale): string {
     : 'در انتظار تأیید محتوای CMS'
 }
 
+/** Honest CMS-record slot label — not invented contact or publication values. */
+export function getApprovedCmsRecordLabel(locale: Locale): string {
+  return locale === 'en' ? 'From approved CMS record' : 'از رکورد تأییدشده CMS'
+}
+
+/** Honest publication-status pill label — not invented CMS status values. */
+export function getPublicationStatusFromCmsLabel(locale: Locale): string {
+  return locale === 'en'
+    ? 'Publication status from approved CMS record'
+    : 'وضعیت انتشار از رکورد تأییدشده CMS'
+}
+
+/** Structural constellation headline (PF-05) — UI chrome, not CMS copy. */
+export function getResearchConstellationHeadline(locale: Locale): string {
+  return locale === 'en'
+    ? 'Interconnected themes. Unified by human impact.'
+    : 'موضوعات به‌هم‌پیوسته. یکپارچه با اثر انسانی.'
+}
+
+/** Structural contact topic-band heading (PF-08) — UI chrome, not CMS copy. */
+export function getContactTopicSectionLabel(locale: Locale): string {
+  return locale === 'en'
+    ? "I'd like to discuss"
+    : 'مایلم دربارهٔ این موضوع گفتگو کنم'
+}
+
+/** Structural contact form privacy note (PF-08) — UI chrome, not CMS copy. */
+export function getContactFormPrivacyNote(locale: Locale): string {
+  return locale === 'en'
+    ? 'Messages are emailed directly and are not stored in the site database.'
+    : 'پیام‌ها مستقیم ایمیل می‌شوند و در پایگاه‌دادهٔ سایت ذخیره نمی‌شوند.'
+}
+
+/** Structural anti-spam ready label (PF-08) — UI chrome, not live captcha state. */
+export function getContactAntiSpamReadyLabel(locale: Locale): string {
+  return locale === 'en' ? 'Ready' : 'آماده'
+}
+
 /** Structural About sub-navigation tabs — UI chrome, not CMS sections. */
 export function getAboutSubNavLabels(locale: Locale): readonly string[] {
   return locale === 'en'
@@ -455,6 +493,19 @@ export function getAboutSubNavLabels(locale: Locale): readonly string[] {
         'انتشارات',
         'گواهینامه‌ها',
       ]
+}
+
+/** Structural Research/Publications sub-navigation tabs — UI chrome, not CMS sections. */
+export function getResearchSubNavLabels(locale: Locale): readonly string[] {
+  return locale === 'en'
+    ? [
+        'Overview',
+        'Research directions',
+        'Publications',
+        'Statement',
+        'Collaborators',
+      ]
+    : ['نمای کلی', 'جهت‌های پژوهشی', 'انتشارات', 'بیانیه', 'همکاران']
 }
 
 /** Structural How I Work pillars (PF-07) — UI chrome, not CMS copy. */
@@ -850,8 +901,14 @@ export function getResearchDirectionActionLabels(locale: Locale): {
   related: string
 } {
   return locale === 'en'
-    ? { status: 'Publication status', related: 'Related records' }
-    : { status: 'وضعیت انتشار', related: 'رکوردهای مرتبط' }
+    ? {
+        status: getPublicationStatusFromCmsLabel('en'),
+        related: 'Related records',
+      }
+    : {
+        status: getPublicationStatusFromCmsLabel('fa'),
+        related: 'رکوردهای مرتبط',
+      }
 }
 
 /** Structural theme chip labels for explore band (PF-03) — UI chrome, not CMS records. */

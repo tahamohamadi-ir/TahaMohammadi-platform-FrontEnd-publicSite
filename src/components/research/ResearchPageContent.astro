@@ -1,17 +1,18 @@
 ---
 import CollectionIndexTemplate from '../templates/CollectionIndexTemplate.astro'
 import PageFamilyIndexHero from '../page-family/PageFamilyIndexHero.astro'
+import PageFamilySubNavShell from '../page-family/PageFamilySubNavShell.astro'
 import PageFamilyConstellationShell from '../page-family/PageFamilyConstellationShell.astro'
 import PageFamilyResearchFitShell from '../page-family/PageFamilyResearchFitShell.astro'
 import PageFamilyResearchDirectionsShell from '../page-family/PageFamilyResearchDirectionsShell.astro'
 import PageFamilySelectedPublicationsShell from '../page-family/PageFamilySelectedPublicationsShell.astro'
-import PageFamilyBibliographyRowPlaceholder from '../page-family/PageFamilyBibliographyRowPlaceholder.astro'
 import PageFamilyCollaborateBandShell from '../page-family/PageFamilyCollaborateBandShell.astro'
 import ContentState from '../state/ContentState.astro'
 import Link from '../ui/Link.astro'
 import {
   getGatewayRoleLine,
   getCmsPlaceholderCopy,
+  getResearchSubNavLabels,
 } from '../../lib/page-family-empty-chrome'
 import {
   getResearchEmptyTopicsCopy,
@@ -32,24 +33,8 @@ const routeTitle = getResearchRouteTitle(locale)
 const emptyCopy = getResearchUnavailableCopy(locale)
 const roleLine = getGatewayRoleLine(locale)
 const cmsPlaceholder = getCmsPlaceholderCopy(locale)
-const tabLabels =
-  locale === 'en'
-    ? {
-        region: 'Research sections',
-        overview: 'Overview',
-        directions: 'Research directions',
-        publications: 'Publications',
-        statement: 'Statement',
-        collaborators: 'Collaborators',
-      }
-    : {
-        region: 'بخش‌های پژوهش',
-        overview: 'نمای کلی',
-        directions: 'جهت‌های پژوهشی',
-        publications: 'انتشارات',
-        statement: 'بیانیه',
-        collaborators: 'همکاران',
-      }
+const subNavLabels = getResearchSubNavLabels(locale)
+const tabRegion = locale === 'en' ? 'Research sections' : 'بخش‌های پژوهش'
 ---
 
 {
@@ -66,55 +51,14 @@ const tabLabels =
         atmosphere
       />
 
-      <div
+      <PageFamilySubNavShell
         slot="filters"
-        class="research-page__tabs pf-index-empty__filters"
-        role="tablist"
-        aria-label={tabLabels.region}
-        aria-disabled="true"
-      >
-        <button
-          type="button"
-          class="pf-index-empty__filter-chip pf-index-empty__filter-chip--active"
-          role="tab"
-          aria-selected="true"
-          disabled
-        >
-          {tabLabels.overview}
-        </button>
-        <button
-          type="button"
-          class="pf-index-empty__filter-chip"
-          role="tab"
-          disabled
-        >
-          {tabLabels.directions}
-        </button>
-        <button
-          type="button"
-          class="pf-index-empty__filter-chip"
-          role="tab"
-          disabled
-        >
-          {tabLabels.publications}
-        </button>
-        <button
-          type="button"
-          class="pf-index-empty__filter-chip"
-          role="tab"
-          disabled
-        >
-          {tabLabels.statement}
-        </button>
-        <button
-          type="button"
-          class="pf-index-empty__filter-chip"
-          role="tab"
-          disabled
-        >
-          {tabLabels.collaborators}
-        </button>
-      </div>
+        locale={locale}
+        labels={subNavLabels}
+        regionLabel={tabRegion}
+        activeIndex={0}
+        class="research-page__tabs"
+      />
 
       <div slot="records" class="research-page__sections pf-index-empty__shell">
         <section class="research-page__band research-page__band--constellation">
@@ -130,8 +74,7 @@ const tabLabels =
         </section>
 
         <section class="research-page__band research-page__band--publications">
-          <PageFamilySelectedPublicationsShell locale={locale} count={3} />
-          <PageFamilyBibliographyRowPlaceholder locale={locale} count={3} />
+          <PageFamilySelectedPublicationsShell locale={locale} count={4} />
         </section>
 
         <ContentState
