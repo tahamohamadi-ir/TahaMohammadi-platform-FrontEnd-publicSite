@@ -5180,6 +5180,10 @@ html[data-theme='dark'] .creative-page--detail-shell {
 
 .publications-page__nav-stack {
   display: grid;
+  /* minmax(0, 1fr) keeps the single-column track at container width so the
+     sub-nav scrolls internally and the filter row wraps instead of stretching
+     the page (PUBLIC-270 @390 overflow, 2026-09-04). */
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-4);
 }
 
@@ -5354,4 +5358,13 @@ html[data-theme='dark'] .creative-page--detail-shell {
 .research-page__tabs.pf-index-subnav,
 .publications-page__tabs.pf-index-subnav {
   margin-block-end: var(--space-2);
+}
+
+/* Column-direction filters at ≤479px must not wrap into side-by-side flex
+   columns (search 250px + chip columns stretched the page to 927px @390,
+   PUBLIC-270 capture predicate, 2026-09-04). */
+@media (max-width: 479px) {
+  .publications-page__nav-stack .pf-index-empty__filters {
+    flex-wrap: nowrap;
+  }
 }
