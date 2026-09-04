@@ -578,7 +578,11 @@ export function getContactTopicCards(
   return locale === 'en'
     ? [
         { title: 'PhD / Research', tone: 'phd', description: placeholder },
-        { title: 'Technical work', tone: 'technical', description: placeholder },
+        {
+          title: 'Technical work',
+          tone: 'technical',
+          description: placeholder,
+        },
         { title: 'Creative work', tone: 'creative', description: placeholder },
         { title: 'Other', tone: 'other', description: placeholder },
       ]
@@ -621,9 +625,13 @@ export type ConstellationLegendItem = {
   tone: 'brand' | 'research' | 'context' | 'signature' | 'ink'
 }
 
+export type ConstellationNodeIcon =
+  'center' | 'systems' | 'health' | 'comms' | 'nlp' | 'data'
+
 export type ConstellationDiagramNode = {
   label: string
   tone: ConstellationLegendItem['tone']
+  icon: ConstellationNodeIcon
   cx: number
   cy: number
 }
@@ -655,20 +663,92 @@ export function getResearchConstellationNodes(
 ): readonly ConstellationDiagramNode[] {
   return locale === 'en'
     ? [
-        { label: 'Human-Centered AI', tone: 'brand', cx: 200, cy: 200 },
-        { label: 'Systems Thinking', tone: 'research', cx: 200, cy: 72 },
-        { label: 'Digital Health', tone: 'context', cx: 318, cy: 132 },
-        { label: 'Fluid Communication', tone: 'signature', cx: 318, cy: 268 },
-        { label: 'Human NLP & Text-to-SQL', tone: 'ink', cx: 82, cy: 268 },
-        { label: 'Data Systems', tone: 'research', cx: 82, cy: 132 },
+        {
+          label: 'Human-Centered AI',
+          tone: 'brand',
+          icon: 'center',
+          cx: 200,
+          cy: 200,
+        },
+        {
+          label: 'Systems Thinking',
+          tone: 'research',
+          icon: 'systems',
+          cx: 200,
+          cy: 72,
+        },
+        {
+          label: 'Digital Health',
+          tone: 'context',
+          icon: 'health',
+          cx: 318,
+          cy: 132,
+        },
+        {
+          label: 'Visual Communication',
+          tone: 'signature',
+          icon: 'comms',
+          cx: 318,
+          cy: 268,
+        },
+        {
+          label: 'Persian NLP & Text-to-SQL',
+          tone: 'ink',
+          icon: 'nlp',
+          cx: 82,
+          cy: 268,
+        },
+        {
+          label: 'Data Systems',
+          tone: 'research',
+          icon: 'data',
+          cx: 82,
+          cy: 132,
+        },
       ]
     : [
-        { label: 'هوش مصنوعی انسان‌محور', tone: 'brand', cx: 200, cy: 200 },
-        { label: 'تفکر سیستمی', tone: 'research', cx: 200, cy: 72 },
-        { label: 'سلامت دیجیتال', tone: 'context', cx: 318, cy: 132 },
-        { label: 'ارتباط سیال', tone: 'signature', cx: 318, cy: 268 },
-        { label: 'NLP و Text-to-SQL', tone: 'ink', cx: 82, cy: 268 },
-        { label: 'سامانه‌های داده', tone: 'research', cx: 82, cy: 132 },
+        {
+          label: 'هوش مصنوعی انسان‌محور',
+          tone: 'brand',
+          icon: 'center',
+          cx: 200,
+          cy: 200,
+        },
+        {
+          label: 'تفکر سیستمی',
+          tone: 'research',
+          icon: 'systems',
+          cx: 200,
+          cy: 72,
+        },
+        {
+          label: 'سلامت دیجیتال',
+          tone: 'context',
+          icon: 'health',
+          cx: 318,
+          cy: 132,
+        },
+        {
+          label: 'ارتباط بصری',
+          tone: 'signature',
+          icon: 'comms',
+          cx: 318,
+          cy: 268,
+        },
+        {
+          label: 'NLP و Text-to-SQL',
+          tone: 'ink',
+          icon: 'nlp',
+          cx: 82,
+          cy: 268,
+        },
+        {
+          label: 'سامانه‌های داده',
+          tone: 'research',
+          icon: 'data',
+          cx: 82,
+          cy: 132,
+        },
       ]
 }
 
@@ -802,11 +882,95 @@ export function getTeachingBrowsePathsLabel(locale: Locale): string {
   return locale === 'en' ? 'Browse paths' : 'مرور مسیرها'
 }
 
+export type TeachingFeaturedPathStep = {
+  index: string
+  label: string
+}
+
 /** Structural featured-path step labels (PF-06) — UI chrome, not CMS records. */
 export function getTeachingFeaturedPathSteps(
   locale: Locale,
-): readonly string[] {
+): readonly TeachingFeaturedPathStep[] {
   return locale === 'en'
-    ? ['01 Foundations', '02 Deepen', '03 Apply', '04 Expand']
-    : ['۰۱ مبانی', '۰۲ تعمیق', '۰۳ کاربرد', '۰۴ گسترش']
+    ? [
+        { index: '01', label: 'Foundations' },
+        { index: '02', label: 'Deepen' },
+        { index: '03', label: 'Apply' },
+        { index: '04', label: 'Expand' },
+      ]
+    : [
+        { index: '۰۱', label: 'مبانی' },
+        { index: '۰۲', label: 'تعمیق' },
+        { index: '۰۳', label: 'کاربرد' },
+        { index: '۰۴', label: 'گسترش' },
+      ]
+}
+
+export type ProjectsEvidenceCard = {
+  title: string
+  tone: 'methods' | 'artifacts' | 'code' | 'docs'
+  description: string
+}
+
+/** Structural Evidence Available cards (PF-04) — UI chrome, not CMS records. */
+export function getProjectsEvidenceCards(
+  locale: Locale,
+): readonly ProjectsEvidenceCard[] {
+  return locale === 'en'
+    ? [
+        {
+          title: 'Methods',
+          tone: 'methods',
+          description: 'Approach, assumptions, and modeling methods.',
+        },
+        {
+          title: 'Artifacts',
+          tone: 'artifacts',
+          description: 'Diagrams, prototypes, and supporting assets.',
+        },
+        {
+          title: 'Code / Demo',
+          tone: 'code',
+          description: 'Source code and demos when disclosure is safe.',
+        },
+        {
+          title: 'Documentation',
+          tone: 'docs',
+          description: 'Papers, notes, and technical documentation.',
+        },
+      ]
+    : [
+        {
+          title: 'روش‌ها',
+          tone: 'methods',
+          description: 'رویکرد، مفروضات و روش‌های مدل‌سازی.',
+        },
+        {
+          title: 'آثار',
+          tone: 'artifacts',
+          description: 'نمودارها، نمونه‌ها و دارایی‌های پشتیبان.',
+        },
+        {
+          title: 'کد / دمو',
+          tone: 'code',
+          description: 'کد منبع و دمو هنگام مجاز بودن افشا.',
+        },
+        {
+          title: 'مستندات',
+          tone: 'docs',
+          description: 'مقالات، یادداشت‌ها و مستندات فنی.',
+        },
+      ]
+}
+
+/** Structural sanitized badge label (PF-04) — disclosure chrome, not CMS copy. */
+export function getProjectsSanitizedBadgeLabel(locale: Locale): string {
+  return locale === 'en' ? 'Sanitized' : 'پالایش‌شده'
+}
+
+/** Structural projects hero disclosure notice (PF-04) — UI chrome, not CMS copy. */
+export function getProjectsHeroNotice(locale: Locale): string {
+  return locale === 'en'
+    ? 'No sensitive or real operational data'
+    : 'بدون داده حساس یا عملیاتی واقعی'
 }

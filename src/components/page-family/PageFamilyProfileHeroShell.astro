@@ -36,7 +36,9 @@ const ctaLabels = getProfileHeroCtaLabels(locale)
 const displayName = title ?? shellCopy.brandName[locale]
 const displaySummary = summary ?? placeholder
 const portraitLabel =
-  locale === 'en' ? 'Portrait from approved CMS record' : 'پرتره از رکورد تأییدشده CMS'
+  locale === 'en'
+    ? 'Portrait from approved CMS record'
+    : 'پرتره از رکورد تأییدشده CMS'
 ---
 
 <section

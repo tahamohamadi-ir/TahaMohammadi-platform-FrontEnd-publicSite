@@ -20,12 +20,12 @@ Page components must not call raw endpoints directly. Domain adapters own respon
 
 Repeated chrome is owned by a single component each — change once, apply everywhere:
 
-| Primitive | Location | Consumed via |
-| --- | --- | --- |
-| Site footer | `src/components/Footer.astro` | `SiteLayout.astro` only (all locale routes) |
-| Primary/outline buttons | `src/components/ui/Button.astro` | Hero, collaborate bands, contact forms, page-family shells |
-| Collaborate band | `src/components/page-family/PageFamilyCollaborateBandShell.astro` | About, CV, Teaching, Publications empty states |
-| Sub-navigation tabs | `src/components/page-family/PageFamilySubNavShell.astro` | Page-family index shells (no inline tab markup in pages) |
+| Primitive               | Location                                                          | Consumed via                                               |
+| ----------------------- | ----------------------------------------------------------------- | ---------------------------------------------------------- |
+| Site footer             | `src/components/Footer.astro`                                     | `SiteLayout.astro` only (all locale routes)                |
+| Primary/outline buttons | `src/components/ui/Button.astro`                                  | Hero, collaborate bands, contact forms, page-family shells |
+| Collaborate band        | `src/components/page-family/PageFamilyCollaborateBandShell.astro` | About, CV, Teaching, Publications empty states             |
+| Sub-navigation tabs     | `src/components/page-family/PageFamilySubNavShell.astro`          | Page-family index shells (no inline tab markup in pages)   |
 
 Footer styles live in `src/styles/shell.css`. Page-family band styles live in `src/styles/page-families.css`. Do not duplicate footer HTML or button markup in page-family files.
 

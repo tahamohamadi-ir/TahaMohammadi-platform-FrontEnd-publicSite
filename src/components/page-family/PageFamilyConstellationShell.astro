@@ -3,6 +3,7 @@ import ThemePicture from '../media/ThemePicture.astro'
 import {
   getResearchConstellationLegend,
   getResearchConstellationNodes,
+  type ConstellationNodeIcon,
 } from '../../lib/page-family-empty-chrome'
 import { HOME_GRAPH_BACKPLATE_ASSETS } from '../../lib/media/promoted-media'
 import type { Locale } from '../../lib/navigation'
@@ -19,16 +20,25 @@ const centerNode = nodes[0]!
 const satelliteNodes = nodes.slice(1)
 const sectionLabel =
   locale === 'en' ? 'Research constellation' : 'صورت‌فلکی پژوهشی'
+
+const iconPaths: Record<ConstellationNodeIcon, string> = {
+  center: 'M12 4.5 14.5 14.5 12 12 9.5 14.5Z',
+  systems:
+    'M12 8.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 0 1 0-7Zm0-3.5v2.2M12 16.3V18.5M7.05 7.05l1.56 1.56M15.39 15.39l1.56 1.56M5.5 12H7.7M16.3 12H18.5M7.05 16.95l1.56-1.56M15.39 8.61l1.56-1.56',
+  health:
+    'M12 19s-5.5-3.6-5.5-8A3.5 3.5 0 0 1 12 7.8 3.5 3.5 0 0 1 17.5 11c0 4.4-5.5 8-5.5 8Z',
+  comms:
+    'M5 8.5h9.5a2 2 0 0 1 2 2V16H8.5L5 18.5V8.5Zm11.5 1.5H19a1.5 1.5 0 0 1 1.5 1.5v5.2L18 15h-1.5',
+  nlp: 'M7 8h10v2.5H13v5.5h-2V10.5H7V8Z',
+  data: 'M5 7.5c0-1.4 3.1-2.5 7-2.5s7 1.1 7 2.5-3.1 2.5-7 2.5-7-1.1-7-2.5Zm0 4.5c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5M5 12v4.5c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5V12',
+}
 ---
 
 <div
   class={['pf-index-constellation', className].filter(Boolean).join(' ')}
   data-visual-id="PageFamilyConstellationShell"
 >
-  <aside
-    class="pf-index-constellation__legend"
-    aria-label={sectionLabel}
-  >
+  <aside class="pf-index-constellation__legend" aria-label={sectionLabel}>
     <h2 class="pf-index-constellation__legend-title">{sectionLabel}</h2>
     <ul class="pf-index-constellation__legend-list">
       {
@@ -71,14 +81,12 @@ const sectionLabel =
           class="pf-index-constellation__orbit pf-index-constellation__orbit--outer"
           cx="200"
           cy="200"
-          r="128"
-        />
+          r="128"></circle>
         <circle
           class="pf-index-constellation__orbit pf-index-constellation__orbit--inner"
           cx="200"
           cy="200"
-          r="88"
-        />
+          r="88"></circle>
         {
           satelliteNodes.map((node) => (
             <line
@@ -91,30 +99,56 @@ const sectionLabel =
           ))
         }
         {
-          nodes.map((node, index) => (
-            <g>
-              <circle
-                class={[
-                  'pf-index-constellation__node-dot',
-                  index === 0 ? 'pf-index-constellation__node-dot--center' : '',
-                  `pf-index-constellation__node-dot--${node.tone}`,
-                ]
-                  .filter(Boolean)
-                  .join(' ')}
-                cx={node.cx}
-                cy={node.cy}
-                r={index === 0 ? 14 : 8}
-              />
-              <text
-                class="pf-index-constellation__node-label"
-                x={node.cx}
-                y={node.cy + (index === 0 ? 28 : 22)}
-                text-anchor="middle"
-              >
-                {node.label}
-              </text>
-            </g>
-          ))
+          nodes.map((node, index) => {
+            const radius = index === 0 ? 22 : 16
+            const iconSize = index === 0 ? 18 : 14
+            return (
+              <g>
+                <circle
+                  class={[
+                    'pf-index-constellation__node-dot',
+                    index === 0
+                      ? 'pf-index-constellation__node-dot--center'
+                      : '',
+                    `pf-index-constellation__node-dot--${node.tone}`,
+                  ]
+                    .filter(Boolean)
+                    .join(' ')}
+                  cx={node.cx}
+                  cy={node.cy}
+                  r={radius}
+                />
+                <g
+                  class="pf-index-constellation__node-icon"
+                  transform={`translate(${node.cx - iconSize / 2} ${node.cy - iconSize / 2})`}
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    width={iconSize}
+                    height={iconSize}
+                    aria-hidden="true"
+                  >
+                    <path
+                      d={iconPaths[node.icon]}
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.6"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </g>
+                <text
+                  class="pf-index-constellation__node-label"
+                  x={node.cx}
+                  y={node.cy + radius + 14}
+                  text-anchor="middle"
+                >
+                  {node.label}
+                </text>
+              </g>
+            )
+          })
         }
       </svg>
     </div>

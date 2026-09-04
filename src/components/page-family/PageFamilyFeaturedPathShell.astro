@@ -57,7 +57,10 @@ const placeholderCopy =
           <span class="pf-index-path__featured-action">{viewPathLabel} →</span>
           <ol class="pf-index-path__step-row">
             {pathSteps.map((step) => (
-              <li class="pf-index-path__step-pill">{step}</li>
+              <li class="pf-index-path__step-pill">
+                <span class="pf-index-path__step-index">{step.index}</span>
+                <span class="pf-index-path__step-label">{step.label}</span>
+              </li>
             ))}
           </ol>
         </div>

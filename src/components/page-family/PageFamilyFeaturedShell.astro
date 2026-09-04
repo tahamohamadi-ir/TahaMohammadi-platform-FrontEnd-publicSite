@@ -46,59 +46,57 @@ const copyFirst = family === 'writing' || family === 'projects'
       </h2>
 
       <div class="pf-index-featured__card" aria-hidden="true">
-        {
-          copyFirst ? (
-            <>
-              <div class="pf-index-featured__copy">
-                <p class="pf-index-featured__card-label">{cardLabel}</p>
-                <span class="pf-index-empty__line pf-index-empty__line--short" />
-                <span class="pf-index-empty__line pf-index-empty__line--medium" />
-                <span class="pf-index-empty__line" />
-                {family === 'projects' ? (
-                  <div class="pf-index-featured__tags">
-                    <span class="pf-index-empty__tag" />
-                    <span class="pf-index-empty__tag" />
-                    <span class="pf-index-empty__tag" />
-                    <span class="pf-index-empty__tag pf-index-empty__tag--accent" />
-                  </div>
-                ) : null}
-                {actionLabel ? (
-                  <span class="pf-index-featured__action">{actionLabel}</span>
-                ) : null}
-              </div>
-              <div class="pf-index-featured__media">
-                <PromotedPicture
-                  assetId={preview.assetId}
-                  mediaSlot={preview.mediaSlot}
-                  locale={locale}
-                  alt={decorativeAlt}
-                  imgClass="pf-index-featured__image"
-                />
-              </div>
-            </>
-          ) : (
-            <>
-              <div class="pf-index-featured__media">
-                <PromotedPicture
-                  assetId={preview.assetId}
-                  mediaSlot={preview.mediaSlot}
-                  locale={locale}
-                  alt={decorativeAlt}
-                  imgClass="pf-index-featured__image"
-                />
-              </div>
-              <div class="pf-index-featured__copy">
-                <p class="pf-index-featured__card-label">{cardLabel}</p>
-                <span class="pf-index-empty__line pf-index-empty__line--short" />
-                <span class="pf-index-empty__line pf-index-empty__line--medium" />
-                <span class="pf-index-empty__line" />
-                {actionLabel ? (
-                  <span class="pf-index-featured__action">{actionLabel}</span>
-                ) : null}
-              </div>
-            </>
-          )
-        }
+        {copyFirst ? (
+          <>
+            <div class="pf-index-featured__copy">
+              <p class="pf-index-featured__card-label">{cardLabel}</p>
+              <span class="pf-index-empty__line pf-index-empty__line--short" />
+              <span class="pf-index-empty__line pf-index-empty__line--medium" />
+              <span class="pf-index-empty__line" />
+              {family === 'projects' ? (
+                <div class="pf-index-featured__tags">
+                  <span class="pf-index-empty__tag" />
+                  <span class="pf-index-empty__tag" />
+                  <span class="pf-index-empty__tag" />
+                  <span class="pf-index-empty__tag pf-index-empty__tag--accent" />
+                </div>
+              ) : null}
+              {actionLabel ? (
+                <span class="pf-index-featured__action">{actionLabel}</span>
+              ) : null}
+            </div>
+            <div class="pf-index-featured__media">
+              <PromotedPicture
+                assetId={preview.assetId}
+                mediaSlot={preview.mediaSlot}
+                locale={locale}
+                alt={decorativeAlt}
+                imgClass="pf-index-featured__image"
+              />
+            </div>
+          </>
+        ) : (
+          <>
+            <div class="pf-index-featured__media">
+              <PromotedPicture
+                assetId={preview.assetId}
+                mediaSlot={preview.mediaSlot}
+                locale={locale}
+                alt={decorativeAlt}
+                imgClass="pf-index-featured__image"
+              />
+            </div>
+            <div class="pf-index-featured__copy">
+              <p class="pf-index-featured__card-label">{cardLabel}</p>
+              <span class="pf-index-empty__line pf-index-empty__line--short" />
+              <span class="pf-index-empty__line pf-index-empty__line--medium" />
+              <span class="pf-index-empty__line" />
+              {actionLabel ? (
+                <span class="pf-index-featured__action">{actionLabel}</span>
+              ) : null}
+            </div>
+          </>
+        )}
       </div>
     </section>
   ) : null

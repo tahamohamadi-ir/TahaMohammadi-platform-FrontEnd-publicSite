@@ -19,6 +19,7 @@ interface Props {
   title: string
   summary?: string
   roleLine?: string
+  notice?: string
   atmosphere?: boolean
   portal?: boolean
   browseCtaLabel?: string
@@ -32,6 +33,7 @@ const {
   title,
   summary,
   roleLine,
+  notice,
   atmosphere = false,
   portal = false,
   browseCtaLabel,
@@ -92,6 +94,31 @@ const decorativeAlt = getPageFamilyDecorativeAlt(locale, family)
       class="pf-index-hero__lead"
     />
     {roleLine ? <p class="pf-index-hero__role">{roleLine}</p> : null}
+    {
+      notice ? (
+        <p class="pf-index-hero__notice">
+          <span class="pf-index-hero__notice-icon" aria-hidden="true">
+            <svg viewBox="0 0 16 16" focusable="false">
+              <path
+                d="M8 1.5 12.5 3.5v4.2c0 2.7-1.8 4.8-4.5 5.8-2.7-1-4.5-3.1-4.5-5.8V3.5L8 1.5Z"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.2"
+              />
+              <path
+                d="M5.8 8.1 7.2 9.5 10.2 6.4"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </span>
+          <span>{notice}</span>
+        </p>
+      ) : null
+    }
     {
       browseCtaLabel ? (
         <Button

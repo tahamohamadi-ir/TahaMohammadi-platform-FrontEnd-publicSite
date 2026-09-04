@@ -339,7 +339,8 @@ html[data-theme='light'] .site-footer {
 
 html[data-theme='dark'] .site-footer {
   background: var(--gradient-section-surface-dark);
-  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--color-accent-gold) 8%, transparent);
+  box-shadow: inset 0 1px 0
+    color-mix(in srgb, var(--color-accent-gold) 8%, transparent);
 }
 
 @media (prefers-color-scheme: light) {
@@ -351,7 +352,8 @@ html[data-theme='dark'] .site-footer {
 @media (prefers-color-scheme: dark) {
   html:not([data-theme]) .site-footer {
     background: var(--gradient-section-surface-dark);
-    box-shadow: inset 0 1px 0 color-mix(in srgb, var(--color-accent-gold) 8%, transparent);
+    box-shadow: inset 0 1px 0
+      color-mix(in srgb, var(--color-accent-gold) 8%, transparent);
   }
 }
 

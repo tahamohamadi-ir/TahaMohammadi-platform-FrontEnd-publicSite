@@ -15,8 +15,7 @@ const { locale, class: className = '' } = Astro.props
 const placeholder = getCmsPlaceholderCopy(locale)
 const rows = getResearchDirectionRows(locale)
 const actions = getResearchDirectionActionLabels(locale)
-const sectionLabel =
-  locale === 'en' ? 'Research directions' : 'جهت‌های پژوهشی'
+const sectionLabel = locale === 'en' ? 'Research directions' : 'جهت‌های پژوهشی'
 ---
 
 <section
@@ -24,7 +23,10 @@ const sectionLabel =
   data-visual-id="PageFamilyResearchDirectionsShell"
   aria-labelledby="pf-research-directions-title"
 >
-  <h2 id="pf-research-directions-title" class="pf-index-research-directions__title">
+  <h2
+    id="pf-research-directions-title"
+    class="pf-index-research-directions__title"
+  >
     {sectionLabel}
   </h2>
 

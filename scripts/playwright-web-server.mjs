@@ -41,7 +41,8 @@ function runBuild() {
   const result = spawnSync(npm, ['run', 'build', '--silent'], {
     cwd: repositoryRoot,
     stdio: 'inherit',
-    shell: false,
+    // Windows: spawnSync('npm.cmd', …, { shell: false }) often returns EINVAL.
+    shell: process.platform === 'win32',
   })
 
   if (result.error) {

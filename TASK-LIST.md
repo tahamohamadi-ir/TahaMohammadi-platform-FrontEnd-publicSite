@@ -25,6 +25,8 @@ Status: `[x]` done, `[ ]` open, `[~]` in progress.
 
 ## PUB-2 — API and routes
 
+> **Independent verification 2026-09-02:** PUBLIC-100/110/120 re-verified against their done-when criteria (client published-only gate, fa/en route helpers + canonical/hreflang, env schema + dev proxy) — lint, format:check, vitest 244/244, build, validate:design, validate:seo all pass. Central board synced.
+
 - [x] PS-05 OpenAPI accepted; client generation unblocked.
 - [x] **PUBLIC-090** Generate types from accepted public OpenAPI hash.
 - [x] **PUBLIC-100** Typed client; enforce published-only gate on reads.
@@ -32,6 +34,8 @@ Status: `[x]` done, `[ ]` open, `[~]` in progress.
 - [x] **PUBLIC-120** Env schema + dev proxy to backend (`LOCAL-DEVELOPMENT.md`).
 
 ## PUB-3 — Design system and atlas
+
+> **Independent verification 2026-09-02:** PUBLIC-140 (24/24 primitives vs pinned authority snapshot), PUBLIC-150 (shell + a11y crawl), PUBLIC-160 (6/6 templates), PUBLIC-170 (prod build excludes `/_design/`), PUBLIC-180 (state components, 15 behavior tests) — all VERIFIED; hygiene: `npm run format` applied to 21 drifted files, format:check green.
 
 - [x] **PUBLIC-130** Pin and validate semantic tokens from `agent-kit/tokens.json`; complete primitive/semantic/type/motion/layout/component projection and portable snapshot validate locally and against central authority.
 - [x] **PUBLIC-140** Primitives per `components.json` (24 components). Evidence: Vitest `public-140`, design contract, Atlas gallery on `main`.
@@ -46,7 +50,7 @@ Status: `[x]` done, `[ ]` open, `[~]` in progress.
 
 **After `PUBLIC-190` PASS (owner evidence only):** unfreezes visual acceptance for `PUBLIC-201` through `PUBLIC-221` (routes already implemented); allows `PUBLIC-350` release-evidence `ready` evaluation to proceed past owner-acceptance blocker; enables coordination R4 page-family adoption checklist and R8 quality closure sign-off per `docs/quality/PUBLIC-350-RELEASE-EVIDENCE.md`. Does **not** auto-complete PF-02 detail (still needs published API slug or honest preview shell), staging smoke (`PUBLIC-320`), or production telemetry (`PUBLIC-290`).
 
-- [~] **PUBLIC-190** Home `/{locale}/` — **structure complete; visual acceptance open**. PF empty-state chrome + Path A @ `dd515a0`; compare **39/48** @ `c14508a`. Coordination remediation pack: `Docs/10-tracking/PUBLIC-190-asset-prompts/` (owner regenerate decorative masters), `PUBLIC-190-VISUAL-REMEDIATION-PLAN.md`, `PUBLIC-190-IMPLEMENTATION-REQUIREMENTS.md`. **Open implementation phases:** Phase 0 asset drop-in after owner handback → per-PF CSS/shell fidelity → CMS API wiring when published. Independent QA and owner approval remain required — **do not mark PASS**.
+- [~] **PUBLIC-190** Home `/{locale}/` — **structure complete; visual acceptance open**. PF empty-state chrome + Path A @ `dd515a0`; compare **39/48** @ `c14508a`. Coordination remediation pack: `Docs/10-tracking/PUBLIC-190-asset-prompts/` (owner regenerate decorative masters), `PUBLIC-190-VISUAL-REMEDIATION-PLAN.md`, `PUBLIC-190-IMPLEMENTATION-REQUIREMENTS.md`. **This pass:** PF-04 Evidence Available grid + sanitized row badge + hero notice; PF-05 constellation node icons; PF-06 featured-path step chrome; PF-07 How I Work / Skills SVG icons; PF-08 dark gold contact title; FA home publications slot parity. **Open:** owner asset handback, CMS Category A, PF-02 route, manual compare. Independent QA and owner approval remain required — **do not mark PASS**.
 - [x] **PUBLIC-200** About — profile sections; fetch only `/api/profiles/{locale}/about`. Unavailable ContentState when unpublished; anchor sections when API returns published profile.
 - [~] **PUBLIC-201** Research + publications indexes and details — implemented; frozen pending visual acceptance. Evidence: `public-201.behavior.test.ts`, `public-201.content.test.ts`, routes `/{locale}/research/`, `/{locale}/publications/`.
 - [~] **PUBLIC-210** Projects index + detail; sanitized media only — implemented; frozen pending visual acceptance. Evidence: `public-210.behavior.test.ts`, `public-210.content.test.ts`, routes `/{locale}/projects/`.

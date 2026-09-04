@@ -12,8 +12,7 @@ const { locale, count = 2, class: className = '' } = Astro.props
 const placeholder = getCmsPlaceholderCopy(locale)
 const sectionLabel =
   locale === 'en' ? 'Selected publications' : 'انتشارات منتخب'
-const viewAllLabel =
-  locale === 'en' ? 'View all publications' : 'همهٔ انتشارات'
+const viewAllLabel = locale === 'en' ? 'View all publications' : 'همهٔ انتشارات'
 const statusLabel = locale === 'en' ? 'Status pending' : 'وضعیت در انتظار'
 const cards = Array.from({ length: count }, (_, index) => index)
 ---

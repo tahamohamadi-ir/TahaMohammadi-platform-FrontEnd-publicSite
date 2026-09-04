@@ -108,7 +108,9 @@
 
 .gw__orbital-glow {
   fill: var(--color-brand);
-  filter: drop-shadow(0 0 0.45rem color-mix(in srgb, var(--color-brand) 80%, transparent));
+  filter: drop-shadow(
+    0 0 0.45rem color-mix(in srgb, var(--color-brand) 80%, transparent)
+  );
 }
 
 .gw__portal .theme-picture,
@@ -204,11 +206,15 @@
 @keyframes gw-orbital-pulse {
   from {
     opacity: 0.55;
-    filter: drop-shadow(0 0 0.25rem color-mix(in srgb, var(--color-brand) 55%, transparent));
+    filter: drop-shadow(
+      0 0 0.25rem color-mix(in srgb, var(--color-brand) 55%, transparent)
+    );
   }
 
   to {
     opacity: 1;
-    filter: drop-shadow(0 0 0.75rem color-mix(in srgb, var(--color-brand) 90%, transparent));
+    filter: drop-shadow(
+      0 0 0.75rem color-mix(in srgb, var(--color-brand) 90%, transparent)
+    );
   }
 }

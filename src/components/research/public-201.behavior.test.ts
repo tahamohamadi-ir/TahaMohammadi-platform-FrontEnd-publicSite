@@ -34,9 +34,7 @@ describe('PUBLIC-201 research pages', () => {
     expect(html).toMatch(/pf-index-constellation__legend/)
     expect(html).toMatch(/pf-index-constellation__svg/)
     expect(html).toMatch(/data-visual-id="PageFamilyResearchFitShell"/)
-    expect(html).toMatch(
-      /data-visual-id="PageFamilyResearchDirectionsShell"/,
-    )
+    expect(html).toMatch(/data-visual-id="PageFamilyResearchDirectionsShell"/)
     expect(html).toMatch(/data-visual-id="PageFamilySelectedPublicationsShell"/)
     expect(html).toMatch(
       /data-visual-id="PageFamilyBibliographyRowPlaceholder"/,
