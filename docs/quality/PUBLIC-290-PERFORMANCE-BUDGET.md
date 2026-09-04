@@ -55,10 +55,12 @@ Loopback static preview yields much lower LCP than production field data is expe
 
 ## Font preload verification (PUBLIC-050)
 
-| Locale | Preloaded WOFF2 (body + display)                                                     | `@font-face` swap            | Probe                                       |
-| ------ | ------------------------------------------------------------------------------------ | ---------------------------- | ------------------------------------------- |
-| EN     | `/fonts/inter/InterVariable.woff2`, `/fonts/newsreader/Newsreader-Variable.woff2`    | yes (`src/styles/fonts.css`) | Playwright `@performance` — assets HTTP 200 |
-| FA     | `/fonts/vazirmatn/Vazirmatn-Variable.woff2`, `/fonts/estedad/Estedad-Variable.woff2` | yes (`src/styles/fonts.css`) | Playwright `@performance` — assets HTTP 200 |
+| Locale | Preloaded WOFF2 (body + display)                                                                   | `@font-face` swap            | Probe                                       |
+| ------ | -------------------------------------------------------------------------------------------------- | ---------------------------- | ------------------------------------------- |
+| EN     | `/fonts/inter/InterVariable-latin.woff2`, `/fonts/newsreader/Newsreader-Variable-latin.woff2`      | yes (`src/styles/fonts.css`) | Playwright `@performance` — assets HTTP 200 |
+| FA     | `/fonts/vazirmatn/Vazirmatn-Variable-arabic.woff2`, `/fonts/estedad/Estedad-Variable-arabic.woff2` | yes (`src/styles/fonts.css`) | Playwright `@performance` — assets HTTP 200 |
+
+PS-10 subsets: latin/arabic splits with unicode-range faces (full binaries remain as fallback); Latin glyphs on FA pages load the Vazirmatn/Estedad latin subsets on demand. Coverage proofs: `tests/fixtures/fonts/subset-coverage.json`.
 
 Manifest and SHA-256: `public/fonts/MANIFEST.md`.
 

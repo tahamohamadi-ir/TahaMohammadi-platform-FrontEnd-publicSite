@@ -1,0 +1,100 @@
+{
+  "generatedBy": "pyftsubset (fonttools 4.64.0) --flavor=woff2 --layout-features=*",
+  "note": "U+200E/U+200F bidi controls are absent from the upstream Inter binary too (default-ignorable: no tofu); full binaries remain as unicode-range-less fallback faces.",
+  "files": [
+    {
+      "path": "/fonts/inter/InterVariable-latin.woff2",
+      "family": "Inter Variable",
+      "script": "latin",
+      "unicodeRanges": "U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD",
+      "bytes": 99740,
+      "sha256": "13f685d4b9cf5384a2b01a5692fed6e537ba5a80b0ad968aa93d0efe176a8df5",
+      "fullBytes": 352240,
+      "verifiedProbes": [
+        "0x2019",
+        "0x20ac",
+        "0x2212",
+        "0x41",
+        "0x7a",
+        "0xc9",
+        "0xe9"
+      ],
+      "variationAxesKept": ["opsz", "wght"]
+    },
+    {
+      "path": "/fonts/newsreader/Newsreader-Variable-latin.woff2",
+      "family": "Newsreader Variable",
+      "script": "latin",
+      "unicodeRanges": "U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD",
+      "bytes": 136820,
+      "sha256": "9c8b500fc31dcd61005dc78bfc09428f68f915edef4233f059a8a41dd0ed89b2",
+      "fullBytes": 214880,
+      "verifiedProbes": ["0x2019", "0x201c", "0x41", "0x7a", "0xc9", "0xe9"],
+      "variationAxesKept": ["wght", "opsz"]
+    },
+    {
+      "path": "/fonts/vazirmatn/Vazirmatn-Variable-latin.woff2",
+      "family": "Vazirmatn Variable",
+      "script": "latin",
+      "unicodeRanges": "U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD",
+      "bytes": 44452,
+      "sha256": "779d9ba754ac7f46dcc25c337ec97d53ed13c7de995cc27d548fab477f7ec2a7",
+      "fullBytes": 111152,
+      "verifiedProbes": ["0x20ac", "0x41", "0x7a", "0xc9", "0xe9"],
+      "variationAxesKept": ["wght"]
+    },
+    {
+      "path": "/fonts/vazirmatn/Vazirmatn-Variable-arabic.woff2",
+      "family": "Vazirmatn Variable",
+      "script": "arabic",
+      "unicodeRanges": "U+0600-06FF,U+0750-077F,U+08A0-08FF,U+200C-200D,U+FB50-FDFF,U+FE70-FEFF",
+      "bytes": 44332,
+      "sha256": "c0601f44e37bcc1a78f59488edde078c78ea0f2313b504cf38ba07ff6546eb09",
+      "fullBytes": 111152,
+      "verifiedProbes": [
+        "0x200c",
+        "0x200d",
+        "0x627",
+        "0x67e",
+        "0x686",
+        "0x6af",
+        "0x6cc",
+        "0xfb8b",
+        "0xfef4"
+      ],
+      "variationAxesKept": ["wght"]
+    },
+    {
+      "path": "/fonts/estedad/Estedad-Variable-latin.woff2",
+      "family": "Estedad Variable",
+      "script": "latin",
+      "unicodeRanges": "U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD",
+      "bytes": 39888,
+      "sha256": "529c91a2d078b35f40ee47141a6fac5549fdf5760196f85d23328dcdb82383c6",
+      "fullBytes": 128304,
+      "verifiedProbes": ["0x20ac", "0x41", "0x7a", "0xc9", "0xe9"],
+      "variationAxesKept": ["wght"]
+    },
+    {
+      "path": "/fonts/estedad/Estedad-Variable-arabic.woff2",
+      "family": "Estedad Variable",
+      "script": "arabic",
+      "unicodeRanges": "U+0600-06FF,U+0750-077F,U+08A0-08FF,U+200C-200D,U+FB50-FDFF,U+FE70-FEFF",
+      "bytes": 57752,
+      "sha256": "9862262e5fbb6535c1493964b726e83c68956b8a030d5396978d3362d7c4a68c",
+      "fullBytes": 128304,
+      "verifiedProbes": [
+        "0x200c",
+        "0x200d",
+        "0x627",
+        "0x67e",
+        "0x686",
+        "0x6af",
+        "0x6cc",
+        "0xfb8b",
+        "0xfef4"
+      ],
+      "variationAxesKept": ["wght"]
+    }
+  ]
+}

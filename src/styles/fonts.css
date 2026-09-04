@@ -1,4 +1,18 @@
-/* Self-hosted variable fonts — see public/fonts/MANIFEST.md for sources and SHA-256. */
+/* Self-hosted variable fonts — see public/fonts/MANIFEST.md for sources and SHA-256.
+ * Per-locale subsets ship first with unicode-range; full binaries remain as
+ * unicode-range-less fallback faces. Coverage claims: tests/fixtures/fonts/subset-coverage.json. */
+
+@font-face {
+  font-family: 'Inter Variable';
+  src: url('/fonts/inter/InterVariable-latin.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF,
+    U+FFFD;
+}
 
 @font-face {
   font-family: 'Inter Variable';
@@ -6,6 +20,19 @@
   font-weight: 100 900;
   font-style: normal;
   font-display: swap;
+}
+
+@font-face {
+  font-family: 'Newsreader Variable';
+  src: url('/fonts/newsreader/Newsreader-Variable-latin.woff2') format('woff2');
+  font-weight: 200 800;
+  font-style: normal;
+  font-display: swap;
+  font-optical-sizing: auto;
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF,
+    U+FFFD;
 }
 
 @font-face {
@@ -19,10 +46,54 @@
 
 @font-face {
   font-family: 'Vazirmatn Variable';
+  src: url('/fonts/vazirmatn/Vazirmatn-Variable-arabic.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+  unicode-range:
+    U+0600-06FF, U+0750-077F, U+08A0-08FF, U+200C-200D, U+FB50-FDFF, U+FE70-FEFF;
+}
+
+@font-face {
+  font-family: 'Vazirmatn Variable';
+  src: url('/fonts/vazirmatn/Vazirmatn-Variable-latin.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF,
+    U+FFFD;
+}
+
+@font-face {
+  font-family: 'Vazirmatn Variable';
   src: url('/fonts/vazirmatn/Vazirmatn-Variable.woff2') format('woff2');
   font-weight: 100 900;
   font-style: normal;
   font-display: swap;
+}
+
+@font-face {
+  font-family: 'Estedad Variable';
+  src: url('/fonts/estedad/Estedad-Variable-arabic.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+  unicode-range:
+    U+0600-06FF, U+0750-077F, U+08A0-08FF, U+200C-200D, U+FB50-FDFF, U+FE70-FEFF;
+}
+
+@font-face {
+  font-family: 'Estedad Variable';
+  src: url('/fonts/estedad/Estedad-Variable-latin.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF,
+    U+FFFD;
 }
 
 @font-face {

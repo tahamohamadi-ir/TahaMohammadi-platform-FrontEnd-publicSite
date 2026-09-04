@@ -23,15 +23,16 @@ export const PERFORMANCE_PROBE_ROUTES = [
   },
 ] as const
 
-/** Locale-specific body + display preloads wired in BaseLayout.astro (PUBLIC-050). */
+/** Locale-specific body + display preloads wired in BaseLayout.astro (PUBLIC-050).
+ * PS-10 subsets: latin for EN; arabic for FA (latin on FA pages loads on demand). */
 export const LOCALE_FONT_PRELOADS = {
   en: [
-    '/fonts/inter/InterVariable.woff2',
-    '/fonts/newsreader/Newsreader-Variable.woff2',
+    '/fonts/inter/InterVariable-latin.woff2',
+    '/fonts/newsreader/Newsreader-Variable-latin.woff2',
   ],
   fa: [
-    '/fonts/vazirmatn/Vazirmatn-Variable.woff2',
-    '/fonts/estedad/Estedad-Variable.woff2',
+    '/fonts/vazirmatn/Vazirmatn-Variable-arabic.woff2',
+    '/fonts/estedad/Estedad-Variable-arabic.woff2',
   ],
 } as const
 
