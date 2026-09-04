@@ -1,5 +1,4 @@
 ---
-import SectionLead from '../ui/SectionLead.astro'
 import Button from '../ui/Button.astro'
 import Chip from '../ui/Chip.astro'
 import ThemePicture from '../media/ThemePicture.astro'
@@ -18,24 +17,13 @@ const content = getHomeHeroContent(locale)
 const ctaLabels = getProfileHeroCtaLabels(locale)
 ---
 
-<section class="hm-hero">
-  <div class="hm-hero__atmosphere" aria-hidden="true">
-    <ThemePicture
-      lightAssetId={HOME_HERO_ATMOSPHERE_ASSETS.light}
-      darkAssetId={HOME_HERO_ATMOSPHERE_ASSETS.dark}
-      mediaSlot="home.hero.atmosphere"
-      imgClass="hm-hero__atmosphere-img"
-    />
-    <div class="hm-hero__scrim"></div>
-  </div>
-
-  <div class="hm-hero__inner">
-    <SectionLead
-      eyebrow={content.role}
-      title={content.name}
-      summary={content.intro}
-      class="hm-hero__lead"
-    />
+<section class="hm-hero" data-hero-layout="split">
+  <div class="hm-hero__copy">
+    <header class="hm-hero__lead">
+      <p class="hm-hero__role">{content.role}</p>
+      <h1 class="hm-hero__name">{content.name}</h1>
+      <p class="hm-hero__intro">{content.intro}</p>
+    </header>
 
     <div class="hm-hero__actions">
       <Button
@@ -78,5 +66,56 @@ const ctaLabels = getProfileHeroCtaLabels(locale)
         </div>
       )
     }
+  </div>
+
+  <div class="hm-hero__media" aria-hidden="true">
+    <ThemePicture
+      lightAssetId={HOME_HERO_ATMOSPHERE_ASSETS.light}
+      darkAssetId={HOME_HERO_ATMOSPHERE_ASSETS.dark}
+      mediaSlot="home.hero.atmosphere"
+      imgClass="hm-hero__media-img"
+    />
+    <svg class="hm-hero__ornament" viewBox="0 0 240 240" focusable="false">
+      <circle
+        cx="120"
+        cy="120"
+        r="98"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1"
+        opacity="0.28"></circle>
+      <circle
+        cx="120"
+        cy="120"
+        r="68"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1"
+        opacity="0.36"></circle>
+      <circle
+        cx="120"
+        cy="120"
+        r="38"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1"
+        opacity="0.44"></circle>
+      <line
+        x1="120"
+        y1="18"
+        x2="120"
+        y2="222"
+        stroke="currentColor"
+        stroke-width="1"
+        opacity="0.22"></line>
+      <line
+        x1="18"
+        y1="120"
+        x2="222"
+        y2="120"
+        stroke="currentColor"
+        stroke-width="1"
+        opacity="0.22"></line>
+    </svg>
   </div>
 </section>

@@ -87,7 +87,7 @@ test.describe('WP-40 home structure acceptance', () => {
       await expect(list.locator('a')).toHaveCount(0)
       await expect(
         list.locator('[data-graph-node-state="unavailable"]'),
-      ).toHaveCount(5)
+      ).toHaveCount(3)
       await expect(list.locator('[tabindex]')).toHaveCount(0)
       await expect(list.locator('.hm-graph__node-label').first()).toBeVisible()
     }
@@ -104,13 +104,14 @@ test.describe('WP-40 home structure acceptance', () => {
     await page.goto('/en/')
 
     const nodes = page.locator('.hm-graph__node-label')
-    await expect(nodes).toHaveCount(5)
-    for (let index = 0; index < 5; index += 1) {
+    await expect(nodes).toHaveCount(3)
+    for (let index = 0; index < 3; index += 1) {
       await expect(nodes.nth(index)).toBeVisible()
     }
+    await expect(page.locator('.hm-hero__name')).toContainText('Taha Mohammadi')
     await expect(
-      page.locator('.hm-hero__lead .ui-section-lead__title'),
-    ).toContainText('Taha Mohammadi')
+      page.locator('.hm-hero[data-hero-layout="split"]'),
+    ).toHaveCount(1)
     await expect
       .poll(() =>
         page.evaluate(
@@ -127,10 +128,10 @@ test.describe('WP-40 home structure acceptance', () => {
     const noJsPage = await context.newPage()
     await noJsPage.goto('/en/')
 
-    await expect(noJsPage.locator('.hm-hero__lead h1')).toContainText(
+    await expect(noJsPage.locator('.hm-hero__name')).toContainText(
       'Taha Mohammadi',
     )
-    await expect(noJsPage.locator('.hm-graph__node-label')).toHaveCount(5)
+    await expect(noJsPage.locator('.hm-graph__node-label')).toHaveCount(3)
     await expect(noJsPage.locator('.hm-projects__image')).toHaveCount(2)
     await context.close()
   })

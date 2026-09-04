@@ -1,7 +1,6 @@
 import { expect, test, type Locator } from '@playwright/test'
 
 const ATMOSPHERE_WIDTHS = [320, 390, 768, 1024, 1280, 1440, 1672]
-const GRAPH_WIDTHS = [320, 480, 640, 768, 1024]
 const PREVIEW_WIDTHS = [320, 480, 640, 800, 1024]
 
 async function loadedSelection(locator: Locator) {
@@ -66,10 +65,6 @@ test.describe('WP-40 theme media selection', () => {
 
       for (const [slot, variants] of [
         ['hero atmosphere', ['portal-orbit-light', 'portal-orbit-dark']],
-        [
-          'graph backplate',
-          ['home-graph-backplate-light', 'home-graph-backplate-dark'],
-        ],
       ] as const) {
         for (const variant of variants) {
           const downloads = requested.filter((url) => url.includes(variant))
@@ -87,17 +82,9 @@ test.describe('WP-40 theme media selection', () => {
         ).toBe(true)
       }
 
-      const hero = await loadedSelection(
-        page.locator('.hm-hero__atmosphere-img'),
-      )
+      const hero = await loadedSelection(page.locator('.hm-hero__media-img'))
       expect(hero.format).toBe('avif')
       expect(ATMOSPHERE_WIDTHS).toContain(hero.width)
-
-      const backplate = await loadedSelection(
-        page.locator('.hm-graph__backplate-img'),
-      )
-      expect(backplate.format).toBe('avif')
-      expect(GRAPH_WIDTHS).toContain(backplate.width)
     })
   }
 

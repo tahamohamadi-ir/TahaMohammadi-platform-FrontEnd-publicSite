@@ -44,6 +44,18 @@ describe('WP-40 home hero', () => {
     expect(html).not.toMatch(/\/media\//)
   })
 
+  it('uses concept split layout chrome (copy + discrete media) for EN and FA', async () => {
+    for (const locale of ['en', 'fa'] as const) {
+      const html = await render(HomeHero, { locale })
+      expect(html).toMatch(/data-hero-layout="split"/)
+      expect(html).toMatch(/hm-hero__copy/)
+      expect(html).toMatch(/hm-hero__media/)
+      expect(html).toMatch(/hm-hero__ornament/)
+      expect(html).not.toMatch(/hm-hero__atmosphere/)
+      expect(html).not.toMatch(/hm-hero__scrim/)
+    }
+  })
+
   it('uses the approved seed professional role per locale and never the shared EN line on FA', async () => {
     const en = await render(HomeHero, { locale: 'en' })
     expect(en).toContain(EN_ROLE)

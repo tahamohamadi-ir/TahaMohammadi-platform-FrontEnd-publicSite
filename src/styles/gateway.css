@@ -143,8 +143,10 @@
 
 .gw__prompt {
   margin: 0;
-  font-size: 0.95rem;
-  color: var(--color-ink-secondary);
+  font-family: var(--font-display);
+  font-size: clamp(0.95rem, 2.2vw, 1.125rem);
+  line-height: 1.4;
+  color: var(--color-ink);
 }
 
 .gw__nav {
@@ -153,21 +155,24 @@
   justify-content: center;
   gap: var(--space-4);
   margin-block-start: var(--space-2);
+  inline-size: 100%;
+  max-inline-size: 28rem;
 }
 
 .gw__locale {
-  min-inline-size: 9rem;
-  min-height: var(--layout-touch-target-min);
+  flex: 1 1 9.5rem;
+  min-inline-size: 9.5rem;
+  min-height: max(var(--layout-touch-target-min), 2.85rem);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0.85rem 1.75rem;
+  padding: 0.95rem 1.75rem;
   border: 1px solid color-mix(in srgb, var(--color-signature) 70%, transparent);
   border-radius: var(--radius-xs);
   background: color-mix(in srgb, var(--color-surface) 12%, transparent);
   color: var(--color-ink);
   font-family: var(--font-display);
-  font-size: 1.125rem;
+  font-size: clamp(1.05rem, 2.4vw, 1.2rem);
   text-decoration: none;
   transition:
     border-color var(--motion-fast) var(--motion-ease-out),
@@ -179,6 +184,57 @@
   border-color: var(--color-brand);
   color: var(--color-brand);
   background: color-mix(in srgb, var(--color-brand-soft) 40%, transparent);
+}
+
+.gw__locale:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 3px;
+}
+
+/* 200% zoom / short viewports: keep language affordance above the fold. */
+@media (max-width: 720px), (max-height: 760px) {
+  .gw {
+    gap: var(--space-3);
+    padding-block: var(--space-4) var(--space-6);
+  }
+
+  .gw__hero {
+    gap: var(--space-2);
+    padding-block: var(--space-2);
+  }
+
+  .gw__mark {
+    inline-size: 2.75rem;
+  }
+
+  .gw__title {
+    font-size: clamp(1.85rem, 7vw, 2.75rem);
+  }
+
+  .gw__portal {
+    inline-size: min(100%, 14.5rem);
+    margin-block-start: var(--space-2);
+  }
+
+  .gw__footer {
+    gap: var(--space-3);
+    padding-block: var(--space-2) var(--space-3);
+  }
+}
+
+@media (max-width: 480px) {
+  .gw__nav {
+    flex-direction: column;
+    align-items: stretch;
+    max-inline-size: 16rem;
+    gap: var(--space-3);
+  }
+
+  .gw__locale {
+    flex: 1 1 auto;
+    inline-size: 100%;
+    min-inline-size: 0;
+  }
 }
 
 @media (prefers-reduced-motion: no-preference) {

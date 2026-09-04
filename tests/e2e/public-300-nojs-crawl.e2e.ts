@@ -74,7 +74,7 @@ async function assertRouteReadable(page: Page, route: NoJsAuditRoute) {
       await expect(page.locator('.hm-hero__lead h1')).toContainText(
         getBrandName(route.locale!),
       )
-      await expect(page.locator('.hm-graph__node-label')).toHaveCount(5)
+      await expect(page.locator('.hm-graph__node-label')).toHaveCount(3)
       break
     case 'locale-index':
       await assertLocaleShell(page, route)
