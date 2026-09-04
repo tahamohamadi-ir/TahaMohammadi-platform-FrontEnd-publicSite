@@ -509,6 +509,39 @@ export function getTeachingPathProcessSteps(locale: Locale): readonly string[] {
     : ['نمای کلی', 'درس‌ها', 'منابع', 'مراجع']
 }
 
+/** Structural creative-detail process steps (PF-02) — UI chrome, not CMS records. */
+export function getCreativeDetailProcessSteps(
+  locale: Locale,
+): readonly { label: string; tone: string }[] {
+  return locale === 'en'
+    ? [
+        { label: 'Research & mood exploration', tone: 'research' },
+        { label: 'Form & composition iteration', tone: 'form' },
+        { label: 'Material & lighting studies', tone: 'material' },
+        { label: '3D modeling & rendering', tone: 'model' },
+        { label: 'Refinement & final output', tone: 'refine' },
+      ]
+    : [
+        { label: 'پژوهش و کاوش حال‌وهوا', tone: 'research' },
+        { label: 'تکرار فرم و ترکیب', tone: 'form' },
+        { label: 'مطالعات ماده و نور', tone: 'material' },
+        { label: 'مدل‌سازی و رندر سه‌بعدی', tone: 'model' },
+        { label: 'پالایش و خروجی نهایی', tone: 'refine' },
+      ]
+}
+
+/** Structural creative-detail meta field labels (PF-02) — UI chrome, not CMS values. */
+export function getCreativeDetailMetaLabels(locale: Locale): readonly string[] {
+  return locale === 'en'
+    ? ['Medium', 'Year', 'Role', 'Context']
+    : ['رسانه', 'سال', 'نقش', 'زمینه']
+}
+
+/** Empty meta dash used when CMS values are absent. */
+export function getCreativeDetailMetaEmptyValue(): string {
+  return '—'
+}
+
 /** Structural contact before-you-write checklist (PF-08) — UI chrome, not CMS copy. */
 export function getContactBeforeYouWriteItems(
   locale: Locale,

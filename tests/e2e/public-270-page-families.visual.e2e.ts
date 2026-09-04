@@ -220,43 +220,34 @@ test.describe('PUBLIC-270 page-family visual capture stubs', () => {
     }
   }
 
-  test('PUBLIC-270 PF-02 creative detail capture when a detail route is built @visual', async ({
+  test('PUBLIC-270 PF-02 creative detail empty-shell capture @visual', async ({
     page,
     baseURL,
   }) => {
     test.setTimeout(120_000)
-    const candidates = ['/en/creative/ivory-forms/', '/en/creative/']
-    let detailPath: string | null = null
+    const locales = [
+      { locale: 'en' as const, path: '/en/creative/empty-shell/' },
+      { locale: 'fa' as const, path: '/fa/creative/empty-shell/' },
+    ]
 
-    for (const candidate of candidates) {
-      const response = await page.goto(candidate)
-      if (
-        response?.ok() &&
-        candidate.endsWith('/') &&
-        candidate.split('/').filter(Boolean).length > 2
-      ) {
-        detailPath = candidate
-        break
+    for (const entry of locales) {
+      for (const width of widths) {
+        await page.addInitScript(() => localStorage.setItem('tm-theme', 'dark'))
+        await page.setViewportSize({ width, height: 900 })
+        const response = await page.goto(entry.path)
+        expect(response?.ok(), `${entry.path} must build`).toBeTruthy()
+        await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')
+        await expect(
+          page.locator('[data-visual-id="PageFamilyCreativeDetailShell"]'),
+        ).toBeVisible()
+        await page.screenshot({
+          path: path.join(
+            visualOutputDir,
+            `public-270-pf02-${entry.locale}-${width}-dark.png`,
+          ),
+          fullPage: true,
+        })
       }
-    }
-
-    test.skip(
-      !detailPath,
-      'No published creative detail route in static build; PF-02 detail evidence remains open.',
-    )
-
-    for (const width of widths) {
-      await page.addInitScript(() => localStorage.setItem('tm-theme', 'dark'))
-      await page.setViewportSize({ width, height: 900 })
-      await page.goto(detailPath!)
-      await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')
-      await page.screenshot({
-        path: path.join(
-          visualOutputDir,
-          `public-270-pf02-en-${width}-dark.png`,
-        ),
-        fullPage: true,
-      })
     }
 
     expect(baseURL).toBeTruthy()

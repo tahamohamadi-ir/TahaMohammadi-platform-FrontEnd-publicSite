@@ -80,7 +80,7 @@ function buildHtml({ pfRows, homeRows, generatedAt }) {
   <header>
     <h2>${row.label}</h2>
     <p class="meta">${row.pf} · <code>${row.captureFile}</code> ↔ <code>${row.conceptRelative ?? 'n/a'}</code></p>
-    ${row.optional ? '<p class="note">Optional — PF-02 detail skipped until published route exists.</p>' : ''}
+    ${row.optional ? '<p class="note">Optional — capture may be absent until route is built.</p>' : ''}
   </header>
   <div class="panels">
     <div class="panel">

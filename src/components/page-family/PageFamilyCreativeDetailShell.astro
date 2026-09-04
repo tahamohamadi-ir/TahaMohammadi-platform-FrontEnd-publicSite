@@ -1,0 +1,226 @@
+---
+import PromotedPicture from '../media/PromotedPicture.astro'
+import PageFamilyCollaborateBandShell from './PageFamilyCollaborateBandShell.astro'
+import Button from '../ui/Button.astro'
+import {
+  getCmsPlaceholderCopy,
+  getCreativeDetailMetaEmptyValue,
+  getCreativeDetailMetaLabels,
+  getCreativeDetailProcessSteps,
+  getPageFamilyDecorativeAlt,
+  getPageFamilyPreviewAsset,
+  getPageFamilyRowPreviewAssets,
+} from '../../lib/page-family-empty-chrome'
+import { getCreativeRouteTitle } from '../../lib/creative-content'
+import { localePath, type Locale } from '../../lib/navigation'
+
+interface Props {
+  locale: Locale
+  class?: string
+}
+
+const { locale, class: className = '' } = Astro.props
+const placeholder = getCmsPlaceholderCopy(locale)
+const metaLabels = getCreativeDetailMetaLabels(locale)
+const metaEmpty = getCreativeDetailMetaEmptyValue()
+const processSteps = getCreativeDetailProcessSteps(locale)
+const heroAsset = getPageFamilyPreviewAsset('creative')
+const thumbAssets = getPageFamilyRowPreviewAssets('creative')
+const decorativeAlt = getPageFamilyDecorativeAlt(locale, 'creative')
+const creativeHref = localePath(locale, 'creative')
+const routeTitle = getCreativeRouteTitle(locale)
+
+const copy =
+  locale === 'en'
+    ? {
+        processTitle: 'Process',
+        creditsTitle: 'Credits & licence',
+        relatedTitle: 'Related work',
+        viewLarger: 'View larger',
+        previous: 'Previous work',
+        next: 'Next work',
+        galleryCounter: '1 / 6',
+      }
+    : {
+        processTitle: 'فرآیند',
+        creditsTitle: 'اعتبار و مجوز',
+        relatedTitle: 'آثار مرتبط',
+        viewLarger: 'نمایش بزرگ‌تر',
+        previous: 'اثر قبلی',
+        next: 'اثر بعدی',
+        galleryCounter: '۱ / ۶',
+      }
+
+const thumbSlots = Array.from({ length: 6 }, (_, index) => index)
+const relatedSlots = Array.from({ length: 4 }, (_, index) => index)
+---
+
+<article
+  class={['pf-creative-detail-shell', className].filter(Boolean).join(' ')}
+  data-visual-id="PageFamilyCreativeDetailShell"
+  data-pagefind-ignore
+>
+  <nav class="pf-creative-detail-shell__breadcrumb" aria-label="Breadcrumb">
+    <a href={creativeHref}>{routeTitle}</a>
+    <span aria-hidden="true">/</span>
+    <span>{placeholder}</span>
+  </nav>
+
+  <section
+    class="pf-creative-detail-shell__gallery"
+    aria-label={locale === 'en' ? 'Work gallery shell' : 'پوسته گالری اثر'}
+  >
+    <div class="pf-creative-detail-shell__hero" aria-hidden="true">
+      <PromotedPicture
+        assetId={heroAsset.assetId}
+        mediaSlot={heroAsset.mediaSlot}
+        locale={locale}
+        alt={decorativeAlt}
+        imgClass="pf-creative-detail-shell__hero-img"
+      />
+      <span class="pf-creative-detail-shell__counter"
+        >{copy.galleryCounter}</span
+      >
+      <span class="pf-creative-detail-shell__view-larger"
+        >{copy.viewLarger}</span
+      >
+    </div>
+
+    <ul class="pf-creative-detail-shell__thumbs" aria-hidden="true">
+      {
+        thumbSlots.map((slot) => {
+          const preview = thumbAssets[slot % thumbAssets.length]!
+          return (
+            <li class="pf-creative-detail-shell__thumb">
+              <PromotedPicture
+                assetId={preview.assetId}
+                mediaSlot={preview.mediaSlot}
+                locale={locale}
+                alt={decorativeAlt}
+                imgClass="pf-creative-detail-shell__thumb-img"
+              />
+            </li>
+          )
+        })
+      }
+    </ul>
+  </section>
+
+  <header class="pf-creative-detail-shell__header">
+    <h1 class="pf-creative-detail-shell__title">{placeholder}</h1>
+    <dl class="pf-creative-detail-shell__meta">
+      {
+        metaLabels.map((label) => (
+          <div class="pf-creative-detail-shell__meta-item">
+            <dt>{label}</dt>
+            <dd>{metaEmpty}</dd>
+          </div>
+        ))
+      }
+    </dl>
+    <p class="pf-creative-detail-shell__statement">{placeholder}</p>
+  </header>
+
+  <section
+    class="pf-creative-detail-shell__process"
+    aria-labelledby="pf-creative-process-title"
+  >
+    <h2
+      id="pf-creative-process-title"
+      class="pf-creative-detail-shell__section-title"
+    >
+      {copy.processTitle}
+    </h2>
+    <ol class="pf-creative-detail-shell__process-track" aria-hidden="true">
+      {
+        processSteps.map((step) => (
+          <li class="pf-creative-detail-shell__process-step">
+            <span
+              class={[
+                'pf-creative-detail-shell__process-icon',
+                `pf-creative-detail-shell__process-icon--${step.tone}`,
+              ].join(' ')}
+            />
+            <span class="pf-creative-detail-shell__process-label">
+              {step.label}
+            </span>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  <section
+    class="pf-creative-detail-shell__credits"
+    aria-labelledby="pf-creative-credits-title"
+  >
+    <h2
+      id="pf-creative-credits-title"
+      class="pf-creative-detail-shell__section-title"
+    >
+      {copy.creditsTitle}
+    </h2>
+    <div class="pf-creative-detail-shell__credits-card" aria-hidden="true">
+      <span class="pf-creative-detail-shell__credits-badge"></span>
+      <dl
+        class="pf-creative-detail-shell__meta pf-creative-detail-shell__meta--compact"
+      >
+        {
+          metaLabels.map((label) => (
+            <div class="pf-creative-detail-shell__meta-item">
+              <dt>{label}</dt>
+              <dd>{metaEmpty}</dd>
+            </div>
+          ))
+        }
+      </dl>
+      <p class="pf-creative-detail-shell__credits-copy">{placeholder}</p>
+    </div>
+  </section>
+
+  <section
+    class="pf-creative-detail-shell__related"
+    aria-labelledby="pf-creative-related-title"
+  >
+    <h2
+      id="pf-creative-related-title"
+      class="pf-creative-detail-shell__section-title"
+    >
+      {copy.relatedTitle}
+    </h2>
+    <ul class="pf-creative-detail-shell__related-grid" aria-hidden="true">
+      {
+        relatedSlots.map((slot) => {
+          const preview = thumbAssets[slot % thumbAssets.length]!
+          return (
+            <li class="pf-creative-detail-shell__related-card">
+              <PromotedPicture
+                assetId={preview.assetId}
+                mediaSlot={preview.mediaSlot}
+                locale={locale}
+                alt={decorativeAlt}
+                imgClass="pf-creative-detail-shell__related-img"
+              />
+              <span class="pf-creative-detail-shell__related-title">
+                {placeholder}
+              </span>
+              <span class="pf-index-empty__line pf-index-empty__line--short" />
+            </li>
+          )
+        })
+      }
+    </ul>
+  </section>
+
+  <nav
+    class="pf-creative-detail-shell__pager"
+    aria-label={locale === 'en' ? 'Adjacent works' : 'آثار مجاور'}
+  >
+    <Button label={copy.previous} variant="secondary" disabled />
+    <span class="pf-creative-detail-shell__pager-mark" aria-hidden="true"
+    ></span>
+    <Button label={copy.next} variant="secondary" disabled />
+  </nav>
+
+  <PageFamilyCollaborateBandShell locale={locale} context="creative" />
+</article>

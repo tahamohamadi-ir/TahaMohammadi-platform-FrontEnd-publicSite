@@ -21,7 +21,19 @@ export type CreativeIndexModel =
   { status: 'empty' } | { status: 'ready'; works: CreativeWorkListOut[] }
 
 export type CreativeDetailModel =
-  { status: 'unavailable' } | { status: 'ready'; work: CreativeWorkDetailOut }
+  | { status: 'unavailable' }
+  | { status: 'empty-shell' }
+  | { status: 'ready'; work: CreativeWorkDetailOut }
+
+/**
+ * Reserved static path for honest PF-02 empty-detail chrome.
+ * Never fetched from CMS; excluded from sitemap.
+ */
+export const CREATIVE_DETAIL_EMPTY_SHELL_SLUG = 'empty-shell'
+
+export function isCreativeDetailEmptyShellSlug(slug: string): boolean {
+  return slug === CREATIVE_DETAIL_EMPTY_SHELL_SLUG
+}
 
 const creativeNavItem = primaryNav.find((item) => item.slug === 'creative')
 
@@ -120,6 +132,10 @@ export async function fetchCreativeDetail(
   locale: Locale,
   slug: string,
 ): Promise<CreativeDetailModel> {
+  if (isCreativeDetailEmptyShellSlug(slug)) {
+    return { status: 'empty-shell' }
+  }
+
   if (!canFetchPublicApi()) {
     return { status: 'unavailable' }
   }
@@ -146,12 +162,20 @@ export async function fetchCreativeDetail(
 
 export async function listCreativeSlugs(locale: Locale): Promise<string[]> {
   const works = await listCreativeWorks(locale)
-  return works.map((item) => item.slug)
+  const slugs = works.map((item) => item.slug)
+  if (!slugs.includes(CREATIVE_DETAIL_EMPTY_SHELL_SLUG)) {
+    slugs.push(CREATIVE_DETAIL_EMPTY_SHELL_SLUG)
+  }
+  return slugs
 }
 
 export async function resolveCreativeAlternateAvailability(
   locale: Locale,
+  slug?: string,
 ): Promise<boolean> {
+  if (slug && isCreativeDetailEmptyShellSlug(slug)) {
+    return true
+  }
   const alternate: Locale = locale === 'en' ? 'fa' : 'en'
   const model = await fetchCreativeIndex(alternate)
   return model.status === 'ready'

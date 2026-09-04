@@ -121,7 +121,7 @@ export const PAGE_FAMILY_VISUAL_ENTRIES = [
   },
 ]
 
-/** PF-02 detail — included in report only when captures exist (no static build route yet). */
+/** PF-02 detail — honest empty-shell route `/ {locale}/creative/empty-shell/`. */
 export const PAGE_FAMILY_PF02_OPTIONAL = {
   pf: 'PF-02',
   captureId: 'pf02',
@@ -129,7 +129,7 @@ export const PAGE_FAMILY_PF02_OPTIONAL = {
   conceptDir: 'concepts/page-families',
   theme: 'dark',
   locales: ['en', 'fa'],
-  optional: true,
+  optional: false,
 }
 
 /**
@@ -328,7 +328,7 @@ export function buildPublic270CompareRows(designAuthorityRoot) {
           PAGE_FAMILY_PF02_OPTIONAL.concept,
         ),
         conceptRelative: `${PAGE_FAMILY_PF02_OPTIONAL.conceptDir}/${PAGE_FAMILY_PF02_OPTIONAL.concept}`,
-        optional: true,
+        optional: PAGE_FAMILY_PF02_OPTIONAL.optional,
       })
     }
   }

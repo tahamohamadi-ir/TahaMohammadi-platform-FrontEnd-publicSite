@@ -3,6 +3,7 @@ import LongFormDetailTemplate from '../templates/LongFormDetailTemplate.astro'
 import SectionLead from '../ui/SectionLead.astro'
 import ContentState from '../state/ContentState.astro'
 import Link from '../ui/Link.astro'
+import PageFamilyCreativeDetailShell from '../page-family/PageFamilyCreativeDetailShell.astro'
 import {
   getCreativeRouteTitle,
   getCreativeUnavailableCopy,
@@ -20,7 +21,11 @@ const creativeHref = localePath(locale, 'creative')
 ---
 
 {
-  model.status === 'unavailable' ? (
+  model.status === 'empty-shell' ? (
+    <div class="creative-page creative-page--detail-shell">
+      <PageFamilyCreativeDetailShell locale={locale} />
+    </div>
+  ) : model.status === 'unavailable' ? (
     <div class="creative-page creative-page--unavailable">
       <ContentState
         variant="unavailable"

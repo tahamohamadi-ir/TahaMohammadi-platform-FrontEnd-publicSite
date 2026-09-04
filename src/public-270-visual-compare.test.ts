@@ -37,7 +37,7 @@ describe('PUBLIC-270 visual compare owner assist', () => {
 
     const rows = buildPublic270CompareRows(defaultDesignAuthorityRoot)
     const requiredRows = rows.filter((row) => !row.optional)
-    expect(requiredRows.length).toBe(36)
+    expect(requiredRows.length).toBe(40)
     expect(rows.length).toBe(40)
 
     for (const row of rows) {

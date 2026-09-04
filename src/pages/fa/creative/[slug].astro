@@ -3,9 +3,12 @@ import SiteLayout from '../../../layouts/SiteLayout.astro'
 import CreativeDetailContent from '../../../components/creative/CreativeDetailContent.astro'
 import {
   fetchCreativeDetail,
+  getCreativeRouteTitle,
+  isCreativeDetailEmptyShellSlug,
   listCreativeSlugs,
   resolveCreativeAlternateAvailability,
 } from '../../../lib/creative-content'
+import { getCmsPlaceholderCopy } from '../../../lib/page-family-empty-chrome'
 import '../../../styles/page-families.css'
 
 export async function getStaticPaths() {
@@ -21,8 +24,13 @@ if (model.status === 'unavailable') {
   return new Response(null, { status: 404, statusText: 'Not Found' })
 }
 
-const alternateAvailable = await resolveCreativeAlternateAvailability(locale)
-const pageTitle = `${model.work.title} — Taha Mohammadi`
+const alternateAvailable = await resolveCreativeAlternateAvailability(
+  locale,
+  slug,
+)
+const pageTitle = isCreativeDetailEmptyShellSlug(slug)
+  ? `${getCreativeRouteTitle(locale)} — ${getCmsPlaceholderCopy(locale)}`
+  : `${model.status === 'ready' ? model.work.title : getCreativeRouteTitle(locale)} — Taha Mohammadi`
 ---
 
 <SiteLayout

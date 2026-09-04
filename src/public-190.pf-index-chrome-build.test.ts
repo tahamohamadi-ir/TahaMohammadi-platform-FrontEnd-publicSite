@@ -36,6 +36,23 @@ const PF_INDEX_CHROME_ROUTES = [
       'page-families',
     ],
   },
+  {
+    route: 'en/creative/empty-shell/index.html',
+    markers: [
+      'PageFamilyCreativeDetailShell',
+      'PageFamilyCollaborateBandShell',
+      'page-families',
+      'Awaiting approved CMS copy',
+    ],
+  },
+  {
+    route: 'fa/creative/empty-shell/index.html',
+    markers: [
+      'PageFamilyCreativeDetailShell',
+      'PageFamilyCollaborateBandShell',
+      'page-families',
+    ],
+  },
 ] as const
 
 describe('PUBLIC-190 PF index build chrome', () => {

@@ -47,7 +47,8 @@ export default defineConfig({
         const pathname = new URL(page).pathname
         return (
           !pathname.startsWith('/pagefind/') &&
-          !pathname.startsWith('/_design/')
+          !pathname.startsWith('/_design/') &&
+          !pathname.includes('/creative/empty-shell')
         )
       },
     }),

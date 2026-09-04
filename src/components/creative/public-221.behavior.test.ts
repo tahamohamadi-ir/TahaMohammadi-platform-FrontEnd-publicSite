@@ -113,4 +113,20 @@ describe('PUBLIC-221 creative pages', () => {
     expect(html).toContain('Creative body.')
     expect(html).toMatch(/src="https:\/\/example.com\/image.jpg"/)
   })
+
+  it('renders honest empty creative detail shell without inventing CMS copy', async () => {
+    const html = await render(CreativeDetailContent, {
+      locale: 'en',
+      model: { status: 'empty-shell' },
+    })
+    expect(html).toMatch(/data-visual-id="PageFamilyCreativeDetailShell"/)
+    expect(html).toMatch(/data-visual-id="PageFamilyCollaborateBandShell"/)
+    expect(html).toContain('Awaiting approved CMS copy')
+    expect(html).toContain('Medium')
+    expect(html).toContain('Process')
+    expect(html).toMatch(/Research\s*(?:&|&amp;)\s*mood exploration/)
+    expect(html).not.toContain('Ivory Forms')
+    expect(html).not.toContain('Visual Exploration')
+    expect(html).toMatch(/<h1[\s>]/)
+  })
 })

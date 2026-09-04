@@ -29,7 +29,7 @@ const PAGE_FAMILY_ROUTE_MAP = [
   {
     pf: 'PF-02',
     concept: 'creative-detail-dark.png',
-    routes: ['/{locale}/creative/{slug}/'],
+    routes: ['/{locale}/creative/{slug}/', '/{locale}/creative/empty-shell/'],
   },
   {
     pf: 'PF-03',
@@ -84,6 +84,7 @@ describe('PUBLIC-270 page-family visual evidence scaffold', () => {
     expect(source).toContain('PUBLIC_270_CAPTURE_WIDTHS')
     expect(source).toContain('PUBLIC-270')
     expect(source).toContain('/en/creative/')
+    expect(source).toContain('/en/creative/empty-shell/')
     expect(source).toContain('/en/contact/')
   })
 })
