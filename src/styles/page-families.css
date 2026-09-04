@@ -215,6 +215,27 @@ html[data-theme='dark'] .pf-index-featured__card {
   color: var(--color-brand);
 }
 
+.pf-index-featured__dots {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: center;
+  gap: var(--space-2);
+  margin-block-start: var(--space-2);
+}
+
+.pf-index-featured__dot {
+  inline-size: 0.45rem;
+  block-size: 0.45rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-ink) 22%, transparent);
+}
+
+.pf-index-featured__dot--active {
+  background: var(--color-brand);
+  box-shadow: 0 0 0.45rem
+    color-mix(in srgb, var(--color-brand) 55%, transparent);
+}
+
 .pf-index-empty__tag--accent {
   background: color-mix(
     in srgb,
@@ -4577,7 +4598,13 @@ html[data-theme='dark'] .contact-page .contact-page__panel--form {
   margin-block-start: var(--space-6);
 }
 
-.pf-index-collaborate-band--writing .pf-index-collaborate-band__card {
+.pf-index-collaborate-band--flat {
+  grid-template-columns: minmax(0, 1fr);
+  margin-block-start: var(--space-6);
+}
+
+.pf-index-collaborate-band--writing .pf-index-collaborate-band__card,
+.pf-index-collaborate-band--flat .pf-index-collaborate-band__card {
   background: color-mix(
     in srgb,
     var(--color-brand-soft) 55%,
@@ -4585,10 +4612,80 @@ html[data-theme='dark'] .contact-page .contact-page__panel--form {
   );
 }
 
+.pf-index-collaborate-band--projects .pf-index-collaborate-band__card {
+  background: color-mix(in srgb, var(--color-brand) 10%, var(--color-surface));
+  border-color: color-mix(
+    in srgb,
+    var(--color-brand) 28%,
+    var(--color-border-subtle)
+  );
+}
+
+html[data-theme='dark']
+  .pf-index-collaborate-band--projects
+  .pf-index-collaborate-band__card {
+  background: color-mix(in srgb, var(--color-brand) 14%, var(--color-surface));
+}
+
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme])
+    .pf-index-collaborate-band--projects
+    .pf-index-collaborate-band__card {
+    background: color-mix(
+      in srgb,
+      var(--color-brand) 14%,
+      var(--color-surface)
+    );
+  }
+}
+
+.pf-index-collaborate-band--creative .pf-index-collaborate-band__card {
+  background: color-mix(
+    in srgb,
+    var(--color-brand-soft) 40%,
+    var(--color-surface)
+  );
+}
+
+.pf-index-collaborate-band--research .pf-index-collaborate-band__card {
+  background: color-mix(
+    in srgb,
+    var(--color-research-soft) 55%,
+    var(--color-surface)
+  );
+  border-color: color-mix(
+    in srgb,
+    var(--color-research) 22%,
+    var(--color-border-subtle)
+  );
+}
+
 .pf-index-collaborate-band__actions {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-3);
+}
+
+.pf-index-empty__filters--projects {
+  gap: var(--space-3) var(--space-4);
+}
+
+.pf-index-empty__filters--projects .projects-page__filters-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  flex: 1 1 auto;
+}
+
+@media (min-width: 768px) {
+  .pf-index-empty__filters--projects {
+    flex-wrap: nowrap;
+  }
+
+  .pf-index-empty__filters--projects .pf-index-empty__search {
+    flex: 0 1 14rem;
+    margin-inline-start: auto;
+  }
 }
 
 .pf-index-grid-placeholder__image--shift-1 {

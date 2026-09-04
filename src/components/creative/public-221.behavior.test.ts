@@ -43,6 +43,9 @@ describe('PUBLIC-221 creative pages', () => {
     expect(html).toContain('Published creative works are not available yet.')
     expect(html).toContain('All work')
     expect(html).toContain('Medium')
+    expect(html).toMatch(/data-visual-id="PageFamilyCollaborateBandShell"/)
+    expect(html).toMatch(/Let(?:'|&#39;)s collaborate on visual work/)
+    expect(html).toMatch(/Let(?:'|&#39;)s Connect/)
   })
 
   it('renders creative work cards when the index model is ready', async () => {

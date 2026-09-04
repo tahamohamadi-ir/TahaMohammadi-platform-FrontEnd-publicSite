@@ -34,11 +34,18 @@ describe('PUBLIC-210 projects pages', () => {
     expect(html).toMatch(/data-visual-id="PageFamilyPaginationShell"/)
     expect(html).toMatch(/data-visual-id="PageFamilySortShell"/)
     expect(html).toMatch(/pf-index-featured--project/)
+    expect(html).toMatch(/pf-index-featured__dots/)
     expect(html).toMatch(/pf-index-hero--atmosphere/)
     expect(html).toMatch(/pf-index-hero__notice/)
     expect(html).toMatch(/pf-index-row-placeholder__sanitized/)
     expect(html).toMatch(/projects-page--grid/)
     expect(html).toMatch(/pf-index-empty__filter-chip--rect/)
+    expect(html).toMatch(/pf-index-empty__filter-chip--active/)
+    expect(html).toMatch(/data-visual-id="PageFamilyCollaborateBandShell"/)
+    expect(html).toMatch(
+      /Let(?:'|&#39;)s collaborate on research that advances knowledge/,
+    )
+    expect(html).toMatch(/Let(?:'|&#39;)s Connect/)
   })
 
   it('renders project cards when the index model is ready', async () => {

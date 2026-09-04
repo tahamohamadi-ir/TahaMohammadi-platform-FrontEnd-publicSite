@@ -40,6 +40,9 @@ describe('PUBLIC-201 research pages', () => {
       /data-visual-id="PageFamilyBibliographyRowPlaceholder"/,
     )
     expect(html).toMatch(/research-page__band/)
+    expect(html).toMatch(/data-visual-id="PageFamilyCollaborateBandShell"/)
+    expect(html).toMatch(/Let(?:'|&#39;)s collaborate on research/)
+    expect(html).toMatch(/Let(?:'|&#39;)s Connect/)
   })
 
   it('renders topic cards when the index model is ready', async () => {

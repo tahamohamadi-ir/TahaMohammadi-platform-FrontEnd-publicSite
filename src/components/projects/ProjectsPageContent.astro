@@ -6,6 +6,7 @@ import PageFamilyContentRowPlaceholder from '../page-family/PageFamilyContentRow
 import PageFamilyEvidenceGridShell from '../page-family/PageFamilyEvidenceGridShell.astro'
 import PageFamilySortShell from '../page-family/PageFamilySortShell.astro'
 import PageFamilyPaginationShell from '../page-family/PageFamilyPaginationShell.astro'
+import PageFamilyCollaborateBandShell from '../page-family/PageFamilyCollaborateBandShell.astro'
 import ContentState from '../state/ContentState.astro'
 import {
   formatProjectAvailability,
@@ -72,13 +73,20 @@ const filterLabels =
 
       <div
         slot="filters"
-        class="projects-page__filters pf-index-empty__filters"
+        class="projects-page__filters pf-index-empty__filters pf-index-empty__filters--projects"
         role="group"
         aria-label={filterLabels.region}
         aria-disabled="true"
       >
-        <p class="projects-page__filters-active">{filterLabels.allProjects}</p>
         <div class="projects-page__filters-controls">
+          <button
+            type="button"
+            class="pf-index-empty__filter-chip pf-index-empty__filter-chip--rect pf-index-empty__filter-chip--active"
+            disabled
+            aria-pressed="true"
+          >
+            {filterLabels.allProjects}
+          </button>
           <button
             type="button"
             class="pf-index-empty__filter-chip pf-index-empty__filter-chip--rect"
@@ -147,6 +155,13 @@ const filterLabels =
       </div>
 
       <PageFamilyPaginationShell slot="pagination" locale={locale} />
+
+      <PageFamilyCollaborateBandShell
+        slot="footer"
+        locale={locale}
+        context="projects"
+        variant="collaborate-only"
+      />
     </CollectionIndexTemplate>
   ) : (
     <CollectionIndexTemplate class="projects-page">

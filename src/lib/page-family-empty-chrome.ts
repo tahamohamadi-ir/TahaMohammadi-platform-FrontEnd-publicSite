@@ -946,26 +946,98 @@ export function getOptionalUpdatesChrome(locale: Locale): {
     : { title: 'به‌روزرسانی اختیاری', action: 'دنبال کردن به‌روزرسانی‌ها' }
 }
 
-/** Structural writing collaborate band chrome (PF-03). */
-export function getWritingCollaborateChrome(locale: Locale): {
+export type IndexCollaborateFamily =
+  'writing' | 'projects' | 'creative' | 'research'
+
+export type IndexCollaborateChrome = {
   title: string
   copy: string
   connectAction: string
   cvAction: string
-} {
-  return locale === 'en'
-    ? {
-        title: "Let's collaborate on writing that matters",
-        copy: 'Independent thoughts, shared insight, and meaningful dialogue.',
-        connectAction: "Let's Connect",
-        cvAction: 'Download CV',
+}
+
+/**
+ * Structural index collaborate-band chrome (PF-01/03/04/05).
+ * Route CTA labels only — not CMS bios, emails, or record copy.
+ */
+export function getIndexCollaborateChrome(
+  locale: Locale,
+  family: IndexCollaborateFamily,
+): IndexCollaborateChrome {
+  if (locale === 'en') {
+    switch (family) {
+      case 'projects':
+        return {
+          title:
+            "Let's collaborate on research that advances knowledge and improves lives.",
+          copy: 'Evidence-led project work when disclosure is approved and sanitized.',
+          connectAction: "Let's Connect",
+          cvAction: 'Download CV',
+        }
+      case 'creative':
+        return {
+          title: "Let's collaborate on visual work",
+          copy: 'Selected creative commissions and research-informed form.',
+          connectAction: "Let's Connect",
+          cvAction: 'Download CV',
+        }
+      case 'research':
+        return {
+          title: "Let's collaborate on research",
+          copy: 'Co-authored outputs, datasets, and evidence-led project work.',
+          connectAction: "Let's Connect",
+          cvAction: 'Download CV',
+        }
+      case 'writing':
+      default:
+        return {
+          title: "Let's collaborate on writing that matters",
+          copy: 'Independent thoughts, shared insight, and meaningful dialogue.',
+          connectAction: "Let's Connect",
+          cvAction: 'Download CV',
+        }
+    }
+  }
+
+  switch (family) {
+    case 'projects':
+      return {
+        title:
+          'همکاری در پژوهشی که دانش را پیش می‌برد و زندگی را بهبود می‌دهد.',
+        copy: 'کار پروژه‌ای مبتنی بر شواهد، پس از تأیید و پالایش افشا.',
+        connectAction: 'ارتباط بگیریم',
+        cvAction: 'دانلود رزومه',
       }
-    : {
+    case 'creative':
+      return {
+        title: 'همکاری در آثار بصری',
+        copy: 'سفارش‌های خلاقه منتخب و فرم برآمده از پژوهش.',
+        connectAction: 'ارتباط بگیریم',
+        cvAction: 'دانلود رزومه',
+      }
+    case 'research':
+      return {
+        title: 'همکاری پژوهشی',
+        copy: 'خروجی‌های مشترک، مجموعه‌داده‌ها و پروژه‌های مبتنی بر شواهد.',
+        connectAction: 'ارتباط بگیریم',
+        cvAction: 'دانلود رزومه',
+      }
+    case 'writing':
+    default:
+      return {
         title: 'همکاری در نوشتاری که اهمیت دارد',
         copy: 'اندیشه‌های مستقل، بینش مشترک و گفت‌وگوی معنادار.',
         connectAction: 'ارتباط بگیریم',
         cvAction: 'دانلود رزومه',
       }
+  }
+}
+
+/** Structural writing collaborate band chrome (PF-03). */
+export function getWritingCollaborateChrome(
+  locale: Locale,
+): IndexCollaborateChrome {
+  return getIndexCollaborateChrome(locale, 'writing')
 }
 
 /** Structural view-path CTA for featured learning path (PF-06). */

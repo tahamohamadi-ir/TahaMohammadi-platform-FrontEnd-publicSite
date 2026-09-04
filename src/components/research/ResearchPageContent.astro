@@ -6,6 +6,7 @@ import PageFamilyResearchFitShell from '../page-family/PageFamilyResearchFitShel
 import PageFamilyResearchDirectionsShell from '../page-family/PageFamilyResearchDirectionsShell.astro'
 import PageFamilySelectedPublicationsShell from '../page-family/PageFamilySelectedPublicationsShell.astro'
 import PageFamilyBibliographyRowPlaceholder from '../page-family/PageFamilyBibliographyRowPlaceholder.astro'
+import PageFamilyCollaborateBandShell from '../page-family/PageFamilyCollaborateBandShell.astro'
 import ContentState from '../state/ContentState.astro'
 import Link from '../ui/Link.astro'
 import {
@@ -141,6 +142,13 @@ const tabLabels =
           message={emptyCopy.message}
         />
       </div>
+
+      <PageFamilyCollaborateBandShell
+        slot="footer"
+        locale={locale}
+        context="research"
+        variant="collaborate-only"
+      />
     </CollectionIndexTemplate>
   ) : (
     <CollectionIndexTemplate class="research-page">

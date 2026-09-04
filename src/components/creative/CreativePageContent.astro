@@ -4,6 +4,7 @@ import PageFamilyIndexHero from '../page-family/PageFamilyIndexHero.astro'
 import PageFamilyFeaturedShell from '../page-family/PageFamilyFeaturedShell.astro'
 import PageFamilyMediaGridPlaceholder from '../page-family/PageFamilyMediaGridPlaceholder.astro'
 import PageFamilyPaginationShell from '../page-family/PageFamilyPaginationShell.astro'
+import PageFamilyCollaborateBandShell from '../page-family/PageFamilyCollaborateBandShell.astro'
 import ContentState from '../state/ContentState.astro'
 import Link from '../ui/Link.astro'
 import {
@@ -119,6 +120,13 @@ const filterLabels =
       </div>
 
       <PageFamilyPaginationShell slot="pagination" locale={locale} />
+
+      <PageFamilyCollaborateBandShell
+        slot="footer"
+        locale={locale}
+        context="creative"
+        variant="collaborate-only"
+      />
     </CollectionIndexTemplate>
   ) : (
     <CollectionIndexTemplate class="creative-page">

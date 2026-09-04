@@ -97,6 +97,13 @@ const copyFirst = family === 'writing' || family === 'projects'
             </div>
           </>
         )}
+        {family === 'projects' ? (
+          <div class="pf-index-featured__dots" aria-hidden="true">
+            <span class="pf-index-featured__dot pf-index-featured__dot--active" />
+            <span class="pf-index-featured__dot" />
+            <span class="pf-index-featured__dot" />
+          </div>
+        ) : null}
       </div>
     </section>
   ) : null

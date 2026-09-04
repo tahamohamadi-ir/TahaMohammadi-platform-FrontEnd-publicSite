@@ -1,12 +1,22 @@
 ---
 import Button from '../ui/Button.astro'
-import { getWritingCollaborateChrome } from '../../lib/page-family-empty-chrome'
+import {
+  getIndexCollaborateChrome,
+  type IndexCollaborateFamily,
+} from '../../lib/page-family-empty-chrome'
 import { localePath, type Locale } from '../../lib/navigation'
 
 interface Props {
   locale: Locale
   variant?: 'dual' | 'collaborate-only'
-  context?: 'about' | 'publications' | 'teaching' | 'writing'
+  context?:
+    | 'about'
+    | 'publications'
+    | 'teaching'
+    | 'writing'
+    | 'projects'
+    | 'creative'
+    | 'research'
   class?: string
 }
 
@@ -53,7 +63,16 @@ const publicationsCollaborateCopy =
     : 'خروجی‌های مشترک، مجموعه‌داده‌ها و پروژه‌های مبتنی بر شواهد.'
 const collaborateAction = locale === 'en' ? 'Get in touch' : 'ارتباط بگیرید'
 
-const writingChrome = getWritingCollaborateChrome(locale)
+const flatFamilies = new Set<IndexCollaborateFamily>([
+  'writing',
+  'projects',
+  'creative',
+  'research',
+])
+const isFlatBand = flatFamilies.has(context as IndexCollaborateFamily)
+const flatChrome = isFlatBand
+  ? getIndexCollaborateChrome(locale, context as IndexCollaborateFamily)
+  : null
 
 const primaryTitle =
   context === 'about' ? aboutPrimaryTitle : teachingPrimaryTitle
@@ -65,23 +84,23 @@ const collaborateTitle =
     ? aboutCollaborateTitle
     : context === 'publications'
       ? publicationsCollaborateTitle
-      : context === 'writing'
-        ? writingChrome.title
-        : teachingCollaborateTitle
+      : teachingCollaborateTitle
 const collaborateCopy =
   context === 'about'
     ? aboutCollaborateCopy
     : context === 'publications'
       ? publicationsCollaborateCopy
-      : context === 'writing'
-        ? writingChrome.copy
-        : teachingCollaborateCopy
+      : teachingCollaborateCopy
 ---
 
 <section
   class={[
     'pf-index-collaborate-band',
+    isFlatBand ? 'pf-index-collaborate-band--flat' : '',
     context === 'writing' ? 'pf-index-collaborate-band--writing' : '',
+    context === 'projects' ? 'pf-index-collaborate-band--projects' : '',
+    context === 'creative' ? 'pf-index-collaborate-band--creative' : '',
+    context === 'research' ? 'pf-index-collaborate-band--research' : '',
     className,
   ]
     .filter(Boolean)
@@ -90,59 +109,68 @@ const collaborateCopy =
   aria-label={locale === 'en' ? 'Collaboration options' : 'گزینه‌های همکاری'}
 >
   {
-    variant === 'dual' && context !== 'writing' ? (
+    flatChrome ? (
       <article class="pf-index-collaborate-band__card">
         <span
-          class={[
-            'pf-index-collaborate-band__icon',
-            context === 'about'
-              ? 'pf-index-collaborate-band__icon--cv'
-              : 'pf-index-collaborate-band__icon--mail',
-          ].join(' ')}
+          class="pf-index-collaborate-band__icon pf-index-collaborate-band__icon--group"
           aria-hidden="true"
         />
-        <h2 class="pf-index-collaborate-band__title">{primaryTitle}</h2>
-        <p class="pf-index-collaborate-band__copy">{primaryCopy}</p>
-        {context === 'about' ? (
-          <Button
-            label={primaryAction}
-            href={localePath(locale, 'cv')}
-            variant="secondary"
-          />
-        ) : (
-          <Button label={primaryAction} variant="secondary" disabled />
-        )}
-      </article>
-    ) : null
-  }
-
-  <article class="pf-index-collaborate-band__card">
-    <span
-      class="pf-index-collaborate-band__icon pf-index-collaborate-band__icon--group"
-      aria-hidden="true"></span>
-    <h2 class="pf-index-collaborate-band__title">{collaborateTitle}</h2>
-    <p class="pf-index-collaborate-band__copy">{collaborateCopy}</p>
-    {
-      context === 'writing' ? (
+        <h2 class="pf-index-collaborate-band__title">{flatChrome.title}</h2>
+        <p class="pf-index-collaborate-band__copy">{flatChrome.copy}</p>
         <div class="pf-index-collaborate-band__actions">
           <Button
-            label={writingChrome.connectAction}
+            label={flatChrome.connectAction}
             href={localePath(locale, 'contact')}
             variant="primary"
           />
           <Button
-            label={writingChrome.cvAction}
+            label={flatChrome.cvAction}
             href={localePath(locale, 'cv')}
             variant="secondary"
           />
         </div>
-      ) : (
-        <Button
-          label={collaborateAction}
-          href={localePath(locale, 'contact')}
-          variant="primary"
-        />
-      )
-    }
-  </article>
+      </article>
+    ) : (
+      <>
+        {variant === 'dual' ? (
+          <article class="pf-index-collaborate-band__card">
+            <span
+              class={[
+                'pf-index-collaborate-band__icon',
+                context === 'about'
+                  ? 'pf-index-collaborate-band__icon--cv'
+                  : 'pf-index-collaborate-band__icon--mail',
+              ].join(' ')}
+              aria-hidden="true"
+            />
+            <h2 class="pf-index-collaborate-band__title">{primaryTitle}</h2>
+            <p class="pf-index-collaborate-band__copy">{primaryCopy}</p>
+            {context === 'about' ? (
+              <Button
+                label={primaryAction}
+                href={localePath(locale, 'cv')}
+                variant="secondary"
+              />
+            ) : (
+              <Button label={primaryAction} variant="secondary" disabled />
+            )}
+          </article>
+        ) : null}
+
+        <article class="pf-index-collaborate-band__card">
+          <span
+            class="pf-index-collaborate-band__icon pf-index-collaborate-band__icon--group"
+            aria-hidden="true"
+          />
+          <h2 class="pf-index-collaborate-band__title">{collaborateTitle}</h2>
+          <p class="pf-index-collaborate-band__copy">{collaborateCopy}</p>
+          <Button
+            label={collaborateAction}
+            href={localePath(locale, 'contact')}
+            variant="primary"
+          />
+        </article>
+      </>
+    )
+  }
 </section>
