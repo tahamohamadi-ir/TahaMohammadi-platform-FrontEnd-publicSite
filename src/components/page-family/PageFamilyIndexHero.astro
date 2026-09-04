@@ -93,6 +93,15 @@ const decorativeAlt = getPageFamilyDecorativeAlt(locale, family)
       titleScale="display"
       class="pf-index-hero__lead"
     />
+    {
+      family === 'writing' ? (
+        <span class="pf-index-hero__ornament" aria-hidden="true">
+          <span class="pf-index-hero__ornament-line" />
+          <span class="pf-index-hero__ornament-diamond" />
+          <span class="pf-index-hero__ornament-line" />
+        </span>
+      ) : null
+    }
     {roleLine ? <p class="pf-index-hero__role">{roleLine}</p> : null}
     {
       notice ? (

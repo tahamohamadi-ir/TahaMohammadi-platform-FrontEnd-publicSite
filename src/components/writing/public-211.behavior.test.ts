@@ -28,10 +28,33 @@ describe('PUBLIC-211/212 writing pages', () => {
     expect(html).toMatch(/data-visual-id="PageFamilyFeaturedShell"/)
     expect(html).toMatch(/data-visual-id="PageFamilyContentRowPlaceholder"/)
     expect(html).toMatch(/data-visual-id="PageFamilyThemeExploreShell"/)
+    expect(html).toMatch(/data-visual-id="PageFamilyOptionalUpdatesShell"/)
+    expect(html).toMatch(/data-visual-id="PageFamilyCollaborateBandShell"/)
     expect(html).toMatch(/data-visual-id="PageFamilyPaginationShell"/)
     expect(html).toMatch(/pf-index-featured--writing/)
     expect(html).toMatch(/pf-index-featured--copy-first/)
     expect(html).toMatch(/pf-index-theme-explore__cards/)
+    expect(html).toMatch(/pf-index-hero__ornament/)
+    expect(html).toMatch(/pf-index-empty__filter-chip--outline/)
+    expect(html).toContain('Independent writing')
+    expect(html).toContain('independent from project records')
+    expect(html).toContain('Optional updates')
+    expect(html).toContain('Follow updates')
+    expect(html).toContain('writing that matters')
+    expect(html).toContain('ESSAY')
+    expect(html).toMatch(/Let(?:'|&#39;)s Connect/)
+    expect(html).toContain('Download CV')
+  })
+
+  it('renders FA writing empty chrome with locale parity', async () => {
+    const html = await render(WritingPageContent, {
+      locale: 'fa',
+      model: { status: 'unavailable' },
+    })
+    expect(html).toContain('نوشتار مستقل')
+    expect(html).toContain('به‌روزرسانی اختیاری')
+    expect(html).toContain('همکاری در نوشتاری که اهمیت دارد')
+    expect(html).toMatch(/data-visual-id="PageFamilyOptionalUpdatesShell"/)
   })
 
   it('renders article and book sections when the index model is ready', async () => {

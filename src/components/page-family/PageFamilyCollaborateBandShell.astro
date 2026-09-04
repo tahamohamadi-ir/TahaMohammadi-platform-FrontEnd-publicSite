@@ -1,11 +1,12 @@
 ---
 import Button from '../ui/Button.astro'
+import { getWritingCollaborateChrome } from '../../lib/page-family-empty-chrome'
 import { localePath, type Locale } from '../../lib/navigation'
 
 interface Props {
   locale: Locale
   variant?: 'dual' | 'collaborate-only'
-  context?: 'about' | 'publications' | 'teaching'
+  context?: 'about' | 'publications' | 'teaching' | 'writing'
   class?: string
 }
 
@@ -52,6 +53,8 @@ const publicationsCollaborateCopy =
     : 'خروجی‌های مشترک، مجموعه‌داده‌ها و پروژه‌های مبتنی بر شواهد.'
 const collaborateAction = locale === 'en' ? 'Get in touch' : 'ارتباط بگیرید'
 
+const writingChrome = getWritingCollaborateChrome(locale)
+
 const primaryTitle =
   context === 'about' ? aboutPrimaryTitle : teachingPrimaryTitle
 const primaryCopy = context === 'about' ? aboutPrimaryCopy : teachingPrimaryCopy
@@ -62,22 +65,32 @@ const collaborateTitle =
     ? aboutCollaborateTitle
     : context === 'publications'
       ? publicationsCollaborateTitle
-      : teachingCollaborateTitle
+      : context === 'writing'
+        ? writingChrome.title
+        : teachingCollaborateTitle
 const collaborateCopy =
   context === 'about'
     ? aboutCollaborateCopy
     : context === 'publications'
       ? publicationsCollaborateCopy
-      : teachingCollaborateCopy
+      : context === 'writing'
+        ? writingChrome.copy
+        : teachingCollaborateCopy
 ---
 
 <section
-  class={['pf-index-collaborate-band', className].filter(Boolean).join(' ')}
+  class={[
+    'pf-index-collaborate-band',
+    context === 'writing' ? 'pf-index-collaborate-band--writing' : '',
+    className,
+  ]
+    .filter(Boolean)
+    .join(' ')}
   data-visual-id="PageFamilyCollaborateBandShell"
   aria-label={locale === 'en' ? 'Collaboration options' : 'گزینه‌های همکاری'}
 >
   {
-    variant === 'dual' ? (
+    variant === 'dual' && context !== 'writing' ? (
       <article class="pf-index-collaborate-band__card">
         <span
           class={[
@@ -109,10 +122,27 @@ const collaborateCopy =
       aria-hidden="true"></span>
     <h2 class="pf-index-collaborate-band__title">{collaborateTitle}</h2>
     <p class="pf-index-collaborate-band__copy">{collaborateCopy}</p>
-    <Button
-      label={collaborateAction}
-      href={localePath(locale, 'contact')}
-      variant="primary"
-    />
+    {
+      context === 'writing' ? (
+        <div class="pf-index-collaborate-band__actions">
+          <Button
+            label={writingChrome.connectAction}
+            href={localePath(locale, 'contact')}
+            variant="primary"
+          />
+          <Button
+            label={writingChrome.cvAction}
+            href={localePath(locale, 'cv')}
+            variant="secondary"
+          />
+        </div>
+      ) : (
+        <Button
+          label={collaborateAction}
+          href={localePath(locale, 'contact')}
+          variant="primary"
+        />
+      )
+    }
   </article>
 </section>

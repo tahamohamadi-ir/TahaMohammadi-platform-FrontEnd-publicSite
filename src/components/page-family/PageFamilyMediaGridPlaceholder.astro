@@ -1,7 +1,7 @@
 ---
 import PromotedPicture from '../media/PromotedPicture.astro'
 import {
-  getPageFamilyPreviewAsset,
+  getPageFamilyRowPreviewAssets,
   getPageFamilyDecorativeAlt,
   type PageFamilyChromeId,
 } from '../../lib/page-family-empty-chrome'
@@ -14,7 +14,7 @@ interface Props {
 }
 
 const { locale, family, class: className = '' } = Astro.props
-const preview = getPageFamilyPreviewAsset(family)
+const previewAssets = getPageFamilyRowPreviewAssets(family)
 const decorativeAlt = getPageFamilyDecorativeAlt(locale, family)
 
 type GridCell = {
@@ -46,26 +46,33 @@ const cells: GridCell[] = [
   aria-hidden="true"
 >
   {
-    cells.map((cell) => (
-      <div
-        class:list={[
-          'pf-index-grid-placeholder__cell',
-          cell.modifier && `pf-index-grid-placeholder__cell--${cell.modifier}`,
-        ]}
-      >
-        {cell.filled ? (
-          <PromotedPicture
-            assetId={preview.assetId}
-            mediaSlot={preview.mediaSlot}
-            locale={locale}
-            alt={decorativeAlt}
-            imgClass="pf-index-grid-placeholder__image"
-            loading={cell.eager ? 'eager' : 'lazy'}
-          />
-        ) : (
-          <span class="pf-index-grid-placeholder__shell" />
-        )}
-      </div>
-    ))
+    cells.map((cell, index) => {
+      const preview = previewAssets[index % previewAssets.length]!
+      return (
+        <div
+          class:list={[
+            'pf-index-grid-placeholder__cell',
+            cell.modifier &&
+              `pf-index-grid-placeholder__cell--${cell.modifier}`,
+          ]}
+        >
+          {cell.filled ? (
+            <PromotedPicture
+              assetId={preview.assetId}
+              mediaSlot={preview.mediaSlot}
+              locale={locale}
+              alt={decorativeAlt}
+              imgClass={[
+                'pf-index-grid-placeholder__image',
+                `pf-index-grid-placeholder__image--shift-${index % 3}`,
+              ].join(' ')}
+              loading={cell.eager ? 'eager' : 'lazy'}
+            />
+          ) : (
+            <span class="pf-index-grid-placeholder__shell" />
+          )}
+        </div>
+      )
+    })
   }
 </div>

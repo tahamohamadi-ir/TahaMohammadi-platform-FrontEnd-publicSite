@@ -4414,3 +4414,187 @@ html[data-theme='dark'] .contact-page .contact-page__panel--form {
   font-weight: 600;
   color: var(--color-brand);
 }
+
+/* PUBLIC-190 Phase 6 — PF-03 writing + PF-01 masonry fidelity */
+.pf-index-hero__ornament {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  max-inline-size: 12rem;
+  margin-block-start: var(--space-1);
+  color: color-mix(in srgb, var(--color-accent-gold) 72%, var(--color-ink));
+}
+
+.pf-index-hero__ornament-line {
+  flex: 1 1 auto;
+  block-size: 1px;
+  background: currentColor;
+  opacity: 0.55;
+}
+
+.pf-index-hero__ornament-diamond {
+  flex: 0 0 auto;
+  inline-size: 0.55rem;
+  block-size: 0.55rem;
+  border: 1px solid currentColor;
+  transform: rotate(45deg);
+  background: color-mix(in srgb, var(--color-accent-gold) 35%, transparent);
+}
+
+.pf-index-empty__filter-chip--outline.pf-index-empty__filter-chip--active {
+  background: transparent;
+  border-width: 1.5px;
+  border-color: color-mix(
+    in srgb,
+    var(--primitive-coral-500) 72%,
+    var(--primitive-navy-950)
+  );
+  color: color-mix(
+    in srgb,
+    var(--primitive-coral-500) 62%,
+    var(--primitive-navy-950)
+  );
+}
+
+.pf-index-row-placeholder__category-label {
+  display: inline-block;
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(
+    in srgb,
+    var(--primitive-coral-500) 70%,
+    var(--primitive-navy-950)
+  );
+}
+
+.pf-index-row-placeholder__arrow svg {
+  inline-size: 1.15rem;
+  block-size: 1.15rem;
+  display: block;
+}
+
+.pf-index-theme-explore__title {
+  color: color-mix(
+    in srgb,
+    var(--primitive-coral-500) 68%,
+    var(--primitive-navy-950)
+  );
+}
+
+.pf-index-theme-explore__icon {
+  display: grid;
+  place-items: center;
+  color: color-mix(
+    in srgb,
+    var(--primitive-coral-500) 72%,
+    var(--primitive-navy-950)
+  );
+}
+
+.pf-index-theme-explore__icon svg {
+  inline-size: 1.15rem;
+  block-size: 1.15rem;
+}
+
+.pf-index-theme-explore__icon--memory {
+  background: color-mix(
+    in srgb,
+    var(--primitive-coral-500) 14%,
+    var(--color-surface)
+  );
+}
+
+.pf-index-theme-explore__icon--society {
+  background: color-mix(
+    in srgb,
+    var(--primitive-coral-500) 16%,
+    var(--color-surface)
+  );
+}
+
+.pf-index-theme-explore__icon--archive {
+  background: color-mix(
+    in srgb,
+    var(--primitive-coral-500) 8%,
+    var(--color-surface)
+  );
+}
+
+.pf-index-optional-updates {
+  display: grid;
+  gap: var(--space-4);
+  align-items: center;
+  margin-block-start: var(--space-4);
+  padding: var(--space-5) var(--space-6);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+}
+
+@media (min-width: 640px) {
+  .pf-index-optional-updates {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+  }
+}
+
+.pf-index-optional-updates__icon {
+  display: grid;
+  place-items: center;
+  inline-size: 2.5rem;
+  block-size: 2.5rem;
+  border-radius: var(--radius-pill);
+  color: var(--color-brand);
+  background: var(--color-brand-soft);
+}
+
+.pf-index-optional-updates__icon svg {
+  inline-size: 1.2rem;
+  block-size: 1.2rem;
+}
+
+.pf-index-optional-updates__copy {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.pf-index-optional-updates__title {
+  margin: 0;
+  font-size: var(--font-size-md);
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.pf-index-optional-updates__email {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-ink-secondary);
+}
+
+.pf-index-collaborate-band--writing {
+  grid-template-columns: minmax(0, 1fr);
+  margin-block-start: var(--space-6);
+}
+
+.pf-index-collaborate-band--writing .pf-index-collaborate-band__card {
+  background: color-mix(
+    in srgb,
+    var(--color-brand-soft) 55%,
+    var(--color-surface)
+  );
+}
+
+.pf-index-collaborate-band__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.pf-index-grid-placeholder__image--shift-1 {
+  object-position: 30% 40%;
+}
+
+.pf-index-grid-placeholder__image--shift-2 {
+  object-position: 70% 60%;
+}

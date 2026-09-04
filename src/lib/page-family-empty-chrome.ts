@@ -239,11 +239,32 @@ export function getPageFamilyRowPreviewAssets(
           assetId: HOME_RAIL_ASSET_BY_PATH.creative,
           mediaSlot: 'home.rail.preview',
         },
+        {
+          assetId: HOME_PROJECT_ASSET_BY_SLUG['pars-sql-vtd-edge'],
+          mediaSlot: 'home.project.preview',
+        },
+        {
+          assetId: HOME_RAIL_ASSET_BY_PATH.teaching,
+          mediaSlot: 'home.rail.preview',
+        },
+        {
+          assetId:
+            HOME_PROJECT_ASSET_BY_SLUG['organizational-dashboard-research'],
+          mediaSlot: 'home.project.preview',
+        },
+        {
+          assetId: HOME_RAIL_ASSET_BY_PATH.writing,
+          mediaSlot: 'home.rail.preview',
+        },
       ]
     case 'writing':
       return [
         {
           assetId: HOME_RAIL_ASSET_BY_PATH.writing,
+          mediaSlot: 'home.rail.preview',
+        },
+        {
+          assetId: HOME_RAIL_ASSET_BY_PATH.creative,
           mediaSlot: 'home.rail.preview',
         },
       ]
@@ -851,6 +872,8 @@ export function getPageFamilyHeroSummary(
     switch (family) {
       case 'creative':
         return 'A curated collection of visual explorations, experiments, and creative studies. Where research meets form.'
+      case 'writing':
+        return 'Essays, notes, memories, and reflections—independent from project records.'
       case 'teaching':
         return 'Notes, guides, tutorials, and resources—published when ready.'
       case 'projects':
@@ -863,6 +886,8 @@ export function getPageFamilyHeroSummary(
   switch (family) {
     case 'creative':
       return 'مجموعه‌ای گزینش‌شده از کاوش‌های بصری، آزمایش‌ها و مطالعات خلاقانه؛ جایی که پژوهش با فرم ملاقات می‌کند.'
+    case 'writing':
+      return 'مقالات، یادداشت‌ها، خاطرات و تأملات—مستقل از رکوردهای پروژه.'
     case 'teaching':
       return 'یادداشت‌ها، راهنماها، آموزش‌ها و منابع—هنگام آماده‌شدن منتشر می‌شوند.'
     case 'projects':
@@ -870,6 +895,77 @@ export function getPageFamilyHeroSummary(
     default:
       return undefined
   }
+}
+
+/** Structural writing index hero eyebrow (PF-03) — UI chrome, not CMS copy. */
+export function getWritingHeroEyebrow(locale: Locale): string {
+  return locale === 'en' ? 'Independent writing' : 'نوشتار مستقل'
+}
+
+/**
+ * Structural category chrome for writing list rows (PF-03).
+ * Cycles filter/theme tones — not CMS record categories.
+ */
+export function getWritingRowCategoryLabel(
+  locale: Locale,
+  index: number,
+): string {
+  const items = getPageFamilyThemeExploreItems(locale, 'writing')
+  if (!items?.length) {
+    return locale === 'en' ? 'ESSAY' : 'مقاله'
+  }
+  const item = items[index % items.length]!
+  if (locale === 'fa') {
+    return item.label
+  }
+  switch (item.tone) {
+    case 'essay':
+      return 'ESSAY'
+    case 'note':
+      return 'NOTE'
+    case 'memory':
+      return 'MEMORY'
+    case 'society':
+      return 'SOCIETY'
+    case 'archive':
+      return 'ARCHIVE'
+    default: {
+      const neverTone: never = item.tone
+      throw new Error(`Unknown writing theme tone: ${neverTone}`)
+    }
+  }
+}
+
+/** Structural optional-updates / newsletter band chrome (PF-03). */
+export function getOptionalUpdatesChrome(locale: Locale): {
+  title: string
+  action: string
+} {
+  return locale === 'en'
+    ? { title: 'Optional updates', action: 'Follow updates' }
+    : { title: 'به‌روزرسانی اختیاری', action: 'دنبال کردن به‌روزرسانی‌ها' }
+}
+
+/** Structural writing collaborate band chrome (PF-03). */
+export function getWritingCollaborateChrome(locale: Locale): {
+  title: string
+  copy: string
+  connectAction: string
+  cvAction: string
+} {
+  return locale === 'en'
+    ? {
+        title: "Let's collaborate on writing that matters",
+        copy: 'Independent thoughts, shared insight, and meaningful dialogue.',
+        connectAction: "Let's Connect",
+        cvAction: 'Download CV',
+      }
+    : {
+        title: 'همکاری در نوشتاری که اهمیت دارد',
+        copy: 'اندیشه‌های مستقل، بینش مشترک و گفت‌وگوی معنادار.',
+        connectAction: 'ارتباط بگیریم',
+        cvAction: 'دانلود رزومه',
+      }
 }
 
 /** Structural view-path CTA for featured learning path (PF-06). */

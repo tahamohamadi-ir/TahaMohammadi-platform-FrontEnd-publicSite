@@ -4,6 +4,7 @@ import {
   getPageFamilyRowPreviewAssets,
   getPageFamilyDecorativeAlt,
   getProjectsSanitizedBadgeLabel,
+  getWritingRowCategoryLabel,
   type PageFamilyChromeId,
 } from '../../lib/page-family-empty-chrome'
 import type { Locale } from '../../lib/navigation'
@@ -19,7 +20,7 @@ interface Props {
 const {
   locale,
   family,
-  count = 4,
+  count = family === 'writing' ? 6 : 4,
   variant = 'default',
   class: className = '',
 } = Astro.props
@@ -52,6 +53,8 @@ const sanitizedLabel =
   {
     rows.map((index) => {
       const preview = previewAssets[index % previewAssets.length]!
+      const writingCategory =
+        family === 'writing' ? getWritingRowCategoryLabel(locale, index) : null
       return (
         <div class="pf-index-row-placeholder__row">
           {resolvedVariant === 'project' ? (
@@ -81,7 +84,13 @@ const sanitizedLabel =
           <div class="pf-index-row-placeholder__lines">
             {resolvedVariant !== 'direction' ? (
               <div class="pf-index-row-placeholder__meta">
-                <span class="pf-index-row-placeholder__category" />
+                {writingCategory ? (
+                  <span class="pf-index-row-placeholder__category-label">
+                    {writingCategory}
+                  </span>
+                ) : (
+                  <span class="pf-index-row-placeholder__category" />
+                )}
                 {sanitizedLabel ? (
                   <span class="pf-index-row-placeholder__sanitized">
                     <svg
@@ -123,7 +132,16 @@ const sanitizedLabel =
           ) : null}
           {resolvedVariant === 'default' ? (
             <span class="pf-index-row-placeholder__arrow" aria-hidden="true">
-              →
+              <svg viewBox="0 0 24 24" focusable="false">
+                <path
+                  d="M5 12h12.5M13 6.5 18.5 12 13 17.5"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
             </span>
           ) : null}
         </div>

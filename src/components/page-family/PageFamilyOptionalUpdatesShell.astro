@@ -1,0 +1,56 @@
+---
+import Button from '../ui/Button.astro'
+import {
+  getCmsPlaceholderCopy,
+  getOptionalUpdatesChrome,
+} from '../../lib/page-family-empty-chrome'
+import type { Locale } from '../../lib/navigation'
+
+interface Props {
+  locale: Locale
+  class?: string
+}
+
+const { locale, class: className = '' } = Astro.props
+const chrome = getOptionalUpdatesChrome(locale)
+const emailPlaceholder = getCmsPlaceholderCopy(locale)
+---
+
+<section
+  class={['pf-index-optional-updates', className].filter(Boolean).join(' ')}
+  data-visual-id="PageFamilyOptionalUpdatesShell"
+  aria-labelledby="pf-optional-updates-title"
+>
+  <span class="pf-index-optional-updates__icon" aria-hidden="true">
+    <svg viewBox="0 0 24 24" focusable="false">
+      <rect
+        x="3.5"
+        y="6"
+        width="17"
+        height="12"
+        rx="2"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.5"></rect>
+      <path
+        d="M4.5 7.5 12 13l7.5-5.5"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"></path>
+    </svg>
+  </span>
+  <div class="pf-index-optional-updates__copy">
+    <h2 id="pf-optional-updates-title" class="pf-index-optional-updates__title">
+      {chrome.title}
+    </h2>
+    <p class="pf-index-optional-updates__email">{emailPlaceholder}</p>
+  </div>
+  <Button
+    label={chrome.action}
+    variant="secondary"
+    disabled
+    class="pf-index-optional-updates__action"
+  />
+</section>

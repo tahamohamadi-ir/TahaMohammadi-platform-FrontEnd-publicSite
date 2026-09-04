@@ -5,6 +5,8 @@ import PageFamilyFeaturedShell from '../page-family/PageFamilyFeaturedShell.astr
 import PageFamilyContentRowPlaceholder from '../page-family/PageFamilyContentRowPlaceholder.astro'
 import PageFamilyPaginationShell from '../page-family/PageFamilyPaginationShell.astro'
 import PageFamilyThemeExploreShell from '../page-family/PageFamilyThemeExploreShell.astro'
+import PageFamilyOptionalUpdatesShell from '../page-family/PageFamilyOptionalUpdatesShell.astro'
+import PageFamilyCollaborateBandShell from '../page-family/PageFamilyCollaborateBandShell.astro'
 import ContentState from '../state/ContentState.astro'
 import {
   formatArticleCardMeta,
@@ -13,6 +15,10 @@ import {
   getWritingUnavailableCopy,
   type WritingIndexModel,
 } from '../../lib/writing-content'
+import {
+  getPageFamilyHeroSummary,
+  getWritingHeroEyebrow,
+} from '../../lib/page-family-empty-chrome'
 import { localePath, type Locale } from '../../lib/navigation'
 
 interface Props {
@@ -53,8 +59,9 @@ const filterLabels =
         slot="lead"
         locale={locale}
         family="writing"
-        eyebrow={locale === 'en' ? 'Essays & books' : 'مقالات و کتاب‌ها'}
+        eyebrow={getWritingHeroEyebrow(locale)}
         title={getWritingRouteTitle(locale)}
+        summary={getPageFamilyHeroSummary(locale, 'writing')}
       />
 
       <PageFamilyFeaturedShell
@@ -73,7 +80,7 @@ const filterLabels =
         <div class="writing-page__filters-controls">
           <button
             type="button"
-            class="pf-index-empty__filter-chip pf-index-empty__filter-chip--active"
+            class="pf-index-empty__filter-chip pf-index-empty__filter-chip--active pf-index-empty__filter-chip--outline"
             disabled
           >
             {filterLabels.allWriting}
@@ -117,9 +124,17 @@ const filterLabels =
           message={emptyCopy.message}
         />
         <PageFamilyThemeExploreShell locale={locale} family="writing" />
+        <PageFamilyOptionalUpdatesShell locale={locale} />
       </div>
 
       <PageFamilyPaginationShell slot="pagination" locale={locale} />
+
+      <PageFamilyCollaborateBandShell
+        slot="footer"
+        locale={locale}
+        context="writing"
+        variant="collaborate-only"
+      />
     </EditorialIndexTemplate>
   ) : (
     <EditorialIndexTemplate class="writing-page">
@@ -127,8 +142,9 @@ const filterLabels =
         slot="lead"
         locale={locale}
         family="writing"
-        eyebrow={locale === 'en' ? 'Essays & books' : 'مقالات و کتاب‌ها'}
+        eyebrow={getWritingHeroEyebrow(locale)}
         title={getWritingRouteTitle(locale)}
+        summary={getPageFamilyHeroSummary(locale, 'writing')}
       />
 
       <div slot="records" class="writing-page__sections">
