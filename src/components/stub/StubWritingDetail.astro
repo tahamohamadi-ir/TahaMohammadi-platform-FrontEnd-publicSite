@@ -13,7 +13,7 @@ interface Props {
 }
 
 const { locale, publication } = Astro.props
-const writingIndexHref = localePath(locale, 'writing')
+const writingIndexHref = localePath(locale, 'blog')
 const draftNote = getStubPublicationDraftNote(locale)
 const backLabel = getStubBackToWritingLabel(locale)
 const manuscriptLabel = getHomePublicationsContent(locale).manuscriptLabel

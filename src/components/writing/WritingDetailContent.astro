@@ -17,7 +17,7 @@ interface Props {
 }
 
 const { locale, model } = Astro.props
-const writingHref = localePath(locale, 'writing')
+const writingHref = localePath(locale, 'blog')
 ---
 
 {
@@ -29,7 +29,7 @@ const writingHref = localePath(locale, 'writing')
         headingLevel="h1"
         title={getWritingUnavailableCopy(locale).title}
         message={getWritingUnavailableCopy(locale).message}
-        actionLabel={locale === 'en' ? 'Back to writing' : 'بازگشت به نوشتار'}
+        actionLabel={locale === 'en' ? 'Back to blog' : 'بازگشت به وبلاگ'}
         actionHref={writingHref}
       />
     </div>
@@ -101,7 +101,7 @@ const writingHref = localePath(locale, 'writing')
       <p slot="related" class="writing-page__back">
         <Link
           href={writingHref}
-          label={locale === 'en' ? '← Back to writing' : '← بازگشت به نوشتار'}
+          label={locale === 'en' ? '← Back to blog' : '← بازگشت به وبلاگ'}
           variant="standalone"
         />
       </p>

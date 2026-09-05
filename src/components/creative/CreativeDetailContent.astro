@@ -17,7 +17,7 @@ interface Props {
 }
 
 const { locale, model } = Astro.props
-const creativeHref = localePath(locale, 'creative')
+const creativeHref = localePath(locale, 'gallery')
 ---
 
 {
@@ -33,9 +33,7 @@ const creativeHref = localePath(locale, 'creative')
         headingLevel="h1"
         title={getCreativeUnavailableCopy(locale).title}
         message={getCreativeUnavailableCopy(locale).message}
-        actionLabel={
-          locale === 'en' ? 'Back to creative' : 'بازگشت به آثار خلاقه'
-        }
+        actionLabel={locale === 'en' ? 'Back to gallery' : 'بازگشت به گالری'}
         actionHref={creativeHref}
       />
     </div>
@@ -136,9 +134,7 @@ const creativeHref = localePath(locale, 'creative')
       <p slot="related" class="creative-page__back">
         <Link
           href={creativeHref}
-          label={
-            locale === 'en' ? '← Back to creative' : '← بازگشت به آثار خلاقه'
-          }
+          label={locale === 'en' ? '← Back to gallery' : '← بازگشت به گالری'}
           variant="standalone"
         />
       </p>

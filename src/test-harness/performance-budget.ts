@@ -17,7 +17,7 @@ export const PERFORMANCE_PROBE_ROUTES = [
   { id: 'home-fa', path: '/fa/', locale: 'fa' as const, label: 'Home (FA)' },
   {
     id: 'index-creative-en',
-    path: '/en/creative/',
+    path: '/en/gallery/',
     locale: 'en' as const,
     label: 'Creative index (EN)',
   },

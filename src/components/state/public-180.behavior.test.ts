@@ -42,13 +42,13 @@ const fixtureCopy = {
       title: 'Translation unavailable',
       message: 'This page is not published in English.',
       alternateLabel: 'View Persian version',
-      alternateHref: '/fa/writing/',
+      alternateHref: '/fa/blog/',
     },
     'no-results': {
       title: 'No matching results',
       message: 'Adjust filters or clear the query.',
       actionLabel: 'Clear filters',
-      actionHref: '/en/writing/',
+      actionHref: '/en/blog/',
     },
   },
   fa: {
@@ -76,13 +76,13 @@ const fixtureCopy = {
       title: 'ترجمه در دسترس نیست',
       message: 'این صفحه به فارسی منتشر نشده است.',
       alternateLabel: 'مشاهده نسخه انگلیسی',
-      alternateHref: '/en/writing/',
+      alternateHref: '/en/blog/',
     },
     'no-results': {
       title: 'نتیجه‌ای یافت نشد',
       message: 'فیلترها را تغییر دهید یا جستجو را پاک کنید.',
       actionLabel: 'پاک کردن فیلترها',
-      actionHref: '/fa/writing/',
+      actionHref: '/fa/blog/',
     },
   },
 } as const

@@ -25,8 +25,8 @@ export const footerResourceNav: NavItem[] = [
   },
   {
     slug: 'teaching',
-    pathSegment: 'teaching',
-    label: { en: 'Teaching', fa: 'تدریس' },
+    pathSegment: 'education',
+    label: { en: 'Education', fa: 'آموزش' },
   },
 ]
 
@@ -44,18 +44,18 @@ export const primaryNav: NavItem[] = [
   },
   {
     slug: 'creative',
-    pathSegment: 'creative',
-    label: { en: 'Creative', fa: 'آثار خلاقه' },
+    pathSegment: 'gallery',
+    label: { en: 'Gallery', fa: 'گالری' },
   },
   {
     slug: 'writing',
-    pathSegment: 'writing',
-    label: { en: 'Writing', fa: 'نوشتار' },
+    pathSegment: 'blog',
+    label: { en: 'Blog', fa: 'وبلاگ' },
   },
   {
     slug: 'teaching',
-    pathSegment: 'teaching',
-    label: { en: 'Teaching', fa: 'تدریس' },
+    pathSegment: 'education',
+    label: { en: 'Education', fa: 'آموزش' },
   },
 ]
 

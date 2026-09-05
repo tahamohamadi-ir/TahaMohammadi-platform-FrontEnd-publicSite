@@ -1,35 +1,11 @@
 ---
-import SiteLayout from '../../../layouts/SiteLayout.astro'
-import WritingDetailContent from '../../../components/writing/WritingDetailContent.astro'
-import {
-  fetchArticleDetail,
-  listArticleSlugs,
-  resolveWritingAlternateAvailability,
-} from '../../../lib/writing-content'
-import '../../../styles/page-families.css'
+import { listArticleSlugs } from '../../../lib/writing-content'
 
 export async function getStaticPaths() {
   const slugs = await listArticleSlugs('fa')
   return slugs.map((slug) => ({ params: { slug } }))
 }
 
-const locale = 'fa' as const
 const slug = Astro.params.slug ?? ''
-const model = await fetchArticleDetail(locale, slug)
-
-if (model.status === 'unavailable') {
-  return new Response(null, { status: 404, statusText: 'Not Found' })
-}
-
-const alternateAvailable = await resolveWritingAlternateAvailability(locale)
-const pageTitle = `${model.article.title} — طه محمدی`
+return Astro.redirect(`/fa/blog/${slug}/`, 301)
 ---
-
-<SiteLayout
-  title={pageTitle}
-  locale={locale}
-  pathSegment={`writing/${slug}`}
-  alternateAvailable={alternateAvailable}
->
-  <WritingDetailContent locale={locale} model={model} />
-</SiteLayout>

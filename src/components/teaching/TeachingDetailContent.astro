@@ -17,7 +17,7 @@ interface Props {
 }
 
 const { locale, model } = Astro.props
-const teachingHref = localePath(locale, 'teaching')
+const teachingHref = localePath(locale, 'education')
 ---
 
 {
@@ -29,7 +29,7 @@ const teachingHref = localePath(locale, 'teaching')
         headingLevel="h1"
         title={getTeachingUnavailableCopy(locale).title}
         message={getTeachingUnavailableCopy(locale).message}
-        actionLabel={locale === 'en' ? 'Back to teaching' : 'بازگشت به تدریس'}
+        actionLabel={locale === 'en' ? 'Back to education' : 'بازگشت به آموزش'}
         actionHref={teachingHref}
       />
     </div>
@@ -111,7 +111,7 @@ const teachingHref = localePath(locale, 'teaching')
       <p slot="related" class="teaching-page__back">
         <Link
           href={teachingHref}
-          label={locale === 'en' ? '← Back to teaching' : '← بازگشت به تدریس'}
+          label={locale === 'en' ? '← Back to education' : '← بازگشت به آموزش'}
           variant="standalone"
         />
       </p>
@@ -213,7 +213,7 @@ const teachingHref = localePath(locale, 'teaching')
       <p slot="related" class="teaching-page__back">
         <Link
           href={teachingHref}
-          label={locale === 'en' ? '← Back to teaching' : '← بازگشت به تدریس'}
+          label={locale === 'en' ? '← Back to education' : '← بازگشت به آموزش'}
           variant="standalone"
         />
       </p>

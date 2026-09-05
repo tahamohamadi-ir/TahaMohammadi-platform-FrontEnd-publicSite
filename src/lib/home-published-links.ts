@@ -39,5 +39,5 @@ export function resolveFeaturedPublicationHref(
   publishedSlugs: ReadonlySet<string>,
 ): string | undefined {
   if (!publishedSlugs.has(slug)) return undefined
-  return localePath(locale, `writing/${slug}`)
+  return localePath(locale, `blog/${slug}`)
 }

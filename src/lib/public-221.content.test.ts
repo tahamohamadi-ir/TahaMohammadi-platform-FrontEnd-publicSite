@@ -9,10 +9,10 @@ import {
 
 describe('creative content helpers', () => {
   it('returns localized route titles and empty copy', () => {
-    expect(getCreativeRouteTitle('en')).toBe('Creative')
-    expect(getCreativeRouteTitle('fa')).toBe('آثار خلاقه')
+    expect(getCreativeRouteTitle('en')).toBe('Gallery')
+    expect(getCreativeRouteTitle('fa')).toBe('گالری')
     expect(getCreativeEmptyCopy('en').message).toContain('not available yet')
-    expect(getCreativeEmptyCopy('fa').title).toBe('آثار خلاقه')
+    expect(getCreativeEmptyCopy('fa').title).toBe('گالری')
     expect(getCreativeUnavailableCopy('en').message).toBe(
       getCreativeEmptyCopy('en').message,
     )

@@ -28,7 +28,7 @@ const indexCaptures: PageFamilyCapture[] = [
   {
     id: 'pf01',
     pf: 'PF-01',
-    path: '/en/creative/',
+    path: '/en/gallery/',
     theme: 'light',
     locale: 'en',
     dir: 'ltr',
@@ -36,7 +36,7 @@ const indexCaptures: PageFamilyCapture[] = [
   {
     id: 'pf01',
     pf: 'PF-01',
-    path: '/fa/creative/',
+    path: '/fa/gallery/',
     theme: 'light',
     locale: 'fa',
     dir: 'rtl',
@@ -44,7 +44,7 @@ const indexCaptures: PageFamilyCapture[] = [
   {
     id: 'pf03',
     pf: 'PF-03',
-    path: '/en/writing/',
+    path: '/en/blog/',
     theme: 'light',
     locale: 'en',
     dir: 'ltr',
@@ -52,7 +52,7 @@ const indexCaptures: PageFamilyCapture[] = [
   {
     id: 'pf03',
     pf: 'PF-03',
-    path: '/fa/writing/',
+    path: '/fa/blog/',
     theme: 'light',
     locale: 'fa',
     dir: 'rtl',
@@ -108,7 +108,7 @@ const indexCaptures: PageFamilyCapture[] = [
   {
     id: 'pf06',
     pf: 'PF-06',
-    path: '/en/teaching/',
+    path: '/en/education/',
     theme: 'dark',
     locale: 'en',
     dir: 'ltr',
@@ -116,7 +116,7 @@ const indexCaptures: PageFamilyCapture[] = [
   {
     id: 'pf06',
     pf: 'PF-06',
-    path: '/fa/teaching/',
+    path: '/fa/education/',
     theme: 'dark',
     locale: 'fa',
     dir: 'rtl',
@@ -226,8 +226,8 @@ test.describe('PUBLIC-270 page-family visual capture stubs', () => {
   }) => {
     test.setTimeout(120_000)
     const locales = [
-      { locale: 'en' as const, path: '/en/creative/empty-shell/' },
-      { locale: 'fa' as const, path: '/fa/creative/empty-shell/' },
+      { locale: 'en' as const, path: '/en/gallery/empty-shell/' },
+      { locale: 'fa' as const, path: '/fa/gallery/empty-shell/' },
     ]
 
     for (const entry of locales) {

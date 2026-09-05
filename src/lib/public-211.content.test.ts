@@ -10,12 +10,12 @@ import {
 
 describe('writing content helpers', () => {
   it('returns localized route titles and unavailable copy', () => {
-    expect(getWritingRouteTitle('en')).toBe('Writing')
-    expect(getWritingRouteTitle('fa')).toBe('نوشتار')
+    expect(getWritingRouteTitle('en')).toBe('Blog')
+    expect(getWritingRouteTitle('fa')).toBe('وبلاگ')
     expect(getWritingUnavailableCopy('en').message).toContain(
       'not available yet',
     )
-    expect(getWritingUnavailableCopy('fa').title).toBe('نوشتار')
+    expect(getWritingUnavailableCopy('fa').title).toBe('وبلاگ')
   })
 
   it('formats reading time and card metadata from API fields only', () => {

@@ -32,16 +32,16 @@ This checklist does **not** close `PUBLIC-190`. Passing the no-JS crawl does not
 | ------- | ------------------------------------------------ | ------- | ----------------------------------------------- |
 | Gateway | `/`                                              | —       | language-selection nav, locale links, single H1 |
 | Home    | `/{locale}/`                                     | EN, FA  | shell chrome, hero H1, graph node labels        |
-| PF-01   | `/{locale}/creative/`                            | EN, FA  | shell, H1, main content text                    |
-| PF-03   | `/{locale}/writing/`                             | EN, FA  | shell, H1, main content text                    |
+| PF-01   | `/{locale}/gallery/`                             | EN, FA  | shell, H1, main content text                    |
+| PF-03   | `/{locale}/blog/`                                | EN, FA  | shell, H1, main content text                    |
 | PF-04   | `/{locale}/projects/`                            | EN, FA  | shell, H1, main content text                    |
 | PF-05   | `/{locale}/research/`, `/{locale}/publications/` | EN, FA  | shell, H1, main content text                    |
-| PF-06   | `/{locale}/teaching/`                            | EN, FA  | shell, H1, main content text                    |
+| PF-06   | `/{locale}/education/`                           | EN, FA  | shell, H1, main content text                    |
 | PF-07   | `/{locale}/about/`, `/{locale}/cv/`              | EN, FA  | shell, H1, main content text                    |
 | PF-08   | `/{locale}/contact/`                             | EN, FA  | shell, H1, main content text                    |
 | Utility | `/{locale}/search/`                              | EN, FA  | shell, H1, GET search form (`name="q"`)         |
 
-**Excluded:** PF-02 creative detail (`/{locale}/creative/{slug}/`) until a published detail route ships in the static build.
+**Excluded:** PF-02 gallery detail (`/{locale}/gallery/{slug}/`) until a published detail route ships in the static build.
 
 ---
 

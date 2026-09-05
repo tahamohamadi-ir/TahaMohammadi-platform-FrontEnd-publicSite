@@ -8,10 +8,10 @@ export type PageFamilyIndexCapture = {
 
 /** Index routes for PF-01 and PF-03..PF-08 (PUBLIC-270/280 map). PF-02 detail excluded. */
 export const PAGE_FAMILY_INDEX_CAPTURES: PageFamilyIndexCapture[] = [
-  { id: 'pf01', pf: 'PF-01', path: '/en/creative/', locale: 'en', dir: 'ltr' },
-  { id: 'pf01', pf: 'PF-01', path: '/fa/creative/', locale: 'fa', dir: 'rtl' },
-  { id: 'pf03', pf: 'PF-03', path: '/en/writing/', locale: 'en', dir: 'ltr' },
-  { id: 'pf03', pf: 'PF-03', path: '/fa/writing/', locale: 'fa', dir: 'rtl' },
+  { id: 'pf01', pf: 'PF-01', path: '/en/gallery/', locale: 'en', dir: 'ltr' },
+  { id: 'pf01', pf: 'PF-01', path: '/fa/gallery/', locale: 'fa', dir: 'rtl' },
+  { id: 'pf03', pf: 'PF-03', path: '/en/blog/', locale: 'en', dir: 'ltr' },
+  { id: 'pf03', pf: 'PF-03', path: '/fa/blog/', locale: 'fa', dir: 'rtl' },
   { id: 'pf04', pf: 'PF-04', path: '/en/projects/', locale: 'en', dir: 'ltr' },
   { id: 'pf04', pf: 'PF-04', path: '/fa/projects/', locale: 'fa', dir: 'rtl' },
   {
@@ -42,8 +42,8 @@ export const PAGE_FAMILY_INDEX_CAPTURES: PageFamilyIndexCapture[] = [
     locale: 'fa',
     dir: 'rtl',
   },
-  { id: 'pf06', pf: 'PF-06', path: '/en/teaching/', locale: 'en', dir: 'ltr' },
-  { id: 'pf06', pf: 'PF-06', path: '/fa/teaching/', locale: 'fa', dir: 'rtl' },
+  { id: 'pf06', pf: 'PF-06', path: '/en/education/', locale: 'en', dir: 'ltr' },
+  { id: 'pf06', pf: 'PF-06', path: '/fa/education/', locale: 'fa', dir: 'rtl' },
   {
     id: 'pf07-about',
     pf: 'PF-07',

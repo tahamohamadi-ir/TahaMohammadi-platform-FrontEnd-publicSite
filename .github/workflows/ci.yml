@@ -38,8 +38,8 @@ jobs:
       - name: Design authority validation
         run: npm run validate:design
 
-      - name: SEO validation
-        run: npm run validate:seo
-
       - name: Production build
         run: npm run build
+
+      - name: SEO validation
+        run: npm run validate:seo

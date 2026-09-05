@@ -1,0 +1,94 @@
+name: Deploy staging
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-staging-public-site
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Verify release candidate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Format check
+        run: npm run format:check
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Design authority validation
+        run: npm run validate:design
+
+      - name: Production build
+        run: npm run build
+
+      - name: SEO validation
+        run: npm run validate:seo
+
+  deploy:
+    name: Deploy public site to staging
+    needs: verify
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - name: Configure staging SSH access
+        env:
+          STAGING_SSH_PRIVATE_KEY: ${{ secrets.STAGING_SSH_PRIVATE_KEY }}
+          STAGING_SSH_KNOWN_HOSTS: ${{ secrets.STAGING_SSH_KNOWN_HOSTS }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$STAGING_SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          printf '%s\n' "$STAGING_SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Build and replace staging public service
+        env:
+          STAGING_SSH_HOST: ${{ secrets.STAGING_SSH_HOST }}
+          STAGING_SSH_PORT: ${{ secrets.STAGING_SSH_PORT }}
+          STAGING_SSH_USER: ${{ secrets.STAGING_SSH_USER }}
+          STAGING_APP_DIR: ${{ secrets.STAGING_APP_DIR }}
+          DEPLOY_SHA: ${{ github.sha }}
+        run: |
+          ssh -i ~/.ssh/id_ed25519 -o BatchMode=yes -o StrictHostKeyChecking=yes -p "$STAGING_SSH_PORT" "$STAGING_SSH_USER@$STAGING_SSH_HOST" \
+            "STAGING_APP_DIR='$STAGING_APP_DIR' DEPLOY_SHA='$DEPLOY_SHA' bash -se" <<'REMOTE'
+          set -euo pipefail
+          cd "$STAGING_APP_DIR"
+          git -C src/public fetch --prune origin main
+          git -C src/public checkout --detach "$DEPLOY_SHA"
+
+          current_release_id=$(sed -n 's/^RELEASE_ID=//p' .env.stage)
+          next_release_id="stage-public-${DEPLOY_SHA:0:12}"
+
+          docker image inspect "taha-cms-stage:${current_release_id}" >/dev/null
+          docker image inspect "taha-admin-stage:${current_release_id}" >/dev/null
+          docker image tag "taha-cms-stage:${current_release_id}" "taha-cms-stage:${next_release_id}"
+          docker image tag "taha-admin-stage:${current_release_id}" "taha-admin-stage:${next_release_id}"
+          sed -i "s/^RELEASE_ID=.*/RELEASE_ID=${next_release_id}/" .env.stage
+
+          docker compose --env-file .env.stage -f deploy/docker-compose.stage.yml build web
+          docker compose --env-file .env.stage -f deploy/docker-compose.stage.yml up -d --no-build web
+          test "$(docker compose --env-file .env.stage -f deploy/docker-compose.stage.yml ps --status running --services web)" = web
+          REMOTE

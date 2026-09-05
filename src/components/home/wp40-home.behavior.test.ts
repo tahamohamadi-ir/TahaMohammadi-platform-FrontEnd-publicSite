@@ -199,10 +199,8 @@ describe('WP-40 featured projects', () => {
 describe('WP-40 manuscript rail', () => {
   it('omits writing detail links when seed slugs are not in the published API set', async () => {
     const html = await render(HomeFeaturedPublications, { locale: 'en' })
-    expect(html).not.toMatch(
-      /href="\/en\/writing\/visual-discourse-elections\/"/,
-    )
-    expect(html).not.toMatch(/href="\/en\/writing\/vtd-edge-manuscript\/"/)
+    expect(html).not.toMatch(/href="\/en\/blog\/visual-discourse-elections\/"/)
+    expect(html).not.toMatch(/href="\/en\/blog\/vtd-edge-manuscript\/"/)
     expect(html).toMatch(/Manuscript in final revision/)
   })
 
@@ -212,14 +210,14 @@ describe('WP-40 manuscript rail', () => {
       locale: 'en',
       publishedArticleSlugs: published,
     })
-    expect(html).toMatch(/href="\/en\/writing\/visual-discourse-elections\/"/)
-    expect(html).not.toMatch(/href="\/en\/writing\/vtd-edge-manuscript\/"/)
+    expect(html).toMatch(/href="\/en\/blog\/visual-discourse-elections\/"/)
+    expect(html).not.toMatch(/href="\/en\/blog\/vtd-edge-manuscript\/"/)
   })
 
   it('omits EN-only manuscripts entirely from FA', async () => {
     const html = await render(HomeFeaturedPublications, { locale: 'fa' })
     expect(html).not.toMatch(/<article[\s>]/)
-    expect(html).not.toMatch(/href="\/fa\/writing\//)
+    expect(html).not.toMatch(/href="\/fa\/blog\//)
   })
 })
 
@@ -229,15 +227,15 @@ describe('WP-40 explore rails', () => {
     expect(html).toMatch(/blog-coral-stairs/)
     expect(html).toMatch(/learning-sage-library/)
     expect(html).toMatch(/gallery-ivory-forms/)
-    expect(html).toMatch(/href="\/en\/writing\/"/)
-    expect(html).not.toMatch(/href="\/en\/(teaching|creative)\/"/)
+    expect(html).toMatch(/href="\/en\/blog\/"/)
+    expect(html).not.toMatch(/href="\/en\/(education|gallery)\/"/)
     expect(html).toContain('No public teaching record is available yet.')
   })
 
   it('renders seed-backed FA unavailable states without anchors', async () => {
     const html = await render(HomeExploreRails, { locale: 'fa' })
-    expect(html).toMatch(/href="\/fa\/writing\/"/)
-    expect(html).not.toMatch(/href="\/fa\/(teaching|creative)\/"/)
+    expect(html).toMatch(/href="\/fa\/blog\/"/)
+    expect(html).not.toMatch(/href="\/fa\/(education|gallery)\/"/)
     expect(html).toContain(
       'هنوز رکورد عمومی تأییدشده‌ای برای تدریس در دسترس نیست.',
     )
@@ -272,10 +270,10 @@ describe('WP-40 exact-locale content adapter', () => {
 
     const rails = getHomeExploreContent('en').rails
     expect(
-      rails.find((rail) => rail.pathSegment === 'teaching')?.unavailableStatus,
+      rails.find((rail) => rail.pathSegment === 'education')?.unavailableStatus,
     ).toBe('No public teaching record is available yet.')
     expect(
-      rails.find((rail) => rail.pathSegment === 'creative')?.unavailableStatus,
+      rails.find((rail) => rail.pathSegment === 'gallery')?.unavailableStatus,
     ).toBe(
       'Selected visual and design work will be added after authorship, credits, and publication rights are confirmed.',
     )

@@ -1,0 +1,24 @@
+---
+import SiteLayout from '../../../layouts/SiteLayout.astro'
+import WritingPageContent from '../../../components/writing/WritingPageContent.astro'
+import {
+  fetchWritingIndex,
+  getWritingRouteTitle,
+  resolveWritingAlternateAvailability,
+} from '../../../lib/writing-content'
+import '../../../styles/page-families.css'
+
+const locale = 'fa' as const
+const model = await fetchWritingIndex(locale)
+const alternateAvailable = await resolveWritingAlternateAvailability(locale)
+const pageTitle = `${getWritingRouteTitle(locale)} — طه محمدی`
+---
+
+<SiteLayout
+  title={pageTitle}
+  locale={locale}
+  pathSegment="blog"
+  alternateAvailable={alternateAvailable}
+>
+  <WritingPageContent locale={locale} model={model} />
+</SiteLayout>

@@ -24,17 +24,17 @@ const PAGE_FAMILY_ROUTE_MAP = [
   {
     pf: 'PF-01',
     concept: 'creative-index-light.png',
-    routes: ['/{locale}/creative/'],
+    routes: ['/{locale}/gallery/'],
   },
   {
     pf: 'PF-02',
     concept: 'creative-detail-dark.png',
-    routes: ['/{locale}/creative/{slug}/', '/{locale}/creative/empty-shell/'],
+    routes: ['/{locale}/gallery/{slug}/', '/{locale}/gallery/empty-shell/'],
   },
   {
     pf: 'PF-03',
     concept: 'writing-index-light.png',
-    routes: ['/{locale}/writing/'],
+    routes: ['/{locale}/blog/'],
   },
   {
     pf: 'PF-04',
@@ -49,7 +49,7 @@ const PAGE_FAMILY_ROUTE_MAP = [
   {
     pf: 'PF-06',
     concept: 'teaching-index-dark.png',
-    routes: ['/{locale}/teaching/'],
+    routes: ['/{locale}/education/'],
   },
   {
     pf: 'PF-07',
@@ -83,8 +83,8 @@ describe('PUBLIC-270 page-family visual evidence scaffold', () => {
     expect(source).toContain('@visual')
     expect(source).toContain('PUBLIC_270_CAPTURE_WIDTHS')
     expect(source).toContain('PUBLIC-270')
-    expect(source).toContain('/en/creative/')
-    expect(source).toContain('/en/creative/empty-shell/')
+    expect(source).toContain('/en/gallery/')
+    expect(source).toContain('/en/gallery/empty-shell/')
     expect(source).toContain('/en/contact/')
   })
 })

@@ -36,8 +36,8 @@ describe('PUBLIC-150 behavior', () => {
   it('builds an equivalent-route alternate href only when the locale is available', () => {
     expect(buildLanguageToggleHref('en', 'about', true)).toBe('/fa/about/')
     expect(
-      buildLanguageToggleHref('fa', 'writing/visual-discourse-elections', true),
-    ).toBe('/en/writing/visual-discourse-elections/')
+      buildLanguageToggleHref('fa', 'blog/visual-discourse-elections', true),
+    ).toBe('/en/blog/visual-discourse-elections/')
     expect(buildLanguageToggleHref('en', 'about', false)).toBeUndefined()
   })
 

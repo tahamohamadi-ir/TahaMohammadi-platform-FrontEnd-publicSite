@@ -1,0 +1,24 @@
+---
+import SiteLayout from '../../../layouts/SiteLayout.astro'
+import TeachingPageContent from '../../../components/teaching/TeachingPageContent.astro'
+import {
+  fetchTeachingIndex,
+  getTeachingRouteTitle,
+  resolveTeachingAlternateAvailability,
+} from '../../../lib/teaching-content'
+import '../../../styles/page-families.css'
+
+const locale = 'fa' as const
+const model = await fetchTeachingIndex(locale)
+const alternateAvailable = await resolveTeachingAlternateAvailability(locale)
+const pageTitle = `${getTeachingRouteTitle(locale)} — طه محمدی`
+---
+
+<SiteLayout
+  title={pageTitle}
+  locale={locale}
+  pathSegment="education"
+  alternateAvailable={alternateAvailable}
+>
+  <TeachingPageContent locale={locale} model={model} />
+</SiteLayout>

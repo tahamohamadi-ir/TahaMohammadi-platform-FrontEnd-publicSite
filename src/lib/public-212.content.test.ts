@@ -17,7 +17,7 @@ describe('PUBLIC-212 books/talks/downloads via parent families', () => {
     expect(getWritingUnavailableCopy('en').message).toContain(
       'not available yet',
     )
-    expect(getWritingUnavailableCopy('fa').title).toBe('نوشتار')
+    expect(getWritingUnavailableCopy('fa').title).toBe('وبلاگ')
   })
 
   it('loads talks through teaching-content with honest unavailable copy', async () => {
@@ -26,7 +26,7 @@ describe('PUBLIC-212 books/talks/downloads via parent families', () => {
     expect(getTeachingUnavailableCopy('en').message).toContain(
       'not available yet',
     )
-    expect(getTeachingUnavailableCopy('fa').title).toBe('تدریس')
+    expect(getTeachingUnavailableCopy('fa').title).toBe('آموزش')
   })
 
   it('projects CV downloads through site settings with honest unavailable copy', async () => {

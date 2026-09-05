@@ -28,11 +28,11 @@ Compare each implementation screenshot against the matching concept at the same 
 
 | PF    | Route(s)                                         | Locales | Themes      | Widths   | Capture path                                                                                                         | Automated gate     | Manual owner compare |
 | ----- | ------------------------------------------------ | ------- | ----------- | -------- | -------------------------------------------------------------------------------------------------------------------- | ------------------ | -------------------- |
-| PF-01 | `/{locale}/creative/`                            | EN, FA  | Light, Dark | 320–1440 | `test-results/visual/public-280-pf01-{locale}-{width}-{theme}.png`                                                   | PASS (24 captures) | [ ]                  |
-| PF-03 | `/{locale}/writing/`                             | EN, FA  | Light, Dark | 320–1440 | `test-results/visual/public-280-pf03-{locale}-{width}-{theme}.png`                                                   | PASS (24 captures) | [ ]                  |
+| PF-01 | `/{locale}/gallery/`                             | EN, FA  | Light, Dark | 320–1440 | `test-results/visual/public-280-pf01-{locale}-{width}-{theme}.png`                                                   | PASS (24 captures) | [ ]                  |
+| PF-03 | `/{locale}/blog/`                                | EN, FA  | Light, Dark | 320–1440 | `test-results/visual/public-280-pf03-{locale}-{width}-{theme}.png`                                                   | PASS (24 captures) | [ ]                  |
 | PF-04 | `/{locale}/projects/`                            | EN, FA  | Light, Dark | 320–1440 | `test-results/visual/public-280-pf04-{locale}-{width}-{theme}.png`                                                   | PASS (24 captures) | [ ]                  |
 | PF-05 | `/{locale}/research/`, `/{locale}/publications/` | EN, FA  | Light, Dark | 320–1440 | `public-280-pf05-research-{locale}-{width}-{theme}.png`, `public-280-pf05-publications-{locale}-{width}-{theme}.png` | PASS (48 captures) | [ ]                  |
-| PF-06 | `/{locale}/teaching/`                            | EN, FA  | Light, Dark | 320–1440 | `test-results/visual/public-280-pf06-{locale}-{width}-{theme}.png`                                                   | PASS (24 captures) | [ ]                  |
+| PF-06 | `/{locale}/education/`                           | EN, FA  | Light, Dark | 320–1440 | `test-results/visual/public-280-pf06-{locale}-{width}-{theme}.png`                                                   | PASS (24 captures) | [ ]                  |
 | PF-07 | `/{locale}/about/`, `/{locale}/cv/`              | EN, FA  | Light, Dark | 320–1440 | `public-280-pf07-about-{locale}-{width}-{theme}.png`, `public-280-pf07-cv-{locale}-{width}-{theme}.png`              | PASS (48 captures) | [ ]                  |
 | PF-08 | `/{locale}/contact/`                             | EN, FA  | Light, Dark | 320–1440 | `test-results/visual/public-280-pf08-{locale}-{width}-{theme}.png`                                                   | PASS (24 captures) | [ ]                  |
 
@@ -48,11 +48,11 @@ Compare each implementation screenshot against the matching concept at the same 
 
 ## Open after index matrix
 
-| Item                 | Notes                                                                    |
-| -------------------- | ------------------------------------------------------------------------ |
-| PF-02 detail         | `/{locale}/creative/{slug}/` light/dark captures when detail route ships |
-| Manual owner compare | all PF rows above                                                        |
-| PUBLIC-290           | performance budget follows matrix evidence                               |
+| Item                 | Notes                                                                   |
+| -------------------- | ----------------------------------------------------------------------- |
+| PF-02 detail         | `/{locale}/gallery/{slug}/` light/dark captures when detail route ships |
+| Manual owner compare | all PF rows above                                                       |
+| PUBLIC-290           | performance budget follows matrix evidence                              |
 
 ---
 

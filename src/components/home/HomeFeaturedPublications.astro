@@ -12,7 +12,7 @@ interface Props {
 
 const { locale, publishedArticleSlugs = new Set<string>() } = Astro.props
 const content = getHomePublicationsContent(locale)
-const writingHref = localePath(locale, 'writing')
+const writingHref = localePath(locale, 'blog')
 ---
 
 {

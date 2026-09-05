@@ -31,7 +31,7 @@ describe('home published link resolution', () => {
         'visual-discourse-elections',
         published,
       ),
-    ).toBe('/en/writing/visual-discourse-elections/')
+    ).toBe('/en/blog/visual-discourse-elections/')
     expect(
       resolveFeaturedPublicationHref('en', 'vtd-edge-manuscript', published),
     ).toBeUndefined()

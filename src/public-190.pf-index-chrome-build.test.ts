@@ -61,7 +61,7 @@ const PF_INDEX_CHROME_ROUTES = [
     ],
   },
   {
-    route: 'en/creative/empty-shell/index.html',
+    route: 'en/gallery/empty-shell/index.html',
     markers: [
       'PageFamilyCreativeDetailShell',
       'PageFamilyCollaborateBandShell',
@@ -70,7 +70,7 @@ const PF_INDEX_CHROME_ROUTES = [
     ],
   },
   {
-    route: 'fa/creative/empty-shell/index.html',
+    route: 'fa/gallery/empty-shell/index.html',
     markers: [
       'PageFamilyCreativeDetailShell',
       'PageFamilyCollaborateBandShell',

@@ -9,12 +9,12 @@ import {
 
 describe('teaching content helpers', () => {
   it('returns localized route titles and unavailable copy', () => {
-    expect(getTeachingRouteTitle('en')).toBe('Teaching')
-    expect(getTeachingRouteTitle('fa')).toBe('تدریس')
+    expect(getTeachingRouteTitle('en')).toBe('Education')
+    expect(getTeachingRouteTitle('fa')).toBe('آموزش')
     expect(getTeachingUnavailableCopy('en').message).toContain(
       'not available yet',
     )
-    expect(getTeachingUnavailableCopy('fa').title).toBe('تدریس')
+    expect(getTeachingUnavailableCopy('fa').title).toBe('آموزش')
   })
 
   it('formats course and talk card metadata from API fields only', () => {

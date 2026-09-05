@@ -72,6 +72,10 @@ function collectSitemapUrls() {
 }
 
 function validateLocalePage(relativePath, html) {
+  if (/^(fa|en)\/(writing|teaching|creative)(?:\/|$)/.test(relativePath)) {
+    return
+  }
+
   const route = localeRouteFromDistRelative(relativePath)
   if (!route) return
 

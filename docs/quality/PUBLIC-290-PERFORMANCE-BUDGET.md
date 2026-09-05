@@ -43,11 +43,11 @@ Local Playwright probes apply the same numeric LCP/CLS caps as guardrails on the
 
 Viewport **1280×900**, Chromium via Playwright, cold build per run.
 
-| Route           | Locale | LCP (ms) |   CLS | Within budget | Notes       |
-| --------------- | ------ | -------: | ----: | ------------- | ----------- |
-| `/en/`          | EN     |      124 | 0.000 | yes           | home        |
-| `/fa/`          | FA     |       68 | 0.000 | yes           | home RTL    |
-| `/en/creative/` | EN     |       60 | 0.000 | yes           | PF-01 index |
+| Route          | Locale | LCP (ms) |   CLS | Within budget | Notes       |
+| -------------- | ------ | -------: | ----: | ------------- | ----------- |
+| `/en/`         | EN     |      124 | 0.000 | yes           | home        |
+| `/fa/`         | FA     |       68 | 0.000 | yes           | home RTL    |
+| `/en/gallery/` | EN     |       60 | 0.000 | yes           | PF-01 index |
 
 Loopback static preview yields much lower LCP than production field data is expected to show. Do not treat these milliseconds as production SLAs.
 

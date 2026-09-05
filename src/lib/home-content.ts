@@ -407,7 +407,7 @@ const seedEmptyStates: Record<
 const exploreRails: Record<
   Locale,
   readonly {
-    pathSegment: 'creative' | 'writing' | 'teaching'
+    pathSegment: 'gallery' | 'blog' | 'education'
     title: string
     excerpt: string
     viewLabel: string
@@ -415,45 +415,45 @@ const exploreRails: Record<
 > = {
   en: [
     {
-      pathSegment: 'creative',
-      title: 'Creative Work',
+      pathSegment: 'gallery',
+      title: 'Gallery',
       excerpt:
         'Selected visual and design work, published only with clear rights and credits.',
       viewLabel: 'View gallery',
     },
     {
-      pathSegment: 'writing',
-      title: 'Writing',
+      pathSegment: 'blog',
+      title: 'Blog',
       excerpt: 'Long-form technical and research writing.',
-      viewLabel: 'View writing',
+      viewLabel: 'View blog',
     },
     {
-      pathSegment: 'teaching',
-      title: 'Teaching',
+      pathSegment: 'education',
+      title: 'Education',
       excerpt: 'Selected structured learning and professional development.',
-      viewLabel: 'View teaching',
+      viewLabel: 'View education',
     },
   ],
   fa: [
     {
-      pathSegment: 'creative',
-      title: 'آثار خلاقه',
+      pathSegment: 'gallery',
+      title: 'گالری',
       excerpt:
         'آثار بصری و طراحی منتخب، فقط با حقوق و اعتبار روشن منتشر می‌شوند.',
       viewLabel: 'مشاهده گالری',
     },
     {
-      pathSegment: 'writing',
-      title: 'نوشتار',
+      pathSegment: 'blog',
+      title: 'وبلاگ',
       excerpt: 'نوشتارهای پژوهشی و فنی بلند.',
-      viewLabel: 'مشاهده نوشتار',
+      viewLabel: 'مشاهده وبلاگ',
     },
     {
-      pathSegment: 'teaching',
-      title: 'تدریس',
+      pathSegment: 'education',
+      title: 'آموزش',
       excerpt:
         'منتخبی از آموزش‌های ساختاریافته و توسعه حرفه‌ای که مستقیماً از مسیر پژوهشی و مهندسی من پشتیبانی می‌کنند.',
-      viewLabel: 'مشاهده تدریس',
+      viewLabel: 'مشاهده آموزش',
     },
   ],
 }
@@ -501,7 +501,7 @@ export interface HomePublicationsContent {
 }
 
 export interface ExploreRail {
-  pathSegment: 'creative' | 'writing' | 'teaching'
+  pathSegment: 'gallery' | 'blog' | 'education'
   title: string
   excerpt: string
   viewLabel?: string
@@ -567,13 +567,19 @@ export function getHomeExploreContent(locale: Locale): HomeExploreContent {
   return {
     title: exploreRailsTitle[locale],
     rails: exploreRails[locale].map((rail) => {
-      if (rail.pathSegment === 'writing') {
+      if (rail.pathSegment === 'blog') {
         return { ...rail, assetId: HOME_RAIL_ASSET_BY_PATH.writing }
       }
       return {
         ...rail,
-        assetId: HOME_RAIL_ASSET_BY_PATH[rail.pathSegment],
-        unavailableStatus: seedEmptyStates[rail.pathSegment][locale],
+        assetId:
+          rail.pathSegment === 'gallery'
+            ? HOME_RAIL_ASSET_BY_PATH.creative
+            : HOME_RAIL_ASSET_BY_PATH.teaching,
+        unavailableStatus:
+          seedEmptyStates[
+            rail.pathSegment === 'gallery' ? 'creative' : 'teaching'
+          ][locale],
       }
     }),
   }
