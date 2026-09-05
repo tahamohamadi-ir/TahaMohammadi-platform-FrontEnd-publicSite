@@ -50,6 +50,15 @@ jobs:
   deploy:
     name: Deploy public site to staging
     needs: verify
+    if: >-
+      ${{
+        secrets.STAGING_SSH_PRIVATE_KEY != '' &&
+        secrets.STAGING_SSH_KNOWN_HOSTS != '' &&
+        secrets.STAGING_SSH_HOST != '' &&
+        secrets.STAGING_SSH_PORT != '' &&
+        secrets.STAGING_SSH_USER != '' &&
+        secrets.STAGING_APP_DIR != ''
+      }}
     runs-on: ubuntu-latest
     environment: staging
     steps:
