@@ -98,6 +98,6 @@ jobs:
           sed -i "s/^RELEASE_ID=.*/RELEASE_ID=${next_release_id}/" .env.stage
 
           docker compose --env-file .env.stage -f deploy/docker-compose.stage.yml build web
-          docker compose --env-file .env.stage -f deploy/docker-compose.stage.yml up -d --no-build web
+          docker compose --env-file .env.stage -f deploy/docker-compose.stage.yml up -d --no-build --force-recreate web
           test "$(docker compose --env-file .env.stage -f deploy/docker-compose.stage.yml ps --status running --services web)" = web
           REMOTE
