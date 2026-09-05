@@ -21,7 +21,10 @@ if (model.status === 'unavailable') {
   return new Response(null, { status: 404, statusText: 'Not Found' })
 }
 
-const alternateAvailable = await resolveWritingAlternateAvailability(locale)
+const alternateAvailable = await resolveWritingAlternateAvailability(
+  locale,
+  slug,
+)
 const pageTitle = `${model.article.title} — Taha Mohammadi`
 ---
 

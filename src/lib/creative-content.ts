@@ -173,10 +173,9 @@ export async function resolveCreativeAlternateAvailability(
   locale: Locale,
   slug?: string,
 ): Promise<boolean> {
-  if (slug && isCreativeDetailEmptyShellSlug(slug)) {
+  if (!slug || isCreativeDetailEmptyShellSlug(slug)) {
     return true
   }
   const alternate: Locale = locale === 'en' ? 'fa' : 'en'
-  const model = await fetchCreativeIndex(alternate)
-  return model.status === 'ready'
+  return (await listCreativeSlugs(alternate)).includes(slug)
 }

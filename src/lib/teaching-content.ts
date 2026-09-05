@@ -227,10 +227,13 @@ export async function listTeachingDetailSlugs(
 
 export async function resolveTeachingAlternateAvailability(
   locale: Locale,
+  slug?: string,
 ): Promise<boolean> {
+  if (!slug) {
+    return true
+  }
   const alternate: Locale = locale === 'en' ? 'fa' : 'en'
-  const model = await fetchTeachingIndex(alternate)
-  return model.status === 'ready'
+  return (await listTeachingDetailSlugs(alternate)).includes(slug)
 }
 
 export { splitBodyParagraphs }

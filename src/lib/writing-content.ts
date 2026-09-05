@@ -178,8 +178,11 @@ export async function listArticleSlugs(locale: Locale): Promise<string[]> {
 
 export async function resolveWritingAlternateAvailability(
   locale: Locale,
+  slug?: string,
 ): Promise<boolean> {
+  if (!slug) {
+    return true
+  }
   const alternate: Locale = locale === 'en' ? 'fa' : 'en'
-  const model = await fetchWritingIndex(alternate)
-  return model.status === 'ready'
+  return (await listArticleSlugs(alternate)).includes(slug)
 }

@@ -5,10 +5,11 @@ import {
   getCreativeEmptyCopy,
   getCreativeRouteTitle,
   getCreativeUnavailableCopy,
+  resolveCreativeAlternateAvailability,
 } from './creative-content'
 
 describe('creative content helpers', () => {
-  it('returns localized route titles and empty copy', () => {
+  it('returns localized route titles and empty copy', async () => {
     expect(getCreativeRouteTitle('en')).toBe('Gallery')
     expect(getCreativeRouteTitle('fa')).toBe('گالری')
     expect(getCreativeEmptyCopy('en').message).toContain('not available yet')
@@ -16,6 +17,7 @@ describe('creative content helpers', () => {
     expect(getCreativeUnavailableCopy('en').message).toBe(
       getCreativeEmptyCopy('en').message,
     )
+    await expect(resolveCreativeAlternateAvailability('fa')).resolves.toBe(true)
   })
 
   it('formats creative card metadata from API fields only', () => {

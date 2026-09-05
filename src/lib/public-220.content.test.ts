@@ -5,16 +5,18 @@ import {
   formatTalkCardMeta,
   getTeachingRouteTitle,
   getTeachingUnavailableCopy,
+  resolveTeachingAlternateAvailability,
 } from './teaching-content'
 
 describe('teaching content helpers', () => {
-  it('returns localized route titles and unavailable copy', () => {
+  it('returns localized route titles and unavailable copy', async () => {
     expect(getTeachingRouteTitle('en')).toBe('Education')
     expect(getTeachingRouteTitle('fa')).toBe('آموزش')
     expect(getTeachingUnavailableCopy('en').message).toContain(
       'not available yet',
     )
     expect(getTeachingUnavailableCopy('fa').title).toBe('آموزش')
+    await expect(resolveTeachingAlternateAvailability('fa')).resolves.toBe(true)
   })
 
   it('formats course and talk card metadata from API fields only', () => {

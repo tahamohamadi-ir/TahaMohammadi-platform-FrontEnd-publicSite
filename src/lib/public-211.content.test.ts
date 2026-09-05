@@ -6,16 +6,18 @@ import {
   formatReadingTime,
   getWritingRouteTitle,
   getWritingUnavailableCopy,
+  resolveWritingAlternateAvailability,
 } from './writing-content'
 
 describe('writing content helpers', () => {
-  it('returns localized route titles and unavailable copy', () => {
+  it('returns localized route titles and unavailable copy', async () => {
     expect(getWritingRouteTitle('en')).toBe('Blog')
     expect(getWritingRouteTitle('fa')).toBe('وبلاگ')
     expect(getWritingUnavailableCopy('en').message).toContain(
       'not available yet',
     )
     expect(getWritingUnavailableCopy('fa').title).toBe('وبلاگ')
+    await expect(resolveWritingAlternateAvailability('fa')).resolves.toBe(true)
   })
 
   it('formats reading time and card metadata from API fields only', () => {
