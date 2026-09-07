@@ -33,7 +33,6 @@ Owner: PUBLIC (`Front-End/public-site`)
 - Design authority:
   - `npm run validate:design` -> PASS.
 
-
 ## 2026-09-07 — Detail SEO forwarding (PU-24, CM-03)
 
 - Detail pages (en/fa) forward `model.record.seo (course/talk union)` through the shared
