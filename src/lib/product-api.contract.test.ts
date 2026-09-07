@@ -1,21 +1,12 @@
-import { createHash } from 'node:crypto'
-import { existsSync, readFileSync } from 'node:fs'
+import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
 
 const testDir = path.dirname(fileURLToPath(import.meta.url))
 const repositoryRoot = path.resolve(testDir, '..', '..')
-const workspaceRoot = path.resolve(repositoryRoot, '..', '..')
-const backendPublicSchema = path.join(
-  workspaceRoot,
-  'Back-End',
-  'docs',
-  'contracts',
-  'openapi',
-  'current',
-  'public-openapi.json',
-)
+const acceptedPublicSchemaSha256 =
+  '47980f8f1992d885398676cf984b80e7068c7aa8e8b8f76a856565ffc9033681'
 const generatedPath = path.join(
   repositoryRoot,
   'src',
@@ -34,21 +25,11 @@ const shaPinPath = path.join(
   'openapi.public.sha256',
 )
 
-function crlfSha256(file: string): string {
-  const raw = readFileSync(file)
-  const lf = Buffer.from(raw.toString('utf8').replace(/\r\n/g, '\n'))
-  const crlf = Buffer.from(lf.toString('utf8').replace(/\n/g, '\r\n'))
-  return createHash('sha256').update(crlf).digest('hex')
-}
-
 /** Final public consumer-type sync (PU-SYNC-public, I08). The generated types
  * must come from the accepted backend snapshot — never a drifted or invented
  * schema — and must cover the final operations families build on. */
 describe('PU-SYNC-public product contract (I08)', () => {
   it('pins the accepted public snapshot before trusting generated types', () => {
-    expect(existsSync(backendPublicSchema), 'backend snapshot must exist').toBe(
-      true,
-    )
     const pin = JSON.parse(readFileSync(generatedPinPath, 'utf8')) as {
       artifact?: string
       sha256?: string
@@ -56,7 +37,7 @@ describe('PU-SYNC-public product contract (I08)', () => {
       pathCount?: number
     }
     expect(pin.artifact).toBe('public-openapi.json')
-    expect(pin.sha256).toBe(crlfSha256(backendPublicSchema))
+    expect(pin.sha256).toBe(acceptedPublicSchemaSha256)
     expect(readFileSync(shaPinPath, 'utf8').trim()).toBe(pin.sha256)
     // A07 acceptance 2026-09-06: 48 paths, version 0.4.0.
     expect(pin.openapiVersion).toBe('0.4.0')

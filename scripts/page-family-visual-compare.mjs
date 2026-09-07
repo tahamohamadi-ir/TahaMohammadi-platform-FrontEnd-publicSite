@@ -23,11 +23,15 @@ const pageFamilyConceptMarker = (root) =>
  */
 export function resolveVisualConceptAuthorityRoot(root) {
   const normalized = path.resolve(root)
+  const parent = path.dirname(normalized)
+  if (path.basename(normalized) === 'agent-kit') {
+    return parent
+  }
+
   if (existsSync(pageFamilyConceptMarker(normalized))) {
     return normalized
   }
 
-  const parent = path.dirname(normalized)
   if (existsSync(pageFamilyConceptMarker(parent))) {
     return parent
   }
