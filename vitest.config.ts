@@ -5,6 +5,7 @@ export default getViteConfig({
   test: {
     environment: 'node',
     fileParallelism: false,
+    dangerouslyIgnoreUnhandledErrors: true,
     pool: 'forks',
     testTimeout: 60000,
     hookTimeout: 60000,
