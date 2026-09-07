@@ -1,13 +1,10 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro'
 import ThemeToggle from '../components/ThemeToggle.astro'
-import ThemePicture from '../components/media/ThemePicture.astro'
+import GatewayPortal from '../components/gateway/GatewayPortal.astro'
 import PromotedPicture from '../components/media/PromotedPicture.astro'
 import { GATEWAY_ROLE_LINE } from '../lib/navigation'
-import {
-  BRAND_MARK_ASSET_ID,
-  GATEWAY_ATMOSPHERE_ASSETS,
-} from '../lib/media/promoted-media'
+import { BRAND_MARK_ASSET_ID } from '../lib/media/promoted-media'
 import '../styles/gateway.css'
 ---
 
@@ -34,7 +31,7 @@ import '../styles/gateway.css'
         />
       </div>
 
-      <h1 id="gateway-name" class="gw__title">
+      <h1 id="gateway-name" class="gw__title" aria-label="Taha Mohammadi">
         <span class="gw__title-primary">Taha</span><span
           class="gw__title-accent"
         >
@@ -44,36 +41,7 @@ import '../styles/gateway.css'
 
       <p class="gw__roles">{GATEWAY_ROLE_LINE}</p>
 
-      <div class="gw__portal" aria-hidden="true">
-        <svg class="gw__orbital" viewBox="0 0 400 400" focusable="false">
-          <circle
-            cx="200"
-            cy="200"
-            r="148"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1"
-            opacity="0.22"></circle>
-          <circle
-            cx="200"
-            cy="200"
-            r="108"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1"
-            opacity="0.32"></circle>
-          <circle cx="200" cy="52" r="5" class="gw__orbital-glow"></circle>
-          <circle cx="348" cy="200" r="5" class="gw__orbital-glow"></circle>
-          <circle cx="200" cy="348" r="5" class="gw__orbital-glow"></circle>
-          <circle cx="52" cy="200" r="5" class="gw__orbital-glow"></circle>
-        </svg>
-        <ThemePicture
-          lightAssetId={GATEWAY_ATMOSPHERE_ASSETS.light}
-          darkAssetId={GATEWAY_ATMOSPHERE_ASSETS.dark}
-          mediaSlot="gateway.atmosphere"
-          imgClass="gw__portal-img"
-        />
-      </div>
+      <GatewayPortal />
     </section>
 
     <footer class="gw__footer">

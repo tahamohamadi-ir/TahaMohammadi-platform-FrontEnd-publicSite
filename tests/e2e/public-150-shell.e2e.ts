@@ -25,6 +25,63 @@ test.describe('PUBLIC-150 shell muted label contrast', () => {
   }
 })
 
+test.describe('CA-08 shared chrome navigation', () => {
+  for (const locale of ['en', 'fa'] as const) {
+    const brandName = locale === 'en' ? 'TAHA MOHAMMADI' : 'طه محمدی'
+
+    test(`brand link keeps its locale name at 390px (${locale}) @a11y`, async ({
+      page,
+    }) => {
+      await page.setViewportSize({ width: 390, height: 844 })
+      await page.goto(`/${locale}/`)
+
+      // Brand text is visually hidden below 768px, so the header link
+      // must carry its own accessible name instead of going unnamed on
+      // mobile (the footer brand link stays visible and named throughout).
+      const headerBrand = page
+        .locator('.site-header')
+        .getByRole('link', { name: brandName })
+      await expect(headerBrand).toHaveAttribute('href', `/${locale}/`)
+    })
+
+    test(`mobile menu toggles by keyboard with no trap (${locale}) @a11y`, async ({
+      page,
+    }) => {
+      await page.setViewportSize({ width: 390, height: 844 })
+      await page.goto(`/${locale}/`)
+
+      const trigger = page.locator('.site-header__menu-trigger')
+      await expect(trigger).toBeVisible()
+      await trigger.focus()
+      await expect(trigger).toBeFocused()
+      await expect(trigger).toHaveCSS('outline-style', 'solid')
+      await expect(trigger).toHaveCSS('outline-width', '2px')
+
+      // Keyboard toggles the drawer open; its links become visible with no
+      // horizontal overflow and focus keeps moving (no trap).
+      await page.keyboard.press('Enter')
+      const mobileNav = page.locator('.site-header__nav--mobile')
+      await expect(mobileNav).toBeVisible()
+      const firstLink = mobileNav.getByRole('link').first()
+      await expect(firstLink).toBeVisible()
+      await firstLink.focus()
+      await expect(firstLink).toBeFocused()
+      await expect
+        .poll(() =>
+          page.evaluate(
+            () => document.documentElement.scrollWidth <= window.innerWidth,
+          ),
+        )
+        .toBe(true)
+
+      // Toggling again closes the drawer.
+      await trigger.focus()
+      await page.keyboard.press('Enter')
+      await expect(mobileNav).toBeHidden()
+    })
+  }
+})
+
 test.describe('PUBLIC-150 shell skip-link destination focus', () => {
   test('activates SkipLink, focuses #main-content, and shows a tokenized outline @a11y', async ({
     page,

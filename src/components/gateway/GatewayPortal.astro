@@ -1,0 +1,238 @@
+---
+/**
+ * CA-07 — Procedural gateway portal shell.
+ *
+ * Decorative only (`aria-hidden`): brand, heading, and both language links
+ * stay real HTML in `src/pages/index.astro` and navigate without waiting
+ * for the scene. The approved `portal-centered-*` raster (ThemePicture)
+ * remains the static fallback until the procedural canvas succeeds; with
+ * JS disabled, WebGL unavailable, or a rejected import the fallback simply
+ * stays. Exactly one canvas per route; the Home graph path is never
+ * imported here.
+ */
+import ThemePicture from '../media/ThemePicture.astro'
+import { GATEWAY_ATMOSPHERE_ASSETS } from '../../lib/media/promoted-media'
+---
+
+<div
+  class="gw__portal"
+  data-gateway-portal
+  data-gateway-state="idle"
+  aria-hidden="true"
+>
+  <svg class="gw__orbital" viewBox="0 0 400 400" focusable="false">
+    <circle
+      cx="200"
+      cy="200"
+      r="148"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1"
+      opacity="0.22"></circle>
+    <circle
+      cx="200"
+      cy="200"
+      r="108"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1"
+      opacity="0.32"></circle>
+    <circle cx="200" cy="52" r="5" class="gw__orbital-glow"></circle>
+    <circle cx="348" cy="200" r="5" class="gw__orbital-glow"></circle>
+    <circle cx="200" cy="348" r="5" class="gw__orbital-glow"></circle>
+    <circle cx="52" cy="200" r="5" class="gw__orbital-glow"></circle>
+  </svg>
+  <canvas
+    class="gw__portal-canvas"
+    data-gateway-canvas
+    aria-hidden="true"
+    hidden></canvas>
+  <ThemePicture
+    lightAssetId={GATEWAY_ATMOSPHERE_ASSETS.light}
+    darkAssetId={GATEWAY_ATMOSPHERE_ASSETS.dark}
+    mediaSlot="gateway.atmosphere"
+    imgClass="gw__portal-img"
+  />
+</div>
+
+<script>
+  // CA-07 — Progressive portal enhancement. Semantic brand, heading, and
+  // language links render first; the procedural arch loads lazily and
+  // yields to the raster fallback on any failure. Never imports the Home
+  // graph path.
+  import { scenePaletteFromCss } from '../../lib/visual/scene-contract'
+
+  function readPalette() {
+    const style = getComputedStyle(document.documentElement)
+    return scenePaletteFromCss((name) => style.getPropertyValue(name).trim())
+  }
+
+  function motionPreference() {
+    try {
+      return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        ? 'reduced'
+        : 'full'
+    } catch {
+      return 'full'
+    }
+  }
+
+  async function enhanceGatewayPortal() {
+    const portal = document.querySelector<HTMLElement>('[data-gateway-portal]')
+    if (!portal || portal.dataset.gatewayState === 'ready') return
+    const canvas = portal.querySelector<HTMLCanvasElement>(
+      'canvas[data-gateway-canvas]',
+    )
+    const fallback = portal.querySelector<HTMLElement>('[data-theme-picture]')
+    if (!canvas) {
+      portal.setAttribute('data-gateway-state', 'fallback')
+      return
+    }
+    const setFallback = () => {
+      portal.setAttribute('data-gateway-state', 'fallback')
+      canvas.hidden = true
+    }
+
+    let scene: {
+      render(): void
+      resize(width: number, height: number, pixelRatio: number): void
+      setPalette(palette: ReturnType<typeof readPalette>): void
+      dispose(): void
+    } | null = null
+    let motion: { playEntrance(): Promise<void>; dispose(): void } | null = null
+    const cleanups: Array<() => void> = []
+
+    try {
+      const sceneModule = await import('../../lib/visual/gateway-scene')
+      scene = sceneModule.createGatewayScene({
+        canvas,
+        palette: readPalette(),
+        motion: motionPreference(),
+        onError: () => {
+          try {
+            motion?.dispose()
+          } catch {
+            /* workers already torn down */
+          }
+          try {
+            scene?.dispose()
+          } catch {
+            /* workers already torn down */
+          }
+          motion = null
+          scene = null
+          setFallback()
+        },
+      })
+    } catch {
+      setFallback()
+      return
+    }
+    if (!scene) {
+      setFallback()
+      return
+    }
+
+    const resize = () => {
+      const width = portal.clientWidth
+      const height = portal.clientHeight
+      if (width <= 0 || height <= 0) return
+      scene?.resize(width, height, window.devicePixelRatio || 1)
+    }
+
+    const resizeObserver =
+      typeof ResizeObserver !== 'undefined'
+        ? new ResizeObserver(() => resize())
+        : null
+    resizeObserver?.observe(portal)
+    if (resizeObserver) cleanups.push(() => resizeObserver.disconnect())
+
+    const onThemeChange = () => {
+      if (portal.dataset.gatewayState !== 'ready') return
+      try {
+        scene?.setPalette(readPalette())
+      } catch {
+        /* a failed re-tint must not clear the fallback */
+      }
+    }
+    window.addEventListener('tm-themechange', onThemeChange)
+    cleanups.push(() =>
+      window.removeEventListener('tm-themechange', onThemeChange),
+    )
+
+    window.addEventListener(
+      'pagehide',
+      () => {
+        for (const cleanup of cleanups.splice(0)) {
+          try {
+            cleanup()
+          } catch {
+            /* teardown best-effort */
+          }
+        }
+        try {
+          motion?.dispose()
+        } catch {
+          /* workers already torn down */
+        }
+        try {
+          scene?.dispose()
+        } catch {
+          /* workers already torn down */
+        }
+        motion = null
+        scene = null
+      },
+      { once: true },
+    )
+
+    portal.setAttribute('data-gateway-state', 'ready')
+    canvas.hidden = false
+    resize()
+
+    try {
+      const motionModule = await import('../../lib/visual/gateway-motion')
+      motion = motionModule.createGatewayMotion({
+        scene,
+        canvas,
+        stage: portal,
+        fallbackElement: fallback,
+        motionPreference: motionPreference(),
+      })
+      await motion.playEntrance()
+    } catch {
+      setFallback()
+    }
+  }
+
+  function scheduleGatewayPortal() {
+    const idleWindow = window as unknown as {
+      requestIdleCallback?: (
+        callback: () => void,
+        options?: { timeout: number },
+      ) => number
+    }
+    if (typeof idleWindow.requestIdleCallback === 'function') {
+      idleWindow.requestIdleCallback(
+        () => {
+          void enhanceGatewayPortal()
+        },
+        { timeout: 1500 },
+      )
+    } else {
+      requestAnimationFrame(() =>
+        window.setTimeout(() => {
+          void enhanceGatewayPortal()
+        }, 0),
+      )
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', scheduleGatewayPortal, {
+      once: true,
+    })
+  } else {
+    scheduleGatewayPortal()
+  }
+</script>

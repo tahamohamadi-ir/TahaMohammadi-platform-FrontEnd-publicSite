@@ -1,6 +1,9 @@
 /* Language gateway — WP-40 reconstruction.
    Concept: language-gateway (brand first, portal graphic below, orbital glow).
-   Tokens only; no page-specific palette or spacing values. */
+   Tokens only; no page-specific palette or spacing values.
+   CA-07 — procedural portal canvas overlays the reserved portal slot
+   (aspect-ratio keeps its size before load); brand, heading, and language
+   links never wait for the scene. */
 
 .gw {
   position: relative;
@@ -128,6 +131,27 @@
   filter: drop-shadow(
     0 0 2rem color-mix(in srgb, var(--color-brand) 28%, transparent)
   );
+}
+
+/* CA-07 — procedural canvas. Absolute over the reserved slot (no layout
+   shift), never intercepting pointer input; only canvas visibility changes
+   between idle/ready/fallback states. */
+.gw__portal-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  inline-size: 100%;
+  block-size: 100%;
+  display: block;
+  pointer-events: none;
+}
+
+.gw__portal-canvas[hidden] {
+  display: none;
+}
+
+.gw__portal[data-gateway-state='fallback'] .gw__portal-canvas {
+  display: none;
 }
 
 .gw__footer {

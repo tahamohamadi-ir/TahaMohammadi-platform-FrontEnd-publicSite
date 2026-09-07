@@ -1,0 +1,68 @@
+---
+/**
+ * CA-03 — Native semantic node list for the hero graph. The renderer
+ * enhances this same source; it must not create a second keyboard tree.
+ * Usable with JavaScript disabled: every label, summary, and resolved link
+ * is static HTML. Unresolved related records are never rendered as links.
+ */
+import type { HeroGraphNode } from '../../lib/hero-graph-content'
+import type { Locale } from '../../lib/navigation'
+
+interface Props {
+  locale: Locale
+  nodes: HeroGraphNode[]
+  selectedId?: string | null
+  listLabel: string
+}
+
+const { locale, nodes, selectedId = null, listLabel } = Astro.props
+
+const relatedLinkLabel =
+  locale === 'fa'
+    ? (family: string, id: string) => `مشاهدهٔ رکورد ${family} (${id})`
+    : (family: string, id: string) => `Open ${family} record ${id}`
+---
+
+<ul class="hg-node-list" data-graph-nodes aria-label={listLabel}>
+  {
+    nodes.map((node) => {
+      return (
+        <li
+          class="hg-node"
+          data-graph-node={node.id}
+          data-x={String(node.layout.x)}
+          data-y={String(node.layout.y)}
+          data-z={String(node.layout.z)}
+          data-color-role={node.colorRole}
+          data-weight={String(node.weight)}
+        >
+          <details
+            class="hg-node__details"
+            name="hero-graph-node"
+            open={selectedId === node.id}
+          >
+            <summary class="hg-node__summary">
+              <span class="hg-node__label">{node.label}</span>
+            </summary>
+            <div class="hg-node__body">
+              {node.summary != null ? (
+                <p class="hg-node__summary-text">{node.summary}</p>
+              ) : null}
+              {node.related.length > 0 ? (
+                <ul class="hg-node__links">
+                  {node.related.map((link) => (
+                    <li>
+                      <a class="hg-node__link" href={link.href}>
+                        {relatedLinkLabel(link.family, link.id)}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+            </div>
+          </details>
+        </li>
+      )
+    })
+  }
+</ul>

@@ -1,0 +1,52 @@
+---
+import type { StoryDocument } from '../../lib/story-content'
+import { extractTableOfContents } from '../../lib/story-content'
+import StoryBlock from './StoryBlock.astro'
+import '../../styles/story.css'
+
+interface Props {
+  story: StoryDocument
+  showToc?: boolean
+  locale?: string
+}
+
+const { story, showToc, locale = story.locale || 'en' } = Astro.props
+
+const headings = extractTableOfContents(story)
+const shouldShowToc = showToc !== undefined ? showToc : headings.length >= 2
+const isFa = locale === 'fa'
+const tocTitle = isFa ? 'فهرست مطالب' : 'Table of Contents'
+const sections = Array.isArray(story.sections) ? story.sections : []
+---
+
+<article class="story-document" dir={isFa ? 'rtl' : 'ltr'}>
+  {
+    shouldShowToc && headings.length > 0 && (
+      <nav class="story-toc" aria-label={tocTitle}>
+        <h2 class="story-toc__title">{tocTitle}</h2>
+        <ol class="story-toc__list">
+          {headings.map((item) => (
+            <li class={`story-toc__item story-toc__item--level-${item.level}`}>
+              <a href={`#${item.id}`} class="story-toc__link">
+                {item.text}
+              </a>
+            </li>
+          ))}
+        </ol>
+      </nav>
+    )
+  }
+
+  {
+    sections.map((section) => (
+      <section
+        class={`story-section story-section--${section.layout || '1col'}`}
+      >
+        {Array.isArray(section.blocks) &&
+          section.blocks.map((block) => (
+            <StoryBlock block={block} locale={locale} />
+          ))}
+      </section>
+    ))
+  }
+</article>

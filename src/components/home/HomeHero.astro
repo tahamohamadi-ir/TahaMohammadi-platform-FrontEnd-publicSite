@@ -1,27 +1,57 @@
 ---
+/**
+ * CA-03 — Integrated identity/graph hero. The semantic graph (HeroGraph)
+ * lives inside this hero; Home pages no longer render a separate
+ * relationship-graph section. No portal imagery on Home: the gateway alone
+ * owns the portal (ADR-0008). Research-statement text is preserved as a
+ * readable paragraph in the copy column.
+ */
 import Button from '../ui/Button.astro'
 import Chip from '../ui/Chip.astro'
-import ThemePicture from '../media/ThemePicture.astro'
+import HeroGraph from '../hero/HeroGraph.astro'
 import { ArrowRight, FileText, Mail } from 'lucide-astro'
-import { getHomeHeroContent } from '../../lib/home-content'
+import type { HeroGraphModel } from '../../lib/hero-graph-content'
+import {
+  getHomeHeroContent,
+  getHomeResearchContent,
+} from '../../lib/home-content'
 import { getProfileHeroCtaLabels } from '../../lib/page-family-empty-chrome'
-import { HOME_HERO_ATMOSPHERE_ASSETS } from '../../lib/media/promoted-media'
 import { localePath, type Locale } from '../../lib/navigation'
 
 interface Props {
   locale: Locale
+  graph?: HeroGraphModel
+  selectedId?: string | null
 }
 
-const { locale } = Astro.props
+const { locale, selectedId = null } = Astro.props
+const graph: HeroGraphModel = Astro.props.graph ?? {
+  status: 'unavailable',
+  locale,
+}
 const content = getHomeHeroContent(locale)
+const research = getHomeResearchContent(locale)
 const ctaLabels = getProfileHeroCtaLabels(locale)
 ---
 
-<section class="hm-hero" data-hero-layout="split">
+<section
+  class="hm-hero hm-hero--integrated"
+  data-hero-layout="integrated"
+  data-graph-status={graph.status}
+>
   <div class="hm-hero__copy">
     <header class="hm-hero__lead">
       <p class="hm-hero__role">{content.role}</p>
-      <h1 class="hm-hero__name">{content.name}</h1>
+      {
+        locale === 'en' ? (
+          <h1 class="hm-hero__name">
+            <span class="hm-hero__name-primary">{content.namePrimary}</span>
+            <span class="hm-hero__name-accent">{content.nameAccent}</span>
+          </h1>
+        ) : (
+          <h1 class="hm-hero__name">{content.name}</h1>
+        )
+      }
       <p class="hm-hero__intro">{content.intro}</p>
     </header>
 
@@ -52,6 +82,8 @@ const ctaLabels = getProfileHeroCtaLabels(locale)
       </Button>
     </div>
 
+    <p class="hm-hero__research">{research.lead}</p>
+
     {
       content.focusChips.length > 0 && (
         <div class="hm-hero__focus">
@@ -68,54 +100,7 @@ const ctaLabels = getProfileHeroCtaLabels(locale)
     }
   </div>
 
-  <div class="hm-hero__media" aria-hidden="true">
-    <ThemePicture
-      lightAssetId={HOME_HERO_ATMOSPHERE_ASSETS.light}
-      darkAssetId={HOME_HERO_ATMOSPHERE_ASSETS.dark}
-      mediaSlot="home.hero.atmosphere"
-      imgClass="hm-hero__media-img"
-    />
-    <svg class="hm-hero__ornament" viewBox="0 0 240 240" focusable="false">
-      <circle
-        cx="120"
-        cy="120"
-        r="98"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="1"
-        opacity="0.28"></circle>
-      <circle
-        cx="120"
-        cy="120"
-        r="68"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="1"
-        opacity="0.36"></circle>
-      <circle
-        cx="120"
-        cy="120"
-        r="38"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="1"
-        opacity="0.44"></circle>
-      <line
-        x1="120"
-        y1="18"
-        x2="120"
-        y2="222"
-        stroke="currentColor"
-        stroke-width="1"
-        opacity="0.22"></line>
-      <line
-        x1="18"
-        y1="120"
-        x2="222"
-        y2="120"
-        stroke="currentColor"
-        stroke-width="1"
-        opacity="0.22"></line>
-    </svg>
+  <div class="hm-hero__graph">
+    <HeroGraph locale={locale} graph={graph} selectedId={selectedId} />
   </div>
 </section>

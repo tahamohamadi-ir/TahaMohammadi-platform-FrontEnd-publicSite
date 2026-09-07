@@ -1,0 +1,107 @@
+---
+/**
+ * CA-05 — Visual Atlas Section: Graph Selection & Motion Specimen.
+ *
+ * Provides live testing and visual verification of:
+ * - GraphController native DOM synchronization.
+ * - GSAP bounded motion choreography (settle 600-900ms, selection 180-280ms, tilt ±3°).
+ * - Projected HTML label tags with click-to-select without route change.
+ * - Live reduced-motion switching and keyboard Escape clearing.
+ * - No wheel capture and clean disposal.
+ */
+
+import GraphInteractionDemo from '../../components/hero/GraphInteractionDemo.astro'
+import {
+  SCENE_CONTRACT_VERSION,
+  SCENE_MOTION,
+} from '../../lib/visual/scene-contract'
+---
+
+<section
+  class="atlas-section"
+  id="atlas-graph-interaction"
+  data-visual-id="AtlasGraphInteractionSection"
+>
+  <h2 class="atlas-section__title">Graph Selection & Motion Choreography</h2>
+  <p class="atlas-section__summary">
+    Accessible native-control enhancement, projected HTML labels, and bounded
+    GSAP choreography built against scene contract <code
+      >{SCENE_CONTRACT_VERSION}</code
+    >. Single selection model shared between native HTML summaries, projected
+    label chips, and 3D constellation visual states.
+  </p>
+
+  <div class="atlas-specimen" data-visual-id="AtlasGraphInteractionSpecimen">
+    <div class="atlas-state-row" style="justify-content: space-between;">
+      <p class="atlas-specimen__label">Interactive Choreography Specimen</p>
+      <span
+        style="font-size: var(--font-size-xs); color: var(--color-ink-secondary); font-family: monospace;"
+      >
+        Settle: {SCENE_MOTION.settleMs.min}&ndash;{SCENE_MOTION.settleMs.max}ms
+        &bull; Selection: {SCENE_MOTION.selectionMs.min}&ndash;{
+          SCENE_MOTION.selectionMs.max
+        }ms &bull; Tilt: &plusmn;{SCENE_MOTION.tiltDegrees}&deg;
+      </span>
+    </div>
+
+    <GraphInteractionDemo initialCount={5} initialLocale="en" />
+  </div>
+
+  <div class="atlas-grid atlas-grid--components">
+    <div class="atlas-specimen">
+      <p class="atlas-specimen__label">Interaction & Accessibility Contract</p>
+      <ul
+        style="margin: 0; padding-inline-start: 1.25rem; font-size: var(--font-size-sm); color: var(--color-ink-secondary); line-height: 1.6;"
+      >
+        <li>
+          Native <code>&lt;details&gt;</code> and <code>&lt;summary&gt;</code> elements
+          maintain full semantic access.
+        </li>
+        <li>
+          Selecting a node updates native controls, label chips, detail panel,
+          and Three.js scene concurrently.
+        </li>
+        <li>
+          Escape key clears selection and restores focus without scroll jumping.
+        </li>
+        <li>
+          Regular anchor links in detail panels navigate normally without
+          interception.
+        </li>
+        <li>
+          No wheel capture: page scrolling and pinch zoom remain completely
+          unconstrained.
+        </li>
+      </ul>
+    </div>
+
+    <div class="atlas-specimen">
+      <p class="atlas-specimen__label">GSAP Choreography & Lifecycle</p>
+      <ul
+        style="margin: 0; padding-inline-start: 1.25rem; font-size: var(--font-size-sm); color: var(--color-ink-secondary); line-height: 1.6;"
+      >
+        <li>Settle duration clamped between 600ms and 900ms (750ms target).</li>
+        <li>
+          Selection duration clamped between 180ms and 280ms (220ms target).
+        </li>
+        <li>
+          Fine-pointer tilt clamped strictly to &plusmn;3&deg; and smoothly
+          interpolates.
+        </li>
+        <li>
+          Reduced motion instantly applies static poses and disables pointer
+          tilt.
+        </li>
+        <li>
+          Animations pause when the document tab is hidden and resume on
+          visibility.
+        </li>
+        <li>
+          Full cleanup via <code>gsap.context().revert()</code> and <code
+            >gsap.matchMedia().revert()</code
+          >.
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>

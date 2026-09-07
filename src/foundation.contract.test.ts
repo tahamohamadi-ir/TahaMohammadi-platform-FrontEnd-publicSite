@@ -7,6 +7,7 @@ import {
   readdirSync,
   rmSync,
   statSync,
+  writeFileSync,
 } from 'node:fs'
 import path from 'node:path'
 import { spawnSync } from 'node:child_process'
@@ -138,10 +139,11 @@ describe('WP-10 foundation contracts', () => {
     )
   })
 
-  it('freezes only the defined page-family range while allowing WP-25 and PUBLIC-260', () => {
+  it('points active PUBLIC dispatch at the V2 execution queue, not retired CA packets', () => {
     const taskList = readRepositoryFile('TASK-LIST.md')
-    expect(taskList).toContain('`PUBLIC-200` through `PUBLIC-240`')
-    expect(taskList).toContain('`WP-25` and `PUBLIC-260` remain allowed')
+    expect(taskList).toContain('execution-tasks.json')
+    expect(taskList).toContain('EXECUTION.md')
+    expect(taskList).toContain('retired CA IDs are not assignments')
   })
 
   it('projects every required authority token through one CSS token interface', () => {
@@ -273,5 +275,322 @@ describe('WP-10 foundation contracts', () => {
 
     expect(order.every((index) => index >= 0)).toBe(true)
     expect(order).toEqual([...order].sort((left, right) => left - right))
+  })
+})
+
+describe('CA-01 versioned V2 consumer overlay', () => {
+  it('pins the versioned consumer overlay alongside the intact snapshot', () => {
+    const overlayPath = path.join(
+      repositoryRoot,
+      'contracts',
+      'design-authority',
+      'v2-overlay.json',
+    )
+    expect(
+      existsSync(overlayPath),
+      'contracts/design-authority/v2-overlay.json must exist',
+    ).toBe(true)
+    const overlay = JSON.parse(
+      readRepositoryFile('contracts/design-authority/v2-overlay.json'),
+    )
+    expect(overlay.version).toBe('2.1.0')
+    expect(overlay.packet).toBe('CA-01')
+    expect(overlay.home.hero).toBe('identity-and-research-graph')
+    expect(overlay.home.portal).toBe(false)
+    expect(overlay.home.standaloneGraphSection).toBe(false)
+    expect(overlay.home.order).toEqual([
+      'identity-lead-with-graph',
+      'audience-paths',
+      'selected-work',
+      'research-axes',
+      'recent-writing',
+      'collaboration-cv-contact',
+    ])
+    expect(overlay.portalDecorationRoutes).toEqual(['/'])
+    expect(overlay.referencePolicy.historicalSnapshots).toBe(
+      'preserve-pinned-bytes',
+    )
+    expect(overlay.referencePolicy.overlayAdoption).toBe('CA-01')
+    expect(overlay.productAuthority).toBe(
+      'Docs/09-decisions/ADR-0010-UNIFIED-EXECUTION-CONTRACTS.md',
+    )
+    expect(overlay.centralOverlaySha256).toBe(
+      '301806119c176110f8f6f43bfadf8778c073d81ccfd1364d94c7a5177da78345',
+    )
+    expect(overlay.pinnedSnapshot.components).toBe(24)
+    expect(overlay.pinnedSnapshot.templates).toBe(6)
+  })
+
+  it('validates the versioned overlay through the design authority validator', () => {
+    const result = spawnSync(
+      process.execPath,
+      ['scripts/validate-design-authority.mjs'],
+      {
+        cwd: repositoryRoot,
+        encoding: 'utf8',
+        env: {
+          ...process.env,
+          DESIGN_AUTHORITY_ROOT: path.join(repositoryRoot, 'not-present'),
+        },
+      },
+    )
+
+    expect(result.status, result.stderr).toBe(0)
+    expect(result.stdout).toContain('V2 overlay 2.1.0 validated')
+  })
+
+  it('rejects contradictory V2 ordering in the overlay', () => {
+    const snapshotRoot = path.join(
+      repositoryRoot,
+      'contracts',
+      'design-authority',
+    )
+    const mutatedSnapshotRoot = mkdtempSync(
+      path.join(os.tmpdir(), 'tm-ca01-order-'),
+    )
+    try {
+      cpSync(snapshotRoot, mutatedSnapshotRoot, { recursive: true })
+      const overlayPath = path.join(mutatedSnapshotRoot, 'v2-overlay.json')
+      const overlay = JSON.parse(readFileSync(overlayPath, 'utf8'))
+      overlay.home.order = [
+        'audience-paths',
+        'identity-lead-with-graph',
+        ...overlay.home.order.slice(2),
+      ]
+      writeFileSync(overlayPath, `${JSON.stringify(overlay, null, 2)}\n`)
+      const result = spawnSync(
+        process.execPath,
+        ['scripts/validate-design-authority.mjs'],
+        {
+          cwd: repositoryRoot,
+          encoding: 'utf8',
+          env: {
+            ...process.env,
+            DESIGN_AUTHORITY_ROOT: path.join(
+              mutatedSnapshotRoot,
+              'central-unavailable',
+            ),
+            DESIGN_AUTHORITY_SNAPSHOT_ROOT: mutatedSnapshotRoot,
+          },
+        },
+      )
+
+      expect(result.status).not.toBe(0)
+      expect(`${result.stdout}${result.stderr}`).toContain(
+        'V2 overlay home order contradiction',
+      )
+    } finally {
+      rmSync(mutatedSnapshotRoot, { recursive: true, force: true })
+    }
+  })
+
+  it('rejects contradictory portal placement in the overlay', () => {
+    const snapshotRoot = path.join(
+      repositoryRoot,
+      'contracts',
+      'design-authority',
+    )
+    const mutatedSnapshotRoot = mkdtempSync(
+      path.join(os.tmpdir(), 'tm-ca01-portal-'),
+    )
+    try {
+      cpSync(snapshotRoot, mutatedSnapshotRoot, { recursive: true })
+      const overlayPath = path.join(mutatedSnapshotRoot, 'v2-overlay.json')
+      const overlay = JSON.parse(readFileSync(overlayPath, 'utf8'))
+      overlay.home.portal = true
+      overlay.portalDecorationRoutes = ['/', '/fa/', '/en/']
+      writeFileSync(overlayPath, `${JSON.stringify(overlay, null, 2)}\n`)
+      const result = spawnSync(
+        process.execPath,
+        ['scripts/validate-design-authority.mjs'],
+        {
+          cwd: repositoryRoot,
+          encoding: 'utf8',
+          env: {
+            ...process.env,
+            DESIGN_AUTHORITY_ROOT: path.join(
+              mutatedSnapshotRoot,
+              'central-unavailable',
+            ),
+            DESIGN_AUTHORITY_SNAPSHOT_ROOT: mutatedSnapshotRoot,
+          },
+        },
+      )
+
+      expect(result.status).not.toBe(0)
+      expect(`${result.stdout}${result.stderr}`).toContain(
+        'V2 overlay portal placement contradiction',
+      )
+    } finally {
+      rmSync(mutatedSnapshotRoot, { recursive: true, force: true })
+    }
+  })
+
+  it('records the CA-01 delivery with no dependency change', () => {
+    // A06: the no-dependency-change invariant belongs to the CA-01 delivery
+    // evidence, not to the live tree. CA-04 legitimately adopted the bounded
+    // Three.js scene dependency afterwards, so asserting its permanent
+    // absence here would keep breaking every later packet. The overlay — the
+    // CA-01 delivery artifact — records both facts explicitly.
+    const overlay = JSON.parse(
+      readRepositoryFile('contracts/design-authority/v2-overlay.json'),
+    )
+    expect(overlay.packet).toBe('CA-01')
+    expect(overlay.runtimeChange.dependencies).toBe(false)
+    expect(overlay.runtimeChange.css).toBe(false)
+    expect(overlay.runtimeChange.routes).toBe(false)
+    expect(overlay.runtimeChange.components).toBe(false)
+    expect(overlay.allowedSceneDependencies.gsap).toMatch(/unchanged by CA-01/)
+    expect(overlay.allowedSceneDependencies.three).toMatch(/bounded-allowed/)
+    expect(overlay.allowedSceneDependencies.three).toMatch(/CA-04/)
+    expect(overlay.allowedSceneDependencies.three).toMatch(
+      /not installed by CA-01/,
+    )
+    const packageManifest = JSON.parse(readRepositoryFile('package.json'))
+    expect(packageManifest.dependencies['gsap']).toBeTruthy()
+    expect(
+      existsSync(
+        path.join(
+          repositoryRoot,
+          'docs',
+          'quality',
+          'concept-alignment-v2',
+          'CA-01-HANDOFF.md',
+        ),
+      ),
+      'CA-01 handoff delivery record must be preserved',
+    ).toBe(true)
+  })
+
+  it('accepts the approved Three.js scene dependency in isolated fixtures', () => {
+    const snapshotRoot = path.join(
+      repositoryRoot,
+      'contracts',
+      'design-authority',
+    )
+    const fixtureRoot = mkdtempSync(path.join(os.tmpdir(), 'tm-ca01-three-'))
+    try {
+      cpSync(snapshotRoot, fixtureRoot, { recursive: true })
+      const fixturePackage = path.join(fixtureRoot, 'package.fixture.json')
+      const packageManifest = JSON.parse(readRepositoryFile('package.json'))
+      packageManifest.dependencies = {
+        ...packageManifest.dependencies,
+        three: '0.0.0-ca01-fixture-synthetic',
+      }
+      writeFileSync(
+        fixturePackage,
+        `${JSON.stringify(packageManifest, null, 2)}\n`,
+      )
+      const result = spawnSync(
+        process.execPath,
+        ['scripts/validate-design-authority.mjs'],
+        {
+          cwd: repositoryRoot,
+          encoding: 'utf8',
+          env: {
+            ...process.env,
+            DESIGN_AUTHORITY_ROOT: path.join(
+              fixtureRoot,
+              'central-unavailable',
+            ),
+            DESIGN_AUTHORITY_SNAPSHOT_ROOT: fixtureRoot,
+            DESIGN_AUTHORITY_PACKAGE_JSON: fixturePackage,
+          },
+        },
+      )
+
+      expect(result.status, result.stderr).toBe(0)
+      expect(result.stdout).toContain('V2 overlay 2.1.0 validated')
+    } finally {
+      rmSync(fixtureRoot, { recursive: true, force: true })
+    }
+  })
+
+  it('still rejects contradictory portal placement when Three.js is present', () => {
+    const snapshotRoot = path.join(
+      repositoryRoot,
+      'contracts',
+      'design-authority',
+    )
+    const fixtureRoot = mkdtempSync(
+      path.join(os.tmpdir(), 'tm-ca01-three-portal-'),
+    )
+    try {
+      cpSync(snapshotRoot, fixtureRoot, { recursive: true })
+      const overlayPath = path.join(fixtureRoot, 'v2-overlay.json')
+      const overlay = JSON.parse(readFileSync(overlayPath, 'utf8'))
+      overlay.home.portal = true
+      overlay.portalDecorationRoutes = ['/', '/fa/', '/en/']
+      writeFileSync(overlayPath, `${JSON.stringify(overlay, null, 2)}\n`)
+      const fixturePackage = path.join(fixtureRoot, 'package.fixture.json')
+      const packageManifest = JSON.parse(readRepositoryFile('package.json'))
+      packageManifest.dependencies = {
+        ...packageManifest.dependencies,
+        three: '0.0.0-ca01-fixture-synthetic',
+      }
+      writeFileSync(
+        fixturePackage,
+        `${JSON.stringify(packageManifest, null, 2)}\n`,
+      )
+      const result = spawnSync(
+        process.execPath,
+        ['scripts/validate-design-authority.mjs'],
+        {
+          cwd: repositoryRoot,
+          encoding: 'utf8',
+          env: {
+            ...process.env,
+            DESIGN_AUTHORITY_ROOT: path.join(
+              fixtureRoot,
+              'central-unavailable',
+            ),
+            DESIGN_AUTHORITY_SNAPSHOT_ROOT: fixtureRoot,
+            DESIGN_AUTHORITY_PACKAGE_JSON: fixturePackage,
+          },
+        },
+      )
+
+      expect(result.status).not.toBe(0)
+      expect(`${result.stdout}${result.stderr}`).toContain(
+        'V2 overlay portal placement contradiction',
+      )
+    } finally {
+      rmSync(fixtureRoot, { recursive: true, force: true })
+    }
+  })
+
+  it('keeps the CA-01 delivery evidence reproducible', () => {
+    // A06: attributing the whole-checkout `git status` diff to CA-01 broke
+    // every later packet sharing this checkout. CA-01 scope is its delivery
+    // evidence only: the pinned snapshot manifest and the overlay must agree
+    // with each other, so the historical no-change record stays checkable
+    // without scanning unrelated work.
+    const manifest = JSON.parse(
+      readRepositoryFile('contracts/design-authority/manifest.json'),
+    )
+    for (const name of ['tokens.json', 'components.json', 'templates.json']) {
+      expect(
+        existsSync(
+          path.join(repositoryRoot, 'contracts', 'design-authority', name),
+        ),
+        `${name} must exist`,
+      ).toBe(true)
+    }
+    expect(manifest.version).toBe('1.0.0')
+    const overlay = JSON.parse(
+      readRepositoryFile('contracts/design-authority/v2-overlay.json'),
+    )
+    expect(overlay.packet).toBe('CA-01')
+    expect(overlay.pinnedSnapshot.manifestVersion).toBe(manifest.version)
+    expect(overlay.pinnedSnapshot.snapshotDate).toBe(manifest.snapshotDate)
+    expect(overlay.pinnedSnapshot.components).toBe(
+      manifest.inventories.components,
+    )
+    expect(overlay.pinnedSnapshot.templates).toBe(
+      manifest.inventories.templates,
+    )
+    expect(overlay.referencePolicy.historicalSnapshots).toBe(
+      'preserve-pinned-bytes',
+    )
   })
 })

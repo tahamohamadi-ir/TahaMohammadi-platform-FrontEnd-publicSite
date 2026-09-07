@@ -1,3 +1,6 @@
+import { readFileSync } from 'node:fs'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { experimental_AstroContainer as AstroContainer } from 'astro/container'
 import { describe, expect, it } from 'vitest'
 
@@ -9,6 +12,11 @@ import HomeHero from './HomeHero.astro'
 import HomeJourney from './HomeJourney.astro'
 import HomeResearchGraph from './HomeResearchGraph.astro'
 import HomeResearchInterests from './HomeResearchInterests.astro'
+import {
+  adaptHeroGraph,
+  createStaticRelatedResolver,
+  type GraphPayloadOut,
+} from '../../lib/hero-graph-content'
 import {
   getHomeExploreContent,
   getHomeFeaturedContent,
@@ -36,21 +44,25 @@ const EN_ROLE =
   'Software Engineer &amp; Researcher in Human-Centered AI, Data Systems, and Visual Analytics'
 
 describe('WP-40 home hero', () => {
-  it('keeps the orbit atmosphere in a decorative ThemePicture without /media/ URLs', async () => {
-    const html = await render(HomeHero, { locale: 'en' })
-    expect(html).toMatch(/data-theme-picture/)
-    expect(html).toMatch(/portal-orbit-light/)
-    expect(html).toMatch(/aria-hidden="true"/)
-    expect(html).not.toMatch(/\/media\//)
-  })
-
-  it('uses concept split layout chrome (copy + discrete media) for EN and FA', async () => {
+  it('keeps the integrated hero free of portal atmosphere imagery', async () => {
     for (const locale of ['en', 'fa'] as const) {
       const html = await render(HomeHero, { locale })
-      expect(html).toMatch(/data-hero-layout="split"/)
+      expect(html).toMatch(/data-hero-layout="integrated"/)
+      expect(html).not.toMatch(/data-theme-picture/)
+      expect(html).not.toMatch(/portal-orbit-light/)
+      expect(html).not.toMatch(/hm-hero__media/)
+      expect(html).not.toMatch(/hm-hero__ornament/)
+      expect(html).not.toMatch(/\/media\//)
+    }
+  })
+
+  it('uses the integrated identity/graph layout chrome for EN and FA', async () => {
+    for (const locale of ['en', 'fa'] as const) {
+      const html = await render(HomeHero, { locale })
+      expect(html).toMatch(/data-hero-layout="integrated"/)
       expect(html).toMatch(/hm-hero__copy/)
-      expect(html).toMatch(/hm-hero__media/)
-      expect(html).toMatch(/hm-hero__ornament/)
+      expect(html).toMatch(/hm-hero__graph/)
+      expect(html).toMatch(/data-graph-region/)
       expect(html).not.toMatch(/hm-hero__atmosphere/)
       expect(html).not.toMatch(/hm-hero__scrim/)
     }
@@ -75,6 +87,19 @@ describe('WP-40 home hero', () => {
       expect(html).toMatch(/lucide/)
       expect(html.match(/class="ui-chip ui-chip--neutral"/g)?.length).toBe(5)
     }
+  })
+
+  it('keeps the EN name split accessible as one name', async () => {
+    const en = await render(HomeHero, { locale: 'en' })
+    expect(en).toMatch(/hm-hero__name-primary/)
+    expect(en).toMatch(/hm-hero__name-accent/)
+    expect(en).toContain('Taha')
+    expect(en).toContain('Mohammadi')
+    expect(en.match(/<h1[\s>]/g)?.length).toBe(1)
+
+    const fa = await render(HomeHero, { locale: 'fa' })
+    expect(fa).not.toMatch(/hm-hero__name-primary/)
+    expect(fa.match(/<h1[\s>]/g)?.length).toBe(1)
   })
 })
 
@@ -279,5 +304,114 @@ describe('WP-40 exact-locale content adapter', () => {
     )
     expect(getHomeJourneyContent('en').milestones).toHaveLength(5)
     expect(getHomeHeroContent('fa').role).toBe(FA_ROLE)
+  })
+})
+
+const ca03RepositoryRoot = path.resolve(
+  path.dirname(fileURLToPath(import.meta.url)),
+  '..',
+  '..',
+  '..',
+)
+
+function readCa03FixturePayload(): GraphPayloadOut {
+  const raw = readFileSync(
+    path.join(
+      ca03RepositoryRoot,
+      'tests',
+      'fixtures',
+      'contracts',
+      'hero-graph.json',
+    ),
+    'utf8',
+  )
+  return (JSON.parse(raw) as { payload: GraphPayloadOut }).payload
+}
+
+const ca03Resolver = createStaticRelatedResolver([
+  {
+    family: 'researchtopic',
+    id: '11',
+    locale: 'en',
+    href: '/en/research/human-centered-ai/',
+  },
+  {
+    family: 'project',
+    id: '7',
+    locale: 'en',
+    href: '/en/projects/pars-sql/',
+  },
+  {
+    family: 'publication',
+    id: '3',
+    locale: 'en',
+    href: '/en/blog/vtd-edge/',
+  },
+  {
+    family: 'article',
+    id: '21',
+    locale: 'en',
+    href: '/en/blog/visual-discourse/',
+  },
+])
+
+describe('CA-03 integrated semantic graph in the hero', () => {
+  it('renders the honest unavailable graph state inside the hero by default', async () => {
+    for (const locale of ['en', 'fa'] as const) {
+      const html = await render(HomeHero, { locale })
+      expect(html).toMatch(/data-graph-region/)
+      expect(html).toMatch(/data-graph-status="unavailable"/)
+      expect(html).not.toMatch(/data-graph-node=/)
+      expect(html).toMatch(
+        locale === 'en'
+          ? /Research graph unavailable/
+          : /گراف پژوهشی در دسترس نیست/,
+      )
+    }
+  })
+
+  it('renders every adapted node natively with resolver-only links', async () => {
+    const graph = adaptHeroGraph(readCa03FixturePayload(), {
+      locale: 'en',
+      resolveRelatedHref: ca03Resolver,
+    })
+    expect(graph.status).toBe('ready')
+    const html = await render(HomeHero, { locale: 'en', graph })
+    expect(html).toMatch(/data-graph-status="ready"/)
+    expect(html.match(/data-graph-node="/g)?.length).toBe(5)
+    expect(html.match(/<details[\s>]/g)?.length).toBe(5)
+    expect(html).toMatch(/Human-Centered AI/)
+    expect(html).toMatch(/href="\/en\/research\/human-centered-ai\/"/)
+    expect(html).toMatch(/href="\/en\/projects\/pars-sql\/"/)
+    expect(html.match(/data-graph-edge="/g)?.length).toBe(4)
+    expect(html).toMatch(/data-graph-canvas/)
+    expect(html).toMatch(/aria-hidden="true"/)
+    expect(html).toMatch(/Select a node to read its summary/)
+  })
+
+  it('shows the selected node in the reserved detail area', async () => {
+    const graph = adaptHeroGraph(readCa03FixturePayload(), {
+      locale: 'en',
+      resolveRelatedHref: ca03Resolver,
+    })
+    const html = await render(HomeHero, {
+      locale: 'en',
+      graph,
+      selectedId: 'node-01',
+    })
+    const detail = html.match(/data-graph-detail[\s\S]*?<\/div>/)?.[0] ?? ''
+    expect(detail).toMatch(/Human-Centered AI/)
+    expect(detail).toMatch(/human goals and agency/)
+    expect(detail).toMatch(/href="\/en\/research\/human-centered-ai\/"/)
+  })
+
+  it('preserves the research-statement lead in both locales', async () => {
+    const en = await render(HomeHero, { locale: 'en' })
+    expect(en).toMatch(/hm-hero__research/)
+    expect(en).toContain('intelligent systems extend human capability')
+
+    const fa = await render(HomeHero, { locale: 'fa' })
+    expect(fa).toMatch(/hm-hero__research/)
+    expect(fa).toContain('امکان کنترل')
   })
 })

@@ -1,0 +1,691 @@
+---
+/**
+ * CA-04 — Interactive Graph Scene Demo Component.
+ *
+ * Local specimen/demo component for testing and inspecting the procedural
+ * Three.js constellation renderer against the locked scene contract.
+ *
+ * Technical capabilities:
+ * - Tests node scaling: 3, 5, 12, 50 nodes.
+ * - Tests locale/label handling: short EN vs long FA labels.
+ * - Tests interactive node selection and incident edge dimming.
+ * - Tests responsive resizing and DPR clamping ceilings.
+ * - Tests WebGL context loss recovery and full disposal.
+ * - Validates HTML projected label coordinates without visual drift.
+ *
+ * This demo is isolated to the Visual Atlas and is NOT imported by public routes.
+ */
+
+interface Props {
+  initialCount?: 3 | 5 | 12 | 50
+  initialLocale?: 'en' | 'fa'
+}
+
+const { initialCount = 12, initialLocale = 'en' } = Astro.props
+---
+
+<div
+  class="graph-scene-demo"
+  data-graph-scene-demo
+  data-initial-count={initialCount}
+  data-initial-locale={initialLocale}
+>
+  <div
+    class="graph-scene-demo__toolbar"
+    role="toolbar"
+    aria-label="Constellation scene controls"
+  >
+    <div class="graph-scene-demo__control-group">
+      <span class="graph-scene-demo__label">Nodes:</span>
+      <div
+        class="graph-scene-demo__buttons"
+        role="group"
+        aria-label="Node count"
+      >
+        <button type="button" class="graph-scene-demo__btn" data-count-btn="3"
+          >3</button
+        >
+        <button type="button" class="graph-scene-demo__btn" data-count-btn="5"
+          >5</button
+        >
+        <button
+          type="button"
+          class="graph-scene-demo__btn is-active"
+          data-count-btn="12">12</button
+        >
+        <button type="button" class="graph-scene-demo__btn" data-count-btn="50"
+          >50</button
+        >
+      </div>
+    </div>
+
+    <div class="graph-scene-demo__control-group">
+      <span class="graph-scene-demo__label">Locale:</span>
+      <div
+        class="graph-scene-demo__buttons"
+        role="group"
+        aria-label="Locale switch"
+      >
+        <button
+          type="button"
+          class="graph-scene-demo__btn is-active"
+          data-locale-btn="en">EN</button
+        >
+        <button type="button" class="graph-scene-demo__btn" data-locale-btn="fa"
+          >FA (Long)</button
+        >
+      </div>
+    </div>
+
+    <div class="graph-scene-demo__control-group">
+      <span class="graph-scene-demo__label">Select:</span>
+      <select
+        class="graph-scene-demo__select"
+        data-select-node
+        aria-label="Select node"
+      >
+        <option value="">(None)</option>
+      </select>
+    </div>
+
+    <div class="graph-scene-demo__control-group">
+      <span class="graph-scene-demo__label">Actions:</span>
+      <div class="graph-scene-demo__buttons">
+        <button
+          type="button"
+          class="graph-scene-demo__btn graph-scene-demo__btn--danger"
+          data-action-lose-context
+        >
+          Lose Context
+        </button>
+        <button type="button" class="graph-scene-demo__btn" data-action-rebuild>
+          Rebuild
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="graph-scene-demo__stage-wrapper">
+    <div class="graph-scene-demo__stage" data-demo-stage>
+      <canvas
+        class="graph-scene-demo__canvas"
+        data-demo-canvas
+        aria-hidden="true"></canvas>
+      <div
+        class="graph-scene-demo__label-layer"
+        data-demo-labels
+        aria-hidden="true"
+      >
+      </div>
+      <div class="graph-scene-demo__error" data-demo-error hidden>
+        <span class="graph-scene-demo__error-badge">WebGL Notice</span>
+        <span class="graph-scene-demo__error-message"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="graph-scene-demo__telemetry" aria-live="polite">
+    <div class="graph-scene-demo__metric-card">
+      <span class="graph-scene-demo__metric-label">Nodes / Edges</span>
+      <span class="graph-scene-demo__metric-value" data-metric-elements
+        >12 / 14</span
+      >
+    </div>
+    <div class="graph-scene-demo__metric-card">
+      <span class="graph-scene-demo__metric-label">Viewport (CSS px)</span>
+      <span class="graph-scene-demo__metric-value" data-metric-viewport>—</span>
+    </div>
+    <div class="graph-scene-demo__metric-card">
+      <span class="graph-scene-demo__metric-label">Clamped DPR</span>
+      <span class="graph-scene-demo__metric-value" data-metric-dpr>—</span>
+    </div>
+    <div class="graph-scene-demo__metric-card">
+      <span class="graph-scene-demo__metric-label">Drawing Buffer</span>
+      <span class="graph-scene-demo__metric-value" data-metric-buffer>—</span>
+    </div>
+    <div class="graph-scene-demo__metric-card">
+      <span class="graph-scene-demo__metric-label">Performance Ceilings</span>
+      <span
+        class="graph-scene-demo__metric-value graph-scene-demo__metric-value--pass"
+        data-metric-ceilings>PASS</span
+      >
+    </div>
+  </div>
+</div>
+
+<style>
+  .graph-scene-demo {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4, 1rem);
+    padding: var(--space-4, 1rem);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-lg, 0.75rem);
+    background: var(--color-surface);
+    color: var(--color-ink);
+  }
+
+  .graph-scene-demo__toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4, 1rem);
+    align-items: center;
+    padding-bottom: var(--space-3, 0.75rem);
+    border-bottom: 1px solid var(--color-border-subtle);
+  }
+
+  .graph-scene-demo__control-group {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2, 0.5rem);
+  }
+
+  .graph-scene-demo__label {
+    font-size: var(--font-size-xs, 0.75rem);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-ink-secondary);
+  }
+
+  .graph-scene-demo__buttons {
+    display: flex;
+    gap: 0.25rem;
+  }
+
+  .graph-scene-demo__btn {
+    padding: 0.35rem 0.65rem;
+    font-size: var(--font-size-xs, 0.75rem);
+    font-family: inherit;
+    font-weight: 600;
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-sm, 0.25rem);
+    background: var(--color-canvas);
+    color: var(--color-ink);
+    cursor: pointer;
+    transition:
+      background 0.15s ease,
+      border-color 0.15s ease,
+      color 0.15s ease;
+  }
+
+  .graph-scene-demo__btn:hover {
+    background: var(--color-surface);
+    border-color: var(--color-brand);
+  }
+
+  .graph-scene-demo__btn.is-active {
+    background: var(--color-brand);
+    color: #ffffff;
+    border-color: var(--color-brand);
+  }
+
+  .graph-scene-demo__btn--danger {
+    color: #e53e3e;
+  }
+  .graph-scene-demo__btn--danger:hover {
+    background: #fff5f5;
+    border-color: #e53e3e;
+  }
+
+  .graph-scene-demo__select {
+    padding: 0.3rem 0.5rem;
+    font-size: var(--font-size-xs, 0.75rem);
+    font-family: inherit;
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-sm, 0.25rem);
+    background: var(--color-canvas);
+    color: var(--color-ink);
+  }
+
+  .graph-scene-demo__stage-wrapper {
+    position: relative;
+    inline-size: 100%;
+    min-block-size: 340px;
+    block-size: 420px;
+    background: var(--color-canvas);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-md, 0.5rem);
+    overflow: hidden;
+  }
+
+  .graph-scene-demo__stage {
+    position: absolute;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
+  }
+
+  .graph-scene-demo__canvas {
+    position: absolute;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
+    display: block;
+    pointer-events: none;
+  }
+
+  .graph-scene-demo__label-layer {
+    position: absolute;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  :global(.graph-scene-demo__label-chip) {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    padding: 2px 6px;
+    font-size: 10px;
+    font-weight: 600;
+    line-height: 1.2;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.88);
+    color: #1a202c;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    white-space: nowrap;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: opacity 0.15s ease;
+    max-inline-size: 160px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  :global([data-theme='dark']) :global(.graph-scene-demo__label-chip) {
+    background: rgba(20, 24, 33, 0.88);
+    color: #e2e8f0;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+  }
+
+  .graph-scene-demo__error {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2, 0.5rem);
+    background: rgba(0, 0, 0, 0.7);
+    color: #ffffff;
+    padding: 1rem;
+    text-align: center;
+  }
+
+  .graph-scene-demo__error[hidden] {
+    display: none;
+  }
+
+  .graph-scene-demo__error-badge {
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    background: #e53e3e;
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+
+  .graph-scene-demo__telemetry {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: var(--space-3, 0.75rem);
+    padding-top: var(--space-2, 0.5rem);
+  }
+
+  .graph-scene-demo__metric-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-sm, 0.25rem);
+    background: var(--color-canvas);
+  }
+
+  .graph-scene-demo__metric-label {
+    font-size: 0.68rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-ink-secondary);
+  }
+
+  .graph-scene-demo__metric-value {
+    font-size: var(--font-size-sm, 0.875rem);
+    font-family: monospace;
+    font-weight: 700;
+    color: var(--color-ink);
+  }
+
+  .graph-scene-demo__metric-value--pass {
+    color: #2b8a3e;
+  }
+</style>
+
+<script>
+  import { createGraphScene } from '../../lib/visual/graph-scene'
+  import {
+    SCENE_CONTRACT_VERSION,
+    SCENE_PERFORMANCE_CEILINGS,
+    scenePaletteFromCss,
+    type ProjectedLabel,
+    type ScenePayload,
+  } from '../../lib/visual/scene-contract'
+
+  // Synthetic specimen dataset generators
+  function createSpecimenPayload(
+    nodeCount: number,
+    locale: 'en' | 'fa',
+  ): ScenePayload {
+    const isFa = locale === 'fa'
+    const colorRoles = ['brand', 'signature', 'research', 'context', 'ink']
+
+    const faTitles = [
+      'سامانه‌های تصمیم‌یار بازگشتی در محیط‌های پیچیده',
+      'تحلیل بصری شواهد در تصمیم‌گیری‌های حساس',
+      'پروژه پارس-اس‌کیوال: تعامل مطمئن فارسی با داده‌ها',
+      'دست‌نوشته لبه و پردازش زبان طبیعی امن',
+      'چارچوب بنیادین پژوهش و نظریه سامانه‌ها',
+      'سامانه برخط توزیع‌شده داده‌های حجیم',
+      'هوش مصنوعی انسان‌محور و تصمیم‌گیری عادلانه',
+      'مدل‌سازی گراف‌های ادراکی و ارتباطات چندگانه',
+      'بازیابی ساخت‌یافته اسناد و مدارک علمی',
+      'ارزیابی و سنجه‌های همگرایی الگوریتمی',
+      'الگوریتم‌های بهینه‌سازی تصادفی مقیاس‌پذیر',
+      'امنیت و حریم خصوصی در یادگیری فدرال',
+    ]
+
+    const enTitles = [
+      'Human-Centered AI Systems',
+      'Visual Analytics & Inspectable Models',
+      'PARS-SQL Relational Pipeline',
+      'VTD-Edge Privacy Research',
+      'Core Theoretical Framework',
+      'Distributed Realtime Data Stream',
+      'Fairness in Automated Decisions',
+      'Perceptual Graph Modeling',
+      'Structured Information Retrieval',
+      'Algorithmic Convergence Metrics',
+      'Scalable Stochastic Optimization',
+      'Privacy-Preserving Federated Learning',
+    ]
+
+    const nodes = Array.from({ length: nodeCount }, (_, i) => {
+      const id = `specimen-node-${i + 1}`
+      const titles = isFa ? faTitles : enTitles
+      const label = titles[i % titles.length] ?? `Node ${i + 1}`
+      const colorRole = colorRoles[i % colorRoles.length] ?? 'brand'
+      const weight = 1 + (i % 5)
+
+      return {
+        id,
+        label,
+        x: 0, // Deterministic layout in CA-04 derives stable coordinates
+        y: 0,
+        z: 0,
+        colorRole,
+        weight,
+        selected: false,
+        dimmed: false,
+      }
+    })
+
+    const edges = []
+    for (let i = 0; i < nodeCount; i++) {
+      if (i > 0) {
+        edges.push({
+          id: `specimen-edge-${i}`,
+          source: `specimen-node-${i}`,
+          target: `specimen-node-${i + 1}`,
+          directed: i % 2 === 0,
+          emphasized: false,
+        })
+      }
+      if (i > 2 && i % 3 === 0) {
+        edges.push({
+          id: `specimen-edge-cross-${i}`,
+          source: `specimen-node-${i - 2}`,
+          target: `specimen-node-${i + 1}`,
+          directed: true,
+          emphasized: false,
+        })
+      }
+    }
+
+    return {
+      contractVersion: SCENE_CONTRACT_VERSION,
+      locale,
+      nodes,
+      edges,
+    }
+  }
+
+  function initDemo(container: HTMLElement) {
+    const canvas =
+      container.querySelector<HTMLCanvasElement>('[data-demo-canvas]')
+    const stage = container.querySelector<HTMLElement>('[data-demo-stage]')
+    const labelLayer =
+      container.querySelector<HTMLElement>('[data-demo-labels]')
+    const errorBox = container.querySelector<HTMLElement>('[data-demo-error]')
+    const errorMessage = container.querySelector<HTMLElement>(
+      '.graph-scene-demo__error-message',
+    )
+
+    // Telemetry displays
+    const metricElements = container.querySelector<HTMLElement>(
+      '[data-metric-elements]',
+    )
+    const metricViewport = container.querySelector<HTMLElement>(
+      '[data-metric-viewport]',
+    )
+    const metricDpr = container.querySelector<HTMLElement>('[data-metric-dpr]')
+    const metricBuffer = container.querySelector<HTMLElement>(
+      '[data-metric-buffer]',
+    )
+    const metricCeilings = container.querySelector<HTMLElement>(
+      '[data-metric-ceilings]',
+    )
+
+    // Controls
+    const countButtons =
+      container.querySelectorAll<HTMLButtonElement>('[data-count-btn]')
+    const localeButtons =
+      container.querySelectorAll<HTMLButtonElement>('[data-locale-btn]')
+    const selectNode =
+      container.querySelector<HTMLSelectElement>('[data-select-node]')
+    const btnLoseContext = container.querySelector<HTMLButtonElement>(
+      '[data-action-lose-context]',
+    )
+    const btnRebuild = container.querySelector<HTMLButtonElement>(
+      '[data-action-rebuild]',
+    )
+
+    if (!canvas || !stage || !labelLayer) return
+
+    let currentCount = Number(container.dataset.initialCount || 12)
+    let currentLocale = (container.dataset.initialLocale || 'en') as 'en' | 'fa'
+    let currentSelectedId: string | null = null
+    let sceneHandle: ReturnType<typeof createGraphScene> | null = null
+
+    function getPalette() {
+      const style = getComputedStyle(document.documentElement)
+      return scenePaletteFromCss((name) => style.getPropertyValue(name).trim())
+    }
+
+    function updateSelectOptions(payload: ScenePayload) {
+      if (!selectNode) return
+      const prevVal = selectNode.value
+      selectNode.innerHTML = '<option value="">(None)</option>'
+      payload.nodes.forEach((n) => {
+        const opt = document.createElement('option')
+        opt.value = n.id
+        opt.textContent = `${n.id} — ${n.label.slice(0, 24)}`
+        selectNode.appendChild(opt)
+      })
+      selectNode.value = payload.nodes.some((n) => n.id === prevVal)
+        ? prevVal
+        : ''
+    }
+
+    function updateLabels(labels: ProjectedLabel[]) {
+      if (!labelLayer) return
+      labelLayer.innerHTML = ''
+      labels.forEach((pl) => {
+        if (!pl.visible) return
+        const chip = document.createElement('div')
+        chip.className = 'graph-scene-demo__label-chip'
+        chip.textContent = pl.id.replace('specimen-node-', '#')
+        chip.style.left = `${pl.x}px`
+        chip.style.top = `${pl.y}px`
+        labelLayer.appendChild(chip)
+      })
+    }
+
+    function buildScene() {
+      if (sceneHandle) {
+        sceneHandle.dispose()
+        sceneHandle = null
+      }
+      if (errorBox) errorBox.hidden = true
+
+      const payload = createSpecimenPayload(currentCount, currentLocale)
+      updateSelectOptions(payload)
+
+      if (metricElements) {
+        metricElements.textContent = `${payload.nodes.length} / ${payload.edges.length}`
+      }
+
+      sceneHandle = createGraphScene({
+        canvas,
+        payload,
+        palette: getPalette(),
+        motion: 'full',
+        selectedId: currentSelectedId,
+        onFrame: (labels) => {
+          updateLabels(labels)
+        },
+        onError: (code) => {
+          if (errorBox && errorMessage) {
+            errorBox.hidden = false
+            errorMessage.textContent = `Scene error code: ${code}. Check WebGL support or restart scene.`
+          }
+        },
+      })
+
+      handleResize()
+    }
+
+    function handleResize() {
+      if (!sceneHandle || !stage) return
+      const width = stage.clientWidth
+      const height = stage.clientHeight
+      const dpr = window.devicePixelRatio || 1
+      sceneHandle.resize(width, height, dpr)
+
+      const isMobile = width < 768
+      const maxDpr = isMobile
+        ? SCENE_PERFORMANCE_CEILINGS.maxDevicePixelRatioMobile
+        : SCENE_PERFORMANCE_CEILINGS.maxDevicePixelRatioDesktop
+      const clampedDpr = Math.min(dpr, maxDpr)
+      const bufferW = Math.round(width * clampedDpr)
+      const bufferH = Math.round(height * clampedDpr)
+      const totalPixels = bufferW * bufferH
+
+      if (metricViewport) metricViewport.textContent = `${width} × ${height}`
+      if (metricDpr)
+        metricDpr.textContent = `${clampedDpr.toFixed(2)} (sys: ${dpr.toFixed(1)})`
+      if (metricBuffer)
+        metricBuffer.textContent = `${bufferW}×${bufferH} (${(totalPixels / 1e6).toFixed(2)}M px)`
+
+      const ceilingPassed =
+        totalPixels <= SCENE_PERFORMANCE_CEILINGS.maxDrawingBufferPixels
+      if (metricCeilings) {
+        metricCeilings.textContent = ceilingPassed ? 'PASS' : 'WARN'
+        metricCeilings.classList.toggle(
+          'graph-scene-demo__metric-value--pass',
+          ceilingPassed,
+        )
+      }
+    }
+
+    // Attach ResizeObserver
+    const resizeObserver = new ResizeObserver(() => {
+      handleResize()
+    })
+    resizeObserver.observe(stage)
+
+    // Watch for theme changes on html element
+    const themeObserver = new MutationObserver(() => {
+      if (sceneHandle) {
+        sceneHandle.setPalette(getPalette())
+      }
+    })
+    themeObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme', 'class'],
+    })
+
+    // Toolbar listeners
+    countButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        countButtons.forEach((b) => b.classList.remove('is-active'))
+        btn.classList.add('is-active')
+        currentCount = Number(btn.dataset.countBtn)
+        currentSelectedId = null
+        buildScene()
+      })
+    })
+
+    localeButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        localeButtons.forEach((b) => b.classList.remove('is-active'))
+        btn.classList.add('is-active')
+        currentLocale = (btn.dataset.localeBtn || 'en') as 'en' | 'fa'
+        buildScene()
+      })
+    })
+
+    selectNode?.addEventListener('change', () => {
+      currentSelectedId = selectNode.value || null
+      if (sceneHandle) {
+        sceneHandle.setSelection(currentSelectedId)
+      }
+    })
+
+    btnLoseContext?.addEventListener('click', () => {
+      const gl = canvas.getContext('webgl2') || canvas.getContext('webgl')
+      if (gl) {
+        // @ts-expect-error test extension
+        const ext = gl.getExtension('WEBGL_lose_context')
+        if (ext) {
+          ext.loseContext()
+        } else if (errorBox && errorMessage) {
+          errorBox.hidden = false
+          errorMessage.textContent =
+            'WEBGL_lose_context extension not available in this browser.'
+        }
+      }
+    })
+
+    btnRebuild?.addEventListener('click', () => {
+      buildScene()
+    })
+
+    // Initial build
+    buildScene()
+
+    // Cleanup on destroy
+    return () => {
+      resizeObserver.disconnect()
+      themeObserver.disconnect()
+      sceneHandle?.dispose()
+      sceneHandle = null
+    }
+  }
+
+  document
+    .querySelectorAll<HTMLElement>('[data-graph-scene-demo]')
+    .forEach((container) => {
+      initDemo(container)
+    })
+</script>

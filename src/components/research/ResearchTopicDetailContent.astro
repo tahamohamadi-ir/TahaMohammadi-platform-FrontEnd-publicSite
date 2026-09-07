@@ -3,6 +3,9 @@ import LongFormDetailTemplate from '../templates/LongFormDetailTemplate.astro'
 import SectionLead from '../ui/SectionLead.astro'
 import ContentState from '../state/ContentState.astro'
 import Link from '../ui/Link.astro'
+import StoryDocument from '../story/StoryDocument.astro'
+import { hasStoryContent } from '../../lib/story-content'
+import { canonicalPath, type RouteFamily } from '../../lib/routes'
 import {
   getResearchRouteTitle,
   getResearchUnavailableCopy,
@@ -64,57 +67,69 @@ const researchHref = localePath(locale, 'research')
         summary={model.record.summary}
       />
 
-      <div slot="body" class="research-page__detail-sections">
-        {[
-          {
-            id: 'motivation',
-            label: locale === 'en' ? 'Motivation' : 'انگیزه',
-            value: model.record.motivation,
-          },
-          {
-            id: 'problems',
-            label: locale === 'en' ? 'Problems' : 'مسائل',
-            value: model.record.problems,
-          },
-          {
-            id: 'research-questions',
-            label: locale === 'en' ? 'Research questions' : 'پرسش‌های پژوهشی',
-            value: model.record.research_questions,
-          },
-          {
-            id: 'methods',
-            label: locale === 'en' ? 'Methods' : 'روش‌ها',
-            value: model.record.methods,
-          },
-          {
-            id: 'future-directions',
-            label: locale === 'en' ? 'Future directions' : 'جهت‌های آینده',
-            value: model.record.future_directions,
-          },
-        ].map((section) =>
-          section.value?.trim() ? (
-            <section
-              id={section.id}
-              class="research-page__section"
-              aria-labelledby={`${section.id}-title`}
-            >
-              <h2
-                id={`${section.id}-title`}
-                class="research-page__section-title"
-              >
-                {section.label}
-              </h2>
-              <div class="research-page__prose">
-                {splitBodyParagraphs(section.value).map((paragraph) => (
-                  <p>{paragraph}</p>
-                ))}
-              </div>
-            </section>
-          ) : null,
+      <div slot="body">
+        {'story' in model.record &&
+        model.record.story &&
+        hasStoryContent(model.record.story) ? (
+          <StoryDocument story={model.record.story} locale={locale} />
+        ) : (
+          <div class="research-page__detail-sections">
+            {[
+              {
+                id: 'motivation',
+                label: locale === 'en' ? 'Motivation' : 'انگیزه',
+                value: model.record.motivation,
+              },
+              {
+                id: 'problems',
+                label: locale === 'en' ? 'Problems' : 'مسائل',
+                value: model.record.problems,
+              },
+              {
+                id: 'research-questions',
+                label:
+                  locale === 'en' ? 'Research questions' : 'پرسش‌های پژوهشی',
+                value: model.record.research_questions,
+              },
+              {
+                id: 'methods',
+                label: locale === 'en' ? 'Methods' : 'روش‌ها',
+                value: model.record.methods,
+              },
+              {
+                id: 'future-directions',
+                label: locale === 'en' ? 'Future directions' : 'جهت‌های آینده',
+                value: model.record.future_directions,
+              },
+            ].map((section) =>
+              section.value?.trim() ? (
+                <section
+                  id={section.id}
+                  class="research-page__section"
+                  aria-labelledby={`${section.id}-title`}
+                >
+                  <h2
+                    id={`${section.id}-title`}
+                    class="research-page__section-title"
+                  >
+                    {section.label}
+                  </h2>
+                  <div class="research-page__prose">
+                    {splitBodyParagraphs(section.value).map((paragraph) => (
+                      <p>{paragraph}</p>
+                    ))}
+                  </div>
+                </section>
+              ) : null,
+            )}
+          </div>
         )}
       </div>
 
-      {model.record.projects?.length || model.record.publications?.length ? (
+      {model.record.projects?.length ||
+      model.record.publications?.length ||
+      ('relatedRecords' in model.record &&
+        model.record.relatedRecords?.length) ? (
         <div slot="related" class="research-page__related">
           {model.record.projects?.length ? (
             <section aria-labelledby="related-projects-title">
@@ -155,6 +170,52 @@ const researchHref = localePath(locale, 'research')
                     />
                   </li>
                 ))}
+              </ul>
+            </section>
+          ) : null}
+          {'relatedRecords' in model.record &&
+          model.record.relatedRecords?.length ? (
+            <section aria-labelledby="related-records-title">
+              <h2
+                id="related-records-title"
+                class="research-page__section-title"
+              >
+                {locale === 'en' ? 'Related records' : 'رکوردهای مرتبط'}
+              </h2>
+              <ul class="research-page__related-list">
+                {model.record.relatedRecords.map((ref) => {
+                  const fam = ref.family || ref.routeFamily || ''
+                  const familyKey = (
+                    fam === 'projects'
+                      ? 'project'
+                      : fam === 'publications'
+                        ? 'publication'
+                        : fam === 'books'
+                          ? 'book'
+                          : fam === 'talks'
+                            ? 'talk'
+                            : fam === 'resources'
+                              ? 'resource'
+                              : fam === 'collections'
+                                ? 'collection'
+                                : fam
+                  ) as RouteFamily
+                  const href = canonicalPath(
+                    familyKey,
+                    locale,
+                    ref.slug,
+                    ref.courseSlug,
+                  )
+                  return (
+                    <li>
+                      <Link
+                        href={href}
+                        label={ref.title || `${ref.family} #${ref.id}`}
+                        variant="standalone"
+                      />
+                    </li>
+                  )
+                })}
               </ul>
             </section>
           ) : null}

@@ -1,0 +1,276 @@
+---
+/**
+ * CA-03 — Semantic hero graph. Static HTML first: heading, scene slot with
+ * a quiet decorative orbit, native node list, relationship index, and a
+ * reserved detail area. CA-06 wires the locked scene contract progressively:
+ * the canvas stays hidden until the enhancement succeeds; labels remain
+ * HTML in every state.
+ */
+import type { HeroGraphModel } from '../../lib/hero-graph-content'
+import { getHomeResearchContent } from '../../lib/home-content'
+import type { Locale } from '../../lib/navigation'
+import {
+  SCENE_CONTRACT_VERSION,
+  toScenePayload,
+} from '../../lib/visual/scene-contract'
+import ContentState from '../state/ContentState.astro'
+import GraphNodeList from './GraphNodeList.astro'
+import '../../styles/hero-graph.css'
+
+interface Props {
+  locale: Locale
+  graph: HeroGraphModel
+  selectedId?: string | null
+}
+
+const { locale, graph, selectedId = null } = Astro.props
+const research = getHomeResearchContent(locale)
+
+const copy = {
+  nodesListLabel: {
+    en: 'Research graph nodes',
+    fa: 'گره‌های گراف پژوهشی',
+  },
+  edgesHeading: { en: 'Relationships', fa: 'رابطه‌ها' },
+  detailHeading: { en: 'Selected node', fa: 'گرهٔ انتخاب‌شده' },
+  detailPrompt: {
+    en: 'Select a node to read its summary and related records.',
+    fa: 'یک گره را انتخاب کنید تا خلاصه و رکوردهای مرتبط آن نمایش داده شود.',
+  },
+  emptyTitle: {
+    en: 'No graph nodes yet',
+    fa: 'هنوز گرهی در گراف منتشر نشده است',
+  },
+  emptyMessage: {
+    en: 'Published graph nodes will appear here when they are available.',
+    fa: 'گره‌های منتشرشدهٔ گراف پس از آماده‌شدن در اینجا نمایش داده می‌شوند.',
+  },
+  errorTitle: {
+    en: 'Graph data could not be shown',
+    fa: 'دادهٔ گراف قابل‌نمایش نیست',
+  },
+  errorMessage: {
+    en: 'The published graph failed validation. No invented data is shown.',
+    fa: 'گراف منتشرشده اعتبارسنجی نشد؛ هیچ دادهٔ ساختگی نمایش داده نمی‌شود.',
+  },
+  unavailableTitle: {
+    en: 'Research graph unavailable',
+    fa: 'گراف پژوهشی در دسترس نیست',
+  },
+  unavailableMessage: {
+    en: 'The published research graph is not available yet.',
+    fa: 'گراف پژوهشی منتشرشده هنوز در دسترس نیست.',
+  },
+} as const
+
+const text = (entry: { en: string; fa: string }) => entry[locale]
+
+const selectedNode =
+  graph.status === 'ready'
+    ? (graph.nodes.find((node) => node.id === selectedId) ?? null)
+    : null
+// CA-06 — Serialized renderer input derived from the same semantic model.
+// Facts are preserved: the enhancement reads this JSON and validates it
+// against the locked contract; it never invents nodes, edges, or links.
+const scenePayload =
+  graph.status === 'ready' ? toScenePayload(graph, selectedId) : null
+const scenePayloadJson = scenePayload
+  ? JSON.stringify(scenePayload).replace(/</g, '\\u003c')
+  : null
+const labelById =
+  graph.status === 'ready'
+    ? new Map(graph.nodes.map((node) => [node.id, node.label]))
+    : new Map<string, string>()
+const relatedLinkLabel =
+  locale === 'fa'
+    ? (family: string, id: string) => `مشاهدهٔ رکورد ${family} (${id})`
+    : (family: string, id: string) => `Open ${family} record ${id}`
+---
+
+<section
+  class="hg"
+  data-graph-region
+  data-graph-status={graph.status}
+  data-graph-locale={locale}
+  data-scene-contract={SCENE_CONTRACT_VERSION}
+  data-hero-enhancement="idle"
+  aria-labelledby="home-graph-heading"
+>
+  <h2 id="home-graph-heading" class="hg__heading">{research.title}</h2>
+
+  {
+    graph.status === 'ready' ? (
+      <>
+        <div class="hg-scene" data-graph-scene>
+          <svg
+            class="hg-orbit"
+            viewBox="0 0 320 320"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <circle
+              cx="160"
+              cy="160"
+              r="118"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1"
+              stroke-dasharray="4 6"
+              opacity="0.28"
+            />
+            <circle
+              cx="160"
+              cy="160"
+              r="78"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1"
+              stroke-dasharray="4 6"
+              opacity="0.38"
+            />
+            <circle
+              cx="160"
+              cy="160"
+              r="38"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1"
+              stroke-dasharray="4 6"
+              opacity="0.48"
+            />
+          </svg>
+          <canvas
+            class="hg-canvas"
+            data-graph-canvas
+            aria-hidden="true"
+            hidden
+          />
+          <div class="hg-labels" data-graph-labels aria-hidden="true" />
+        </div>
+        {scenePayloadJson != null ? (
+          <script
+            type="application/json"
+            data-graph-payload
+            set:html={scenePayloadJson}
+          />
+        ) : null}
+
+        <GraphNodeList
+          locale={locale}
+          nodes={graph.nodes}
+          selectedId={selectedId}
+          listLabel={text(copy.nodesListLabel)}
+        />
+
+        {graph.edges.length > 0 ? (
+          <div class="hg-edges">
+            <h3 class="hg-edges__heading">{text(copy.edgesHeading)}</h3>
+            <ol class="hg-edges__list" data-graph-edges>
+              {graph.edges.map((edge) => (
+                <li
+                  class="hg-edges__item"
+                  data-graph-edge={edge.id}
+                  data-source={edge.source}
+                  data-target={edge.target}
+                  data-directed={String(edge.directed)}
+                  data-relation={edge.relationType}
+                >
+                  <span>{labelById.get(edge.source) ?? edge.source}</span>
+                  <span aria-hidden="true"> → </span>
+                  <span>{labelById.get(edge.target) ?? edge.target}</span>
+                </li>
+              ))}
+            </ol>
+          </div>
+        ) : null}
+
+        <div class="hg-detail" data-graph-detail aria-live="polite">
+          <h3 class="hg-detail__heading">{text(copy.detailHeading)}</h3>
+          {selectedNode != null ? (
+            <>
+              <p class="hg-detail__label">{selectedNode.label}</p>
+              {selectedNode.summary != null ? (
+                <p class="hg-detail__summary">{selectedNode.summary}</p>
+              ) : null}
+              {selectedNode.related.length > 0 ? (
+                <ul class="hg-detail__links">
+                  {selectedNode.related.map((link) => (
+                    <li>
+                      <a class="hg-detail__link" href={link.href}>
+                        {relatedLinkLabel(link.family, link.id)}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+            </>
+          ) : (
+            <p class="hg-detail__prompt">{text(copy.detailPrompt)}</p>
+          )}
+        </div>
+      </>
+    ) : graph.status === 'empty' ? (
+      <ContentState
+        variant="empty"
+        locale={locale}
+        title={text(copy.emptyTitle)}
+        message={text(copy.emptyMessage)}
+      />
+    ) : graph.status === 'error' ? (
+      <ContentState
+        variant="error"
+        locale={locale}
+        title={text(copy.errorTitle)}
+        message={text(copy.errorMessage)}
+      />
+    ) : (
+      <ContentState
+        variant="unavailable"
+        locale={locale}
+        title={text(copy.unavailableTitle)}
+        message={text(copy.unavailableMessage)}
+      />
+    )
+  }
+</section>
+
+<script>
+  // CA-06 — Progressive Home hero enhancement. Semantic HTML renders first;
+  // the Three.js constellation loads lazily only for ready hero regions on
+  // eligible routes. Import failures, unavailable WebGL, and context loss
+  // keep the semantic fallback untouched (see hero-enhancement).
+  import { enhanceHeroRegion } from '../../lib/visual/hero-enhancement'
+
+  function enhanceReadyHeroes() {
+    const regions = document.querySelectorAll<HTMLElement>(
+      '[data-graph-region][data-graph-status="ready"]',
+    )
+    // One active canvas per route: enhance at most the first eligible hero.
+    const first = regions[0]
+    if (!first) return
+    const run = () => {
+      void enhanceHeroRegion(first, { doc: document, win: window }).catch(
+        () => {},
+      )
+    }
+    const idleWindow = window as unknown as {
+      requestIdleCallback?: (
+        cb: () => void,
+        options?: { timeout: number },
+      ) => number
+    }
+    if (typeof idleWindow.requestIdleCallback === 'function') {
+      idleWindow.requestIdleCallback(run, { timeout: 1500 })
+    } else {
+      requestAnimationFrame(() => window.setTimeout(run, 0))
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', enhanceReadyHeroes, {
+      once: true,
+    })
+  } else {
+    enhanceReadyHeroes()
+  }
+</script>

@@ -1,5 +1,10 @@
 # Public Site Architecture
 
+<!-- PRODUCT-V2.1 -->
+
+Current execution target: research-first bilingual portfolio, independently publishable detail pages and broad CMS editing under ADR-0010. Dispatch only this repository's packets from `../../Docs/05-delivery/concept-alignment-v2/EXECUTION.md` (paths here are repository-relative). Older scaffold/phase status below is a dated baseline, not current feature acceptance. Preserve current endpoints until the additive target contract is implemented and exported.
+<!-- /PRODUCT-V2.1 -->
+
 The public site is an independently deployable consumer of the backend's published API. The accepted architecture uses Astro for routes, document structure, metadata, and static-first rendering; TypeScript for adapters and validation; Tailwind CSS over semantic tokens; and React only for bounded stateful islands.
 
 Platform decision ADR-0002 lives in coordination `Docs/09-decisions/`. Repository-local implementation ADRs are in [docs/architecture/](README.md).

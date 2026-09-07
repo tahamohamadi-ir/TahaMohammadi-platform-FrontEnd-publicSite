@@ -1,0 +1,830 @@
+---
+/**
+ * CA-05 — Interactive Graph Interaction & Motion Demo Component.
+ *
+ * Local specimen component demonstrating:
+ * - Native accessible node list (<details>/<summary>) synchronization with Three.js scene.
+ * - Single source of truth via GraphController.
+ * - GSAP bounded choreography (600-900ms settle, 180-280ms selection, ±3° pointer tilt).
+ * - Projected HTML label tags placed via onFrame projection and click-to-select.
+ * - Live reduced-motion switching and keyboard Escape clearing.
+ * - Clean disposal and remounting safety.
+ *
+ * Isolated to Visual Atlas; NOT imported by public routes.
+ */
+
+interface Props {
+  initialCount?: 3 | 5 | 12 | 50
+  initialLocale?: 'en' | 'fa'
+}
+
+const { initialCount = 5, initialLocale = 'en' } = Astro.props
+---
+
+<div
+  class="graph-interaction-demo"
+  data-graph-interaction-demo
+  data-initial-count={initialCount}
+  data-initial-locale={initialLocale}
+>
+  <div
+    class="graph-interaction-demo__toolbar"
+    role="toolbar"
+    aria-label="Interaction specimen controls"
+  >
+    <div class="graph-interaction-demo__control-group">
+      <span class="graph-interaction-demo__label">Motion:</span>
+      <div
+        class="graph-interaction-demo__buttons"
+        role="group"
+        aria-label="Motion budget"
+      >
+        <button
+          type="button"
+          class="graph-interaction-demo__btn is-active"
+          data-motion-btn="full">Full</button
+        >
+        <button
+          type="button"
+          class="graph-interaction-demo__btn"
+          data-motion-btn="reduced">Reduced</button
+        >
+        <button
+          type="button"
+          class="graph-interaction-demo__btn"
+          data-motion-btn="off">Off</button
+        >
+      </div>
+    </div>
+
+    <div class="graph-interaction-demo__control-group">
+      <span class="graph-interaction-demo__label">Selection:</span>
+      <button
+        type="button"
+        class="graph-interaction-demo__btn"
+        data-action-clear-selection
+      >
+        Clear Selection (Esc)
+      </button>
+    </div>
+
+    <div class="graph-interaction-demo__control-group">
+      <span class="graph-interaction-demo__label">Choreography:</span>
+      <button
+        type="button"
+        class="graph-interaction-demo__btn"
+        data-action-play-settle
+      >
+        Re-run Settle (750ms)
+      </button>
+      <button
+        type="button"
+        class="graph-interaction-demo__btn"
+        data-action-remount
+      >
+        Remount All
+      </button>
+    </div>
+  </div>
+
+  <div class="graph-interaction-demo__content">
+    <!-- Visual Stage (Three.js canvas + projected HTML labels) -->
+    <div class="graph-interaction-demo__stage-wrapper" data-demo-stage>
+      <canvas
+        class="graph-interaction-demo__canvas"
+        data-demo-canvas
+        aria-hidden="true"></canvas>
+      <div
+        class="graph-interaction-demo__labels-layer"
+        data-demo-labels
+        aria-hidden="true"
+      >
+      </div>
+    </div>
+
+    <!-- Semantic DOM Region (Native details/summary + detail panel) -->
+    <div class="graph-interaction-demo__semantic-region" data-graph-region>
+      <h3 class="graph-interaction-demo__heading">Research Constellation</h3>
+
+      <ul class="graph-interaction-demo__node-list" data-node-list>
+        <!-- Injected deterministically client-side -->
+      </ul>
+
+      <div
+        class="graph-interaction-demo__detail-panel"
+        data-graph-detail
+        aria-live="polite"
+      >
+        <p class="graph-interaction-demo__detail-prompt" data-detail-prompt>
+          Select a research node or label to inspect relationships.
+        </p>
+        <div
+          class="graph-interaction-demo__detail-content"
+          data-detail-content
+          hidden
+        >
+          <h4 class="graph-interaction-demo__detail-title" data-detail-title>
+          </h4>
+          <p class="graph-interaction-demo__detail-summary" data-detail-body>
+          </p>
+          <div class="graph-interaction-demo__detail-links" data-detail-links>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="graph-interaction-demo__telemetry" aria-live="polite">
+    <div class="graph-interaction-demo__metric-card">
+      <span class="graph-interaction-demo__metric-label">Selected Node</span>
+      <span class="graph-interaction-demo__metric-value" data-metric-selected
+        >(None)</span
+      >
+    </div>
+    <div class="graph-interaction-demo__metric-card">
+      <span class="graph-interaction-demo__metric-label">Active Motion</span>
+      <span class="graph-interaction-demo__metric-value" data-metric-motion
+        >full</span
+      >
+    </div>
+    <div class="graph-interaction-demo__metric-card">
+      <span class="graph-interaction-demo__metric-label">Fine Pointer Tilt</span
+      >
+      <span class="graph-interaction-demo__metric-value" data-metric-tilt
+        >&plusmn;3&deg; Active</span
+      >
+    </div>
+    <div class="graph-interaction-demo__metric-card">
+      <span class="graph-interaction-demo__metric-label">Single Model Sync</span
+      >
+      <span
+        class="graph-interaction-demo__metric-value graph-interaction-demo__metric-value--pass"
+        data-metric-sync>PASS</span
+      >
+    </div>
+  </div>
+</div>
+
+<style>
+  .graph-interaction-demo {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4, 1rem);
+    padding: var(--space-4, 1rem);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-lg, 0.75rem);
+    background: var(--color-surface);
+    color: var(--color-ink);
+  }
+
+  .graph-interaction-demo__toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4, 1rem);
+    align-items: center;
+    padding-bottom: var(--space-3, 0.75rem);
+    border-bottom: 1px solid var(--color-border-subtle);
+  }
+
+  .graph-interaction-demo__control-group {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2, 0.5rem);
+  }
+
+  .graph-interaction-demo__label {
+    font-size: var(--font-size-xs, 0.75rem);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-ink-secondary);
+  }
+
+  .graph-interaction-demo__buttons {
+    display: flex;
+    gap: 0.25rem;
+  }
+
+  .graph-interaction-demo__btn {
+    padding: 0.35rem 0.65rem;
+    font-size: var(--font-size-xs, 0.75rem);
+    font-family: inherit;
+    font-weight: 600;
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-sm, 0.25rem);
+    background: var(--color-canvas);
+    color: var(--color-ink);
+    cursor: pointer;
+    transition:
+      background 0.15s ease,
+      border-color 0.15s ease,
+      color 0.15s ease;
+  }
+
+  .graph-interaction-demo__btn:hover {
+    background: var(--color-surface);
+    border-color: var(--color-brand);
+  }
+
+  .graph-interaction-demo__btn.is-active {
+    background: var(--color-brand);
+    color: #ffffff;
+    border-color: var(--color-brand);
+  }
+
+  .graph-interaction-demo__content {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: var(--space-4, 1rem);
+  }
+
+  @media (max-width: 900px) {
+    .graph-interaction-demo__content {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .graph-interaction-demo__stage-wrapper {
+    position: relative;
+    min-block-size: 340px;
+    block-size: 400px;
+    background: var(--color-canvas);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-md, 0.5rem);
+    overflow: hidden;
+    perspective: 800px;
+  }
+
+  .graph-interaction-demo__canvas {
+    position: absolute;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
+    display: block;
+    transform-origin: center center;
+    touch-action: pan-y pinch-zoom;
+  }
+
+  .graph-interaction-demo__labels-layer {
+    position: absolute;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  :global(.graph-interaction-demo__chip) {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    padding: 3px 8px;
+    font-size: 11px;
+    font-weight: 600;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.92);
+    color: #1a202c;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    white-space: nowrap;
+    cursor: pointer;
+    pointer-events: auto;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+    transition:
+      transform 0.15s ease,
+      background 0.15s ease,
+      border-color 0.15s ease;
+  }
+
+  :global(.graph-interaction-demo__chip:hover) {
+    transform: translate(-50%, -50%) scale(1.08);
+    border-color: var(--color-brand, #087c73);
+  }
+
+  :global(.graph-interaction-demo__chip.is-selected) {
+    background: var(--color-signature, #a77b28);
+    color: #ffffff;
+    border-color: var(--color-signature, #a77b28);
+    transform: translate(-50%, -50%) scale(1.12);
+  }
+
+  :global([data-theme='dark']) :global(.graph-interaction-demo__chip) {
+    background: rgba(20, 24, 33, 0.92);
+    color: #f7f3ea;
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+
+  :global([data-theme='dark'])
+    :global(.graph-interaction-demo__chip.is-selected) {
+    background: var(--color-signature, #c89b3c);
+    color: #071225;
+  }
+
+  .graph-interaction-demo__semantic-region {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3, 0.75rem);
+    padding: var(--space-3, 0.75rem);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-md, 0.5rem);
+    background: var(--color-canvas);
+  }
+
+  .graph-interaction-demo__heading {
+    margin: 0;
+    font-size: var(--font-size-sm, 0.875rem);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-ink-secondary);
+  }
+
+  .graph-interaction-demo__node-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  :global(.graph-interaction-demo__node-item) {
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-sm, 0.25rem);
+    background: var(--color-surface);
+    transition:
+      border-color 0.15s ease,
+      background 0.15s ease;
+  }
+
+  :global(.graph-interaction-demo__node-item[data-selected='true']) {
+    border-color: var(--color-signature, #a77b28);
+    background: rgba(167, 123, 40, 0.08);
+  }
+
+  :global(.graph-interaction-demo__summary) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 0.75rem;
+    cursor: pointer;
+    font-size: var(--font-size-sm, 0.875rem);
+    font-weight: 600;
+  }
+
+  :global(.graph-interaction-demo__summary:focus-visible) {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 1px;
+  }
+
+  :global(.graph-interaction-demo__node-body) {
+    padding: 0.5rem 0.75rem;
+    font-size: var(--font-size-xs, 0.75rem);
+    color: var(--color-ink-secondary);
+    border-top: 1px solid var(--color-border-subtle);
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .graph-interaction-demo__detail-panel {
+    margin-top: auto;
+    padding: var(--space-3, 0.75rem);
+    border: 1px dashed var(--color-border-subtle);
+    border-radius: var(--radius-sm, 0.25rem);
+    background: var(--color-surface);
+    min-block-size: 80px;
+  }
+
+  .graph-interaction-demo__detail-prompt {
+    margin: 0;
+    font-size: var(--font-size-xs, 0.75rem);
+    color: var(--color-ink-secondary);
+    font-style: italic;
+  }
+
+  .graph-interaction-demo__detail-title {
+    margin: 0 0 0.25rem 0;
+    font-size: var(--font-size-sm, 0.875rem);
+    font-weight: 700;
+    color: var(--color-signature);
+  }
+
+  .graph-interaction-demo__detail-summary {
+    margin: 0;
+    font-size: var(--font-size-xs, 0.75rem);
+    line-height: 1.5;
+  }
+
+  .graph-interaction-demo__telemetry {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: var(--space-3, 0.75rem);
+    padding-top: var(--space-2, 0.5rem);
+  }
+
+  .graph-interaction-demo__metric-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-sm, 0.25rem);
+    background: var(--color-canvas);
+  }
+
+  .graph-interaction-demo__metric-label {
+    font-size: 0.68rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-ink-secondary);
+  }
+
+  .graph-interaction-demo__metric-value {
+    font-size: var(--font-size-sm, 0.875rem);
+    font-family: monospace;
+    font-weight: 700;
+    color: var(--color-ink);
+  }
+
+  .graph-interaction-demo__metric-value--pass {
+    color: #2b8a3e;
+  }
+</style>
+
+<script>
+  import { createGraphScene } from '../../lib/visual/graph-scene'
+  import { createGraphController } from '../../lib/visual/graph-controller'
+  import { createGraphMotion } from '../../lib/visual/graph-motion'
+  import {
+    SCENE_CONTRACT_VERSION,
+    scenePaletteFromCss,
+    type ProjectedLabel,
+    type SceneMotionPreference,
+    type ScenePayload,
+  } from '../../lib/visual/scene-contract'
+
+  function getDemoPayload(locale: 'en' | 'fa'): ScenePayload {
+    const isFa = locale === 'fa'
+    return {
+      contractVersion: SCENE_CONTRACT_VERSION,
+      locale,
+      nodes: [
+        {
+          id: 'node-01',
+          label: isFa ? 'هوش مصنوعی انسان‌محور' : 'Human-Centered AI',
+          x: -45,
+          y: 20,
+          z: 5,
+          colorRole: 'brand',
+          weight: 4.5,
+          selected: false,
+          dimmed: false,
+        },
+        {
+          id: 'node-02',
+          label: isFa ? 'تحلیل بصری شواهد' : 'Visual Analytics',
+          x: 48,
+          y: -25,
+          z: -5,
+          colorRole: 'research',
+          weight: 3.5,
+          selected: false,
+          dimmed: false,
+        },
+        {
+          id: 'node-03',
+          label: isFa ? 'پروژه پارس-اس‌کیوال' : 'PARS-SQL Project',
+          x: -15,
+          y: -40,
+          z: 8,
+          colorRole: 'signature',
+          weight: 4.0,
+          selected: false,
+          dimmed: false,
+        },
+        {
+          id: 'node-04',
+          label: isFa ? 'دست‌نوشته پردازش زبان طبیعی' : 'VTD-Edge Research',
+          x: 25,
+          y: 42,
+          z: 0,
+          colorRole: 'context',
+          weight: 2.5,
+          selected: false,
+          dimmed: false,
+        },
+        {
+          id: 'node-05',
+          label: isFa ? 'چارچوب نظری سامانه‌ها' : 'Theoretical Framework',
+          x: 0,
+          y: 0,
+          z: 0,
+          colorRole: 'ink',
+          weight: 1.5,
+          selected: false,
+          dimmed: false,
+        },
+      ],
+      edges: [
+        {
+          id: 'edge-01',
+          source: 'node-01',
+          target: 'node-02',
+          directed: true,
+          emphasized: false,
+        },
+        {
+          id: 'edge-02',
+          source: 'node-01',
+          target: 'node-03',
+          directed: true,
+          emphasized: false,
+        },
+        {
+          id: 'edge-03',
+          source: 'node-03',
+          target: 'node-04',
+          directed: false,
+          emphasized: false,
+        },
+        {
+          id: 'edge-04',
+          source: 'node-05',
+          target: 'node-01',
+          directed: true,
+          emphasized: false,
+        },
+      ],
+    }
+  }
+
+  function initInteractionDemo(container: HTMLElement) {
+    const canvas =
+      container.querySelector<HTMLCanvasElement>('[data-demo-canvas]')
+    const stage = container.querySelector<HTMLElement>('[data-demo-stage]')
+    const labelsLayer =
+      container.querySelector<HTMLElement>('[data-demo-labels]')
+    const semanticRegion = container.querySelector<HTMLElement>(
+      '[data-graph-region]',
+    )
+    const nodeList =
+      container.querySelector<HTMLUListElement>('[data-node-list]')
+    const detailPanel = container.querySelector<HTMLElement>(
+      '[data-graph-detail]',
+    )
+    const detailPrompt = container.querySelector<HTMLElement>(
+      '[data-detail-prompt]',
+    )
+    const detailContent = container.querySelector<HTMLElement>(
+      '[data-detail-content]',
+    )
+    const detailTitle = container.querySelector<HTMLElement>(
+      '[data-detail-title]',
+    )
+    const detailBody =
+      container.querySelector<HTMLElement>('[data-detail-body]')
+
+    // Telemetry
+    const metricSelected = container.querySelector<HTMLElement>(
+      '[data-metric-selected]',
+    )
+    const metricMotion = container.querySelector<HTMLElement>(
+      '[data-metric-motion]',
+    )
+
+    // Controls
+    const motionButtons =
+      container.querySelectorAll<HTMLButtonElement>('[data-motion-btn]')
+    const btnClear = container.querySelector<HTMLButtonElement>(
+      '[data-action-clear-selection]',
+    )
+    const btnSettle = container.querySelector<HTMLButtonElement>(
+      '[data-action-play-settle]',
+    )
+    const btnRemount = container.querySelector<HTMLButtonElement>(
+      '[data-action-remount]',
+    )
+
+    if (
+      !canvas ||
+      !stage ||
+      !labelsLayer ||
+      !semanticRegion ||
+      !nodeList ||
+      !detailPanel
+    )
+      return
+
+    let currentMotionPref: SceneMotionPreference = 'full'
+    const locale = (container.dataset.initialLocale || 'en') as 'en' | 'fa'
+    const payload = getDemoPayload(locale)
+
+    let sceneHandle: ReturnType<typeof createGraphScene> | null = null
+    let controllerHandle: ReturnType<typeof createGraphController> | null = null
+    let motionHandle: ReturnType<typeof createGraphMotion> | null = null
+
+    function getPalette() {
+      const style = getComputedStyle(document.documentElement)
+      return scenePaletteFromCss((name) => style.getPropertyValue(name).trim())
+    }
+
+    // Build native semantic DOM node list
+    function renderSemanticNodeList() {
+      if (!nodeList) return
+      nodeList.innerHTML = ''
+
+      payload.nodes.forEach((node) => {
+        const li = document.createElement('li')
+        li.className = 'graph-interaction-demo__node-item'
+        li.setAttribute('data-graph-node', node.id)
+        li.setAttribute('data-label', node.label)
+        li.setAttribute(
+          'data-summary',
+          `Research focus on ${node.label} with connected graph relations.`,
+        )
+
+        const details = document.createElement('details')
+        const summary = document.createElement('summary')
+        summary.className = 'graph-interaction-demo__summary'
+
+        const text = document.createElement('span')
+        text.textContent = node.label
+        summary.appendChild(text)
+
+        const badge = document.createElement('span')
+        badge.style.fontSize = '10px'
+        badge.style.opacity = '0.6'
+        badge.textContent = `#${node.id}`
+        summary.appendChild(badge)
+
+        const body = document.createElement('div')
+        body.className = 'graph-interaction-demo__node-body'
+        body.innerHTML = `
+          <span>Weight: ${node.weight} &bull; Role: ${node.colorRole}</span>
+          <a href="#${node.id}" style="color: var(--color-brand); font-weight: 600;">View publications &rarr;</a>
+        `
+
+        details.appendChild(summary)
+        details.appendChild(body)
+        li.appendChild(details)
+        nodeList.appendChild(li)
+      })
+    }
+
+    // Render projected HTML labels positioned via onFrame
+    function renderProjectedLabels(labels: ProjectedLabel[]) {
+      if (!labelsLayer) return
+      labelsLayer.innerHTML = ''
+
+      labels.forEach((pl) => {
+        if (!pl.visible) return
+        const node = payload.nodes.find((n) => n.id === pl.id)
+        if (!node) return
+
+        const chip = document.createElement('button')
+        chip.type = 'button'
+        chip.className = 'graph-interaction-demo__chip'
+        chip.setAttribute('data-projected-label', pl.id)
+        chip.textContent = node.label
+        chip.style.left = `${pl.x}px`
+        chip.style.top = `${pl.y}px`
+
+        const isSelected = controllerHandle?.getState().selectedId === pl.id
+        chip.setAttribute('data-selected', isSelected ? 'true' : 'false')
+        chip.classList.toggle('is-selected', isSelected)
+
+        labelsLayer.appendChild(chip)
+      })
+    }
+
+    function setupSceneAndControllers() {
+      // Clean up previous instances if any
+      motionHandle?.dispose()
+      controllerHandle?.dispose()
+      sceneHandle?.dispose()
+
+      renderSemanticNodeList()
+
+      // 1. Instantiate Three.js Constellation Scene
+      sceneHandle = createGraphScene({
+        canvas,
+        payload,
+        palette: getPalette(),
+        motion: currentMotionPref,
+        selectedId: null,
+        onFrame: (labels) => {
+          renderProjectedLabels(labels)
+        },
+      })
+
+      // 2. Instantiate GSAP Motion Manager
+      motionHandle = createGraphMotion({
+        scene: sceneHandle,
+        canvas,
+        stage,
+        labelsContainer: labelsLayer,
+        detailElement: detailPanel,
+        motionPreference: currentMotionPref,
+      })
+
+      // 3. Instantiate Graph Controller
+      controllerHandle = createGraphController({
+        container: semanticRegion,
+        labelsContainer: labelsLayer,
+        detailElement: detailPanel,
+        onSelectionChange: (state) => {
+          if (metricSelected) {
+            metricSelected.textContent = state.selectedId
+              ? `#${state.selectedId}`
+              : '(None)'
+          }
+
+          // Update detail panel UI
+          if (state.selectedId) {
+            const node = payload.nodes.find((n) => n.id === state.selectedId)
+            if (detailPrompt) detailPrompt.hidden = true
+            if (detailContent) detailContent.hidden = false
+            if (detailTitle)
+              detailTitle.textContent = node?.label || state.selectedId
+            if (detailBody) {
+              detailBody.textContent = `Active selection grounded by API relations. Priority weight ${node?.weight}.`
+            }
+          } else {
+            if (detailPrompt) detailPrompt.hidden = false
+            if (detailContent) detailContent.hidden = true
+          }
+
+          // Update Three.js scene & GSAP selection choreography
+          motionHandle?.animateSelection(state.selectedId)
+
+          // Sync label chips
+          const chips = labelsLayer.querySelectorAll<HTMLElement>(
+            '[data-projected-label]',
+          )
+          chips.forEach((c) => {
+            const isSel =
+              c.getAttribute('data-projected-label') === state.selectedId
+            c.setAttribute('data-selected', isSel ? 'true' : 'false')
+            c.classList.toggle('is-selected', isSel)
+          })
+        },
+      })
+
+      // Resize and settle
+      handleResize()
+      motionHandle.playSettle()
+    }
+
+    function handleResize() {
+      if (!sceneHandle || !stage) return
+      const width = stage.clientWidth
+      const height = stage.clientHeight
+      const dpr = window.devicePixelRatio || 1
+      sceneHandle.resize(width, height, dpr)
+    }
+
+    const resizeObserver = new ResizeObserver(() => {
+      handleResize()
+    })
+    resizeObserver.observe(stage)
+
+    // Toolbar Event Listeners
+    motionButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        motionButtons.forEach((b) => b.classList.remove('is-active'))
+        btn.classList.add('is-active')
+        currentMotionPref = btn.dataset.motionBtn as SceneMotionPreference
+        if (metricMotion) metricMotion.textContent = currentMotionPref
+        motionHandle?.setMotionPreference(currentMotionPref)
+      })
+    })
+
+    btnClear?.addEventListener('click', () => {
+      controllerHandle?.clearSelection()
+    })
+
+    btnSettle?.addEventListener('click', () => {
+      motionHandle?.playSettle()
+    })
+
+    btnRemount?.addEventListener('click', () => {
+      setupSceneAndControllers()
+    })
+
+    // Initial setup
+    setupSceneAndControllers()
+
+    return () => {
+      resizeObserver.disconnect()
+      motionHandle?.dispose()
+      controllerHandle?.dispose()
+      sceneHandle?.dispose()
+    }
+  }
+
+  document
+    .querySelectorAll<HTMLElement>('[data-graph-interaction-demo]')
+    .forEach((container) => {
+      initInteractionDemo(container)
+    })
+</script>

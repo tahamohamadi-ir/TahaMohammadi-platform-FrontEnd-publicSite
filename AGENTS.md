@@ -1,5 +1,14 @@
 # Public Site Agent Contract
 
+<!-- PRODUCT-V2.1 -->
+
+Current product work: read `../../Docs/09-decisions/ADR-0010-UNIFIED-EXECUTION-CONTRACTS.md`, `../../Docs/05-delivery/concept-alignment-v2/EXECUTION.md`, and the assigned **PUBLIC** leaf packet. New target interfaces live in `../../Docs/03-contracts/PRODUCT-INTERFACES-V2.md`; generated OpenAPI remains current implementation evidence. Old prefix-only task selection and family freezes are superseded for this queue. CA-09–16 must not be dispatched separately.
+<!-- /PRODUCT-V2.1 -->
+
+## Current visual-recovery entry point
+
+Read `../../Docs/09-decisions/ADR-0008-HOME-GRAPH-HERO-AND-PROCEDURAL-MOTION.md` and `../../Docs/05-delivery/concept-alignment-v2/README.md` before visual recovery. CA-* packets are the active bounded subqueue. Home combines identity and graph in one hero; only the language gateway has portal decoration. The new ADR supersedes conflicting historical no-GSAP/no-Three.js and separate-graph rules for assigned packets. Old pinned references remain evidence; runtime adoption is CA-01 onward and acceptance remains open.
+
 ## Read order
 
 1. `README.md`
@@ -9,7 +18,7 @@
 5. `../../Docs/04-design/`
 6. `../../Docs/references/frontend-design-authority/README.md`
 7. `TASK-LIST.md`
-8. `../../Docs/05-delivery/MULTI-AGENT-TASK-BOARD.md` (pick one `PUBLIC-*` task)
+8. `../../Docs/05-delivery/MULTI-AGENT-TASK-BOARD.md` (select one active PUBLIC packet from execution-tasks.json)
 
 ## Scope
 

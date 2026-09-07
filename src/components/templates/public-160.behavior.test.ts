@@ -154,3 +154,33 @@ describe('PUBLIC-160 behavior', () => {
     expect(html).toMatch(/Contact path/)
   })
 })
+
+describe('CA-01 overlay baseline against templates', () => {
+  it('keeps six templates while the overlay records the merged hero order', () => {
+    const overlay = JSON.parse(
+      readFileSync(
+        path.join(
+          repositoryRoot,
+          'contracts',
+          'design-authority',
+          'v2-overlay.json',
+        ),
+        'utf8',
+      ),
+    )
+    expect(templateNames).toHaveLength(6)
+    expect(overlay.version).toBe('2.1.0')
+    expect(overlay.home.order).toEqual([
+      'identity-lead-with-graph',
+      'audience-paths',
+      'selected-work',
+      'research-axes',
+      'recent-writing',
+      'collaboration-cv-contact',
+    ])
+    const homeSource = readTemplateSource('HomeTemplate')
+    expect(homeSource).toContain('slot name="identity-lead"')
+    expect(homeSource).toContain('slot name="relationship-graph"')
+    expect(homeSource).not.toMatch(/portal/i)
+  })
+})

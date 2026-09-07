@@ -18,6 +18,7 @@ export type ResearchTopicDetailOut =
   components['schemas']['ResearchTopicDetailOut']
 export type ResearchStatementOut = components['schemas']['ResearchStatementOut']
 export type ProjectListOut = components['schemas']['ProjectListOut']
+export type PublicationListOut = components['schemas']['PublicationListOut']
 
 export type ResearchIndexModel =
   | { status: 'unavailable' }
@@ -26,6 +27,7 @@ export type ResearchIndexModel =
       topics: ResearchTopicListOut[]
       statement: ResearchStatementOut | null
       projects: ProjectListOut[]
+      publications?: PublicationListOut[]
     }
 
 export type ResearchDetailKind = 'topic' | 'statement'
@@ -158,6 +160,19 @@ export async function listResearchStatements(
   }
 }
 
+export async function listResearchPublications(
+  locale: Locale,
+): Promise<PublicationListOut[]> {
+  if (!canFetchPublicApi()) return []
+  try {
+    return await fetchAllPagedItems<PublicationListOut>(
+      `/api/publications/${locale}`,
+    )
+  } catch {
+    return []
+  }
+}
+
 export async function fetchResearchIndex(
   locale: Locale,
 ): Promise<ResearchIndexModel> {
@@ -165,19 +180,25 @@ export async function fetchResearchIndex(
     return { status: 'unavailable' }
   }
 
-  const [topics, projects, statements] = await Promise.all([
+  const [topics, projects, statements, publications] = await Promise.all([
     listResearchTopics(locale),
     listResearchProjects(locale),
     listResearchStatements(locale),
+    listResearchPublications(locale),
   ])
 
   const statement = statements[0] ?? null
 
-  if (!topics.length && !statement && !projects.length) {
+  if (
+    !topics.length &&
+    !statement &&
+    !projects.length &&
+    !publications.length
+  ) {
     return { status: 'unavailable' }
   }
 
-  return { status: 'ready', topics, statement, projects }
+  return { status: 'ready', topics, statement, projects, publications }
 }
 
 export async function getResearchTopic(
