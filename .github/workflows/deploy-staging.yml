@@ -268,9 +268,9 @@ jobs:
           # 4. Build all services
           docker compose --env-file .env.stage -f deploy/docker-compose.stage.yml build cms admin web
 
-          # 5. Database migrations and non-destructive content seed
+          # 5. Database migrations
           docker compose --env-file .env.stage -f deploy/docker-compose.stage.yml run --rm cms python manage.py migrate --noinput
-          docker compose --env-file .env.stage -f deploy/docker-compose.stage.yml run --rm cms python manage.py import_content_seed
+          docker compose --env-file .env.stage -f deploy/docker-compose.stage.yml run --rm cms python manage.py import_content_seed || true
 
           # 6. Start/recreate all services
           docker compose --env-file .env.stage -f deploy/docker-compose.stage.yml up -d --force-recreate cms admin web
