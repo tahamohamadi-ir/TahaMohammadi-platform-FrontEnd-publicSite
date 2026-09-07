@@ -222,6 +222,8 @@ jobs:
                 dockerfile: deploy/Dockerfile.admin
               image: taha-admin-stage:${RELEASE_ID}
               restart: unless-stopped
+              ports:
+                - "127.0.0.1:13081:8080"
               networks: [stage_ingress]
 
           networks:
@@ -268,8 +270,9 @@ jobs:
           # 4. Build all services
           docker compose --env-file .env.stage -f deploy/docker-compose.stage.yml build cms admin web
 
-          # 5. Database migrations
+          # 5. Database migrations and non-destructive content seed
           docker compose --env-file .env.stage -f deploy/docker-compose.stage.yml run -T --rm cms python manage.py migrate --noinput </dev/null
+          docker compose --env-file .env.stage -f deploy/docker-compose.stage.yml run -T --rm cms python manage.py import_content_seed </dev/null
 
           # 6. Start/recreate all services
           docker compose --env-file .env.stage -f deploy/docker-compose.stage.yml up -d --force-recreate cms admin web
@@ -293,6 +296,29 @@ jobs:
           test -n "$(docker compose --env-file .env.stage -f deploy/docker-compose.stage.yml ps -q cms)"
           test -n "$(docker compose --env-file .env.stage -f deploy/docker-compose.stage.yml ps -q admin)"
           test -n "$(docker compose --env-file .env.stage -f deploy/docker-compose.stage.yml ps -q web)"
+
+          # 9. Align host Caddy reverse proxy for admin SPA
+          if sudo -n true 2>/dev/null; then
+            echo "=== Aligning Caddy /admin/* upstream ==="
+            sudo python3 -c '
+import re
+path = "/etc/caddy/Caddyfile"
+try:
+    with open(path, "r", encoding="utf-8") as f:
+        content = f.read()
+    pattern = r"(handle\s+/admin/\*\s*\{\s*reverse_proxy\s+)127\.0\.0\.1:18000"
+    new_content, count = re.subn(pattern, r"\g<1>127.0.0.1:13081", content)
+    if count > 0:
+        with open(path, "w", encoding="utf-8") as f:
+            f.write(new_content)
+        print(f"Updated /etc/caddy/Caddyfile: /admin/* -> 127.0.0.1:13081 ({count} change)")
+    else:
+        print("No Caddyfile update required or already aligned.")
+except Exception as e:
+    print(f"Caddy update notice: {e}")
+'
+            sudo caddy validate --config /etc/caddy/Caddyfile && (sudo systemctl reload caddy || sudo caddy reload --config /etc/caddy/Caddyfile) || true
+          fi
 
           echo "=== CADDY CONFIG DIAGNOSTIC ==="
           for f in /etc/caddy/Caddyfile /etc/caddy/*.caddy /etc/caddy/conf.d/*; do
