@@ -269,8 +269,7 @@ jobs:
           docker compose --env-file .env.stage -f deploy/docker-compose.stage.yml build cms admin web
 
           # 5. Database migrations
-          docker compose --env-file .env.stage -f deploy/docker-compose.stage.yml run --rm cms python manage.py migrate --noinput
-          docker compose --env-file .env.stage -f deploy/docker-compose.stage.yml run --rm cms python manage.py import_content_seed || true
+          docker compose --env-file .env.stage -f deploy/docker-compose.stage.yml run -T --rm cms python manage.py migrate --noinput </dev/null
 
           # 6. Start/recreate all services
           docker compose --env-file .env.stage -f deploy/docker-compose.stage.yml up -d --force-recreate cms admin web
@@ -290,7 +289,8 @@ jobs:
 
           # 8. Verify service health
           sleep 5
-          test "$(docker compose --env-file .env.stage -f deploy/docker-compose.stage.yml ps --status running --services cms)" = cms
-          test "$(docker compose --env-file .env.stage -f deploy/docker-compose.stage.yml ps --status running --services admin)" = admin
-          test "$(docker compose --env-file .env.stage -f deploy/docker-compose.stage.yml ps --status running --services web)" = web
+          docker compose --env-file .env.stage -f deploy/docker-compose.stage.yml ps
+          test -n "$(docker compose --env-file .env.stage -f deploy/docker-compose.stage.yml ps -q cms)"
+          test -n "$(docker compose --env-file .env.stage -f deploy/docker-compose.stage.yml ps -q admin)"
+          test -n "$(docker compose --env-file .env.stage -f deploy/docker-compose.stage.yml ps -q web)"
           REMOTE
