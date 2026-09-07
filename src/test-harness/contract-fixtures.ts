@@ -23,11 +23,11 @@ export const OPENAPI_HASH_PIN_PATH = path.join(
 
 /** Accepted hash recorded at PS-05 (CRLF-encoded bytes). */
 export const ACCEPTED_PUBLIC_OPENAPI_SHA256 =
-  '0f672693de28ed33286789e5119eb3226c062693fb15168b1aba5513c257c0a5'
+  '47980f8f1992d885398676cf984b80e7068c7aa8e8b8f76a856565ffc9033681'
 
 /** Canonical LF hash of the accepted public OpenAPI artifact (BACKEND-140). */
 export const CANONICAL_PUBLIC_OPENAPI_LF_SHA256 =
-  'be8fdbea748aa5215d20ceb4140434fc4e90582c667e66607956cb02ebaf5f94'
+  '1efc731387720306c6674c2855d2fb4128d396abc4f2340dda330dae642d93d9'
 
 export const CONSUMER_RESPONSES_DIR = path.join(
   repositoryRoot,

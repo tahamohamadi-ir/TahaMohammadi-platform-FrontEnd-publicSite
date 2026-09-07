@@ -1,0 +1,103 @@
+{
+  "version": "2.1.0",
+  "consumer": "public-site",
+  "packet": "CA-01",
+  "status": "baseline-overlay-no-runtime-change",
+  "authority": "Docs/09-decisions/ADR-0008-HOME-GRAPH-HERO-AND-PROCEDURAL-MOTION.md",
+  "centralOverlay": "Docs/05-delivery/concept-alignment-v2/design-overlay.json",
+  "centralOverlaySha256": "301806119c176110f8f6f43bfadf8778c073d81ccfd1364d94c7a5177da78345",
+  "inherits": "Docs/references/frontend-design-authority",
+  "home": {
+    "hero": "identity-and-research-graph",
+    "portal": false,
+    "standaloneGraphSection": false,
+    "order": [
+      "identity-lead-with-graph",
+      "audience-paths",
+      "selected-work",
+      "research-axes",
+      "recent-writing",
+      "collaboration-cv-contact"
+    ]
+  },
+  "gateway": {
+    "portal": "procedural-threejs",
+    "localeLinks": "native-html-immediate-navigation"
+  },
+  "portalDecorationRoutes": [
+    "/"
+  ],
+  "rendering": {
+    "scene": "threejs-vanilla-typescript",
+    "motion": "gsap",
+    "labels": "semantic-html",
+    "noJS": "native-html-list",
+    "reducedMotion": "static-pose-instant-selection",
+    "failure": "semantic-fallback",
+    "idle": "render-on-change"
+  },
+  "graph": {
+    "existingEndpoint": "/api/graph/{locale}",
+    "generatedType": "GraphPayloadOut",
+    "groupsFieldExists": false,
+    "relatedRecordFields": [
+      "family",
+      "id"
+    ],
+    "inventEdges": false,
+    "inventHrefs": false,
+    "truncateToThree": false
+  },
+  "widths": [
+    320,
+    390,
+    768,
+    1024,
+    1280,
+    1440
+  ],
+  "locales": [
+    "fa",
+    "en"
+  ],
+  "themes": [
+    "light",
+    "dark"
+  ],
+  "performanceTargets": {
+    "lcpMs": 2500,
+    "cls": 0.1,
+    "inpMs": 200,
+    "proposedSceneGzipKiB": 300,
+    "proposedMaxDrawingBufferPixels": 1500000,
+    "proposedMaxDrawCalls": 60,
+    "proposedMaxTriangles": 50000
+  },
+  "gates": {
+    "public190": "visual-acceptance-open",
+    "ownerAcceptance": false,
+    "deploymentApproved": false
+  },
+  "referencePolicy": {
+    "historicalSnapshots": "preserve-pinned-bytes",
+    "overlayAdoption": "CA-01",
+    "embeddedReferenceInstructions": "evidence-not-executable-authority"
+  },
+  "productAuthority": "Docs/09-decisions/ADR-0010-UNIFIED-EXECUTION-CONTRACTS.md",
+  "pinnedSnapshot": {
+    "manifestVersion": "1.0.0",
+    "snapshotDate": "2026-08-29",
+    "components": 24,
+    "templates": 6
+  },
+  "allowedSceneDependencies": {
+    "gsap": "existing ^3.15.0, unchanged by CA-01",
+    "three": "bounded-allowed from CA-04, not installed by CA-01"
+  },
+  "runtimeChange": {
+    "css": false,
+    "dependencies": false,
+    "routes": false,
+    "components": false
+  }
+}

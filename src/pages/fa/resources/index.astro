@@ -1,0 +1,59 @@
+---
+import SiteLayout from '../../../layouts/SiteLayout.astro'
+import ContentState from '../../../components/state/ContentState.astro'
+import type { components } from '../../../generated/public-api'
+import { filterPublishedOnly, parseJsonResponse } from '../../../lib/api/client'
+import {
+  buildPublicApiUrl,
+  canFetchPublicApi,
+} from '../../../lib/api/resolve-url'
+
+const locale = 'fa' as const
+const resources = canFetchPublicApi()
+  ? await fetch(
+      buildPublicApiUrl(`/api/downloads/${locale}?page=1&page_size=100`),
+    )
+      .then(parseJsonResponse<components['schemas']['PagedDownloadListOut']>)
+      .then((payload) => filterPublishedOnly(payload.items ?? []))
+      .catch(() => [])
+  : []
+---
+
+<SiteLayout
+  title="منابع — طاها محمدی"
+  locale={locale}
+  pathSegment="resources"
+  alternateAvailable={false}
+>
+  <main class="product-index" id="main-content">
+    <header class="product-index__lead">
+      <p>مواد پژوهشی</p><h1>منابع</h1>
+    </header>
+    {
+      resources.length ? (
+        <ul class="product-index__list">
+          {resources.map((resource) => (
+            <li>
+              <article>
+                <h2>{resource.title}</h2>
+                <p>
+                  {[resource.download_type, resource.language, resource.license]
+                    .filter(Boolean)
+                    .join(' · ')}
+                </p>
+              </article>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <ContentState
+          variant="empty"
+          locale={locale}
+          headingLevel="h2"
+          title="هنوز منبعی منتشر نشده است"
+          message="منابع منتشرشده پس از آماده‌شدن در اینجا نمایش داده می‌شوند."
+        />
+      )
+    }
+  </main>
+</SiteLayout>

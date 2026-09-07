@@ -1,6 +1,54 @@
 # Public Site Task List
 
-Detailed execution queue. Cross-repo board: `../../Docs/05-delivery/MULTI-AGENT-TASK-BOARD.md` (IDs prefixed `PUBLIC-`).
+<!-- PRODUCT-V2.1 -->
+
+## Active V2.1 packets — PUBLIC
+
+Parent groups and retired CA IDs are not assignments. Dependencies and exact files: `../../Docs/05-delivery/concept-alignment-v2/execution-tasks.json`. Implementation/visual/publication gates remain open.
+
+| Packet               | State                  | Specification                                                                         |
+| -------------------- | ---------------------- | ------------------------------------------------------------------------------------- |
+| PU-SYNC-graph        | ACCEPTED_LOCAL         | `../../Docs/05-delivery/concept-alignment-v2/product-packets/PU-SYNC-graph.md`        |
+| CA-01                | ACCEPTED_LOCAL         | `../../Docs/05-delivery/concept-alignment-v2/packets/CA-01.md`                        |
+| CA-02                | REVISE                 | `../../Docs/05-delivery/concept-alignment-v2/packets/CA-02.md`                        |
+| CA-03                | IMPLEMENTED_UNREVIEWED | `../../Docs/05-delivery/concept-alignment-v2/packets/CA-03.md`                        |
+| CA-04                | IMPLEMENTED_UNREVIEWED | `../../Docs/05-delivery/concept-alignment-v2/packets/CA-04.md`                        |
+| CA-05                | IMPLEMENTED_UNREVIEWED | `../../Docs/05-delivery/concept-alignment-v2/packets/CA-05.md`                        |
+| CA-06                | IMPLEMENTED_UNREVIEWED | `../../Docs/05-delivery/concept-alignment-v2/packets/CA-06.md`                        |
+| CA-07                | IMPLEMENTED_UNREVIEWED | `../../Docs/05-delivery/concept-alignment-v2/packets/CA-07.md`                        |
+| CA-08                | IMPLEMENTED_UNREVIEWED | `../../Docs/05-delivery/concept-alignment-v2/packets/CA-08.md`                        |
+| PU-SYNC-public       | IMPLEMENTED_UNREVIEWED | `../../Docs/05-delivery/concept-alignment-v2/product-packets/PU-SYNC-public.md`       |
+| PU-13-routes         | NOT_STARTED            | `../../Docs/05-delivery/concept-alignment-v2/product-packets/PU-13-routes.md`         |
+| PU-13-story          | NOT_STARTED            | `../../Docs/05-delivery/concept-alignment-v2/product-packets/PU-13-story.md`          |
+| PU-14-research       | NOT_STARTED            | `../../Docs/05-delivery/concept-alignment-v2/product-packets/PU-14-research.md`       |
+| PU-14-publications   | NOT_STARTED            | `../../Docs/05-delivery/concept-alignment-v2/product-packets/PU-14-publications.md`   |
+| PU-14-projects       | NOT_STARTED            | `../../Docs/05-delivery/concept-alignment-v2/product-packets/PU-14-projects.md`       |
+| PU-15-articles       | NOT_STARTED            | `../../Docs/05-delivery/concept-alignment-v2/product-packets/PU-15-articles.md`       |
+| PU-15-courses        | NOT_STARTED            | `../../Docs/05-delivery/concept-alignment-v2/product-packets/PU-15-courses.md`        |
+| PU-15-creative       | NOT_STARTED            | `../../Docs/05-delivery/concept-alignment-v2/product-packets/PU-15-creative.md`       |
+| PU-14-statements     | NOT_STARTED            | `../../Docs/05-delivery/concept-alignment-v2/product-packets/PU-14-statements.md`     |
+| PU-15-lessons        | NOT_STARTED            | `../../Docs/05-delivery/concept-alignment-v2/product-packets/PU-15-lessons.md`        |
+| PU-16-books          | NOT_STARTED            | `../../Docs/05-delivery/concept-alignment-v2/product-packets/PU-16-books.md`          |
+| PU-16-talks          | NOT_STARTED            | `../../Docs/05-delivery/concept-alignment-v2/product-packets/PU-16-talks.md`          |
+| PU-16-resources      | NOT_STARTED            | `../../Docs/05-delivery/concept-alignment-v2/product-packets/PU-16-resources.md`      |
+| PU-16-collections    | NOT_STARTED            | `../../Docs/05-delivery/concept-alignment-v2/product-packets/PU-16-collections.md`    |
+| PU-16-series         | NOT_STARTED            | `../../Docs/05-delivery/concept-alignment-v2/product-packets/PU-16-series.md`         |
+| PU-17-home           | NOT_STARTED            | `../../Docs/05-delivery/concept-alignment-v2/product-packets/PU-17-home.md`           |
+| PU-18-about          | NOT_STARTED            | `../../Docs/05-delivery/concept-alignment-v2/product-packets/PU-18-about.md`          |
+| PU-18-cv             | NOT_STARTED            | `../../Docs/05-delivery/concept-alignment-v2/product-packets/PU-18-cv.md`             |
+| PU-18-contact        | NOT_STARTED            | `../../Docs/05-delivery/concept-alignment-v2/product-packets/PU-18-contact.md`        |
+| PU-21-events         | NOT_STARTED            | `../../Docs/05-delivery/concept-alignment-v2/product-packets/PU-21-events.md`         |
+| PU-24-search         | NOT_STARTED            | `../../Docs/05-delivery/concept-alignment-v2/product-packets/PU-24-search.md`         |
+| PU-24-seo            | NOT_STARTED            | `../../Docs/05-delivery/concept-alignment-v2/product-packets/PU-24-seo.md`            |
+| PU-25-public-journey | NOT_STARTED            | `../../Docs/05-delivery/concept-alignment-v2/product-packets/PU-25-public-journey.md` |
+| CA-17                | NOT_STARTED            | `../../Docs/05-delivery/concept-alignment-v2/packets/CA-17.md`                        |
+
+## Historical milestones
+
+Rows below preserve their original evidence and are not reverified by this documentation delivery.
+<!-- /PRODUCT-V2.1 -->
+
+Historical milestone register. Current dispatch queue: `../../Docs/05-delivery/concept-alignment-v2/EXECUTION.md`; filter repository `PUBLIC`.
 
 Status: `[x]` done, `[ ]` open, `[~]` in progress.
 
@@ -46,7 +94,7 @@ Status: `[x]` done, `[ ]` open, `[~]` in progress.
 
 ## PUB-4 — Page families (PF-01..PF-08)
 
-**Recovery freeze:** Page-family development `PUBLIC-200` through `PUBLIC-240` remains frozen until `PUBLIC-190` receives independent visual QA `PASS` and explicit owner acceptance. `WP-25` and `PUBLIC-260` remain allowed. The prerequisite chain is `PUBLIC-070 → PUBLIC-080 → PUBLIC-130 → PUBLIC-140 → PUBLIC-150 → PUBLIC-160 → PUBLIC-170`, plus `PUBLIC-180` and `BACKEND-070`, before visual acceptance can close `PUBLIC-190`.
+**Recovery scope (ADR-0008):** Assigned V2 CA-* packets may remediate existing page-family visuals after their dependencies; new feature development remains gated until `PUBLIC-190` receives independent visual QA `PASS` and explicit owner acceptance. `WP-25` and `PUBLIC-260` remain allowed. The prerequisite chain is `PUBLIC-070 → PUBLIC-080 → PUBLIC-130 → PUBLIC-140 → PUBLIC-150 → PUBLIC-160 → PUBLIC-170`, plus `PUBLIC-180` and `BACKEND-070`, before visual acceptance can close `PUBLIC-190`.
 
 **After `PUBLIC-190` PASS (owner evidence only):** unfreezes visual acceptance for `PUBLIC-201` through `PUBLIC-221` (routes already implemented); allows `PUBLIC-350` release-evidence `ready` evaluation to proceed past owner-acceptance blocker; enables coordination R4 page-family adoption checklist and R8 quality closure sign-off per `docs/quality/PUBLIC-350-RELEASE-EVIDENCE.md`. Does **not** auto-complete published PF-02 CMS detail (empty-shell preview exists; Category A slug still open), staging smoke (`PUBLIC-320`), or production telemetry (`PUBLIC-290`).
 

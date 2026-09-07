@@ -106,96 +106,111 @@ const tabRegion = locale === 'en' ? 'Research sections' : 'بخش‌های پژ�
         atmosphere
       />
 
-      {model.statement ? (
-        <section
-          slot="records"
-          class="research-page__statement research-page__band"
-          aria-labelledby="research-statement-title"
-        >
-          <h2
-            id="research-statement-title"
-            class="research-page__section-title"
+      <div slot="records" class="research-page__sections">
+        <section class="research-page__band research-page__band--constellation">
+          <PageFamilyConstellationShell locale={locale} />
+        </section>
+
+        {model.statement ? (
+          <section
+            class="research-page__statement research-page__band"
+            aria-labelledby="research-statement-title"
           >
-            {model.statement.title}
-          </h2>
-          <div class="research-page__prose">
-            {splitBodyParagraphs(model.statement.body).map((paragraph) => (
-              <p>{paragraph}</p>
-            ))}
-          </div>
-        </section>
-      ) : null}
+            <h2
+              id="research-statement-title"
+              class="research-page__section-title"
+            >
+              {model.statement.title}
+            </h2>
+            <div class="research-page__prose">
+              {splitBodyParagraphs(model.statement.body).map((paragraph) => (
+                <p>{paragraph}</p>
+              ))}
+            </div>
+          </section>
+        ) : null}
 
-      {model.topics.length ? (
-        <section
-          slot="records"
-          class="research-page__topics research-page__band"
-          aria-labelledby="research-topics-title"
-        >
-          <h2 id="research-topics-title" class="research-page__section-title">
-            {locale === 'en' ? 'Focus areas' : 'حوزه‌های تمرکز'}
-          </h2>
-          <ul class="research-page__list">
-            {model.topics.map((topic) => (
-              <li>
-                <article class="research-page__card">
-                  <h3 class="research-page__card-title">
-                    <a
-                      href={localePath(locale, `research/${topic.slug}`)}
-                      class="research-page__card-link"
-                    >
-                      {topic.title}
-                    </a>
-                  </h3>
-                  {topic.summary ? (
-                    <p class="research-page__card-summary">{topic.summary}</p>
-                  ) : null}
-                </article>
-              </li>
-            ))}
-          </ul>
-        </section>
-      ) : (
-        <ContentState
-          slot="records"
-          variant="empty"
-          locale={locale}
-          title={getResearchEmptyTopicsCopy(locale).title}
-          message={getResearchEmptyTopicsCopy(locale).message}
-        />
-      )}
+        {model.topics.length ? (
+          <section
+            class="research-page__topics research-page__band"
+            aria-labelledby="research-topics-title"
+          >
+            <h2 id="research-topics-title" class="research-page__section-title">
+              {locale === 'en' ? 'Focus areas' : 'حوزه‌های تمرکز'}
+            </h2>
+            <ul class="research-page__list">
+              {model.topics.map((topic) => (
+                <li>
+                  <article class="research-page__card">
+                    <h3 class="research-page__card-title">
+                      <a
+                        href={localePath(locale, `research/${topic.slug}`)}
+                        class="research-page__card-link"
+                      >
+                        {topic.title}
+                      </a>
+                    </h3>
+                    {topic.summary ? (
+                      <p class="research-page__card-summary">{topic.summary}</p>
+                    ) : null}
+                  </article>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : (
+          <ContentState
+            variant="empty"
+            locale={locale}
+            title={getResearchEmptyTopicsCopy(locale).title}
+            message={getResearchEmptyTopicsCopy(locale).message}
+          />
+        )}
 
-      {model.projects.length ? (
-        <section
-          slot="records"
-          class="research-page__systems research-page__band"
-          aria-labelledby="research-systems-title"
-        >
-          <h2 id="research-systems-title" class="research-page__section-title">
-            {locale === 'en' ? 'Research systems' : 'سامانه‌های پژوهشی'}
-          </h2>
-          <ul class="research-page__list">
-            {model.projects.map((project) => (
-              <li>
-                <article class="research-page__card">
-                  <h3 class="research-page__card-title">
-                    <Link
-                      href={localePath(locale, `projects/${project.slug}`)}
-                      label={project.title}
-                      variant="standalone"
-                    />
-                  </h3>
-                  {project.objective ? (
-                    <p class="research-page__card-summary">
-                      {project.objective}
-                    </p>
-                  ) : null}
-                </article>
-              </li>
-            ))}
-          </ul>
-        </section>
-      ) : null}
+        {model.projects.length ? (
+          <section
+            class="research-page__systems research-page__band"
+            aria-labelledby="research-systems-title"
+          >
+            <h2
+              id="research-systems-title"
+              class="research-page__section-title"
+            >
+              {locale === 'en' ? 'Research systems' : 'سامانه‌های پژوهشی'}
+            </h2>
+            <ul class="research-page__list">
+              {model.projects.map((project) => (
+                <li>
+                  <article class="research-page__card">
+                    <h3 class="research-page__card-title">
+                      <Link
+                        href={localePath(locale, `projects/${project.slug}`)}
+                        label={project.title}
+                        variant="standalone"
+                      />
+                    </h3>
+                    {project.objective ? (
+                      <p class="research-page__card-summary">
+                        {project.objective}
+                      </p>
+                    ) : null}
+                  </article>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
+
+        {model.publications && model.publications.length > 0 ? (
+          <section class="research-page__band research-page__band--publications">
+            <PageFamilySelectedPublicationsShell
+              locale={locale}
+              count={4}
+              publications={model.publications}
+            />
+          </section>
+        ) : null}
+      </div>
     </CollectionIndexTemplate>
   )
 }

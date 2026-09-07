@@ -1,0 +1,348 @@
+{
+  "synthetic": true,
+  "description": "PU-SYNC-graph synthetic contract fixture for GET /api/v1/records/{locale}/resolve. Contains purely synthetic records for testing contract shapes and ordering; no real profile claims.",
+  "contractSection": "I04",
+  "sourceOpenApiSha256": "47980f8f1992d885398676cf984b80e7068c7aa8e8b8f76a856565ffc9033681",
+  "scenarios": {
+    "resolveBatchSuccess": {
+      "description": "200 OK batch resolution with multiple content families, preserved request order, and unresolved items.",
+      "request": {
+        "locale": "en",
+        "refs": "project:101,article:202,researchtopic:303,publication:404,article:999,researchstatement:505"
+      },
+      "response": {
+        "items": [
+          {
+            "family": "project",
+            "id": "101",
+            "locale": "en",
+            "slug": "synthetic-distributed-mesh",
+            "title": "Synthetic Distributed Mesh",
+            "summary": "Deterministic message-passing architecture for edge topologies.",
+            "routeFamily": "projects",
+            "courseSlug": null
+          },
+          {
+            "family": "article",
+            "id": "202",
+            "locale": "en",
+            "slug": "synthetic-protocol-notes",
+            "title": "Synthetic Protocol Notes",
+            "summary": "Formal verification notes on distributed commit consensus.",
+            "routeFamily": "blog",
+            "courseSlug": null
+          },
+          {
+            "family": "researchtopic",
+            "id": "303",
+            "locale": "en",
+            "slug": "synthetic-formal-methods",
+            "title": "Synthetic Formal Methods",
+            "summary": "State machine reachability algorithms in reactive pipelines.",
+            "routeFamily": "research",
+            "courseSlug": null
+          },
+          {
+            "family": "publication",
+            "id": "404",
+            "locale": "en",
+            "slug": "synthetic-proof-structures",
+            "title": "Synthetic Proof Structures in Compilers",
+            "summary": "Peer-reviewed analysis of semantic tree representations.",
+            "routeFamily": "publications",
+            "courseSlug": null
+          },
+          {
+            "family": "researchstatement",
+            "id": "505",
+            "locale": "en",
+            "slug": "synthetic-verification-statement",
+            "title": "Synthetic Statement on Program Verification",
+            "summary": "Strategic overview of verified system engineering methodologies.",
+            "routeFamily": "research/statements",
+            "courseSlug": null
+          }
+        ],
+        "unresolved": [
+          {
+            "family": "article",
+            "id": "999"
+          }
+        ]
+      }
+    },
+    "resolvePersianBatch": {
+      "description": "200 OK batch resolution in Persian locale with exact-locale synthetic records.",
+      "request": {
+        "locale": "fa",
+        "refs": "article:201,project:102,book:601"
+      },
+      "response": {
+        "items": [
+          {
+            "family": "article",
+            "id": "201",
+            "locale": "fa",
+            "slug": "synthetic-fa-article",
+            "title": "مقاله ساختگی بررسی الگوهای داده",
+            "summary": "خلاصه ساختگی در خصوص معماری سامانه های مقیاس پذیر.",
+            "routeFamily": "blog",
+            "courseSlug": null
+          },
+          {
+            "family": "project",
+            "id": "102",
+            "locale": "fa",
+            "slug": "synthetic-fa-project",
+            "title": "پروژه ساختگی تحلیل سیگنال",
+            "summary": "پیاده سازی سامانه ارزیابی کیفیت داده های حسگر.",
+            "routeFamily": "projects",
+            "courseSlug": null
+          },
+          {
+            "family": "book",
+            "id": "601",
+            "locale": "fa",
+            "slug": "synthetic-fa-book",
+            "title": "کتاب ساختگی نظریه سامانه ها",
+            "summary": "مبانی نظری تحلیل سیستم های پویا در مهندسی نرم افزار.",
+            "routeFamily": "books",
+            "courseSlug": null
+          }
+        ],
+        "unresolved": []
+      }
+    },
+    "resolveLessonCurrentlyUnsupported": {
+      "description": "400 INVALID_INPUT when requesting lesson family: backend resolver supports 13 families (landing/profile/article/series/researchtopic/researchstatement/project/publication/book/talk/download/course/creativework) and rejects lesson/collection until their projections exist (I05). Synthetic 200 lesson payloads must not be treated as live contract.",
+      "request": {
+        "locale": "en",
+        "refs": "lesson:701"
+      },
+      "status": 400,
+      "response": {
+        "code": "INVALID_INPUT",
+        "message": "Specified content family is not supported.",
+        "request_id": "synth-req-err-400-lesson-01",
+        "field_errors": {
+          "refs": [
+            "Specified content family is not supported."
+          ]
+        }
+      }
+    },
+    "resolveAllFamilies": {
+      "description": "200 OK resolution demonstrating all 13 supported families and route mappings.",
+      "items": [
+        {
+          "family": "landing",
+          "id": "1",
+          "locale": "en",
+          "slug": "home",
+          "title": "Synthetic Platform Landing",
+          "summary": "Root landing descriptor.",
+          "routeFamily": "home",
+          "courseSlug": null
+        },
+        {
+          "family": "profile",
+          "id": "2",
+          "locale": "en",
+          "slug": "about",
+          "title": "Synthetic Researcher Profile",
+          "summary": "Profile summary descriptor.",
+          "routeFamily": "about",
+          "courseSlug": null
+        },
+        {
+          "family": "article",
+          "id": "3",
+          "locale": "en",
+          "slug": "synthetic-article",
+          "title": "Synthetic Article",
+          "summary": "Article summary.",
+          "routeFamily": "blog",
+          "courseSlug": null
+        },
+        {
+          "family": "series",
+          "id": "4",
+          "locale": "en",
+          "slug": "synthetic-series",
+          "title": "Synthetic Series",
+          "summary": "Series summary.",
+          "routeFamily": "blog/series",
+          "courseSlug": null
+        },
+        {
+          "family": "researchtopic",
+          "id": "5",
+          "locale": "en",
+          "slug": "synthetic-topic",
+          "title": "Synthetic Research Topic",
+          "summary": "Topic summary.",
+          "routeFamily": "research",
+          "courseSlug": null
+        },
+        {
+          "family": "researchstatement",
+          "id": "6",
+          "locale": "en",
+          "slug": "synthetic-statement",
+          "title": "Synthetic Research Statement",
+          "summary": "Statement summary.",
+          "routeFamily": "research/statements",
+          "courseSlug": null
+        },
+        {
+          "family": "project",
+          "id": "7",
+          "locale": "en",
+          "slug": "synthetic-project",
+          "title": "Synthetic Project",
+          "summary": "Project summary.",
+          "routeFamily": "projects",
+          "courseSlug": null
+        },
+        {
+          "family": "publication",
+          "id": "8",
+          "locale": "en",
+          "slug": "synthetic-publication",
+          "title": "Synthetic Publication",
+          "summary": "Publication summary.",
+          "routeFamily": "publications",
+          "courseSlug": null
+        },
+        {
+          "family": "book",
+          "id": "9",
+          "locale": "en",
+          "slug": "synthetic-book",
+          "title": "Synthetic Book",
+          "summary": "Book summary.",
+          "routeFamily": "books",
+          "courseSlug": null
+        },
+        {
+          "family": "talk",
+          "id": "10",
+          "locale": "en",
+          "slug": "synthetic-talk",
+          "title": "Synthetic Talk",
+          "summary": "Talk summary.",
+          "routeFamily": "talks",
+          "courseSlug": null
+        },
+        {
+          "family": "download",
+          "id": "11",
+          "locale": "en",
+          "slug": "synthetic-download",
+          "title": "Synthetic Download",
+          "summary": "Download resource summary.",
+          "routeFamily": "resources",
+          "courseSlug": null
+        },
+        {
+          "family": "course",
+          "id": "12",
+          "locale": "en",
+          "slug": "synthetic-course",
+          "title": "Synthetic Course",
+          "summary": "Course summary.",
+          "routeFamily": "education",
+          "courseSlug": null
+        },
+        {
+          "family": "creativework",
+          "id": "13",
+          "locale": "en",
+          "slug": "synthetic-creative",
+          "title": "Synthetic Creative Work",
+          "summary": "Creative work summary.",
+          "routeFamily": "gallery",
+          "courseSlug": null
+        }
+      ]
+    },
+    "resolveEmptyRefs": {
+      "description": "200 OK empty resolution when no refs are requested.",
+      "request": {
+        "locale": "en",
+        "refs": ""
+      },
+      "response": {
+        "items": [],
+        "unresolved": []
+      }
+    },
+    "errorMalformedRefs": {
+      "description": "400 Bad Request error envelope when reference query syntax is malformed.",
+      "request": {
+        "locale": "en",
+        "refs": "malformed_ref_without_colon"
+      },
+      "status": 400,
+      "response": {
+        "code": "INVALID_INPUT",
+        "message": "Malformed reference format: 'malformed_ref_without_colon'. Expected family:id.",
+        "request_id": "synth-req-err-400-01",
+        "field_errors": {
+          "refs": [
+            "Malformed reference format: 'malformed_ref_without_colon'. Expected family:id."
+          ]
+        }
+      }
+    },
+    "errorLeadingZeroId": {
+      "description": "400 Bad Request error envelope when ID has non-canonical leading zeros.",
+      "request": {
+        "locale": "en",
+        "refs": "article:0001"
+      },
+      "status": 400,
+      "response": {
+        "code": "INVALID_INPUT",
+        "message": "Invalid record ID '0001' for family 'article'. IDs must be positive canonical decimal integers without leading zeros.",
+        "request_id": "synth-req-err-400-02",
+        "field_errors": {
+          "refs": [
+            "Invalid record ID '0001' for family 'article'. IDs must be positive canonical decimal integers without leading zeros."
+          ]
+        }
+      }
+    },
+    "errorBatchLimitExceeded": {
+      "description": "400 Bad Request error envelope when exceeding 50 unique references.",
+      "request": {
+        "locale": "en",
+        "refCount": 51
+      },
+      "status": 400,
+      "response": {
+        "code": "INVALID_INPUT",
+        "message": "Too many references requested: 51. Maximum allowed per request is 50.",
+        "request_id": "synth-req-err-400-03",
+        "field_errors": {
+          "refs": [
+            "Too many references requested: 51. Maximum allowed per request is 50."
+          ]
+        }
+      }
+    },
+    "errorUnsupportedLocale": {
+      "description": "404 Not Found error envelope when requested locale is unsupported.",
+      "request": {
+        "locale": "de",
+        "refs": "article:1"
+      },
+      "status": 404,
+      "response": {
+        "code": "NOT_FOUND",
+        "message": "Unsupported locale 'de'. Supported locales are: fa, en.",
+        "request_id": "synth-req-err-404-01"
+      }
+    }
+  }
+}

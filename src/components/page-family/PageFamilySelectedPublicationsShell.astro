@@ -2,13 +2,16 @@
 import PageFamilyBibliographyRowPlaceholder from './PageFamilyBibliographyRowPlaceholder.astro'
 import { localePath, type Locale } from '../../lib/navigation'
 
+import type { PublicationListOut } from '../../lib/research-content'
+
 interface Props {
   locale: Locale
   count?: number
   class?: string
+  publications?: PublicationListOut[]
 }
 
-const { locale, count = 4, class: className = '' } = Astro.props
+const { locale, count = 4, class: className = '', publications } = Astro.props
 const sectionLabel =
   locale === 'en' ? 'Selected publications' : 'انتشارات منتخب'
 const viewAllLabel = locale === 'en' ? 'View all publications' : 'همهٔ انتشارات'
@@ -36,7 +39,32 @@ const notice =
     </a>
   </div>
 
-  <PageFamilyBibliographyRowPlaceholder locale={locale} count={count} />
+  {
+    publications && publications.length > 0 ? (
+      <ul class="pf-pub-list" data-visual-id="PageFamilyBibliographyList">
+        {publications.slice(0, count).map((pub) => {
+          const detailHref = localePath(locale, `publications/${pub.slug}`)
+          return (
+            <li class="pf-pub-row">
+              <h3 class="pf-pub-row__title">
+                <a href={detailHref}>{pub.title}</a>
+              </h3>
+              <div class="pf-pub-row__meta">
+                {pub.published_at && (
+                  <span class="pf-pub-row__badge">
+                    {new Date(pub.published_at).getFullYear()}
+                  </span>
+                )}
+                {pub.summary && <span>{pub.summary}</span>}
+              </div>
+            </li>
+          )
+        })}
+      </ul>
+    ) : (
+      <PageFamilyBibliographyRowPlaceholder locale={locale} count={count} />
+    )
+  }
 
   <p class="pf-index-selected-pubs__notice">
     <span class="pf-index-selected-pubs__notice-icon" aria-hidden="true">

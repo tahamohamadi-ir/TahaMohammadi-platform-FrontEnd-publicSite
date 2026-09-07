@@ -1,0 +1,105 @@
+{
+  "synthetic": true,
+  "description": "CA-02 synthetic contract fixture. Illustrative graph only; not a published record and never rendered as public output without adaptation.",
+  "locale": "en",
+  "source": "hand-authored synthetic payload matching GraphPayloadOut",
+  "payload": {
+    "nodes": [
+      {
+        "id": "node-01",
+        "label": "Human-Centered AI",
+        "accessibleLabel": "Research topic: Human-Centered AI",
+        "type": "researchtopic",
+        "weight": 4.5,
+        "summary": "Designing AI systems around human goals and agency.",
+        "colorRole": "brand",
+        "iconRole": "disc",
+        "position": { "x": -80, "y": 24 },
+        "relatedRecords": [
+          { "family": "researchtopic", "id": "11" },
+          { "family": "project", "id": "7" }
+        ]
+      },
+      {
+        "id": "node-02",
+        "label": "Visual Analytics",
+        "accessibleLabel": "Research topic: Visual Analytics",
+        "type": "researchtopic",
+        "weight": 3,
+        "summary": "Inspectable evidence for real decisions.",
+        "colorRole": "research",
+        "iconRole": "ring",
+        "position": { "x": 76, "y": -30, "z": 8 },
+        "relatedRecords": [{ "family": "publication", "id": "3" }]
+      },
+      {
+        "id": "node-03",
+        "label": "PARS-SQL Project",
+        "accessibleLabel": "Project: PARS-SQL",
+        "type": "project",
+        "weight": 5,
+        "summary": "Reliable Persian interaction with structured data.",
+        "colorRole": "signature",
+        "iconRole": "square",
+        "relatedRecords": []
+      },
+      {
+        "id": "node-04",
+        "label": "VTD-Edge Manuscript",
+        "accessibleLabel": "Manuscript: VTD-Edge",
+        "type": "publication",
+        "weight": 2,
+        "summary": "Privacy-preserving Persian NLP-to-SQL on the edge.",
+        "colorRole": "context",
+        "iconRole": "diamond",
+        "position": { "x": 20, "y": 64 },
+        "relatedRecords": [{ "family": "article", "id": "21" }]
+      },
+      {
+        "id": "node-05",
+        "label": "Research Statement",
+        "accessibleLabel": "Statement: research direction",
+        "type": "researchstatement",
+        "weight": 1,
+        "colorRole": "ink",
+        "iconRole": "disc",
+        "position": { "x": 0, "y": 0 }
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge-01",
+        "source": "node-01",
+        "target": "node-02",
+        "relationType": "informs",
+        "weight": 2,
+        "directed": true
+      },
+      {
+        "id": "edge-02",
+        "source": "node-01",
+        "target": "node-03",
+        "relationType": "grounds",
+        "weight": 3,
+        "directed": true,
+        "explanation": "Topic motivates the project."
+      },
+      {
+        "id": "edge-03",
+        "source": "node-03",
+        "target": "node-04",
+        "relationType": "documents",
+        "weight": 1,
+        "directed": false
+      },
+      {
+        "id": "edge-04",
+        "source": "node-05",
+        "target": "node-01",
+        "relationType": "frames",
+        "weight": 1,
+        "directed": true
+      }
+    ]
+  }
+}

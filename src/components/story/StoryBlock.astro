@@ -1,0 +1,392 @@
+---
+import type { StoryBlock } from '../../lib/story-content'
+import { formatFileSize } from '../../lib/story-content'
+
+interface Props {
+  block: StoryBlock
+  locale?: string
+}
+
+const { block, locale = 'en' } = Astro.props
+const { blockType, settings = {} } = block
+
+const isFa = locale === 'fa'
+const labels = {
+  download: isFa ? 'دریافت فایل' : 'Download file',
+  references: isFa ? 'منابع و مراجع' : 'References',
+  related: isFa ? 'مطالب مرتبط' : 'Related Records',
+  copyCode: isFa ? 'کپی کد' : 'Copy code',
+}
+
+const headingLevel = Number(settings.level) || 2
+const headingId = typeof settings.id === 'string' ? settings.id : ''
+const headingText = typeof settings.text === 'string' ? settings.text : ''
+
+const textBody = typeof settings.body === 'string' ? settings.body : ''
+const textContent = typeof settings.text === 'string' ? settings.text : ''
+
+const codeContent = typeof settings.code === 'string' ? settings.code : ''
+const codeLanguage =
+  typeof settings.language === 'string' ? settings.language : ''
+const codeCaption = typeof settings.caption === 'string' ? settings.caption : ''
+
+interface TableColumn {
+  key: string
+  label: string
+}
+const tableColumns: TableColumn[] = Array.isArray(settings.columns)
+  ? (settings.columns as TableColumn[])
+  : []
+const tableRows: Array<Record<string, unknown>> = Array.isArray(settings.rows)
+  ? (settings.rows as Array<Record<string, unknown>>)
+  : []
+const tableCaption =
+  typeof settings.caption === 'string' ? settings.caption : ''
+
+const mathHtml = typeof settings.html === 'string' ? settings.html : ''
+const mathFormula = typeof settings.formula === 'string' ? settings.formula : ''
+
+interface MediaFileRef {
+  id?: number | string
+  title?: string
+  slug?: string
+  url?: string
+  mime?: string
+  size?: number
+  width?: number
+  height?: number
+}
+const fileData = (settings.file ||
+  settings.download ||
+  null) as MediaFileRef | null
+const fileUrl = fileData?.url || ''
+const fileTitle =
+  (typeof settings.label === 'string' ? settings.label : null) ||
+  fileData?.title ||
+  'Download'
+const fileSize = formatFileSize(fileData?.size)
+const fileMime = fileData?.mime || ''
+
+interface ReferenceItem {
+  label: string
+  url?: string
+}
+const refItems: ReferenceItem[] = Array.isArray(settings.items)
+  ? (settings.items as ReferenceItem[])
+  : []
+
+interface RelatedRecordItem {
+  family?: string
+  id?: string
+  title?: string
+  slug?: string
+  summary?: string
+  routeFamily?: string
+}
+const relatedRecords: RelatedRecordItem[] = Array.isArray(settings.records)
+  ? (settings.records as RelatedRecordItem[])
+  : []
+
+const quoteText = typeof settings.text === 'string' ? settings.text : ''
+const quoteAuthor = typeof settings.author === 'string' ? settings.author : ''
+const quoteCitation =
+  typeof settings.citation === 'string' ? settings.citation : ''
+
+const figureMedia = (settings.media || null) as MediaFileRef | null
+const figureCaption =
+  typeof settings.caption === 'string' ? settings.caption : ''
+const figureAlt =
+  (typeof settings.alt === 'string' ? settings.alt : null) ||
+  figureCaption ||
+  ''
+
+interface AccordionItem {
+  title: string
+  body: string
+}
+const accordionItems: AccordionItem[] = Array.isArray(settings.items)
+  ? (settings.items as AccordionItem[])
+  : []
+---
+
+{
+  blockType === 'heading' && (
+    <div class="story-block story-block--heading">
+      {headingLevel === 1 && (
+        <h1 class="story-heading" id={headingId}>
+          <span>{headingText}</span>
+          {headingId && (
+            <a
+              href={`#${headingId}`}
+              class="story-heading__anchor"
+              aria-label={`Link to ${headingText}`}
+            >
+              #
+            </a>
+          )}
+        </h1>
+      )}
+      {headingLevel === 2 && (
+        <h2 class="story-heading" id={headingId}>
+          <span>{headingText}</span>
+          {headingId && (
+            <a
+              href={`#${headingId}`}
+              class="story-heading__anchor"
+              aria-label={`Link to ${headingText}`}
+            >
+              #
+            </a>
+          )}
+        </h2>
+      )}
+      {headingLevel === 3 && (
+        <h3 class="story-heading" id={headingId}>
+          <span>{headingText}</span>
+          {headingId && (
+            <a
+              href={`#${headingId}`}
+              class="story-heading__anchor"
+              aria-label={`Link to ${headingText}`}
+            >
+              #
+            </a>
+          )}
+        </h3>
+      )}
+      {headingLevel === 4 && (
+        <h4 class="story-heading" id={headingId}>
+          <span>{headingText}</span>
+          {headingId && (
+            <a
+              href={`#${headingId}`}
+              class="story-heading__anchor"
+              aria-label={`Link to ${headingText}`}
+            >
+              #
+            </a>
+          )}
+        </h4>
+      )}
+      {headingLevel === 5 && (
+        <h5 class="story-heading" id={headingId}>
+          <span>{headingText}</span>
+          {headingId && (
+            <a
+              href={`#${headingId}`}
+              class="story-heading__anchor"
+              aria-label={`Link to ${headingText}`}
+            >
+              #
+            </a>
+          )}
+        </h5>
+      )}
+      {headingLevel === 6 && (
+        <h6 class="story-heading" id={headingId}>
+          <span>{headingText}</span>
+          {headingId && (
+            <a
+              href={`#${headingId}`}
+              class="story-heading__anchor"
+              aria-label={`Link to ${headingText}`}
+            >
+              #
+            </a>
+          )}
+        </h6>
+      )}
+    </div>
+  )
+}
+
+{
+  (blockType === 'text' ||
+    blockType === 'paragraph' ||
+    blockType === 'rich_text') && (
+    <div class="story-block story-block--text story-text">
+      {textBody ? (
+        <div set:html={textBody} />
+      ) : textContent ? (
+        <p>{textContent}</p>
+      ) : null}
+    </div>
+  )
+}
+
+{
+  blockType === 'code' && (
+    <div class="story-block story-block--code story-code">
+      {codeLanguage && (
+        <div class="story-code__header">
+          <span class="story-code__lang">{codeLanguage}</span>
+        </div>
+      )}
+      <pre class="story-code__pre">
+        <code>{codeContent}</code>
+      </pre>
+      {codeCaption && <div class="story-code__caption">{codeCaption}</div>}
+    </div>
+  )
+}
+
+{
+  blockType === 'table' && (
+    <div class="story-block story-block--table story-table-wrapper">
+      <table class="story-table">
+        {tableCaption && (
+          <caption class="story-table__caption">{tableCaption}</caption>
+        )}
+        {tableColumns.length > 0 && (
+          <thead>
+            <tr>
+              {tableColumns.map((col) => (
+                <th scope="col">{col.label || col.key}</th>
+              ))}
+            </tr>
+          </thead>
+        )}
+        <tbody>
+          {tableRows.map((row) => (
+            <tr>
+              {tableColumns.length > 0
+                ? tableColumns.map((col) => (
+                    <td>{String(row[col.key] ?? '')}</td>
+                  ))
+                : Object.values(row).map((val) => <td>{String(val ?? '')}</td>)}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )
+}
+
+{
+  blockType === 'math' && (
+    <div
+      class="story-block story-block--math story-math"
+      role="region"
+      aria-label="Mathematical formula"
+    >
+      {mathHtml ? <div set:html={mathHtml} /> : <code>{mathFormula}</code>}
+    </div>
+  )
+}
+
+{
+  blockType === 'file' && (
+    <div class="story-block story-block--file">
+      <a href={fileUrl || '#'} class="story-file" download={Boolean(fileUrl)}>
+        <div class="story-file__info">
+          <span class="story-file__title">{fileTitle}</span>
+          {(fileSize || fileMime) && (
+            <span class="story-file__meta">
+              {[fileMime, fileSize].filter(Boolean).join(' • ')}
+            </span>
+          )}
+        </div>
+        <span class="story-file__action">{labels.download}</span>
+      </a>
+    </div>
+  )
+}
+
+{
+  blockType === 'references' && refItems.length > 0 && (
+    <div class="story-block story-block--references story-references">
+      <h3 class="story-references__title">{labels.references}</h3>
+      <ol class="story-references__list">
+        {refItems.map((item) => (
+          <li class="story-references__item">
+            {item.url ? (
+              <a
+                href={item.url}
+                class="story-references__link"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {item.label}
+              </a>
+            ) : (
+              <span>{item.label}</span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </div>
+  )
+}
+
+{
+  blockType === 'related' && relatedRecords.length > 0 && (
+    <div class="story-block story-block--related story-related">
+      <h3 class="story-related__title">{labels.related}</h3>
+      <ul class="story-related__list">
+        {relatedRecords.map((record) => {
+          const family = record.family || 'record'
+          const title = record.title || `${family} #${record.id}`
+          const href = record.slug
+            ? `/${locale}/${record.routeFamily || family}/${record.slug}`
+            : '#'
+          return (
+            <li class="story-related__item">
+              <a href={href} class="story-related__card">
+                <span class="story-related__family">{family}</span>
+                <span class="story-related__record-title">{title}</span>
+              </a>
+            </li>
+          )
+        })}
+      </ul>
+    </div>
+  )
+}
+
+{
+  blockType === 'quote' && (
+    <div class="story-block story-block--quote">
+      <blockquote class="story-quote">
+        <p>{quoteText}</p>
+        {(quoteAuthor || quoteCitation) && (
+          <cite>{[quoteAuthor, quoteCitation].filter(Boolean).join(', ')}</cite>
+        )}
+      </blockquote>
+    </div>
+  )
+}
+
+{
+  (blockType === 'figure' ||
+    blockType === 'image' ||
+    blockType === 'media') && (
+    <figure class="story-block story-block--figure story-figure">
+      {figureMedia?.url && (
+        <img
+          src={figureMedia.url}
+          alt={figureAlt}
+          width={figureMedia.width || undefined}
+          height={figureMedia.height || undefined}
+          loading="lazy"
+        />
+      )}
+      {figureCaption && <figcaption>{figureCaption}</figcaption>}
+    </figure>
+  )
+}
+
+{
+  (blockType === 'accordion' || blockType === 'tabs') &&
+    accordionItems.length > 0 && (
+      <div class="story-block story-block--accordion story-accordion">
+        {accordionItems.map((item) => (
+          <details class="story-accordion__item">
+            <summary class="story-accordion__summary">{item.title}</summary>
+            <div class="story-accordion__content" set:html={item.body} />
+          </details>
+        ))}
+      </div>
+    )
+}
+
+{blockType === 'divider' && <hr class="story-divider" />}

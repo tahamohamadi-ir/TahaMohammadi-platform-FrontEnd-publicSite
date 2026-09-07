@@ -1,0 +1,99 @@
+---
+/**
+ * CA-04 — Visual Atlas Section: Procedural Graph Scene Specimen.
+ *
+ * Provides live testing and visual verification of the procedural constellation
+ * renderer against the locked scene contract (ca03-1.0.0).
+ *
+ * Demonstrates:
+ * - Primitive-based Three.js rendering (orbital rings, spheres, halos, quadratic beziers).
+ * - Deterministic mathematical layout for 3, 5, 12, and 50 nodes.
+ * - Long Persian (FA) vs English (EN) label projections.
+ * - Hardware performance ceilings enforcement (DPR, buffer size, draw calls).
+ * - WebGL context loss handling and clean resource disposal.
+ */
+
+import GraphSceneDemo from '../../components/hero/GraphSceneDemo.astro'
+import {
+  SCENE_CONTRACT_VERSION,
+  SCENE_PERFORMANCE_CEILINGS,
+} from '../../lib/visual/scene-contract'
+---
+
+<section
+  class="atlas-section"
+  id="atlas-graph-scene"
+  data-visual-id="AtlasGraphSceneSection"
+>
+  <h2 class="atlas-section__title">Procedural Constellation Scene</h2>
+  <p class="atlas-section__summary">
+    Original Three.js constellation renderer built against locked scene contract
+    <code>{SCENE_CONTRACT_VERSION}</code>. Pure procedural primitives with zero
+    portal or screenshot-textured planes. Demand-driven rendering with strict
+    hardware ceilings.
+  </p>
+
+  <div class="atlas-specimen" data-visual-id="AtlasGraphSceneSpecimen">
+    <div class="atlas-state-row" style="justify-content: space-between;">
+      <p class="atlas-specimen__label">Interactive Scene Specimen</p>
+      <span
+        style="font-size: var(--font-size-xs); color: var(--color-ink-secondary); font-family: monospace;"
+      >
+        Ceilings: DPR &le; {
+          SCENE_PERFORMANCE_CEILINGS.maxDevicePixelRatioDesktop
+        }d / {SCENE_PERFORMANCE_CEILINGS.maxDevicePixelRatioMobile}m &bull;
+        Buffer &le; 1.5M px &bull; DrawCalls &le; {
+          SCENE_PERFORMANCE_CEILINGS.maxDrawCalls
+        } &bull; Triangles &le; {SCENE_PERFORMANCE_CEILINGS.maxTriangles}
+      </span>
+    </div>
+
+    <GraphSceneDemo initialCount={12} initialLocale="en" />
+  </div>
+
+  <div class="atlas-grid atlas-grid--components">
+    <div class="atlas-specimen">
+      <p class="atlas-specimen__label">Deterministic Layout Invariants</p>
+      <ul
+        style="margin: 0; padding-inline-start: 1.25rem; font-size: var(--font-size-sm); color: var(--color-ink-secondary); line-height: 1.6;"
+      >
+        <li>Concentric orbital rings derived via golden ratio distribution.</li>
+        <li>
+          Identical node payload always computes identical 3D coordinates.
+        </li>
+        <li>
+          Zero-coordinate derivation handles 0, 1, 3, 5, 12, and 50 nodes
+          without NaN or clipping.
+        </li>
+        <li>
+          View-projection matrix computes precise 2D coordinates for accessible
+          HTML labels.
+        </li>
+      </ul>
+    </div>
+
+    <div class="atlas-specimen">
+      <p class="atlas-specimen__label">Resource Lifecycle & Safety</p>
+      <ul
+        style="margin: 0; padding-inline-start: 1.25rem; font-size: var(--font-size-sm); color: var(--color-ink-secondary); line-height: 1.6;"
+      >
+        <li>
+          Full disposal cleanly unloads all geometries, materials, line loops,
+          and WebGL buffers.
+        </li>
+        <li>
+          Context-loss listener prevents crashes when GPU resources are
+          reclaimed.
+        </li>
+        <li>
+          No continuous requestAnimationFrame loop when the constellation is
+          resting.
+        </li>
+        <li>
+          Palette changes re-shade materials live without rebuilding scene
+          graphs.
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>

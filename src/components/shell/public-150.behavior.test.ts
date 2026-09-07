@@ -83,6 +83,40 @@ describe('PUBLIC-150 behavior', () => {
     expect(skipHtml).toMatch(/>رفتن به محتوای اصلی</)
   })
 
+  it('names the Header brand link from locale copy in both locales', async () => {
+    const enHtml = await renderComponent(Header, {
+      locale: 'en',
+      currentPath: '/en/about/',
+      alternateAvailable: false,
+    })
+    expect(enHtml).toMatch(
+      /<a href="\/en\/" class="site-header__brand" aria-label="TAHA MOHAMMADI">/,
+    )
+
+    const faHtml = await renderComponent(Header, {
+      locale: 'fa',
+      currentPath: '/fa/about/',
+      alternateAvailable: false,
+    })
+    expect(faHtml).toMatch(
+      /<a href="\/fa\/" class="site-header__brand" aria-label="طه محمدی">/,
+    )
+  })
+
+  it('keeps the mobile drawer a native disclosure with locale toggle copy', async () => {
+    for (const locale of ['en', 'fa'] as const) {
+      const html = await renderComponent(Header, {
+        locale,
+        currentPath: `/${locale}/about/`,
+        alternateAvailable: false,
+      })
+      expect(html).toMatch(/<details class="site-header__drawer">/)
+      expect(html).toMatch(/<summary class="site-header__menu-trigger">/)
+      expect(html).toContain(locale === 'en' ? '>Menu<' : '>منو<')
+      expect(html).toMatch(/site-header__nav--mobile/)
+    }
+  })
+
   it('consumes ContactCTA and Link primitives in Footer without custom button markup', async () => {
     const footerSource = readRepositoryFile('src/components/Footer.astro')
     expect(footerSource).toContain(

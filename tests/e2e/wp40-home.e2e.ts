@@ -1,5 +1,36 @@
 import { expect, test } from '@playwright/test'
 
+// V2 checks semantic content in the state actually delivered by this build.
+async function expectSemanticGraph(page: import('@playwright/test').Page) {
+  const region = page.locator(
+    '[data-hero-layout="integrated"] [data-graph-region]',
+  )
+  await expect(region).toHaveCount(1)
+  await expect(region).toBeVisible()
+  await expect(region.locator('#home-graph-heading')).toBeVisible()
+  const status = await region.getAttribute('data-graph-status')
+  expect(['ready', 'empty', 'error', 'unavailable']).toContain(status)
+  if (status === 'ready') {
+    const payload = JSON.parse(
+      await region.locator('script[data-graph-payload]').innerText(),
+    )
+    expect(payload.nodes.length).toBeGreaterThan(0)
+    await expect(region.locator('[data-graph-node]')).toHaveCount(
+      payload.nodes.length,
+    )
+    for (const label of await region.locator('.hg-node__label').all()) {
+      await expect(label).toBeVisible()
+    }
+  } else {
+    await expect(region.locator('[data-graph-node]')).toHaveCount(0)
+    await expect(region.locator('a')).toHaveCount(0)
+    await expect(region).toContainText(
+      /unavailable|not available|No graph nodes|not be shown|در دسترس نیست|منتشر نشده|قابل‌نمایش نیست/,
+    )
+  }
+  await expect(page.locator('#home-graph-region')).toHaveCount(0)
+}
+
 async function settleLazyMedia(page: import('@playwright/test').Page) {
   await page.evaluate(async () => {
     const step = window.innerHeight / 2
@@ -77,19 +108,12 @@ test.describe('WP-40 home structure acceptance', () => {
     await expect(languageToggle).toHaveCSS('outline-style', 'solid')
   })
 
-  test('WP-40 graph nodes carry the explicit non-interactive unavailable contract', async ({
+  test('V2 Home exposes one truthful semantic graph in both locales', async ({
     page,
   }) => {
     for (const path of ['/en/', '/fa/']) {
       await page.goto(path)
-      const list = page.locator('[data-graph-state="unavailable-route"]')
-      await expect(list).toHaveCount(1)
-      await expect(list.locator('a')).toHaveCount(0)
-      await expect(
-        list.locator('[data-graph-node-state="unavailable"]'),
-      ).toHaveCount(3)
-      await expect(list.locator('[tabindex]')).toHaveCount(0)
-      await expect(list.locator('.hm-graph__node-label').first()).toBeVisible()
+      await expectSemanticGraph(page)
     }
   })
 
@@ -103,14 +127,10 @@ test.describe('WP-40 home structure acceptance', () => {
     )
     await page.goto('/en/')
 
-    const nodes = page.locator('.hm-graph__node-label')
-    await expect(nodes).toHaveCount(3)
-    for (let index = 0; index < 3; index += 1) {
-      await expect(nodes.nth(index)).toBeVisible()
-    }
+    await expectSemanticGraph(page)
     await expect(page.locator('.hm-hero__name')).toContainText('Taha Mohammadi')
     await expect(
-      page.locator('.hm-hero[data-hero-layout="split"]'),
+      page.locator('.hm-hero[data-hero-layout="integrated"]'),
     ).toHaveCount(1)
     await expect
       .poll(() =>
@@ -131,7 +151,7 @@ test.describe('WP-40 home structure acceptance', () => {
     await expect(noJsPage.locator('.hm-hero__name')).toContainText(
       'Taha Mohammadi',
     )
-    await expect(noJsPage.locator('.hm-graph__node-label')).toHaveCount(3)
+    await expectSemanticGraph(noJsPage)
     await expect(noJsPage.locator('.hm-projects__image')).toHaveCount(2)
     await context.close()
   })

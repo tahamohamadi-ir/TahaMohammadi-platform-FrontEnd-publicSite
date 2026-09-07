@@ -19,6 +19,10 @@ export const LOCALE_INDEX_ROUTES = [
   'cv',
   'contact',
   'search',
+  'books',
+  'talks',
+  'resources',
+  'collections',
 ] as const
 
 export type LocaleIndexRoute = (typeof LOCALE_INDEX_ROUTES)[number]

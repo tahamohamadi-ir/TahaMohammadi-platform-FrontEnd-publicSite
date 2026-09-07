@@ -1,4 +1,10 @@
 ---
+/**
+ * Deprecated for Home pages since CA-03: the semantic graph now lives
+ * inside HomeHero (HeroGraph). This component remains only as a
+ * compatibility specimen with its exact previous output; Home pages must
+ * not render the `relationship-graph` slot anymore.
+ */
 import { getHomeConstellationContent } from '../../lib/home-content'
 import type { Locale } from '../../lib/navigation'
 

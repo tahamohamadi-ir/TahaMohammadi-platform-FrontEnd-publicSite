@@ -1,0 +1,47 @@
+---
+import SiteLayout from '../../../layouts/SiteLayout.astro'
+import ContentState from '../../../components/state/ContentState.astro'
+import { listTalks } from '../../../lib/teaching-content'
+
+const locale = 'fa' as const
+const talks = await listTalks(locale)
+---
+
+<SiteLayout
+  title="سخنرانی‌ها — طاها محمدی"
+  locale={locale}
+  pathSegment="talks"
+  alternateAvailable={false}
+>
+  <main class="product-index" id="main-content">
+    <header class="product-index__lead">
+      <p>گفت‌وگوی عمومی</p><h1>سخنرانی‌ها</h1>
+    </header>
+    {
+      talks.length ? (
+        <ul class="product-index__list">
+          {talks.map((talk) => (
+            <li>
+              <article>
+                <h2>{talk.title}</h2>
+                <p>
+                  {[talk.event_name, talk.event_date, talk.location]
+                    .filter(Boolean)
+                    .join(' · ')}
+                </p>
+              </article>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <ContentState
+          variant="empty"
+          locale={locale}
+          headingLevel="h2"
+          title="هنوز سخنرانی منتشر نشده است"
+          message="سخنرانی‌های منتشرشده پس از آماده‌شدن در اینجا نمایش داده می‌شوند."
+        />
+      )
+    }
+  </main>
+</SiteLayout>

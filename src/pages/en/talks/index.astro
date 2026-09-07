@@ -1,0 +1,47 @@
+---
+import SiteLayout from '../../../layouts/SiteLayout.astro'
+import ContentState from '../../../components/state/ContentState.astro'
+import { listTalks } from '../../../lib/teaching-content'
+
+const locale = 'en' as const
+const talks = await listTalks(locale)
+---
+
+<SiteLayout
+  title="Talks — Taha Mohammadi"
+  locale={locale}
+  pathSegment="talks"
+  alternateAvailable={false}
+>
+  <main class="product-index" id="main-content">
+    <header class="product-index__lead">
+      <p>Public engagement</p><h1>Talks</h1>
+    </header>
+    {
+      talks.length ? (
+        <ul class="product-index__list">
+          {talks.map((talk) => (
+            <li>
+              <article>
+                <h2>{talk.title}</h2>
+                <p>
+                  {[talk.event_name, talk.event_date, talk.location]
+                    .filter(Boolean)
+                    .join(' · ')}
+                </p>
+              </article>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <ContentState
+          variant="empty"
+          locale={locale}
+          headingLevel="h2"
+          title="No talks yet"
+          message="Published talks will appear here when they are available."
+        />
+      )
+    }
+  </main>
+</SiteLayout>

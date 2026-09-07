@@ -1,0 +1,344 @@
+/**
+ * CA-03 — Integrated Home hero and semantic graph styles. Light and Dark
+ * ship together via semantic tokens; fa and en mirror through logical
+ * properties so DOM order always matches focus order.
+ * CA-06 — Progressive enhancement layer: projected HTML labels overlay the
+ * reserved scene slot absolutely (no layout shift); the canvas reveals only
+ * after successful enhancement; copy, node list, and detail never wait for
+ * the scene (no zero-opacity text rules).
+ */
+
+.hm-hero--integrated {
+  display: grid;
+  gap: var(--space-8, 2rem);
+  max-inline-size: 1280px;
+  margin-inline: auto;
+  padding-block: 4rem 5rem;
+  padding-inline: max(1rem, env(safe-area-inset-inline, 1rem));
+  inline-size: 100%;
+  box-sizing: border-box;
+}
+
+.hm-hero__copy {
+  min-inline-size: 0;
+  display: grid;
+  gap: var(--space-4, 1rem);
+  align-content: start;
+}
+
+.hm-hero__role {
+  margin: 0;
+  font-size: var(--font-size-base, 1rem);
+  color: var(--color-ink-secondary, inherit);
+}
+
+.hm-hero__name {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--font-size-4xl, 2.5rem);
+  line-height: var(--font-line-height-tight, 1.15);
+  overflow-wrap: anywhere;
+}
+
+.hm-hero__name-accent {
+  color: var(--color-brand, currentColor);
+}
+
+.hm-hero__intro,
+.hm-hero__research {
+  margin: 0;
+  font-size: var(--font-size-base, 1rem);
+  line-height: var(--font-line-height-base, 1.7);
+  max-inline-size: 42rem;
+}
+
+.hm-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3, 0.75rem);
+}
+
+.hm-hero__focus {
+  display: grid;
+  gap: var(--space-2, 0.5rem);
+}
+
+.hm-hero__focus-label {
+  margin: 0;
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--color-ink-secondary, inherit);
+}
+
+.hm-hero__focus-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2, 0.5rem);
+}
+
+.hm-hero__graph {
+  min-inline-size: 0;
+}
+
+/* Semantic graph region: calm opaque canvas, never text across motion. */
+.hg {
+  display: grid;
+  gap: var(--space-5, 1.25rem);
+  padding: var(--space-6, 1.5rem);
+  border: 1px solid var(--color-border-subtle, currentColor);
+  border-radius: var(--radius-lg, 0.75rem);
+  background: var(--color-surface, transparent);
+  color: var(--color-ink, inherit);
+  max-inline-size: 100%;
+  box-sizing: border-box;
+}
+
+.hg__heading {
+  margin: 0;
+  font-size: var(--font-size-lg, 1.125rem);
+  font-weight: 600;
+}
+
+.hg-scene {
+  position: relative;
+  min-block-size: 280px;
+  block-size: 40vw;
+  max-block-size: 360px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+.hg-orbit {
+  inline-size: min(100%, 320px);
+  block-size: auto;
+  color: var(--color-brand, currentColor);
+}
+
+.hg-canvas {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+}
+
+.hg-canvas[hidden] {
+  display: none;
+}
+
+/* CA-06 — Projected HTML labels overlay the reserved scene slot. The layer
+   is absolute so chips never shift copy, list, or detail layout. Chips are
+   decorative pointer shortcuts (aria-hidden); the native node list remains
+   the keyboard source with 44px targets. */
+.hg-labels {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.hg-labels:empty {
+  display: block;
+}
+
+.hg-label {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  padding: 3px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.4;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--color-surface) 92%, transparent);
+  color: var(--color-ink);
+  border: 1px solid var(--color-border-subtle, currentColor);
+  white-space: nowrap;
+  max-inline-size: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: auto;
+  cursor: pointer;
+  touch-action: pan-y pinch-zoom;
+}
+
+.hg-label:hover {
+  border-color: var(--color-brand, currentColor);
+}
+
+.hg-label.is-selected {
+  background: var(--color-signature);
+  color: var(--color-inverse, #fff);
+  border-color: var(--color-signature);
+}
+
+/* Enhancement states: only the canvas/labels layer changes. Copy, list,
+   and detail keep natural flow in every state (no-JS, fallback, ready). */
+.hg[data-hero-enhancement='fallback'] .hg-canvas {
+  display: none;
+}
+
+.hg[data-hero-enhancement='fallback'] .hg-labels {
+  display: none;
+}
+
+.hg[data-graph-status='empty'] .hg-scene,
+.hg[data-graph-status='error'] .hg-scene,
+.hg[data-graph-status='unavailable'] .hg-scene {
+  display: none;
+}
+
+.hg-node-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: var(--space-2, 0.5rem);
+}
+
+.hg-node__details {
+  border: 1px solid var(--color-border-subtle, currentColor);
+  border-radius: var(--radius-md, 0.5rem);
+  padding-inline: var(--space-3, 0.75rem);
+}
+
+.hg-node__summary {
+  display: flex;
+  align-items: center;
+  min-block-size: 44px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.hg-node__summary:focus-visible {
+  outline: 2px solid var(--color-control-focus, var(--color-brand));
+  outline-offset: 2px;
+}
+
+.hg-node__body {
+  display: grid;
+  gap: var(--space-2, 0.5rem);
+  padding-block-end: var(--space-3, 0.75rem);
+}
+
+.hg-node__summary-text {
+  margin: 0;
+  font-size: var(--font-size-sm, 0.875rem);
+  line-height: var(--font-line-height-base, 1.7);
+}
+
+.hg-node__links {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: var(--space-2, 0.5rem);
+}
+
+.hg-node__link {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 44px;
+}
+
+.hg-edges__heading,
+.hg-detail__heading {
+  margin: 0 0 var(--space-2, 0.5rem);
+  font-size: var(--font-size-base, 1rem);
+  font-weight: 600;
+}
+
+.hg-edges__list {
+  margin: 0;
+  padding-inline-start: var(--space-5, 1.25rem);
+  display: grid;
+  gap: var(--space-1, 0.25rem);
+  font-size: var(--font-size-sm, 0.875rem);
+}
+
+.hg-detail {
+  border-block-start: 1px solid var(--color-border-subtle, currentColor);
+  padding-block-start: var(--space-4, 1rem);
+  min-block-size: 4.5rem;
+}
+
+.hg-detail__label {
+  margin: 0 0 var(--space-1, 0.25rem);
+  font-weight: 600;
+}
+
+.hg-detail__summary,
+.hg-detail__prompt {
+  margin: 0;
+  font-size: var(--font-size-sm, 0.875rem);
+  line-height: var(--font-line-height-base, 1.7);
+}
+
+.hg-detail__links {
+  margin: var(--space-2, 0.5rem) 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: var(--space-2, 0.5rem);
+}
+
+.hg-detail__link {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 44px;
+}
+
+/* 768: stack when copy and graph cannot share a row. */
+@media (min-width: 768px) {
+  .hm-hero--integrated {
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+    gap: var(--space-6, 1.5rem);
+  }
+
+  .hm-hero__copy {
+    grid-column: 1 / -1;
+  }
+
+  .hm-hero__graph {
+    grid-column: 1 / -1;
+  }
+
+  .hg-scene {
+    min-block-size: 360px;
+    max-block-size: 480px;
+  }
+}
+
+/* 1024–1440: 12 columns, copy 5 and graph 7. DOM order keeps focus order. */
+@media (min-width: 1024px) {
+  .hm-hero--integrated {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 24px 32px;
+    padding-block: 4.5rem 6rem;
+  }
+
+  .hm-hero__copy {
+    grid-column: span 5;
+  }
+
+  .hm-hero__graph {
+    grid-column: span 7;
+  }
+
+  .hg-scene {
+    min-block-size: 520px;
+    block-size: auto;
+    max-block-size: 620px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hg *,
+  .hm-hero--integrated * {
+    transition: none !important;
+    animation: none !important;
+  }
+}

@@ -1,4 +1,6 @@
 ---
+import { SCENE_CONTRACT_VERSION } from '../../lib/visual/scene-contract'
+
 const tokens = [
   { name: 'canvas', variable: '--color-canvas' },
   { name: 'surface', variable: '--color-surface' },
@@ -47,5 +49,37 @@ const tokens = [
     >
       Body sample with line-height rhythm.
     </p>
+  </div>
+
+  <div class="atlas-specimen" data-visual-id="AtlasHeroSceneContract">
+    <p class="atlas-specimen__label">
+      Hero scene contract ({SCENE_CONTRACT_VERSION})
+    </p>
+    <p class="atlas-section__summary">
+      Locked CA-03 renderer/controller signatures for the Home hero
+      constellation. The renderer reads only these palette roles from the
+      authored tokens and never invents a second palette.
+    </p>
+    <div class="atlas-grid atlas-grid--tokens">
+      {
+        [
+          'canvas',
+          'surface',
+          'ink',
+          'brand',
+          'signature',
+          'research',
+          'context',
+        ].map((role) => (
+          <div class="atlas-token" data-visual-id={`AtlasToken-hero-${role}`}>
+            <div
+              class="atlas-token__swatch"
+              style={`background: var(--color-${role});`}
+            />
+            <p class="atlas-token__name">--color-{role}</p>
+          </div>
+        ))
+      }
+    </div>
   </div>
 </section>
