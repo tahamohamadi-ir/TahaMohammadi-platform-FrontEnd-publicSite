@@ -1,5 +1,6 @@
 ---
 import SiteLayout from '../../../../layouts/SiteLayout.astro'
+import { pickDetailSeo } from '../../../../lib/seo'
 import ResearchStatementDetailContent from '../../../../components/research/ResearchStatementDetailContent.astro'
 import {
   fetchResearchStatementDetail,
@@ -28,6 +29,7 @@ const alternateAvailable = await resolveResearchStatementAlternateAvailability(
   slug,
 )
 const pageTitle = `${model.statement.title} — طاها محمدی`
+const detailSeo = pickDetailSeo(model.statement.seo)
 ---
 
 <SiteLayout
@@ -35,6 +37,8 @@ const pageTitle = `${model.statement.title} — طاها محمدی`
   locale={locale}
   pathSegment={`research/statements/${slug}`}
   alternateAvailable={alternateAvailable}
+  description={detailSeo.description}
+  socialImage={detailSeo.socialImage}
 >
   <ResearchStatementDetailContent locale={locale} model={model} />
 </SiteLayout>

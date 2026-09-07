@@ -39,6 +39,15 @@ Owner: PUBLIC (`Front-End/public-site`)
 - Design authority:
   - `npm run validate:design` -> PASS (24 components, 6 templates, V2 overlay 2.1.0 validated).
 
+
+## 2026-09-07 — Detail SEO forwarding (PU-24, CM-03)
+
+- Detail pages (en/fa) now forward `model.record.seo` through the shared
+  `pickDetailSeo()` helper (`src/lib/seo.ts`, tested in
+  `src/lib/seo.test.ts` -> 4 passed) into `SiteLayout` as
+  `description`/`socialImage`. Absent or blank values omit the meta
+  tags. `npm run lint` clean, `npm run build` -> 42 pages.
+
 ## Exact Paths Modified
 
 - `src/lib/research-content.ts`

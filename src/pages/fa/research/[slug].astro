@@ -1,5 +1,6 @@
 ---
 import SiteLayout from '../../../layouts/SiteLayout.astro'
+import { pickDetailSeo } from '../../../lib/seo'
 import ResearchTopicDetailContent from '../../../components/research/ResearchTopicDetailContent.astro'
 import {
   fetchResearchDetail,
@@ -25,6 +26,7 @@ if (model.status === 'unavailable') {
 
 const alternateAvailable = await resolveResearchAlternateAvailability(locale)
 const pageTitle = `${model.record.title} — Taha Mohammadi`
+const detailSeo = pickDetailSeo(model.record.seo)
 ---
 
 <SiteLayout
@@ -32,6 +34,8 @@ const pageTitle = `${model.record.title} — Taha Mohammadi`
   locale={locale}
   pathSegment={`research/${slug}`}
   alternateAvailable={alternateAvailable}
+  description={detailSeo.description}
+  socialImage={detailSeo.socialImage}
 >
   <ResearchTopicDetailContent locale={locale} model={model} />
 </SiteLayout>

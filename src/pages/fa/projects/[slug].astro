@@ -1,5 +1,6 @@
 ---
 import SiteLayout from '../../../layouts/SiteLayout.astro'
+import { pickDetailSeo } from '../../../lib/seo'
 import ProjectDetailContent from '../../../components/projects/ProjectDetailContent.astro'
 import {
   fetchProjectDetail,
@@ -23,6 +24,7 @@ if (model.status === 'unavailable') {
 
 const alternateAvailable = await resolveProjectsAlternateAvailability(locale)
 const pageTitle = `${model.project.title} — Taha Mohammadi`
+const detailSeo = pickDetailSeo(model.project.seo)
 ---
 
 <SiteLayout
@@ -30,6 +32,8 @@ const pageTitle = `${model.project.title} — Taha Mohammadi`
   locale={locale}
   pathSegment={`projects/${slug}`}
   alternateAvailable={alternateAvailable}
+  description={detailSeo.description}
+  socialImage={detailSeo.socialImage}
 >
   <ProjectDetailContent locale={locale} model={model} />
 </SiteLayout>
