@@ -155,6 +155,20 @@ acceptance untouched.
 - [x] Before/after evidence recorded with fixture-vs-published labels
       (shell carries no published-record content; states are static).
 
+## 2026-09-07 — CMS-controlled shell regressions (CA-08/CM-02)
+
+- `src/components/shell/managed-shell.test.ts` (2 tests): Header/Footer
+  render through AstroContainer with mocked `fetchLocalizedSiteSettings`;
+  absent settings must not resurrect identity, biography, role line or
+  menu; explicitly empty published footer stays empty and real nav edits
+  are honored.
+- `src/lib/home-content.test.ts` (4 tests): Home loaders return honest
+  empty states when APIs are unavailable; updated published profile,
+  landing and exact-locale research records flow through.
+- Run 2026-09-07: `npm test -- src/components/shell/managed-shell.test.ts
+  src/lib/home-content.test.ts` -> **6/6 passed**.
+  `npm run lint` -> clean. `npm run build` -> 42 pages.
+
 ---
 
 ## 10. Stop Marker
