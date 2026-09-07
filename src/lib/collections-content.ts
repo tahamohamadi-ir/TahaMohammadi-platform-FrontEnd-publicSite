@@ -79,7 +79,9 @@ async function fetchJson<T>(path: string): Promise<T> {
   return parseJsonResponse<T>(response)
 }
 
-export async function listCollections(locale: Locale): Promise<CollectionCardOut[]> {
+export async function listCollections(
+  locale: Locale,
+): Promise<CollectionCardOut[]> {
   if (!canFetchPublicApi()) return []
   try {
     const payload = await fetchJson<CollectionListOut>(

@@ -34,9 +34,10 @@ export function sanitizePagePath(rawPath: string): string {
   return trimmed
 }
 
-export function validateAnalyticsPayload(
-  payload: AnalyticsEventPayload,
-): { valid: boolean; reason?: string } {
+export function validateAnalyticsPayload(payload: AnalyticsEventPayload): {
+  valid: boolean
+  reason?: string
+} {
   const validEvents: ReadonlySet<AnalyticsEventType> = new Set([
     'page_view',
     'cv_download',
@@ -91,7 +92,10 @@ export async function sendAnalyticsEvent(
   const endpoint = buildPublicApiUrl('/api/v1/analytics/events')
 
   try {
-    if (typeof navigator !== 'undefined' && typeof navigator.sendBeacon === 'function') {
+    if (
+      typeof navigator !== 'undefined' &&
+      typeof navigator.sendBeacon === 'function'
+    ) {
       const blob = new Blob([jsonString], { type: 'application/json' })
       const sent = navigator.sendBeacon(endpoint, blob)
       if (sent) return true
@@ -100,7 +104,10 @@ export async function sendAnalyticsEvent(
     if (typeof fetch === 'function') {
       const response = await fetch(endpoint, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
         body: jsonString,
         keepalive: true,
       })

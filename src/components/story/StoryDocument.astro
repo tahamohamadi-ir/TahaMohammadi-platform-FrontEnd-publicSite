@@ -1,6 +1,9 @@
 ---
 import type { StoryDocument } from '../../lib/story-content'
-import { extractTableOfContents, resolveStoryReferences } from '../../lib/story-content'
+import {
+  extractTableOfContents,
+  resolveStoryReferences,
+} from '../../lib/story-content'
 import StoryBlock from './StoryBlock.astro'
 import '../../styles/story.css'
 
@@ -45,7 +48,11 @@ const relatedRecords = await resolveStoryReferences(story, isFa ? 'fa' : 'en')
       >
         {Array.isArray(section.blocks) &&
           section.blocks.map((block) => (
-            <StoryBlock block={block} locale={locale} resolvedRecords={relatedRecords} />
+            <StoryBlock
+              block={block}
+              locale={locale}
+              resolvedRecords={relatedRecords}
+            />
           ))}
       </section>
     ))

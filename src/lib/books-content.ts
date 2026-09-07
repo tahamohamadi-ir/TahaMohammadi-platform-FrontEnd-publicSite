@@ -38,12 +38,10 @@ export interface BookDetailOut extends BookListOut {
 }
 
 export type BooksIndexModel =
-  | { status: 'unavailable' }
-  | { status: 'ready'; books: BookListOut[] }
+  { status: 'unavailable' } | { status: 'ready'; books: BookListOut[] }
 
 export type BookDetailModel =
-  | { status: 'unavailable' }
-  | { status: 'ready'; book: BookDetailOut }
+  { status: 'unavailable' } | { status: 'ready'; book: BookDetailOut }
 
 export function getBooksRouteTitle(locale: Locale): string {
   return locale === 'en' ? 'Books' : 'کتاب‌ها'
@@ -101,7 +99,9 @@ export async function listBooks(locale: Locale): Promise<BookListOut[]> {
   }
 }
 
-export async function fetchBooksIndex(locale: Locale): Promise<BooksIndexModel> {
+export async function fetchBooksIndex(
+  locale: Locale,
+): Promise<BooksIndexModel> {
   if (!canFetchPublicApi()) {
     return { status: 'unavailable' }
   }

@@ -63,7 +63,8 @@ describe('PU-16 Books Product Family', () => {
           updated_at: null,
           description: 'Fallback book overview.',
           url: 'https://books.example.com/pds',
-          accessibility_notes: 'Screen-reader optimized EPUB and PDF available.',
+          accessibility_notes:
+            'Screen-reader optimized EPUB and PDF available.',
           cover: {
             url: 'https://cdn.example.com/covers/pds.jpg',
             alt: 'Cover of Principles of Distributed Systems',
@@ -98,7 +99,9 @@ describe('PU-16 Books Product Family', () => {
     })
 
     expect(html).toContain('Preface and Architectural Vision')
-    expect(html).toContain('This volume unifies theoretical distributed consensus')
+    expect(html).toContain(
+      'This volume unifies theoretical distributed consensus',
+    )
     expect(html).toContain('Academic Press')
     expect(html).toContain('978-0-123456-78-9')
     expect(html).toContain('Cover of Principles of Distributed Systems')
@@ -121,7 +124,8 @@ describe('PU-16 Books Product Family', () => {
           access_state: 'Public',
           published_at: '2025-10-01T00:00:00Z',
           updated_at: null,
-          description: 'A concise introduction to automated theorem proving and model checking.',
+          description:
+            'A concise introduction to automated theorem proving and model checking.',
           url: '',
           accessibility_notes: '',
           cover: null,
@@ -131,7 +135,9 @@ describe('PU-16 Books Product Family', () => {
     })
 
     expect(html).toContain('Introduction to Computational Logic')
-    expect(html).toContain('A concise introduction to automated theorem proving and model checking.')
+    expect(html).toContain(
+      'A concise introduction to automated theorem proving and model checking.',
+    )
   })
 
   it('renders Persian book detail with proper RTL labels', async () => {

@@ -32,7 +32,8 @@ describe('PU-15 Creative Product Family', () => {
           creation_date: '2026-01-10',
           access_state: 'Public',
           license: 'CC-BY-NC-4.0',
-          rights_statement: 'All generative outputs licensed under Creative Commons.',
+          rights_statement:
+            'All generative outputs licensed under Creative Commons.',
           body: null,
           gallery: [],
           published_at: '2026-02-01T00:00:00Z',

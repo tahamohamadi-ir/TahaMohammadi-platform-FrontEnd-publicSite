@@ -34,7 +34,9 @@ describe('PU-18 CV Product Family (F13)', () => {
     })
 
     expect(html).toContain('AboutContactUtilityTemplate')
-    expect(html).toContain('The current public CV is not yet available for download')
+    expect(html).toContain(
+      'The current public CV is not yet available for download',
+    )
     expect(html).toContain('PageFamilyProfileHeroShell')
   })
 
@@ -56,7 +58,9 @@ describe('PU-18 CV Product Family (F13)', () => {
     })
 
     expect(html).toContain('Academic Curriculum Vitae (English)')
-    expect(html).toContain('https://cdn.example.com/docs/taha-mohammadi-cv-en.pdf')
+    expect(html).toContain(
+      'https://cdn.example.com/docs/taha-mohammadi-cv-en.pdf',
+    )
     expect(html).toContain('Academic CV · 2026-03-01 · 350 KB')
   })
 

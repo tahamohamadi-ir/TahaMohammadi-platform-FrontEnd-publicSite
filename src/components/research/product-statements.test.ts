@@ -68,7 +68,9 @@ describe('PU-14 Statements Product Family', () => {
     })
 
     expect(html).toContain('Core Principles of Computational Trust')
-    expect(html).toContain('Decentralized systems require mathematically verifiable')
+    expect(html).toContain(
+      'Decentralized systems require mathematically verifiable',
+    )
     expect(html).toContain('Research Vision 2026')
     expect(html).toContain('Download Statement PDF')
     expect(html).toContain('Distributed Consensus Core')
@@ -94,7 +96,9 @@ describe('PU-14 Statements Product Family', () => {
 
     expect(html).toContain('Algorithmic Integrity and Verification')
     expect(html).toContain('Verifiable computing foundations.')
-    expect(html).toContain('Formal methods applied to real-world distributed architectures.')
+    expect(html).toContain(
+      'Formal methods applied to real-world distributed architectures.',
+    )
   })
 
   it('renders Persian research statement with proper RTL labels', async () => {

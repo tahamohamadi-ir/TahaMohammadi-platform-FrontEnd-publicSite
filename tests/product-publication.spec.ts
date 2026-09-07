@@ -76,7 +76,9 @@ if (process.env.VITEST) {
       })
     }
 
-    test('verifies alternate hreflang tags on home routes', async ({ page }) => {
+    test('verifies alternate hreflang tags on home routes', async ({
+      page,
+    }) => {
       await page.goto('/fa/')
       const alternates = page.locator('link[rel="alternate"]')
       const count = await alternates.count()
@@ -88,7 +90,9 @@ if (process.env.VITEST) {
       const enAlt = page.locator('link[rel="alternate"][hreflang="en"]')
       await pwExpect(enAlt).toHaveAttribute('href', /https?:\/\/[^/]+\/en\//)
 
-      const xDefault = page.locator('link[rel="alternate"][hreflang="x-default"]')
+      const xDefault = page.locator(
+        'link[rel="alternate"][hreflang="x-default"]',
+      )
       await pwExpect(xDefault).toHaveAttribute('href', /https?:\/\/[^/]+\/fa\//)
     })
   })

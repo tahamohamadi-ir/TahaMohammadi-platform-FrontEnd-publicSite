@@ -3,10 +3,7 @@
  * Fetches only published API records; never substitutes seed or draft content.
  */
 
-import {
-  parseJsonResponse,
-  PublicApiError,
-} from './api/client'
+import { parseJsonResponse, PublicApiError } from './api/client'
 import { buildPublicApiUrl, canFetchPublicApi } from './api/resolve-url'
 import { type Locale } from './navigation'
 import type { components } from '../generated/public-api'
@@ -56,7 +53,11 @@ export async function getLessonDetail(
       `/api/v1/lessons/${locale}/${encodeURIComponent(courseSlug)}/${encodeURIComponent(lessonSlug)}`,
     )
     // This endpoint enforces publication; LessonDetailOut has no published_at.
-    if (lesson.locale !== locale || lesson.slug !== lessonSlug || lesson.courseSlug !== courseSlug) {
+    if (
+      lesson.locale !== locale ||
+      lesson.slug !== lessonSlug ||
+      lesson.courseSlug !== courseSlug
+    ) {
       throw new PublicApiError('Lesson identity mismatch', 'validation')
     }
     return lesson
@@ -87,9 +88,9 @@ export async function listCourseLessonParams(
   try {
     const courses: components['schemas']['CourseListOut'][] = []
     for (let page = 1; ; page += 1) {
-      const payload = await fetchJson<components['schemas']['PagedCourseListOut']>(
-        `/api/courses/${locale}?page_size=100&page=${page}`,
-      )
+      const payload = await fetchJson<
+        components['schemas']['PagedCourseListOut']
+      >(`/api/courses/${locale}?page_size=100&page=${page}`)
       courses.push(...payload.items)
       if (payload.items.length === 0 || courses.length >= payload.count) break
     }
@@ -97,9 +98,12 @@ export async function listCourseLessonParams(
     for (const course of courses) {
       if (course.locale !== locale) continue
       try {
-        const lessonsPayload = await fetchJson<components['schemas']['LessonListOut']>(`/api/v1/lessons/${locale}?course=${encodeURIComponent(course.slug)}`)
+        const lessonsPayload = await fetchJson<
+          components['schemas']['LessonListOut']
+        >(`/api/v1/lessons/${locale}?course=${encodeURIComponent(course.slug)}`)
         for (const lesson of lessonsPayload.items || []) {
-          if (lesson.locale !== locale || lesson.courseSlug !== course.slug) continue
+          if (lesson.locale !== locale || lesson.courseSlug !== course.slug)
+            continue
           params.push({
             courseSlug: course.slug,
             lessonSlug: lesson.slug,
@@ -120,7 +124,9 @@ export async function resolveLessonAlternateAvailability(
   courseSlug: string,
   lessonSlug: string,
 ): Promise<boolean> {
-  return (await resolveLessonAlternatePath(locale, courseSlug, lessonSlug)) !== null
+  return (
+    (await resolveLessonAlternatePath(locale, courseSlug, lessonSlug)) !== null
+  )
 }
 
 export async function resolveLessonAlternatePath(
@@ -130,6 +136,10 @@ export async function resolveLessonAlternatePath(
 ): Promise<string | null> {
   const alternate: Locale = locale === 'en' ? 'fa' : 'en'
   const lesson = await getLessonDetail(locale, courseSlug, lessonSlug)
-  const translated = lesson?.alternates?.find((entry) => entry.locale === alternate)
-  return translated ? workRefToHref({ ...translated, family: 'lesson' }, alternate) ?? null : null
+  const translated = lesson?.alternates?.find(
+    (entry) => entry.locale === alternate,
+  )
+  return translated
+    ? (workRefToHref({ ...translated, family: 'lesson' }, alternate) ?? null)
+    : null
 }

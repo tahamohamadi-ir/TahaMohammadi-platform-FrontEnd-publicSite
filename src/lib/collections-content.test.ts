@@ -41,10 +41,12 @@ describe('PU-16 Collections Product Family (F12)', () => {
             locale: 'en',
             slug: 'human-ai-interaction-dossier',
             title: 'Human-AI Interaction Dossier',
-            description: 'Foundational works on trustworthy human-AI interaction.',
+            description:
+              'Foundational works on trustworthy human-AI interaction.',
             curatorName: 'Taha Mohammadi',
             curatorTitle: 'Principal Investigator',
-            criteria: 'Peer-reviewed articles with open-source implementations.',
+            criteria:
+              'Peer-reviewed articles with open-source implementations.',
             curatedDate: '2026-03-01',
           },
         ],
@@ -52,7 +54,9 @@ describe('PU-16 Collections Product Family (F12)', () => {
     })
 
     expect(html).toContain('Human-AI Interaction Dossier')
-    expect(html).toContain('Foundational works on trustworthy human-AI interaction.')
+    expect(html).toContain(
+      'Foundational works on trustworthy human-AI interaction.',
+    )
     expect(html).toContain('Taha Mohammadi')
     expect(html).toContain('/en/collections/human-ai-interaction-dossier')
   })
@@ -78,7 +82,8 @@ describe('PU-16 Collections Product Family (F12)', () => {
           locale: 'en',
           slug: 'human-ai-interaction-dossier',
           title: 'Human-AI Interaction Dossier',
-          description: 'A curated dossier of research papers and software artifacts.',
+          description:
+            'A curated dossier of research papers and software artifacts.',
           curatorName: 'Taha Mohammadi',
           curatorTitle: 'Principal Investigator',
           criteria: 'Peer-reviewed articles with open-source implementations.',
@@ -126,7 +131,9 @@ describe('PU-16 Collections Product Family (F12)', () => {
 
     expect(html).toContain('Human-AI Interaction Dossier')
     expect(html).toContain('Taha Mohammadi')
-    expect(html).toContain('Peer-reviewed articles with open-source implementations.')
+    expect(html).toContain(
+      'Peer-reviewed articles with open-source implementations.',
+    )
     expect(html).toContain('This collection brings together pivotal works.')
     expect(html).toContain('PARS-SQL / VTD-Edge')
     expect(html).toContain('/en/projects/pars-sql-vtd-edge')

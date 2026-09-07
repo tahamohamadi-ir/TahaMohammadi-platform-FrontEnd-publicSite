@@ -21,10 +21,18 @@ interface Props {
 const { locale, model } = Astro.props
 const blogHref = localePath(locale, 'blog')
 
-function resolveArticleHref(item: { contentType?: string; slug: string; href?: string }): string {
+function resolveArticleHref(item: {
+  contentType?: string
+  slug: string
+  href?: string
+}): string {
   if (item.href) return item.href
   try {
-    return canonicalPath((item.contentType || 'article') as RouteFamily, locale, item.slug)
+    return canonicalPath(
+      (item.contentType || 'article') as RouteFamily,
+      locale,
+      item.slug,
+    )
   } catch {
     return `${blogHref.replace(/\/$/, '')}/${item.slug}`
   }
@@ -61,7 +69,10 @@ function resolveArticleHref(item: { contentType?: string; slug: string; href?: s
         ) : null}
 
         {model.series.items && model.series.items.length > 0 ? (
-          <section class="series-page__items" aria-labelledby="series-parts-heading">
+          <section
+            class="series-page__items"
+            aria-labelledby="series-parts-heading"
+          >
             <h2 id="series-parts-heading" class="series-page__items-heading">
               {locale === 'en' ? 'Series Articles' : 'مقالات این مجموعه'}
             </h2>
@@ -71,10 +82,16 @@ function resolveArticleHref(item: { contentType?: string; slug: string; href?: s
                 return (
                   <li class="series-page__item-card">
                     <span class="series-page__item-number">
-                      {locale === 'en' ? `Part ${index + 1}` : `بخش ${index + 1}`}
+                      {locale === 'en'
+                        ? `Part ${index + 1}`
+                        : `بخش ${index + 1}`}
                     </span>
                     <h3 class="series-page__item-title">
-                      <Link href={articleHref} label={item.title} variant="standalone" />
+                      <Link
+                        href={articleHref}
+                        label={item.title}
+                        variant="standalone"
+                      />
                     </h3>
                     {item.summary ? (
                       <p class="series-page__item-summary">{item.summary}</p>

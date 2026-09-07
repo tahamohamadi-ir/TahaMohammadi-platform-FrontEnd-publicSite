@@ -37,7 +37,8 @@ const brandNameDisplay =
       ? shellCopy.brandName.en.toUpperCase()
       : shellCopy.brandName.fa
 
-const roleLine = siteSettings !== null ? siteSettings.tagline : GATEWAY_ROLE_LINE
+const roleLine =
+  siteSettings !== null ? siteSettings.tagline : GATEWAY_ROLE_LINE
 const footerBio =
   siteSettings !== null && siteSettings.footerText
     ? siteSettings.footerText
@@ -127,11 +128,7 @@ const navItems =
         {
           navItems.map((item) => (
             <li>
-              <Link
-                href={item.href}
-                label={item.label}
-                variant="inline"
-              />
+              <Link href={item.href} label={item.label} variant="inline" />
             </li>
           ))
         }

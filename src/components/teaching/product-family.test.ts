@@ -26,7 +26,8 @@ describe('PU-15 Courses Product Family', () => {
           locale: 'en',
           slug: 'distributed-systems-engineering',
           title: 'Distributed Systems Engineering',
-          description: 'A comprehensive graduate course in distributed architectures.',
+          description:
+            'A comprehensive graduate course in distributed architectures.',
           level: 'Advanced',
           course_format: 'Hybrid',
           course_language: 'en',
@@ -100,7 +101,9 @@ describe('PU-15 Courses Product Family', () => {
     })
 
     expect(html).toContain('Introduction to Algorithms')
-    expect(html).toContain('Core sorting, graph search, and dynamic programming.')
+    expect(html).toContain(
+      'Core sorting, graph search, and dynamic programming.',
+    )
   })
 
   it('renders teaching page ready view with courses and talks', async () => {

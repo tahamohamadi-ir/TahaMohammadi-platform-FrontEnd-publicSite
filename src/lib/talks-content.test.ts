@@ -113,7 +113,8 @@ describe('PU-16 Talks Product Family', () => {
           location: 'Online',
           license: 'MIT',
           access_state: 'Open',
-          abstract: 'Mailboxes, actor hierarchies, and failure supervision trees.',
+          abstract:
+            'Mailboxes, actor hierarchies, and failure supervision trees.',
           video_url: null,
           slides_url: null,
           story: null,
@@ -122,7 +123,9 @@ describe('PU-16 Talks Product Family', () => {
     })
 
     expect(html).toContain('Introduction to the Actor Model')
-    expect(html).toContain('Mailboxes, actor hierarchies, and failure supervision trees.')
+    expect(html).toContain(
+      'Mailboxes, actor hierarchies, and failure supervision trees.',
+    )
   })
 
   it('renders Persian talk detail with proper RTL labels', async () => {
