@@ -22,38 +22,44 @@ const iconPaths = [
 ---
 
 {
-  <section
-    class={['pf-index-journey-flow', className].filter(Boolean).join(' ')}
-    data-visual-id="PageFamilyJourneyFlowShell"
-    aria-labelledby="pf-journey-flow-title"
-  >
-    <p class="pf-index-journey-flow__eyebrow">{sectionLabel}</p>
-    <h2 id="pf-journey-flow-title" class="pf-index-journey-flow__headline">
-      {journey.headline}
-    </h2>
+  (
+    <section
+      class={['pf-index-journey-flow', className].filter(Boolean).join(' ')}
+      data-visual-id="PageFamilyJourneyFlowShell"
+      aria-labelledby="pf-journey-flow-title"
+    >
+      <p class="pf-index-journey-flow__eyebrow">{sectionLabel}</p>
+      <h2 id="pf-journey-flow-title" class="pf-index-journey-flow__headline">
+        {journey.headline}
+      </h2>
 
-    {journey.milestones.length > 0 ? (
-      <ol class="pf-index-journey-flow__track">
-        {journey.milestones.map((milestone, index) => (
-          <li class="pf-index-journey-flow__step">
-            <span class="pf-index-journey-flow__icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" focusable="false">
-                <path
-                  d={iconPaths[index] ?? iconPaths[0]}
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.5"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-              </svg>
-            </span>
-            <span class="pf-index-journey-flow__label">{milestone.title}</span>
-          </li>
-        ))}
-      </ol>
-    ) : (
-      <p class="pf-index-journey-flow__empty">{getCmsPlaceholderCopy(locale)}</p>
-    )}
-  </section>
+      {journey.milestones.length > 0 ? (
+        <ol class="pf-index-journey-flow__track">
+          {journey.milestones.map((milestone, index) => (
+            <li class="pf-index-journey-flow__step">
+              <span class="pf-index-journey-flow__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false">
+                  <path
+                    d={iconPaths[index] ?? iconPaths[0]}
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </span>
+              <span class="pf-index-journey-flow__label">
+                {milestone.title}
+              </span>
+            </li>
+          ))}
+        </ol>
+      ) : (
+        <p class="pf-index-journey-flow__empty">
+          {getCmsPlaceholderCopy(locale)}
+        </p>
+      )}
+    </section>
+  )
 }

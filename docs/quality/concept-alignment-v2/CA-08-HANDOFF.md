@@ -166,7 +166,7 @@ acceptance untouched.
   empty states when APIs are unavailable; updated published profile,
   landing and exact-locale research records flow through.
 - Run 2026-09-07: `npm test -- src/components/shell/managed-shell.test.ts
-  src/lib/home-content.test.ts` -> **6/6 passed**.
+src/lib/home-content.test.ts` -> **6/6 passed**.
   `npm run lint` -> clean. `npm run build` -> 42 pages.
 
 ## 2026-09-07 — Stale shell tests rewritten + brand pipeline restored
