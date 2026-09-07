@@ -296,8 +296,10 @@ jobs:
           test -n "$(docker compose --env-file .env.stage -f deploy/docker-compose.stage.yml ps -q admin)"
           test -n "$(docker compose --env-file .env.stage -f deploy/docker-compose.stage.yml ps -q web)"
 
-          # 9. Reload Caddy if needed
+          # 9. Ensure Caddy routes /admin/* to Django CMS on 127.0.0.1:18000
           if sudo -n true 2>/dev/null; then
+            echo "=== Ensuring Caddy /admin/* upstream points to 127.0.0.1:18000 ==="
+            sudo python3 -c "import re; p='/etc/caddy/Caddyfile'; s=open(p).read(); open(p,'w').write(re.sub(r'(handle\s+/admin/\*\s*\{\s*reverse_proxy\s+)127\.0\.0\.1:13081', r'\g<1>127.0.0.1:18000', s))"
             sudo caddy validate --config /etc/caddy/Caddyfile && (sudo systemctl reload caddy || sudo caddy reload --config /etc/caddy/Caddyfile) || true
           fi
 
