@@ -1,10 +1,12 @@
 ---
 import Link from './ui/Link.astro'
+import PromotedPicture from './media/PromotedPicture.astro'
 import { localePath, type Locale } from '../lib/navigation'
 import {
   fetchLocalizedSiteSettings,
   fetchPublicSiteSettings,
 } from '../lib/site-settings-content'
+import { BRAND_MARK_ASSET_ID } from '../lib/media/promoted-media'
 interface Props {
   locale: Locale
   hidePromo?: boolean
@@ -31,6 +33,13 @@ const resources = settings?.audienceLinks ?? []
       {
         settings?.brandName && (
           <a href={localePath(locale)} class="site-footer__brand-link">
+            <PromotedPicture
+              assetId={BRAND_MARK_ASSET_ID}
+              mediaSlot="brand.mark"
+              locale={locale}
+              alt=""
+              imgClass="site-footer__mark"
+            />
             <span class="site-footer__brand-name">{settings.brandName}</span>
           </a>
         )

@@ -1,5 +1,6 @@
 ---
 import { getHomeJourneyContent } from '../../lib/home-content'
+import { getCmsPlaceholderCopy } from '../../lib/page-family-empty-chrome'
 import type { Locale } from '../../lib/navigation'
 
 interface Props {
@@ -21,17 +22,17 @@ const iconPaths = [
 ---
 
 {
-  journey.milestones.length > 0 && (
-    <section
-      class={['pf-index-journey-flow', className].filter(Boolean).join(' ')}
-      data-visual-id="PageFamilyJourneyFlowShell"
-      aria-labelledby="pf-journey-flow-title"
-    >
-      <p class="pf-index-journey-flow__eyebrow">{sectionLabel}</p>
-      <h2 id="pf-journey-flow-title" class="pf-index-journey-flow__headline">
-        {journey.headline}
-      </h2>
+  <section
+    class={['pf-index-journey-flow', className].filter(Boolean).join(' ')}
+    data-visual-id="PageFamilyJourneyFlowShell"
+    aria-labelledby="pf-journey-flow-title"
+  >
+    <p class="pf-index-journey-flow__eyebrow">{sectionLabel}</p>
+    <h2 id="pf-journey-flow-title" class="pf-index-journey-flow__headline">
+      {journey.headline}
+    </h2>
 
+    {journey.milestones.length > 0 ? (
       <ol class="pf-index-journey-flow__track">
         {journey.milestones.map((milestone, index) => (
           <li class="pf-index-journey-flow__step">
@@ -51,6 +52,8 @@ const iconPaths = [
           </li>
         ))}
       </ol>
-    </section>
-  )
+    ) : (
+      <p class="pf-index-journey-flow__empty">{getCmsPlaceholderCopy(locale)}</p>
+    )}
+  </section>
 }

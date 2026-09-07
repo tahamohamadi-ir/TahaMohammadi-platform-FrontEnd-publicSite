@@ -2,12 +2,24 @@ import { existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { experimental_AstroContainer as AstroContainer } from 'astro/container'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import Footer from '../Footer.astro'
 import Header from '../Header.astro'
 import LanguageToggle from '../LanguageToggle.astro'
 import SkipLink from '../SkipLink.astro'
 import { buildLanguageToggleHref } from '../../lib/navigation'
+
+const shellState = vi.hoisted(() => ({
+  settings: null as Record<string, unknown> | null,
+  operational: { contact: {} } as Record<string, unknown>,
+}))
+
+vi.mock('../../lib/site-settings-content', () => ({
+  fetchLocalizedSiteSettings: async () => shellState.settings,
+  getManagedCopy: async () =>
+    (shellState.settings?.contentCopy as Record<string, string>) ?? {},
+  fetchPublicSiteSettings: async () => shellState.operational,
+}))
 
 const repositoryRoot = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -68,43 +80,81 @@ describe('PUBLIC-150 behavior', () => {
   })
 
   it('keeps Header wired to LanguageToggle and preserves skip-link continuity', async () => {
-    const headerHtml = await renderComponent(Header, {
+    shellState.settings = {
       locale: 'fa',
-      currentPath: '/fa/about/',
-      alternateHref: '/en/about/',
-      alternateAvailable: true,
-    })
-    expect(headerHtml).toMatch(/data-visual-id="Header"/)
-    expect(headerHtml).toMatch(/data-visual-id="LanguageToggle"/)
+      brandName: 'نشان آزمایشی',
+      tagline: '',
+      navLinks: [],
+      contentCopy: { 'skip.main': 'رفتن به محتوای اصلی' },
+    }
+    try {
+      const headerHtml = await renderComponent(Header, {
+        locale: 'fa',
+        currentPath: '/fa/about/',
+        alternateHref: '/en/about/',
+        alternateAvailable: true,
+      })
+      expect(headerHtml).toMatch(/data-visual-id="Header"/)
+      expect(headerHtml).toMatch(/data-visual-id="LanguageToggle"/)
 
-    const skipHtml = await renderComponent(SkipLink, { locale: 'fa' })
-    expect(skipHtml).toMatch(/class="skip-link"/)
-    expect(skipHtml).toMatch(/href="#main-content"/)
-    expect(skipHtml).toMatch(/>رفتن به محتوای اصلی</)
+      const skipHtml = await renderComponent(SkipLink, { locale: 'fa' })
+      expect(skipHtml).toMatch(/class="skip-link"/)
+      expect(skipHtml).toMatch(/href="#main-content"/)
+      expect(skipHtml).toMatch(/>رفتن به محتوای اصلی</)
+    } finally {
+      shellState.settings = null
+    }
   })
 
-  it('names the Header brand link from locale copy in both locales', async () => {
-    const enHtml = await renderComponent(Header, {
-      locale: 'en',
-      currentPath: '/en/about/',
-      alternateAvailable: false,
-    })
-    expect(enHtml).toMatch(
-      /<a href="\/en\/" class="site-header__brand" aria-label="TAHA MOHAMMADI">/,
-    )
+  it('names the Header brand link from published settings in both locales', async () => {
+    try {
+      shellState.settings = {
+        locale: 'en',
+        brandName: 'Edited brand EN',
+        tagline: 'Edited role',
+        navLinks: [],
+        contentCopy: {},
+      }
+      const enHtml = await renderComponent(Header, {
+        locale: 'en',
+        currentPath: '/en/about/',
+        alternateAvailable: false,
+      })
+      expect(enHtml).toMatch(
+        /<a href="\/en\/" class="site-header__brand" aria-label="Edited brand EN">/,
+      )
+      expect(enHtml).not.toContain('Researcher · Engineer · Designer')
 
-    const faHtml = await renderComponent(Header, {
-      locale: 'fa',
-      currentPath: '/fa/about/',
-      alternateAvailable: false,
-    })
-    expect(faHtml).toMatch(
-      /<a href="\/fa\/" class="site-header__brand" aria-label="طه محمدی">/,
-    )
+      shellState.settings = {
+        locale: 'fa',
+        brandName: 'نشان ویراسته',
+        tagline: '',
+        navLinks: [],
+        contentCopy: {},
+      }
+      const faHtml = await renderComponent(Header, {
+        locale: 'fa',
+        currentPath: '/fa/about/',
+        alternateAvailable: false,
+      })
+      expect(faHtml).toMatch(
+        /<a href="\/fa\/" class="site-header__brand" aria-label="نشان ویراسته">/,
+      )
+    } finally {
+      shellState.settings = null
+    }
   })
 
-  it('keeps the mobile drawer a native disclosure with locale toggle copy', async () => {
+  it('keeps the mobile drawer a native disclosure with managed toggle copy', async () => {
+    const toggleByLocale = { en: 'Menu', fa: 'منو' } as const
     for (const locale of ['en', 'fa'] as const) {
+      shellState.settings = {
+        locale,
+        brandName: 'Brand',
+        tagline: '',
+        navLinks: [],
+        contentCopy: { 'menu.toggle': toggleByLocale[locale] },
+      }
       const html = await renderComponent(Header, {
         locale,
         currentPath: `/${locale}/about/`,
@@ -112,34 +162,58 @@ describe('PUBLIC-150 behavior', () => {
       })
       expect(html).toMatch(/<details class="site-header__drawer">/)
       expect(html).toMatch(/<summary class="site-header__menu-trigger">/)
-      expect(html).toContain(locale === 'en' ? '>Menu<' : '>منو<')
+      expect(html).toContain(`>${toggleByLocale[locale]}<`)
       expect(html).toMatch(/site-header__nav--mobile/)
     }
+    shellState.settings = null
   })
 
-  it('consumes ContactCTA and Link primitives in Footer without custom button markup', async () => {
+  it('renders Footer promo and nav from published settings without hardcoded chrome', async () => {
     const footerSource = readRepositoryFile('src/components/Footer.astro')
-    expect(footerSource).toContain(
+    expect(footerSource).not.toContain(
       "import ContactCTA from './ui/ContactCTA.astro'",
     )
     expect(footerSource).toContain("import Link from './ui/Link.astro'")
     expect(footerSource).not.toContain('site-footer__button')
 
-    const compactHtml = await renderComponent(Footer, { locale: 'en' })
-    expect(compactHtml).not.toMatch(/data-visual-id="ContactCTA"/)
-    expect(compactHtml).toMatch(/data-visual-id="Link"/)
-    expect(compactHtml).toContain('Resources')
-    expect(compactHtml).toMatch(/site-footer__brand-bio/)
-    expect(compactHtml).toMatch(/site-footer__legal-row/)
-    expect(compactHtml).toMatch(/site-footer__social-btn/)
-    expect(compactHtml).toMatch(/pending CMS publication/)
-    expect(compactHtml).toMatch(/site-footer__contact-meta/)
+    try {
+      shellState.settings = {
+        locale: 'en',
+        brandName: 'Edited brand',
+        tagline: 'Edited role',
+        footerText: 'Edited bio',
+        navLinks: [{ label: 'My work', href: '/en/projects/' }],
+        audienceLinks: [],
+        contentCopy: {
+          'footer.cta': 'Work with me',
+          'footer.explore': 'Explore',
+          'footer.legal': 'Edited legal line',
+        },
+      }
+      const compactHtml = await renderComponent(Footer, { locale: 'en' })
+      expect(compactHtml).not.toMatch(/site-footer__promo/)
+      expect(compactHtml).toMatch(/data-visual-id="Link"/)
+      expect(compactHtml).toContain('My work')
+      expect(compactHtml).toMatch(/site-footer__brand-bio/)
+      expect(compactHtml).toContain('Edited bio')
+      expect(compactHtml).toMatch(/site-footer__legal-row/)
+      expect(compactHtml).not.toContain('pending CMS publication')
 
-    const promoHtml = await renderComponent(Footer, {
-      locale: 'en',
-      hidePromo: false,
-    })
-    expect(promoHtml).toMatch(/data-visual-id="ContactCTA"/)
+      const promoHtml = await renderComponent(Footer, {
+        locale: 'en',
+        hidePromo: false,
+      })
+      expect(promoHtml).toMatch(/site-footer__promo/)
+      expect(promoHtml).toContain('Work with me')
+
+      shellState.settings = null
+      const emptyHtml = await renderComponent(Footer, { locale: 'en' })
+      expect(emptyHtml).not.toMatch(/site-footer__promo/)
+      expect(emptyHtml).not.toMatch(/site-footer__brand-bio/)
+      expect(emptyHtml).not.toMatch(/site-footer__nav-list/)
+    } finally {
+      shellState.settings = null
+    }
   })
 
   it('extracts shell styles with logical direction, theme parity hooks, and 44px targets', () => {

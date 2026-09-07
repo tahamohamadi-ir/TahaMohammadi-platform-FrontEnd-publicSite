@@ -1,8 +1,10 @@
 ---
 import ThemeToggle from './ThemeToggle.astro'
 import LanguageToggle from './LanguageToggle.astro'
+import PromotedPicture from './media/PromotedPicture.astro'
 import { localePath, isNavActive, type Locale } from '../lib/navigation'
 import { fetchLocalizedSiteSettings } from '../lib/site-settings-content'
+import { BRAND_MARK_ASSET_ID } from '../lib/media/promoted-media'
 
 interface Props {
   locale: Locale
@@ -39,6 +41,14 @@ const searchLabel = copy['nav.search'] ?? ''
 <header class="site-header" data-visual-id="Header">
   <div class="site-header__inner">
     <a href={homeHref} class="site-header__brand" aria-label={brandNameDisplay}>
+      <PromotedPicture
+        assetId={BRAND_MARK_ASSET_ID}
+        mediaSlot="brand.mark"
+        locale={locale}
+        alt=""
+        imgClass="site-header__mark"
+        loading="eager"
+      />
       <span class="site-header__brand-text">
         <span class="site-header__brand-name">{brandNameDisplay}</span>
         <span class="site-header__brand-role">{roleLine}</span>

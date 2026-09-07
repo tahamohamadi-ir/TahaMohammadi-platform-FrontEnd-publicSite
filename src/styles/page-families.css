@@ -3031,6 +3031,12 @@ html[data-theme='dark'] .pf-index-featured__card {
   line-height: 1.45;
 }
 
+.pf-index-journey-flow__empty {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-ink-secondary);
+}
+
 .pf-index-split-timeline__sr-only {
   position: absolute;
   inline-size: 1px;

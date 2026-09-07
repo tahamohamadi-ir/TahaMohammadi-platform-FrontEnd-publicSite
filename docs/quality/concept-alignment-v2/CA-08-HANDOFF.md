@@ -169,6 +169,27 @@ acceptance untouched.
   src/lib/home-content.test.ts` -> **6/6 passed**.
   `npm run lint` -> clean. `npm run build` -> 42 pages.
 
+## 2026-09-07 — Stale shell tests rewritten + brand pipeline restored
+
+- `public-150.behavior.test.ts` still asserted the pre-CMS shell
+  (hardcoded brand/skip/drawer copy, `ContactCTA` import, promo/social
+  placeholders): 4 failures. Rewritten to the CMS contract with a
+  `site-settings-content` mock — copy-driven brand/skip/drawer asserts,
+  promo gated by `footer.cta`, honest-empty footer. Now **8/8 passed**.
+- Owner decision: restore promoted-media images (dropped in the rewire).
+  `Header`/`Footer` render `PromotedPicture` `brand.mark` again (footer
+  picture inside the conditional brand link — no image without published
+  brand); `HomeFeaturedProjects` (`home.project.preview`) and
+  `HomeExploreRails` (`home.rail.preview` in `MediaTile`) render guarded
+  on optional `assetId`, so missing CMS media stays imageless without
+  breaking layout. `PUBLIC-261` shell+home wiring tests green again.
+- `PageFamilyJourneyFlowShell` rendered nothing when empty while every
+  sibling shell renders empty chrome (`PUBLIC-200` red). It now always
+  renders the section shell with a `getCmsPlaceholderCopy` line when no
+  milestones exist.
+- Full suite: **87 files / 451 tests passed**. `npm run lint` clean.
+  `npm run build` -> 42 pages.
+
 ---
 
 ## 10. Stop Marker

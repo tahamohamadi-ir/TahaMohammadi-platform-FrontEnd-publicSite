@@ -3,6 +3,7 @@ import FeaturedRecord from '../ui/FeaturedRecord.astro'
 import Badge from '../ui/Badge.astro'
 import Chip from '../ui/Chip.astro'
 import Link from '../ui/Link.astro'
+import PromotedPicture from '../media/PromotedPicture.astro'
 import { getHomeFeaturedContent } from '../../lib/home-content'
 import { localePath, type Locale } from '../../lib/navigation'
 
@@ -47,6 +48,16 @@ const projectsHref = localePath(locale, 'projects')
                 actionLabel={content.viewProject}
                 class="hm-projects__card"
               >
+                {project.assetId && (
+                  <PromotedPicture
+                    slot="media"
+                    assetId={project.assetId}
+                    mediaSlot="home.project.preview"
+                    locale={locale}
+                    alt={project.title}
+                    imgClass="hm-projects__image"
+                  />
+                )}
                 <div slot="metadata" class="hm-projects__meta">
                   {project.statusLabel && (
                     <Badge label={project.statusLabel} tone="brand" />
