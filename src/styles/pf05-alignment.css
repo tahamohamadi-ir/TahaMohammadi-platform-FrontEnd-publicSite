@@ -11,10 +11,17 @@
 .pf-index-constellation {
   position: relative;
   margin: 3rem 0;
-  padding: 2rem;
+  padding: 1rem;
+  min-width: 0;
   background: var(--color-surface-subtle, rgba(248, 250, 252, 0.7));
   border: 1px solid var(--color-border, #e2e8f0);
   border-radius: 1rem;
+}
+
+@media (min-width: 1024px) {
+  .pf-index-constellation {
+    padding: 2rem;
+  }
 }
 
 [data-theme='dark'] .pf-index-constellation {
@@ -50,9 +57,13 @@
 
 .pf-index-constellation__body {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr);
   gap: 2rem;
   align-items: center;
+}
+
+.pf-index-constellation__body > * {
+  min-width: 0;
 }
 
 @media (min-width: 1024px) {

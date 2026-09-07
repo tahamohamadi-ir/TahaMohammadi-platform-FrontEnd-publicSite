@@ -62,3 +62,15 @@ Owner: PUBLIC (`Front-End/public-site`)
 - `src/pages/fa/research/[slug].astro`
 - `src/components/research/product-family.test.ts`
 - `docs/quality/product-v2/PU-14-research-HANDOFF.md`
+
+## 2026-09-07 — Mobile overflow fix + visual matrix (PF-05)
+
+- `PUBLIC-270` was red on `/en/research/` and `/fa/research/` at 390px:
+  `document.scrollWidth > innerWidth`. Root cause: unconditional
+  `padding: 2rem` on `.pf-index-constellation` (`pf05-alignment.css`)
+  plus `grid-template-columns: 1fr` without min-width guards, so
+  320px min-content children forced the band past the viewport.
+- Fix (CSS only): base padding `1rem`, restored `2rem` at
+  `min-width: 1024px` (the file's own breakpoint); `minmax(0, 1fr)`
+  columns and `min-width: 0` on body children.
+- `PUBLIC-270` -> **37/37 passed**; screenshots in `test-results/visual/`.

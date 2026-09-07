@@ -148,3 +148,7 @@ Manual owner compare columns in the matrix above remain `[ ]` until explicit own
 - **PF-02 detail:** honest empty-shell route ships at `/{locale}/gallery/empty-shell/` for concept compare; published `{slug}` detail still requires CMS Category A records.
 - **PUBLIC-190:** remains structure complete with visual acceptance **open** (`REVISE` at coordination `a17f3a5`); independent QA `PASS` and explicit owner approval still required. Do not mark PASS without owner evidence.
 - **PUBLIC-280:** scaffold added (`docs/quality/PUBLIC-280-RESPONSIVE-MATRIX-EVIDENCE.md`); PF-01 six-width stubs follow stable PUBLIC-270 captures.
+- **2026-09-07:** PF-05 research overflow fixed (`pf05-alignment.css`,
+  see PU-14-research handoff); `PUBLIC-270` **37/37**, `PUBLIC-280`
+  **202/202** (202 PNG captures, git-ignored). Manual owner compare
+  columns stay `[ ]` until explicit owner approval.
