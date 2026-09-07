@@ -29,10 +29,23 @@ Owner: PUBLIC (`Front-End/public-site`)
 - Vitest unit tests:
   - `npm test -- src/components/teaching/product-lessons.test.ts`
   - `npm test -- src/components/teaching/product-family.test.ts`
+  - `npm test -- src/lib/lessons-content.test.ts src/lib/story-content.test.ts src/components/teaching/product-lessons.test.ts` -> 13/13 passed (2026-09-07).
+- Contract checks (2026-09-07, against generated `public-api.ts` + `Back-End/apps/api/api.py`):
+  - `LessonDetailOut` has no `published_at`; `getLessonDetail` does not gate
+    on it (endpoint enforces publication). Regression test pins a real-shaped
+    200 response without `published_at` -> `ready`.
+  - Course enumeration pages past 100 (`/api/courses/{locale}` + `page` loop);
+    regression test pins 101 courses across 2 pages.
+  - Lesson alternates carry `courseSlug` from the backend
+    (`_resolve_public_alternates`); `resolveLessonAlternatePath` builds the
+    translated `/education/{course}/lessons/{slug}/` href from explicit
+    identity, not same-slug guessing.
+  - Lesson resources/neighbors are `WorkRefOut` rendered through
+    `workRefToHref`; no `#` fallback links.
 - Linting:
   - `npm run lint` -> Clean 0 errors.
 - Astro build:
-  - `npm run build` -> Clean build.
+  - `npm run build` -> Clean build (42 pages, 2026-09-07).
 - Design authority:
   - `npm run validate:design` -> PASS.
 
