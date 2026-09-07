@@ -1,5 +1,6 @@
 ---
 import SiteLayout from '../../../layouts/SiteLayout.astro'
+import { pickDetailSeo } from '../../../lib/seo'
 import WritingDetailContent from '../../../components/writing/WritingDetailContent.astro'
 import {
   fetchArticleDetail,
@@ -26,6 +27,7 @@ const alternateAvailable = await resolveWritingAlternateAvailability(
   slug,
 )
 const pageTitle = `${model.article.title} — Taha Mohammadi`
+const detailSeo = pickDetailSeo(model.article.seo)
 ---
 
 <SiteLayout
@@ -33,6 +35,8 @@ const pageTitle = `${model.article.title} — Taha Mohammadi`
   locale={locale}
   pathSegment={`blog/${slug}`}
   alternateAvailable={alternateAvailable}
+  description={detailSeo.description}
+  socialImage={detailSeo.socialImage}
 >
   <WritingDetailContent locale={locale} model={model} />
 </SiteLayout>

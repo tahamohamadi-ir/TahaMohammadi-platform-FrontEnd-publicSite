@@ -1,5 +1,6 @@
 ---
 import SiteLayout from '../../../layouts/SiteLayout.astro'
+import { pickDetailSeo } from '../../../lib/seo'
 import CreativeDetailContent from '../../../components/creative/CreativeDetailContent.astro'
 import {
   fetchCreativeDetail,
@@ -31,6 +32,9 @@ const alternateAvailable = await resolveCreativeAlternateAvailability(
 const pageTitle = isCreativeDetailEmptyShellSlug(slug)
   ? `${getCreativeRouteTitle(locale)} — ${getCmsPlaceholderCopy(locale)}`
   : `${model.status === 'ready' ? model.work.title : getCreativeRouteTitle(locale)} — Taha Mohammadi`
+const detailSeo = pickDetailSeo(
+  model.status === 'ready' ? model.work.seo : null,
+)
 ---
 
 <SiteLayout
@@ -38,6 +42,8 @@ const pageTitle = isCreativeDetailEmptyShellSlug(slug)
   locale={locale}
   pathSegment={`gallery/${slug}`}
   alternateAvailable={alternateAvailable}
+  description={detailSeo.description}
+  socialImage={detailSeo.socialImage}
 >
   <CreativeDetailContent locale={locale} model={model} />
 </SiteLayout>
