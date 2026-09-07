@@ -1,5 +1,6 @@
 ---
-import { shellCopy, type Locale } from '../lib/navigation'
+import { getManagedCopy } from '../lib/site-settings-content'
+import { type Locale } from '../lib/navigation'
 
 interface Props {
   locale: Locale
@@ -7,8 +8,9 @@ interface Props {
 }
 
 const { locale, target = '#main-content' } = Astro.props
+const copy = await getManagedCopy(locale)
 ---
 
 <a href={target} class="skip-link" data-visual-id="SkipLink"
-  >{shellCopy.skipLink[locale]}</a
+  >{copy['skip.main']}</a
 >

@@ -24,7 +24,7 @@ interface Props {
 }
 
 const { locale, graph, selectedId = null } = Astro.props
-const research = getHomeResearchContent(locale)
+const research = await getHomeResearchContent(locale)
 
 const copy = {
   nodesListLabel: {

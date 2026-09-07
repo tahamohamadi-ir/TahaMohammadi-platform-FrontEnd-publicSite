@@ -3,9 +3,7 @@ import FeaturedRecord from '../ui/FeaturedRecord.astro'
 import Badge from '../ui/Badge.astro'
 import Chip from '../ui/Chip.astro'
 import Link from '../ui/Link.astro'
-import PromotedPicture from '../media/PromotedPicture.astro'
 import { getHomeFeaturedContent } from '../../lib/home-content'
-import { resolveFeaturedProjectHref } from '../../lib/home-published-links'
 import { localePath, type Locale } from '../../lib/navigation'
 
 interface Props {
@@ -13,67 +11,61 @@ interface Props {
   publishedProjectSlugs?: ReadonlySet<string>
 }
 
-const { locale, publishedProjectSlugs = new Set<string>() } = Astro.props
-const content = getHomeFeaturedContent(locale)
+const { locale } = Astro.props
+const content = await getHomeFeaturedContent(locale)
 const projectsHref = localePath(locale, 'projects')
 ---
 
-<section class="hm-projects">
-  <div class="hm-projects__inner">
-    <header class="hm-projects__header">
-      <div class="hm-section-heading">
-        <h2 id="hm-projects-title" class="hm-eyebrow hm-projects__title">
-          {content.title}
-        </h2>
-        <Link
-          href={projectsHref}
-          label={content.viewAll}
-          variant="standalone"
-          showIcon
-        />
-      </div>
-      <p class="hm-projects__note">{content.draftNote}</p>
-    </header>
-
-    <ul class="hm-projects__grid">
-      {
-        content.projects.map((project) => (
-          <li>
-            <FeaturedRecord
-              title={project.title}
-              summary={project.excerpt}
-              href={resolveFeaturedProjectHref(
-                locale,
-                project.slug,
-                publishedProjectSlugs,
-              )}
-              actionLabel={content.viewProject}
-              class="hm-projects__card"
-            >
-              <PromotedPicture
-                slot="media"
-                assetId={project.assetId}
-                mediaSlot="home.project.preview"
-                locale={locale}
-                alt={project.title}
-                imgClass="hm-projects__image"
+{
+  content.projects.length > 0 && (
+    <section class="hm-projects">
+      <div class="hm-projects__inner">
+        <header class="hm-projects__header">
+          <div class="hm-section-heading">
+            <h2 id="hm-projects-title" class="hm-eyebrow hm-projects__title">
+              {content.title}
+            </h2>
+            {content.viewAll && (
+              <Link
+                href={projectsHref}
+                label={content.viewAll}
+                variant="standalone"
+                showIcon
               />
-              <div slot="metadata" class="hm-projects__meta">
-                <Badge label={project.statusLabel} tone="brand" />
-                {project.tags.length > 0 && (
-                  <ul class="hm-projects__tags">
-                    {project.tags.slice(0, 3).map((tag) => (
-                      <li>
-                        <Chip label={tag} />
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            </FeaturedRecord>
-          </li>
-        ))
-      }
-    </ul>
-  </div>
-</section>
+            )}
+          </div>
+          <p class="hm-projects__note">{content.draftNote}</p>
+        </header>
+
+        <ul class="hm-projects__grid">
+          {content.projects.map((project) => (
+            <li>
+              <FeaturedRecord
+                title={project.title}
+                summary={project.excerpt}
+                href={project.href}
+                actionLabel={content.viewProject}
+                class="hm-projects__card"
+              >
+                <div slot="metadata" class="hm-projects__meta">
+                  {project.statusLabel && (
+                    <Badge label={project.statusLabel} tone="brand" />
+                  )}
+                  {project.tags.length > 0 && (
+                    <ul class="hm-projects__tags">
+                      {project.tags.slice(0, 3).map((tag) => (
+                        <li>
+                          <Chip label={tag} />
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              </FeaturedRecord>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )
+}

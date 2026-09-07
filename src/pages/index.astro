@@ -2,14 +2,15 @@
 import BaseLayout from '../layouts/BaseLayout.astro'
 import ThemeToggle from '../components/ThemeToggle.astro'
 import GatewayPortal from '../components/gateway/GatewayPortal.astro'
-import PromotedPicture from '../components/media/PromotedPicture.astro'
-import { GATEWAY_ROLE_LINE } from '../lib/navigation'
-import { BRAND_MARK_ASSET_ID } from '../lib/media/promoted-media'
+import { fetchLocalizedSiteSettings } from '../lib/site-settings-content'
+const settings = await fetchLocalizedSiteSettings('en')
+const copy = settings?.contentCopy ?? {}
+const name = settings?.brandName ?? ''
 import '../styles/gateway.css'
 ---
 
 <BaseLayout
-  title="Taha Mohammadi — Language gateway"
+  title={settings?.seo?.title || copy['gateway.title'] || name}
   lang="en"
   dir="ltr"
   gateway
@@ -22,33 +23,21 @@ import '../styles/gateway.css'
     </header>
 
     <section class="gw__hero" aria-labelledby="gateway-name">
-      <div class="gw__brand" aria-hidden="true">
-        <PromotedPicture
-          assetId={BRAND_MARK_ASSET_ID}
-          mediaSlot="brand.mark"
-          locale="en"
-          imgClass="gw__mark"
-        />
-      </div>
-
-      <h1 id="gateway-name" class="gw__title" aria-label="Taha Mohammadi">
-        <span class="gw__title-primary">Taha</span><span
-          class="gw__title-accent"
-        >
-          Mohammadi</span
-        >
-      </h1>
-
-      <p class="gw__roles">{GATEWAY_ROLE_LINE}</p>
+      <h1 id="gateway-name" class="gw__title">{name}</h1>
+      {settings?.tagline && <p class="gw__roles">{settings.tagline}</p>}
 
       <GatewayPortal />
     </section>
 
     <footer class="gw__footer">
-      <p class="gw__prompt">Choose your language</p>
-      <nav aria-label="Language selection" class="gw__nav">
-        <a href="/en/" class="gw__locale" lang="en">English</a>
-        <a href="/fa/" class="gw__locale" lang="fa">فارسی</a>
+      <p class="gw__prompt">{copy['gateway.prompt']}</p>
+      <nav aria-label={copy['gateway.selection']} class="gw__nav">
+        <a href="/en/" class="gw__locale" lang="en"
+          >{copy['gateway.en'] || 'EN'}</a
+        >
+        <a href="/fa/" class="gw__locale" lang="fa"
+          >{copy['gateway.fa'] || 'FA'}</a
+        >
       </nav>
     </footer>
   </div>

@@ -1,47 +1,27 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro'
-import HomeTemplate from '../../components/templates/HomeTemplate.astro'
-import HomeHero from '../../components/home/HomeHero.astro'
-import HomeResearchInterests from '../../components/home/HomeResearchInterests.astro'
-import HomeJourney from '../../components/home/HomeJourney.astro'
-import HomeFeaturedProjects from '../../components/home/HomeFeaturedProjects.astro'
-import HomeFeaturedPublications from '../../components/home/HomeFeaturedPublications.astro'
-import HomeExploreRails from '../../components/home/HomeExploreRails.astro'
-import HomeCollaborationCta from '../../components/home/HomeCollaborationCta.astro'
-import { fetchPublishedHomeLinkSlugs } from '../../lib/home-published-links'
+import HomeContent from '../../components/home/HomeContent.astro'
+import { fetchHomeComposition, fetchHomeLanding } from '../../lib/home-content'
 import { loadHeroGraph } from '../../lib/hero-graph-content'
 import '../../styles/home.css'
 
 const locale = 'en' as const
-const { projectSlugs, articleSlugs } = await fetchPublishedHomeLinkSlugs(locale)
-// CA-03: semantic graph renders inside the hero. A05: loadHeroGraph collects
-// related record IDs from the payload and resolves them in ≤50 batches
-// against the published resolver endpoint; only exact-locale published hits
-// become links, everything else stays an honest non-link.
-const graph = await loadHeroGraph(locale)
+const [composition, landing, alternateLanding] = await Promise.all([
+  fetchHomeComposition(locale),
+  fetchHomeLanding(locale),
+  fetchHomeLanding(locale === 'en' ? 'fa' : 'en'),
+])
+const graph = composition?.modules?.some((item) => item.key === 'graph')
+  ? await loadHeroGraph(locale)
+  : { status: 'unavailable' as const, locale }
 ---
 
 <SiteLayout
-  title="Taha Mohammadi — Home"
-  locale="en"
-  alternateAvailable
+  title={landing?.seo_title || landing?.title || ''}
+  description={landing?.seo_description || ''}
+  locale={locale}
+  alternateAvailable={Boolean(alternateLanding)}
   hideFooterPromo
 >
-  <HomeTemplate>
-    <HomeHero slot="identity-lead" locale="en" graph={graph} />
-    <HomeResearchInterests slot="research-fit" locale="en" />
-    <HomeJourney slot="journey-timeline" locale="en" />
-    <HomeFeaturedProjects
-      slot="selected-projects"
-      locale={locale}
-      publishedProjectSlugs={projectSlugs}
-    />
-    <HomeFeaturedPublications
-      slot="selected-publications"
-      locale={locale}
-      publishedArticleSlugs={articleSlugs}
-    />
-    <HomeExploreRails slot="gallery-writing-learning-previews" locale="en" />
-    <HomeCollaborationCta slot="collaboration-cv-contact" locale="en" />
-  </HomeTemplate>
+  <HomeContent locale={locale} composition={composition} graph={graph} />
 </SiteLayout>

@@ -1,17 +1,8 @@
 ---
 import ThemeToggle from './ThemeToggle.astro'
 import LanguageToggle from './LanguageToggle.astro'
-import PromotedPicture from './media/PromotedPicture.astro'
-import {
-  GATEWAY_ROLE_LINE,
-  localePath,
-  primaryNav,
-  shellCopy,
-  isNavActive,
-  type Locale,
-} from '../lib/navigation'
+import { localePath, isNavActive, type Locale } from '../lib/navigation'
 import { fetchLocalizedSiteSettings } from '../lib/site-settings-content'
-import { BRAND_MARK_ASSET_ID } from '../lib/media/promoted-media'
 
 interface Props {
   locale: Locale
@@ -29,55 +20,25 @@ const {
 const homeHref = localePath(locale)
 const siteSettings = await fetchLocalizedSiteSettings(locale)
 
-const brandNameDisplay =
-  siteSettings !== null
-    ? locale === 'en'
-      ? siteSettings.brandName.toUpperCase()
-      : siteSettings.brandName
-    : locale === 'en'
-      ? shellCopy.brandName.en.toUpperCase()
-      : shellCopy.brandName.fa
-
-const roleLine =
-  siteSettings !== null ? siteSettings.tagline : GATEWAY_ROLE_LINE
-
-const navItems =
-  siteSettings !== null
-    ? (siteSettings.navLinks ?? []).map((link) => ({
-        href: link.href,
-        label: link.label,
-        active:
-          currentPath === link.href ||
-          (link.href !== '/' &&
-            link.href !== `/${locale}/` &&
-            currentPath.startsWith(link.href)),
-      }))
-    : primaryNav.map((item) => ({
-        href: localePath(locale, item.pathSegment),
-        label: item.label[locale],
-        active: isNavActive(currentPath, locale, item.pathSegment),
-      }))
-
-const mainMenuLabel =
-  siteSettings?.contentCopy?.['menu.main'] ?? shellCopy.mainMenu[locale]
-const menuToggleLabel =
-  siteSettings?.contentCopy?.['menu.toggle'] ?? shellCopy.menuToggle[locale]
-const searchLabel =
-  siteSettings?.contentCopy?.['nav.search'] ??
-  (locale === 'en' ? 'Search' : 'جستجو')
+const brandNameDisplay = siteSettings?.brandName ?? ''
+const roleLine = siteSettings?.tagline ?? ''
+const navItems = (siteSettings?.navLinks ?? []).map((link) => ({
+  ...link,
+  active:
+    currentPath === link.href ||
+    (link.href !== '/' &&
+      link.href !== `/${locale}/` &&
+      currentPath.startsWith(link.href)),
+}))
+const copy = siteSettings?.contentCopy ?? {}
+const mainMenuLabel = copy['menu.main'] ?? ''
+const menuToggleLabel = copy['menu.toggle'] ?? ''
+const searchLabel = copy['nav.search'] ?? ''
 ---
 
 <header class="site-header" data-visual-id="Header">
   <div class="site-header__inner">
     <a href={homeHref} class="site-header__brand" aria-label={brandNameDisplay}>
-      <PromotedPicture
-        assetId={BRAND_MARK_ASSET_ID}
-        mediaSlot="brand.mark"
-        locale={locale}
-        alt=""
-        imgClass="site-header__mark"
-        loading="eager"
-      />
       <span class="site-header__brand-text">
         <span class="site-header__brand-name">{brandNameDisplay}</span>
         <span class="site-header__brand-role">{roleLine}</span>

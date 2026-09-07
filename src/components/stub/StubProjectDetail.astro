@@ -13,8 +13,8 @@ interface Props {
 
 const { locale, project } = Astro.props
 const projectsIndexHref = localePath(locale, 'projects')
-const draftNote = getStubProjectDraftNote(locale)
-const backLabel = getStubBackToProjectsLabel(locale)
+const draftNote = await getStubProjectDraftNote(locale)
+const backLabel = await getStubBackToProjectsLabel(locale)
 ---
 
 <article class="page-shell">
@@ -23,22 +23,6 @@ const backLabel = getStubBackToProjectsLabel(locale)
     <h1 class="page-shell__title">{project.title}</h1>
     <p class="page-shell__status">{project.statusLabel}</p>
   </header>
-
-  {
-    project.imageSrc && (
-      <figure class="page-shell__media">
-        <img
-          src={project.imageSrc}
-          alt=""
-          width="960"
-          height="540"
-          loading="lazy"
-          decoding="async"
-          class="page-shell__image"
-        />
-      </figure>
-    )
-  }
 
   <p class="page-shell__lead home-prose-justify">{project.excerpt}</p>
 

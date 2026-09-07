@@ -1,5 +1,6 @@
 ---
-import { shellCopy, type Locale } from '../lib/navigation'
+import { getManagedCopy } from '../lib/site-settings-content'
+import { type Locale } from '../lib/navigation'
 import { Monitor, Moon, Sun } from 'lucide-astro'
 
 interface Props {
@@ -7,7 +8,8 @@ interface Props {
 }
 
 const { locale = 'en' } = Astro.props
-const themeLabel = shellCopy.themeToggle[locale]
+const copy = await getManagedCopy(locale)
+const themeLabel = copy['theme.toggle'] ?? ''
 ---
 
 <button

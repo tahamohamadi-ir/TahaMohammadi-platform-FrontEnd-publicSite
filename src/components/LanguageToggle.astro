@@ -1,8 +1,8 @@
 ---
+import { getManagedCopy } from '../lib/site-settings-content'
 import {
   alternateLocale,
   localeDisplayCode,
-  shellCopy,
   type Locale,
 } from '../lib/navigation'
 
@@ -25,7 +25,8 @@ const {
 const otherLocale = alternateLocale(currentLocale)
 const currentCode = localeDisplayCode(currentLocale)
 const alternateCode = localeDisplayCode(otherLocale)
-const unavailableLabel = shellCopy.localeUnavailable[currentLocale]
+const copy = await getManagedCopy(currentLocale)
+const unavailableLabel = copy['locale.unavailable'] ?? ''
 ---
 
 <div
@@ -34,7 +35,7 @@ const unavailableLabel = shellCopy.localeUnavailable[currentLocale]
     .join(' ')}
   data-visual-id="LanguageToggle"
   role="group"
-  aria-label={shellCopy.localeSwitch[currentLocale]}
+  aria-label={copy['locale.switch']}
 >
   {
     currentLocale === 'en' ? (

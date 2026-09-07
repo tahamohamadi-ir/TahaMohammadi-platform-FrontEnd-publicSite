@@ -1,8 +1,6 @@
 ---
 import Button from '../ui/Button.astro'
-import PromotedPicture from '../media/PromotedPicture.astro'
 import { getHomeCollaborationContent } from '../../lib/home-content'
-import { BRAND_MARK_ASSET_ID } from '../../lib/media/promoted-media'
 import { localePath, type Locale } from '../../lib/navigation'
 
 interface Props {
@@ -10,38 +8,38 @@ interface Props {
 }
 
 const { locale } = Astro.props
-const content = getHomeCollaborationContent(locale)
+const content = await getHomeCollaborationContent(locale)
 ---
 
-<section class="hm-collab">
-  <div class="hm-collab__inner">
-    <div class="hm-collab__mark" aria-hidden="true">
-      <PromotedPicture
-        assetId={BRAND_MARK_ASSET_ID}
-        mediaSlot="brand.mark"
-        locale={locale}
-        imgClass="hm-collab__logo"
-      />
-    </div>
-    <div class="hm-collab__copy">
-      <p class="hm-eyebrow">{content.title}</p>
-      <h2 id="hm-collab-title" class="hm-collab__title">
-        {content.message}
-      </h2>
-      <div class="hm-collab__actions">
-        <Button
-          label={content.connectLabel}
-          variant="primary"
-          href={localePath(locale, 'contact')}
-          class="hm-collab__btn"
-        />
-        <Button
-          label={content.cvLabel}
-          variant="secondary"
-          href={localePath(locale, 'cv')}
-          class="hm-collab__btn"
-        />
+{
+  (content.title || content.message) && (
+    <section class="hm-collab">
+      <div class="hm-collab__inner">
+        <div class="hm-collab__copy">
+          <p class="hm-eyebrow">{content.title}</p>
+          <h2 id="hm-collab-title" class="hm-collab__title">
+            {content.message}
+          </h2>
+          <div class="hm-collab__actions">
+            {content.connectLabel && (
+              <Button
+                label={content.connectLabel}
+                variant="primary"
+                href={localePath(locale, 'contact')}
+                class="hm-collab__btn"
+              />
+            )}
+            {content.cvLabel && (
+              <Button
+                label={content.cvLabel}
+                variant="secondary"
+                href={localePath(locale, 'cv')}
+                class="hm-collab__btn"
+              />
+            )}
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-</section>
+    </section>
+  )
+}

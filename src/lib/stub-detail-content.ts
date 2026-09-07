@@ -1,92 +1,57 @@
-/**
- * Draft-safe stub detail records for home featured cards (seed v1.1 — not API).
- */
-
+/** Legacy component adapters over published CMS data; no static stub records. */
 import {
   getHomeFeaturedContent,
   getHomePublicationsContent,
   type FeaturedProjectCard,
   type PublicationCard,
 } from './home-content'
+import { getManagedCopy } from './site-settings-content'
 import type { Locale } from './navigation'
 
-export const stubProjectSlugs = [
-  'pars-sql-vtd-edge',
-  'organizational-dashboard-research',
-] as const
-
-export const stubPublicationSlugs = [
-  'visual-discourse-elections',
-  'vtd-edge-manuscript',
-] as const
-
-export function getStubProject(
+export async function getStubProject(
   locale: Locale,
   slug: string,
-): FeaturedProjectCard | undefined {
-  return getHomeFeaturedContent(locale).projects.find(
+): Promise<FeaturedProjectCard | undefined> {
+  return (await getHomeFeaturedContent(locale)).projects.find(
     (project) => project.slug === slug,
   )
 }
-
-export function getStubPublication(
+export async function getStubPublication(
   locale: Locale,
   slug: string,
-): PublicationCard | undefined {
-  return getHomePublicationsContent(locale).items.find(
+): Promise<PublicationCard | undefined> {
+  return (await getHomePublicationsContent(locale)).items.find(
     (item) => item.slug === slug,
   )
 }
-
-const stubDraftNote: Record<Locale, string> = {
-  en: 'Draft preview from owner seed — not yet published via API.',
-  fa: 'پیش‌نمایش پیش‌نویس از seed مالک — هنوز از API منتشر نشده است.',
+export async function getStubProjectDraftNote(locale: Locale): Promise<string> {
+  return (await getManagedCopy(locale))['home.projects.note'] ?? ''
 }
-
-const stubPublicationDraftNote: Record<Locale, string> = {
-  en: 'Manuscript records from seed — not peer-reviewed publications until approved.',
-  fa: 'رکوردهای پیش‌نویس انگلیسی از seed — ترجمه و انتشار هنوز تأیید نشده است.',
+export async function getStubPublicationDraftNote(
+  locale: Locale,
+): Promise<string> {
+  return (await getManagedCopy(locale))['home.publications.note'] ?? ''
 }
-
-const backToProjects: Record<Locale, string> = {
-  en: 'All projects',
-  fa: 'همهٔ پروژه‌ها',
+export async function getStubBackToProjectsLabel(
+  locale: Locale,
+): Promise<string> {
+  return (await getManagedCopy(locale))['home.projects.view_all'] ?? ''
 }
-
-const backToWriting: Record<Locale, string> = {
-  en: 'All writing',
-  fa: 'همهٔ نوشتار',
+export async function getStubBackToWritingLabel(
+  locale: Locale,
+): Promise<string> {
+  return (await getManagedCopy(locale))['home.publications.view_all'] ?? ''
 }
-
-const backToHome: Record<Locale, string> = {
-  en: 'Home',
-  fa: 'صفحهٔ اصلی',
+export async function getStubBackToHomeLabel(locale: Locale): Promise<string> {
+  return (await getManagedCopy(locale))['nav.home'] ?? ''
 }
-
-export function getStubProjectDraftNote(locale: Locale): string {
-  return stubDraftNote[locale]
+export async function listStubProjects(
+  locale: Locale,
+): Promise<FeaturedProjectCard[]> {
+  return (await getHomeFeaturedContent(locale)).projects
 }
-
-export function getStubPublicationDraftNote(locale: Locale): string {
-  return stubPublicationDraftNote[locale]
-}
-
-export function getStubBackToProjectsLabel(locale: Locale): string {
-  return backToProjects[locale]
-}
-
-export function getStubBackToWritingLabel(locale: Locale): string {
-  return backToWriting[locale]
-}
-
-export function getStubBackToHomeLabel(locale: Locale): string {
-  return backToHome[locale]
-}
-
-export function listStubProjects(locale: Locale): FeaturedProjectCard[] {
-  return getHomeFeaturedContent(locale).projects
-}
-
-export function listStubPublications(locale: Locale): PublicationCard[] {
-  return getHomePublicationsContent(locale).items
+export async function listStubPublications(
+  locale: Locale,
+): Promise<PublicationCard[]> {
+  return (await getHomePublicationsContent(locale)).items
 }

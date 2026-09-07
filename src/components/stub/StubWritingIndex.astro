@@ -11,10 +11,10 @@ interface Props {
 }
 
 const { locale } = Astro.props
-const content = getHomePublicationsContent(locale)
+const content = await getHomePublicationsContent(locale)
 const homeHref = localePath(locale)
-const draftNote = getStubPublicationDraftNote(locale)
-const homeLabel = getStubBackToHomeLabel(locale)
+const draftNote = await getStubPublicationDraftNote(locale)
+const homeLabel = await getStubBackToHomeLabel(locale)
 ---
 
 <article class="page-shell">
@@ -29,15 +29,10 @@ const homeLabel = getStubBackToHomeLabel(locale)
       content.items.map((item) => (
         <li>
           <a
-            href={localePath(locale, `writing/${item.slug}`)}
+            href={item.href}
             class="page-shell__list-link home-card-interactive"
           >
-            <span
-              class="page-shell__list-title"
-              lang={locale === 'fa' ? 'en' : undefined}
-            >
-              {item.title}
-            </span>
+            <span class="page-shell__list-title">{item.title}</span>
             <span class="page-shell__list-excerpt home-prose-justify">
               {item.excerpt}
             </span>

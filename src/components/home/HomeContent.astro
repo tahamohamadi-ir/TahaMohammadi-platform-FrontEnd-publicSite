@@ -1,0 +1,80 @@
+---
+import HomeHero from './HomeHero.astro'
+import HomeResearchInterests from './HomeResearchInterests.astro'
+import HomeJourney from './HomeJourney.astro'
+import HomeFeaturedProjects from './HomeFeaturedProjects.astro'
+import HomeFeaturedPublications from './HomeFeaturedPublications.astro'
+import HomeExploreRails from './HomeExploreRails.astro'
+import HomeCollaborationCta from './HomeCollaborationCta.astro'
+import {
+  homeModuleOrder,
+  type HomeCompositionOut,
+} from '../../lib/home-content'
+import type { HeroGraphModel } from '../../lib/hero-graph-content'
+import type { Locale } from '../../lib/navigation'
+import { getManagedCopy } from '../../lib/site-settings-content'
+import '../templates/template-base.css'
+
+interface Props {
+  locale: Locale
+  composition: HomeCompositionOut | null
+  graph: HeroGraphModel
+}
+const { locale, composition, graph } = Astro.props
+const modules = homeModuleOrder(composition)
+const visible = new Set(composition?.modules?.map((item) => item.key) ?? [])
+const copy = await getManagedCopy(locale)
+const components = {
+  'research-fit': HomeResearchInterests,
+  journey: HomeJourney,
+  projects: HomeFeaturedProjects,
+  publications: HomeFeaturedPublications,
+  previews: HomeExploreRails,
+  cta: HomeCollaborationCta,
+}
+---
+
+<div
+  class="tm-template tm-home-template"
+  data-visual-id="HomeTemplate"
+  data-home-state={modules.length ? 'ready' : 'unavailable'}
+>
+  <div class="tm-template__main tm-home-template__main">
+    {
+      modules.length === 0 && (
+        <section role="status" class="hm-unavailable">
+          {copy['home.unavailable.title'] && (
+            <h1>{copy['home.unavailable.title']}</h1>
+          )}
+          {copy['home.unavailable.message'] && (
+            <p>{copy['home.unavailable.message']}</p>
+          )}
+        </section>
+      )
+    }
+    {
+      modules.map((key) => {
+        if (key === 'identity' || key === 'graph')
+          return (
+            <div class="tm-template__section" data-home-module="hero">
+              <HomeHero
+                locale={locale}
+                graph={graph}
+                showIdentity={visible.has('identity')}
+                showGraph={visible.has('graph')}
+              />
+            </div>
+          )
+        const Component = components[key]
+        return (
+          <div
+            class="tm-template__section tm-template__section--optional"
+            data-home-module={key}
+          >
+            <Component locale={locale} />
+          </div>
+        )
+      })
+    }
+  </div>
+</div>

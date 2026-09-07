@@ -1,7 +1,5 @@
 ---
-import MediaTile from '../ui/MediaTile.astro'
 import Link from '../ui/Link.astro'
-import PromotedPicture from '../media/PromotedPicture.astro'
 import { getHomeExploreContent } from '../../lib/home-content'
 import { localePath, type Locale } from '../../lib/navigation'
 
@@ -10,50 +8,40 @@ interface Props {
 }
 
 const { locale } = Astro.props
-const content = getHomeExploreContent(locale)
+const content = await getHomeExploreContent(locale)
 ---
 
-<section class="hm-explore">
-  <div class="hm-explore__inner">
-    <h2 id="hm-explore-title" class="hm-eyebrow hm-explore__title">
-      {content.title}
-    </h2>
+{
+  content.rails.length > 0 && (
+    <section class="hm-explore">
+      <div class="hm-explore__inner">
+        <h2 id="hm-explore-title" class="hm-eyebrow hm-explore__title">
+          {content.title}
+        </h2>
 
-    <ul class="hm-explore__grid">
-      {
-        content.rails.map((rail) => (
-          <li>
-            <article class="hm-explore__card">
-              <MediaTile
-                variant="grid"
-                aspectRatio="3 / 2"
-                class="hm-explore__tile"
-              >
-                <PromotedPicture
-                  slot="media"
-                  assetId={rail.assetId}
-                  mediaSlot="home.rail.preview"
-                  imgClass="hm-explore__image"
-                />
-              </MediaTile>
-              <h3 class="hm-explore__card-title">{rail.title}</h3>
-              <p class="hm-explore__card-excerpt">{rail.excerpt}</p>
-              {rail.unavailableStatus ? (
-                <p class="hm-explore__status">{rail.unavailableStatus}</p>
-              ) : (
-                rail.viewLabel && (
-                  <Link
-                    href={localePath(locale, rail.pathSegment)}
-                    label={rail.viewLabel}
-                    variant="standalone"
-                    showIcon
-                  />
-                )
-              )}
-            </article>
-          </li>
-        ))
-      }
-    </ul>
-  </div>
-</section>
+        <ul class="hm-explore__grid">
+          {content.rails.map((rail) => (
+            <li>
+              <article class="hm-explore__card">
+                <h3 class="hm-explore__card-title">{rail.title}</h3>
+                <p class="hm-explore__card-excerpt">{rail.excerpt}</p>
+                {rail.unavailableStatus ? (
+                  <p class="hm-explore__status">{rail.unavailableStatus}</p>
+                ) : (
+                  rail.viewLabel && (
+                    <Link
+                      href={localePath(locale, rail.pathSegment)}
+                      label={rail.viewLabel}
+                      variant="standalone"
+                      showIcon
+                    />
+                  )
+                )}
+              </article>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )
+}
