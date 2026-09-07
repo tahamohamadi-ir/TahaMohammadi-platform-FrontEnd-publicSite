@@ -293,4 +293,12 @@ jobs:
           test -n "$(docker compose --env-file .env.stage -f deploy/docker-compose.stage.yml ps -q cms)"
           test -n "$(docker compose --env-file .env.stage -f deploy/docker-compose.stage.yml ps -q admin)"
           test -n "$(docker compose --env-file .env.stage -f deploy/docker-compose.stage.yml ps -q web)"
+
+          echo "=== CADDY CONFIG DIAGNOSTIC ==="
+          for f in /etc/caddy/Caddyfile /etc/caddy/*.caddy /etc/caddy/conf.d/*; do
+            if [ -f "$f" ]; then
+              echo "--- FILE: $f ---"
+              cat "$f" || true
+            fi
+          done
           REMOTE
