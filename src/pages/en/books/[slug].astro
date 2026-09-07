@@ -1,6 +1,7 @@
 ---
 import SiteLayout from '../../../layouts/SiteLayout.astro'
 import DetailPage from '../../../components/books/DetailPage.astro'
+import { pickDetailSeo } from '../../../lib/seo'
 import {
   fetchBookDetail,
   listBookSlugs,
@@ -24,6 +25,7 @@ if (model.status === 'unavailable') {
 
 const alternateAvailable = await resolveBookAlternateAvailability(locale, slug)
 const pageTitle = `${model.book.title} — Taha Mohammadi`
+const detailSeo = pickDetailSeo(model.book.seo)
 ---
 
 <SiteLayout
@@ -31,6 +33,8 @@ const pageTitle = `${model.book.title} — Taha Mohammadi`
   locale={locale}
   pathSegment={`books/${slug}`}
   alternateAvailable={alternateAvailable}
+  description={detailSeo.description}
+  socialImage={detailSeo.socialImage}
 >
   <DetailPage locale={locale} model={model} />
 </SiteLayout>

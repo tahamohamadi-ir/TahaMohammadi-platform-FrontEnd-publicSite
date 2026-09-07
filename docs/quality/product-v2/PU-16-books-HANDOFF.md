@@ -38,6 +38,19 @@ Owner: PUBLIC (`Front-End/public-site`)
 - Design authority:
   - `npm run validate:design` -> PASS.
 
+## 2026-09-07 — Detail SEO forwarding (PU-16/PU-24, CM-03 slice: books)
+
+- Added `pickDetailSeo()` in `src/lib/seo.ts`: accepts typed
+  `PublicSeoOut` and untyped record maps, returns only non-blank
+  `description`/`socialImage` so layouts omit empty meta tags.
+- `src/pages/en/books/[slug].astro` and `src/pages/fa/books/[slug].astro`
+  now forward `model.book.seo` through `pickDetailSeo` into `SiteLayout`
+  (`description`, `socialImage`); `alternateAvailable` wiring unchanged.
+- Tests: `src/lib/seo.test.ts` -> **4 passed** (2 `buildPageSeo` + 2
+  `pickDetailSeo`). `npm run lint` clean. `npm run build` -> 42 pages.
+- Remaining families (talks/resources/lessons/projects/etc.) follow the
+  same one-line pattern per detail page; not changed in this slice.
+
 ## Exact Paths Modified
 
 - `src/lib/books-content.ts`
