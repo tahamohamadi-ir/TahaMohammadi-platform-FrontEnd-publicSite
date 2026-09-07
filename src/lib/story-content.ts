@@ -127,3 +127,36 @@ export function formatFileSize(bytes?: number | null): string {
   const mb = (bytes / (1024 * 1024)).toFixed(1)
   return `${mb} MB`
 }
+
+export interface StoryMediaRef {
+  url?: string
+  alt?: string
+  altFa?: string
+  altEn?: string
+  caption?: string
+  width?: number
+  height?: number
+}
+
+function isMediaObject(value: unknown): value is StoryMediaRef {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
+}
+
+/**
+ * Normalize projected story media (PU-13-story / CM-05).
+ *
+ * Backend projection emits a single object for `mediaId` and an array for
+ * `mediaIds` under the same `media` key. Renderers must accept both shapes
+ * so projected media never silently disappears.
+ */
+export function normalizeStoryMedia(raw: unknown): StoryMediaRef[] {
+  if (Array.isArray(raw)) return raw.filter(isMediaObject)
+  if (isMediaObject(raw)) return [raw]
+  return []
+}
+
+/** First projected media item, or null when absent (figure/video/audio). */
+export function firstStoryMedia(raw: unknown): StoryMediaRef | null {
+  const items = normalizeStoryMedia(raw)
+  return items.length > 0 ? items[0]! : null
+}

@@ -1,6 +1,11 @@
 ---
 import type { StoryBlock, StoryRelatedRecord } from '../../lib/story-content'
-import { formatFileSize, parseHeadingLevel } from '../../lib/story-content'
+import {
+  formatFileSize,
+  normalizeStoryMedia,
+  firstStoryMedia,
+  parseHeadingLevel,
+} from '../../lib/story-content'
 
 interface Props {
   block: StoryBlock
@@ -112,7 +117,7 @@ const quoteAuthor =
 const quoteCitation =
   typeof settings.citation === 'string' ? settings.citation : ''
 
-const figureMedia = (settings.media || null) as MediaFileRef | null
+const figureMedia = firstStoryMedia(settings.media) as MediaFileRef | null
 const mediaAlt = (media: MediaFileRef | null | undefined) =>
   (isFa ? media?.altFa : media?.altEn) || media?.alt || ''
 const figureCaption =
@@ -143,17 +148,13 @@ const ctaExternal = Boolean(settings.external)
 
 const galleryCaption =
   typeof settings.caption === 'string' ? settings.caption : ''
-const galleryItems = Array.isArray(settings.media)
-  ? (settings.media as Array<MediaFileRef & { caption?: string }>).map(
-      (item) => ({
-        url: typeof item.url === 'string' ? item.url : '',
-        alt: mediaAlt(item) || item.caption || '',
-        caption: typeof item.caption === 'string' ? item.caption : '',
-        width: typeof item.width === 'number' ? item.width : undefined,
-        height: typeof item.height === 'number' ? item.height : undefined,
-      }),
-    )
-  : []
+const galleryItems = normalizeStoryMedia(settings.media).map((item) => ({
+  url: typeof item.url === 'string' ? item.url : '',
+  alt: mediaAlt(item) || item.caption || '',
+  caption: typeof item.caption === 'string' ? item.caption : '',
+  width: typeof item.width === 'number' ? item.width : undefined,
+  height: typeof item.height === 'number' ? item.height : undefined,
+}))
 
 const mediaUrl = figureMedia?.url || ''
 const mediaCaption =

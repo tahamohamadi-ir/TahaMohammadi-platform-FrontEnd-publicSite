@@ -27,14 +27,27 @@ Owner: PUBLIC (`Front-End/public-site`)
 ## Verification Evidence
 
 - Unit test suite:
-  - `npm test -- src/lib/story-content.test.ts` -> 5/5 passed.
-  - `npm test -- --run` -> 64 test files / 377 tests passed.
+  - `npm test -- src/lib/story-content.test.ts` -> 6/6 passed (adds PU-13/CM-05 media-shape regression).
+  - `npm test -- src/lib/story-content.test.ts src/lib/lessons-content.test.ts` -> 10/10 passed.
+  - `npm test -- src/lib/lessons-content.test.ts src/lib/story-content.test.ts src/components/teaching/product-lessons.test.ts` -> 13/13 passed.
 - Linting:
   - `npm run lint` -> Clean 0 errors.
 - Astro build:
-  - `npm run build` -> 41 pages built, Pagefind indexed en and fa pages, complete in 5.81s.
+  - `npm run build` -> 42 pages built, Pagefind indexed en and fa pages.
 - Design authority:
   - `npm run validate:design` -> PASS (24 components, 6 templates, V2 overlay 2.1.0 validated).
+
+## 2026-09-07 — Projected-media shape fix (PU-13/CM-05)
+
+- Backend projection emits single-object `media` for `mediaId` and array
+  `media` for `mediaIds` under the same key (`projection.py:310-326`).
+- Added `normalizeStoryMedia()` / `firstStoryMedia()` in
+  `src/lib/story-content.ts`; `StoryBlock.astro` now uses them for
+  figure/video/audio (`firstStoryMedia`) and gallery/slider
+  (`normalizeStoryMedia`), so a single-object gallery no longer renders
+  empty and an array-shaped figure no longer loses its first image.
+- Regression test in `src/lib/story-content.test.ts` covers object, array,
+  and absent shapes.
 
 ## Exact Paths Modified
 
