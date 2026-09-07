@@ -3,10 +3,23 @@ import {
   extractTableOfContents,
   hasStoryContent,
   formatFileSize,
+  parseHeadingLevel,
   type StoryDocument,
 } from './story-content'
 
 describe('Story Content Utilities', () => {
+  it('parses heading levels correctly from strings and numbers', () => {
+    expect(parseHeadingLevel('h2')).toBe(2)
+    expect(parseHeadingLevel('h3')).toBe(3)
+    expect(parseHeadingLevel('h4')).toBe(4)
+    expect(parseHeadingLevel('H2')).toBe(2)
+    expect(parseHeadingLevel('2')).toBe(2)
+    expect(parseHeadingLevel(3)).toBe(3)
+    expect(parseHeadingLevel(null)).toBe(2)
+    expect(parseHeadingLevel(undefined)).toBe(2)
+    expect(parseHeadingLevel('invalid')).toBe(2)
+  })
+
   it('identifies whether a story document has printable/renderable content', () => {
     expect(hasStoryContent(null)).toBe(false)
     expect(hasStoryContent(undefined)).toBe(false)

@@ -1,0 +1,156 @@
+---
+import LongFormDetailTemplate from '../templates/LongFormDetailTemplate.astro'
+import SectionLead from '../ui/SectionLead.astro'
+import ContentState from '../state/ContentState.astro'
+import Link from '../ui/Link.astro'
+import StoryDocument from '../story/StoryDocument.astro'
+import { hasStoryContent } from '../../lib/story-content'
+import {
+  getLessonUnavailableCopy,
+  type LessonDetailModel,
+} from '../../lib/lessons-content'
+import { localePath, type Locale } from '../../lib/navigation'
+import { workRefToHref } from '../../lib/hero-graph-content'
+
+interface Props {
+  locale: Locale
+  model: LessonDetailModel
+}
+
+const { locale, model } = Astro.props
+const educationHref = localePath(locale, 'education')
+const baseEducationHref = educationHref.replace(/\/$/, '')
+const courseHref =
+  model.status === 'ready'
+    ? `${baseEducationHref}/${model.lesson.courseSlug}`
+    : baseEducationHref
+
+const positionLabel =
+  model.status === 'ready'
+    ? locale === 'fa'
+      ? new Intl.NumberFormat('fa-IR').format(model.lesson.position + 1)
+      : String(model.lesson.position + 1)
+    : ''
+---
+
+{
+  model.status === 'unavailable' ? (
+    <div class="teaching-page teaching-page--unavailable">
+      <ContentState
+        variant="unavailable"
+        locale={locale}
+        headingLevel="h1"
+        title={getLessonUnavailableCopy(locale).title}
+        message={getLessonUnavailableCopy(locale).message}
+        actionLabel={locale === 'en' ? 'Back to education' : 'بازگشت به آموزش'}
+        actionHref={educationHref}
+      />
+    </div>
+  ) : (
+    <LongFormDetailTemplate class="teaching-page teaching-page--lesson">
+      <SectionLead
+        slot="lead"
+        eyebrow={`${locale === 'en' ? 'Lesson' : 'درس'} ${positionLabel}`}
+        title={model.lesson.title}
+        summary={model.lesson.summary}
+      />
+
+      <div slot="body" class="teaching-page__detail">
+        <div class="teaching-page__course-context">
+          <Link
+            href={courseHref}
+            label={locale === 'en' ? '← Parent Course' : '← دوره والد'}
+            variant="standalone"
+          />
+        </div>
+
+        {'story' in model.lesson &&
+        model.lesson.story &&
+        hasStoryContent(model.lesson.story) ? (
+          <StoryDocument story={model.lesson.story} locale={locale} />
+        ) : model.lesson.summary?.trim() ? (
+          <div class="teaching-page__prose">
+            <p>{model.lesson.summary}</p>
+          </div>
+        ) : null}
+
+        {model.lesson.resources?.length ? (
+          <section
+            class="teaching-page__section"
+            aria-labelledby="lesson-resources-title"
+          >
+            <h2
+              id="lesson-resources-title"
+              class="teaching-page__section-title"
+            >
+              {locale === 'en' ? 'Lesson Resources' : 'منابع درس'}
+            </h2>
+            <ul class="teaching-page__list">
+              {model.lesson.resources.map((resource) => (
+                <li class="teaching-page__card">
+                  <strong class="teaching-page__card-title">
+                    {workRefToHref(resource, locale) ? <Link
+                      href={workRefToHref(resource, locale)!}
+                      label={resource.title}
+                      variant="standalone"
+                    /> : resource.title}
+                  </strong>
+                  {resource.summary ? (
+                    <p class="teaching-page__card-summary">
+                      {resource.summary}
+                    </p>
+                  ) : null}
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
+
+        <nav
+          class="teaching-page__pagination"
+          aria-label={
+            locale === 'en' ? 'Lesson navigation' : 'ناوبری درس‌ها'
+          }
+        >
+          {model.lesson.previous && workRefToHref(model.lesson.previous, locale) ? (
+            <div class="teaching-page__nav-prev">
+              <span class="teaching-page__nav-label">
+                {locale === 'en' ? 'Previous Lesson' : 'درس قبلی'}
+              </span>
+              <Link
+                href={workRefToHref(model.lesson.previous, locale)!}
+                label={model.lesson.previous.title}
+                variant="standalone"
+              />
+            </div>
+          ) : null}
+
+          {model.lesson.next && workRefToHref(model.lesson.next, locale) ? (
+            <div class="teaching-page__nav-next">
+              <span class="teaching-page__nav-label">
+                {locale === 'en' ? 'Next Lesson' : 'درس بعدی'}
+              </span>
+              <Link
+                href={workRefToHref(model.lesson.next, locale)!}
+                label={model.lesson.next.title}
+                variant="standalone"
+              />
+            </div>
+          ) : null}
+        </nav>
+      </div>
+
+      <p slot="related" class="teaching-page__back">
+        <Link
+          href={courseHref}
+          label={
+            locale === 'en'
+              ? '← Back to course'
+              : '← بازگشت به صفحه دوره'
+          }
+          variant="standalone"
+        />
+      </p>
+    </LongFormDetailTemplate>
+  )
+}

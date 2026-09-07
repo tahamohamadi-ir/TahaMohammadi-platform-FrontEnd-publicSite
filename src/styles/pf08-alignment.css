@@ -1,0 +1,51 @@
+/* ==========================================================================
+   Page Family PF08 / F14 Alignment — PU-18-contact
+   Contact hero, collaboration topics, communication channels & secure dispatch
+   ========================================================================== */
+
+.contact-page {
+  width: 100%;
+}
+
+.pf-contact-hero {
+  padding: 3rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.contact-page__panels {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.5rem;
+  margin: 2rem 0;
+}
+
+@media (min-width: 1024px) {
+  .contact-page__panels {
+    grid-template-columns: 3fr 2fr;
+  }
+}
+
+.contact-page__form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.contact-page__sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+@media print {
+  .contact-page__panel--form {
+    display: none;
+  }
+  .contact-page__sidebar {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}

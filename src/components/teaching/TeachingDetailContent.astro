@@ -3,6 +3,8 @@ import LongFormDetailTemplate from '../templates/LongFormDetailTemplate.astro'
 import SectionLead from '../ui/SectionLead.astro'
 import ContentState from '../state/ContentState.astro'
 import Link from '../ui/Link.astro'
+import StoryDocument from '../story/StoryDocument.astro'
+import { hasStoryContent } from '../../lib/story-content'
 import {
   getTeachingRouteTitle,
   getTeachingUnavailableCopy,
@@ -202,7 +204,11 @@ const teachingHref = localePath(locale, 'education')
           </section>
         ) : null}
 
-        {model.record.body?.trim() ? (
+        {'story' in model.record &&
+        model.record.story &&
+        hasStoryContent(model.record.story) ? (
+          <StoryDocument story={model.record.story} locale={locale} />
+        ) : model.record.body?.trim() ? (
           <div
             class="teaching-page__prose teaching-page__body-html"
             set:html={model.record.body}

@@ -1,0 +1,139 @@
+---
+import LongFormDetailTemplate from '../templates/LongFormDetailTemplate.astro'
+import SectionLead from '../ui/SectionLead.astro'
+import ContentState from '../state/ContentState.astro'
+import Link from '../ui/Link.astro'
+import StoryDocument from '../story/StoryDocument.astro'
+import { hasStoryContent } from '../../lib/story-content'
+import {
+  getTalksRouteTitle,
+  getTalksUnavailableCopy,
+  type TalkDetailModel,
+} from '../../lib/talks-content'
+import { localePath, type Locale } from '../../lib/navigation'
+
+interface Props {
+  locale: Locale
+  model: TalkDetailModel
+}
+
+const { locale, model } = Astro.props
+const talksHref = localePath(locale, 'talks')
+---
+
+{
+  model.status === 'unavailable' ? (
+    <div class="talks-page talks-page--unavailable">
+      <ContentState
+        variant="unavailable"
+        locale={locale}
+        headingLevel="h1"
+        title={getTalksUnavailableCopy(locale).title}
+        message={getTalksUnavailableCopy(locale).message}
+        actionLabel={locale === 'en' ? 'Back to talks' : 'بازگشت به ارائه‌ها'}
+        actionHref={talksHref}
+      />
+    </div>
+  ) : (
+    <LongFormDetailTemplate class="talks-page talks-page--detail">
+      <SectionLead
+        slot="lead"
+        eyebrow={getTalksRouteTitle(locale)}
+        title={model.talk.title}
+        summary={model.talk.abstract}
+      />
+
+      <div slot="body" class="talks-page__detail">
+        <dl class="talks-page__meta">
+          {model.talk.speakers ? (
+            <>
+              <dt>{locale === 'en' ? 'Speakers' : 'سخنرانان'}</dt>
+              <dd>{model.talk.speakers}</dd>
+            </>
+          ) : null}
+          {model.talk.event_name ? (
+            <>
+              <dt>{locale === 'en' ? 'Event' : 'رویداد'}</dt>
+              <dd>{model.talk.event_name}</dd>
+            </>
+          ) : null}
+          {model.talk.event_date ? (
+            <>
+              <dt>{locale === 'en' ? 'Date' : 'تاریخ'}</dt>
+              <dd>{model.talk.event_date}</dd>
+            </>
+          ) : null}
+          {model.talk.location ? (
+            <>
+              <dt>{locale === 'en' ? 'Location' : 'مکان'}</dt>
+              <dd>{model.talk.location}</dd>
+            </>
+          ) : null}
+          {model.talk.license ? (
+            <>
+              <dt>{locale === 'en' ? 'License' : 'مجوز'}</dt>
+              <dd>{model.talk.license}</dd>
+            </>
+          ) : null}
+          {model.talk.access_state ? (
+            <>
+              <dt>{locale === 'en' ? 'Access' : 'دسترسی'}</dt>
+              <dd>{model.talk.access_state}</dd>
+            </>
+          ) : null}
+        </dl>
+
+        {'story' in model.talk &&
+        model.talk.story &&
+        hasStoryContent(model.talk.story) ? (
+          <StoryDocument story={model.talk.story} locale={locale} />
+        ) : model.talk.abstract?.trim() ? (
+          <div class="talks-page__prose">
+            <p>{model.talk.abstract}</p>
+          </div>
+        ) : null}
+
+        <div class="talks-page__links">
+          {model.talk.video_url ? (
+            <Link
+              href={model.talk.video_url}
+              label={locale === 'en' ? 'Watch Video' : 'مشاهده ویدیو'}
+              variant="standalone"
+            />
+          ) : null}
+          {model.talk.slides_url ? (
+            <Link
+              href={model.talk.slides_url}
+              label={locale === 'en' ? 'Download Slides' : 'دانلود اسلایدها'}
+              variant="standalone"
+            />
+          ) : null}
+        </div>
+
+        {model.talk.relatedRecords?.length ? (
+          <section class="talks-page__section">
+            <h2 class="talks-page__section-title">
+              {locale === 'en' ? 'Related Work' : 'آثار مرتبط'}
+            </h2>
+            <ul class="talks-page__grid">
+              {model.talk.relatedRecords.map((ref) => (
+                <li class="talks-page__card">
+                  <strong>{ref.title}</strong>
+                  {ref.summary ? <p>{ref.summary}</p> : null}
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
+      </div>
+
+      <p slot="related" class="talks-page__back">
+        <Link
+          href={talksHref}
+          label={locale === 'en' ? '← Back to talks' : '← بازگشت به ارائه‌ها'}
+          variant="standalone"
+        />
+      </p>
+    </LongFormDetailTemplate>
+  )
+}

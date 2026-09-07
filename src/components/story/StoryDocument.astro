@@ -1,6 +1,6 @@
 ---
 import type { StoryDocument } from '../../lib/story-content'
-import { extractTableOfContents } from '../../lib/story-content'
+import { extractTableOfContents, resolveStoryReferences } from '../../lib/story-content'
 import StoryBlock from './StoryBlock.astro'
 import '../../styles/story.css'
 
@@ -17,6 +17,7 @@ const shouldShowToc = showToc !== undefined ? showToc : headings.length >= 2
 const isFa = locale === 'fa'
 const tocTitle = isFa ? 'فهرست مطالب' : 'Table of Contents'
 const sections = Array.isArray(story.sections) ? story.sections : []
+const relatedRecords = await resolveStoryReferences(story, isFa ? 'fa' : 'en')
 ---
 
 <article class="story-document" dir={isFa ? 'rtl' : 'ltr'}>
@@ -44,7 +45,7 @@ const sections = Array.isArray(story.sections) ? story.sections : []
       >
         {Array.isArray(section.blocks) &&
           section.blocks.map((block) => (
-            <StoryBlock block={block} locale={locale} />
+            <StoryBlock block={block} locale={locale} resolvedRecords={relatedRecords} />
           ))}
       </section>
     ))

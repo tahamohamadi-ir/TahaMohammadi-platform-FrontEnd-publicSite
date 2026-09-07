@@ -13,6 +13,7 @@ import {
 } from '../lib/navigation'
 import { getHomeHeroContent } from '../lib/home-content'
 import { BRAND_MARK_ASSET_ID } from '../lib/media/promoted-media'
+import { fetchLocalizedSiteSettings } from '../lib/site-settings-content'
 
 interface Props {
   locale: Locale
@@ -25,10 +26,33 @@ const homeHref = localePath(locale)
 const contactHref = localePath(locale, 'contact')
 const cvHref = localePath(locale, 'cv')
 const heroContent = getHomeHeroContent(locale)
+const siteSettings = await fetchLocalizedSiteSettings(locale)
+
 const brandNameDisplay =
-  locale === 'en'
-    ? shellCopy.brandName.en.toUpperCase()
-    : shellCopy.brandName.fa
+  siteSettings !== null
+    ? locale === 'en'
+      ? siteSettings.brandName.toUpperCase()
+      : siteSettings.brandName
+    : locale === 'en'
+      ? shellCopy.brandName.en.toUpperCase()
+      : shellCopy.brandName.fa
+
+const roleLine = siteSettings !== null ? siteSettings.tagline : GATEWAY_ROLE_LINE
+const footerBio =
+  siteSettings !== null && siteSettings.footerText
+    ? siteSettings.footerText
+    : heroContent.intro
+
+const navItems =
+  siteSettings !== null
+    ? (siteSettings.navLinks ?? []).map((link) => ({
+        href: link.href,
+        label: link.label,
+      }))
+    : primaryNav.map((item) => ({
+        href: localePath(locale, item.pathSegment),
+        label: item.label[locale],
+      }))
 ---
 
 <footer class="site-footer" data-visual-id="Footer">
@@ -57,8 +81,8 @@ const brandNameDisplay =
         />
         <span class="site-footer__brand-name">{brandNameDisplay}</span>
       </a>
-      <p class="site-footer__brand-role">{GATEWAY_ROLE_LINE}</p>
-      <p class="site-footer__brand-bio">{heroContent.intro}</p>
+      <p class="site-footer__brand-role">{roleLine}</p>
+      <p class="site-footer__brand-bio">{footerBio}</p>
       <ul
         class="site-footer__social"
         aria-label={shellCopy.footerConnect[locale]}
@@ -101,11 +125,11 @@ const brandNameDisplay =
       <p class="site-footer__nav-title">{shellCopy.footerExplore[locale]}</p>
       <ul class="site-footer__nav-list">
         {
-          primaryNav.map((item) => (
+          navItems.map((item) => (
             <li>
               <Link
-                href={localePath(locale, item.pathSegment)}
-                label={item.label[locale]}
+                href={item.href}
+                label={item.label}
                 variant="inline"
               />
             </li>

@@ -4,6 +4,15 @@
  */
 
 import { localePath, type Locale } from './navigation'
+import { sendAnalyticsEvent } from './analytics'
+
+export function recordContactSubmitAnalytics(locale: Locale): Promise<boolean> {
+  return sendAnalyticsEvent({
+    event: 'contact_submit_success',
+    pagePath: localePath(locale, 'contact'),
+    locale,
+  })
+}
 
 export interface ContactFormFields {
   name: string

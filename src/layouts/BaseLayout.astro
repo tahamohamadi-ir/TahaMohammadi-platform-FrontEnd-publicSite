@@ -13,9 +13,20 @@ interface Props {
   gateway?: boolean
   canonical?: string
   alternates?: AlternateLink[]
+  description?: string
+  socialImage?: string
 }
 
-const { title, lang, dir, gateway = false, canonical, alternates } = Astro.props
+const {
+  title,
+  lang,
+  dir,
+  gateway = false,
+  canonical,
+  alternates,
+  description,
+  socialImage,
+} = Astro.props
 ---
 
 <!doctype html>
@@ -25,6 +36,18 @@ const { title, lang, dir, gateway = false, canonical, alternates } = Astro.props
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+    <meta property="og:title" content={title} />
+    {description && <meta property="og:description" content={description} />}
+    {canonical && <meta property="og:url" content={canonical} />}
+    {socialImage && <meta property="og:image" content={socialImage} />}
+    <meta
+      name="twitter:card"
+      content={socialImage ? 'summary_large_image' : 'summary'}
+    />
+    <meta name="twitter:title" content={title} />
+    {description && <meta name="twitter:description" content={description} />}
+    {socialImage && <meta name="twitter:image" content={socialImage} />}
     {canonical && <link rel="canonical" href={canonical} />}
     {
       alternates?.map(({ hreflang, href }) => (

@@ -3,6 +3,8 @@ import LongFormDetailTemplate from '../templates/LongFormDetailTemplate.astro'
 import SectionLead from '../ui/SectionLead.astro'
 import ContentState from '../state/ContentState.astro'
 import Link from '../ui/Link.astro'
+import StoryDocument from '../story/StoryDocument.astro'
+import { hasStoryContent } from '../../lib/story-content'
 import {
   formatProjectAvailability,
   getProjectsRouteTitle,
@@ -55,6 +57,12 @@ function formatDateRange(
       />
 
       <div slot="body" class="projects-page__detail">
+        {'story' in model.project &&
+        model.project.story &&
+        hasStoryContent(model.project.story) ? (
+          <StoryDocument story={model.project.story} locale={locale} />
+        ) : null}
+
         <dl class="projects-page__meta">
           {model.project.project_type ? (
             <>

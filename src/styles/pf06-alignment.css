@@ -1,0 +1,92 @@
+/* ==========================================================================
+   PF-06 Teaching & Courses Alignment — PU-15-courses / CA-14
+   Featured learning paths, path process shells, course progression indicators
+   ========================================================================== */
+
+.pf06-alignment {
+  display: block;
+}
+
+.pf-index-featured-path {
+  margin: 3rem 0;
+  padding: 2rem;
+  background: var(--color-surface-subtle, rgba(248, 250, 252, 0.6));
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 1rem;
+}
+
+[data-theme='dark'] .pf-index-featured-path {
+  background: var(--color-surface-subtle, rgba(15, 23, 42, 0.6));
+  border-color: var(--color-border, #334155);
+}
+
+.pf-index-featured-path__title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-fg-strong, #0f172a);
+  margin: 0 0 1.5rem 0;
+}
+
+[data-theme='dark'] .pf-index-featured-path__title {
+  color: var(--color-fg-strong, #f8fafc);
+}
+
+.pf-index-path-process {
+  margin: 2.5rem 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .pf-index-path-process {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.pf-index-path-process__step {
+  padding: 1.5rem;
+  background: var(--color-surface, #ffffff);
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+[data-theme='dark'] .pf-index-path-process__step {
+  background: var(--color-surface, #1e293b);
+  border-color: var(--color-border, #334155);
+}
+
+.pf-index-path-process__step-number {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--color-accent, #2563eb);
+}
+
+[data-theme='dark'] .pf-index-path-process__step-number {
+  color: var(--color-accent, #60a5fa);
+}
+
+.pf-index-path-process__step-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--color-fg-strong, #0f172a);
+}
+
+[data-theme='dark'] .pf-index-path-process__step-title {
+  color: var(--color-fg-strong, #f8fafc);
+}
+
+.pf-index-path-process__step-description {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--color-fg-muted, #64748b);
+  margin: 0;
+}
+
+[data-theme='dark'] .pf-index-path-process__step-description {
+  color: var(--color-fg-muted, #94a3b8);
+}

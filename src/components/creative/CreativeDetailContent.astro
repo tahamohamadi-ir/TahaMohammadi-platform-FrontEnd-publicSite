@@ -3,6 +3,8 @@ import LongFormDetailTemplate from '../templates/LongFormDetailTemplate.astro'
 import SectionLead from '../ui/SectionLead.astro'
 import ContentState from '../state/ContentState.astro'
 import Link from '../ui/Link.astro'
+import StoryDocument from '../story/StoryDocument.astro'
+import { hasStoryContent } from '../../lib/story-content'
 import PageFamilyCreativeDetailShell from '../page-family/PageFamilyCreativeDetailShell.astro'
 import {
   getCreativeRouteTitle,
@@ -90,7 +92,11 @@ const creativeHref = localePath(locale, 'gallery')
           ) : null}
         </dl>
 
-        {model.work.body?.trim() ? (
+        {'story' in model.work &&
+        model.work.story &&
+        hasStoryContent(model.work.story) ? (
+          <StoryDocument story={model.work.story} locale={locale} />
+        ) : model.work.body?.trim() ? (
           <div
             class="creative-page__prose creative-page__body-html"
             set:html={model.work.body}

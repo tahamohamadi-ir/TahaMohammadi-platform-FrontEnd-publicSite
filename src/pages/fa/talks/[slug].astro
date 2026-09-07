@@ -1,0 +1,36 @@
+---
+import SiteLayout from '../../../layouts/SiteLayout.astro'
+import DetailPage from '../../../components/talks/DetailPage.astro'
+import {
+  fetchTalkDetail,
+  listTalkSlugs,
+  resolveTalkAlternateAvailability,
+} from '../../../lib/talks-content'
+import '../../../styles/page-families.css'
+import '../../../styles/product-talks.css'
+
+export async function getStaticPaths() {
+  const slugs = await listTalkSlugs('fa')
+  return slugs.map((slug) => ({ params: { slug } }))
+}
+
+const locale = 'fa' as const
+const slug = Astro.params.slug ?? ''
+const model = await fetchTalkDetail(locale, slug)
+
+if (model.status === 'unavailable') {
+  return new Response(null, { status: 404, statusText: 'Not Found' })
+}
+
+const alternateAvailable = await resolveTalkAlternateAvailability(locale, slug)
+const pageTitle = `${model.talk.title} — طاها محمدی`
+---
+
+<SiteLayout
+  title={pageTitle}
+  locale={locale}
+  pathSegment={`talks/${slug}`}
+  alternateAvailable={alternateAvailable}
+>
+  <DetailPage locale={locale} model={model} />
+</SiteLayout>

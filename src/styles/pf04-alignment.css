@@ -1,0 +1,105 @@
+/* ==========================================================================
+   PF-04 Projects Collection Alignment — PU-14-projects / CA-12
+   Evidence grid shells, distinct media roles, available evidence affordances
+   ========================================================================== */
+
+.pf04-alignment {
+  display: block;
+}
+
+.pf-index-evidence {
+  margin: 3rem 0;
+  padding: 2rem;
+  background: var(--color-surface-subtle, rgba(248, 250, 252, 0.6));
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 1rem;
+}
+
+[data-theme='dark'] .pf-index-evidence {
+  background: var(--color-surface-subtle, rgba(15, 23, 42, 0.6));
+  border-color: var(--color-border, #334155);
+}
+
+.pf-index-evidence__title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-fg-strong, #0f172a);
+  margin: 0 0 1.5rem 0;
+}
+
+[data-theme='dark'] .pf-index-evidence__title {
+  color: var(--color-fg-strong, #f8fafc);
+}
+
+.pf-index-evidence__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .pf-index-evidence__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .pf-index-evidence__grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.pf-index-evidence__card {
+  padding: 1.5rem;
+  background: var(--color-surface, #ffffff);
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+[data-theme='dark'] .pf-index-evidence__card {
+  background: var(--color-surface, #1e293b);
+  border-color: var(--color-border, #334155);
+}
+
+.pf-index-evidence__icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  background: var(--color-surface-muted, #f1f5f9);
+  color: var(--color-accent, #2563eb);
+}
+
+[data-theme='dark'] .pf-index-evidence__icon {
+  background: var(--color-surface-muted, #334155);
+  color: var(--color-accent, #60a5fa);
+}
+
+.pf-index-evidence__card-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--color-fg-strong, #0f172a);
+}
+
+[data-theme='dark'] .pf-index-evidence__card-title {
+  color: var(--color-fg-strong, #f8fafc);
+}
+
+.pf-index-evidence__card-text {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--color-fg-muted, #64748b);
+  margin: 0;
+  flex-grow: 1;
+}
+
+[data-theme='dark'] .pf-index-evidence__card-text {
+  color: var(--color-fg-muted, #94a3b8);
+}

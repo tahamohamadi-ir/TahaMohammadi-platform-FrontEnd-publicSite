@@ -3,6 +3,8 @@ import LongFormDetailTemplate from '../templates/LongFormDetailTemplate.astro'
 import SectionLead from '../ui/SectionLead.astro'
 import ContentState from '../state/ContentState.astro'
 import Link from '../ui/Link.astro'
+import StoryDocument from '../story/StoryDocument.astro'
+import { hasStoryContent } from '../../lib/story-content'
 import {
   getPublicationsUnavailableCopy,
   publicationsRouteTitle,
@@ -45,6 +47,12 @@ const publicationsHref = localePath(locale, 'publications')
       />
 
       <div slot="body" class="publications-page__detail">
+        {'story' in model.publication &&
+        model.publication.story &&
+        hasStoryContent(model.publication.story) ? (
+          <StoryDocument story={model.publication.story} locale={locale} />
+        ) : null}
+
         <dl class="publications-page__meta">
           {model.publication.publication_type ? (
             <>

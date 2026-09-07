@@ -12,7 +12,7 @@ import HeroGraph from '../hero/HeroGraph.astro'
 import { ArrowRight, FileText, Mail } from 'lucide-astro'
 import type { HeroGraphModel } from '../../lib/hero-graph-content'
 import {
-  getHomeHeroContent,
+  loadHomeHeroContent,
   getHomeResearchContent,
 } from '../../lib/home-content'
 import { getProfileHeroCtaLabels } from '../../lib/page-family-empty-chrome'
@@ -29,7 +29,7 @@ const graph: HeroGraphModel = Astro.props.graph ?? {
   status: 'unavailable',
   locale,
 }
-const content = getHomeHeroContent(locale)
+const content = await loadHomeHeroContent(locale)
 const research = getHomeResearchContent(locale)
 const ctaLabels = getProfileHeroCtaLabels(locale)
 ---

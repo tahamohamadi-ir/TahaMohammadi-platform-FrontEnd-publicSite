@@ -1,0 +1,152 @@
+/* ==========================================================================
+   Product Teaching & Education Styling — PU-15-courses / F07
+   Clean course listings, learning paths, meta lists, outcomes and prerequisites
+   ========================================================================== */
+
+.teaching-page {
+  width: 100%;
+}
+
+.teaching-page--detail {
+  padding-bottom: 4rem;
+}
+
+.teaching-page__list {
+  list-style: none;
+  padding: 0;
+  margin: 2rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.teaching-page__card {
+  padding: 1.75rem;
+  background: var(--color-surface, #ffffff);
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+[data-theme='dark'] .teaching-page__card {
+  background: var(--color-surface, #1e293b);
+  border-color: var(--color-border, #334155);
+}
+
+.teaching-page__card:hover {
+  transform: translateY(-2px);
+  border-color: var(--color-accent, #2563eb);
+}
+
+.teaching-page__card-title {
+  font-size: 1.375rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.teaching-page__card-link {
+  color: var(--color-fg-strong, #0f172a);
+  text-decoration: none;
+}
+
+.teaching-page__card-link:hover {
+  color: var(--color-accent, #2563eb);
+  text-decoration: underline;
+}
+
+[data-theme='dark'] .teaching-page__card-link {
+  color: var(--color-fg-strong, #f8fafc);
+}
+
+.teaching-page__card-summary {
+  font-size: 0.9375rem;
+  color: var(--color-fg-subtle, #64748b);
+  line-height: 1.6;
+  margin: 0;
+}
+
+[data-theme='dark'] .teaching-page__card-summary {
+  color: var(--color-fg-subtle, #94a3b8);
+}
+
+.teaching-page__detail {
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.teaching-page__meta {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.5rem 1.5rem;
+  font-size: 0.9375rem;
+  padding: 1.25rem;
+  background: var(--color-surface-subtle, #f8fafc);
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 0.5rem;
+}
+
+[data-theme='dark'] .teaching-page__meta {
+  background: var(--color-surface-subtle, #0f172a);
+  border-color: var(--color-border, #334155);
+}
+
+.teaching-page__meta dt {
+  color: var(--color-fg-subtle, #64748b);
+  font-weight: 600;
+}
+
+[data-theme='dark'] .teaching-page__meta dt {
+  color: var(--color-fg-subtle, #94a3b8);
+}
+
+.teaching-page__meta dd {
+  color: var(--color-fg-strong, #0f172a);
+  margin: 0;
+}
+
+[data-theme='dark'] .teaching-page__meta dd {
+  color: var(--color-fg-strong, #f8fafc);
+}
+
+.teaching-page__section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.teaching-page__section-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-fg-strong, #0f172a);
+  margin: 0;
+}
+
+[data-theme='dark'] .teaching-page__section-title {
+  color: var(--color-fg-strong, #f8fafc);
+}
+
+.teaching-page__prose {
+  font-size: 1.0625rem;
+  line-height: 1.8;
+  color: var(--color-fg, #334155);
+}
+
+[data-theme='dark'] .teaching-page__prose {
+  color: var(--color-fg, #cbd5e1);
+}
+
+.teaching-page__links {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+.teaching-page__back {
+  margin-top: 2rem;
+}

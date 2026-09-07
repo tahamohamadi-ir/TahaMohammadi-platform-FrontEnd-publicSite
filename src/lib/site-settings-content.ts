@@ -6,12 +6,32 @@
 import type { components } from '../generated/public-api'
 import { parseJsonResponse } from './api/client'
 import { buildPublicApiUrl, canFetchPublicApi } from './api/resolve-url'
+import type { Locale } from './navigation'
 
 export type PublicSiteSettingsOut =
   components['schemas']['PublicSiteSettingsOut']
 export type PublicContactBlockOut =
   components['schemas']['PublicContactBlockOut']
 export type PublicDownloadOut = components['schemas']['PublicDownloadOut']
+export type LocalizedSiteSettingsPublicOut =
+  components['schemas']['LocalizedSiteSettingsPublicOut']
+
+export async function fetchLocalizedSiteSettings(
+  locale: Locale,
+): Promise<LocalizedSiteSettingsPublicOut | null> {
+  if (!canFetchPublicApi()) {
+    return null
+  }
+
+  try {
+    const response = await fetch(buildPublicApiUrl(`/api/v1/site/${locale}`), {
+      headers: { Accept: 'application/json' },
+    })
+    return await parseJsonResponse<LocalizedSiteSettingsPublicOut>(response)
+  } catch {
+    return null
+  }
+}
 
 export async function fetchPublicSiteSettings(): Promise<PublicSiteSettingsOut | null> {
   if (!canFetchPublicApi()) {

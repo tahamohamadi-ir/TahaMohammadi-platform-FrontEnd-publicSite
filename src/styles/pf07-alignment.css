@@ -1,0 +1,56 @@
+/* ==========================================================================
+   Page Family PF07 / F13 Alignment — PU-18-about
+   Profile hero, split timeline, skills grid & biographical narrative
+   ========================================================================== */
+
+.about-page {
+  width: 100%;
+}
+
+.pf-profile-hero {
+  padding: 3rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.pf-split-timeline {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  margin: 2.5rem 0;
+}
+
+@media (min-width: 768px) {
+  .pf-split-timeline {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.pf-skills-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+@media (min-width: 640px) {
+  .pf-skills-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .pf-skills-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media print {
+  .pf-profile-hero,
+  .pf-split-timeline,
+  .pf-skills-grid {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}

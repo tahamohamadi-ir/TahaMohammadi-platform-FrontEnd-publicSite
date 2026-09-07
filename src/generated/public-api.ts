@@ -1716,6 +1716,10 @@ export interface components {
             audienceLinks?: components["schemas"]["LocalizedAudienceLinkOut"][];
             /** Brandname */
             brandName: string;
+            /** Contentcopy */
+            contentCopy?: {
+                [key: string]: string;
+            };
             /** Footertext */
             footerText: string;
             /** Locale */

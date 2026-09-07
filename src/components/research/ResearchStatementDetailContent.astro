@@ -1,0 +1,105 @@
+---
+import LongFormDetailTemplate from '../templates/LongFormDetailTemplate.astro'
+import SectionLead from '../ui/SectionLead.astro'
+import ContentState from '../state/ContentState.astro'
+import Link from '../ui/Link.astro'
+import StoryDocument from '../story/StoryDocument.astro'
+import { hasStoryContent } from '../../lib/story-content'
+import {
+  getResearchRouteTitle,
+  getResearchUnavailableCopy,
+  splitBodyParagraphs,
+  type ResearchStatementDetailModel,
+} from '../../lib/research-content'
+import { localePath, type Locale } from '../../lib/navigation'
+
+interface Props {
+  locale: Locale
+  model: ResearchStatementDetailModel
+}
+
+const { locale, model } = Astro.props
+const researchHref = localePath(locale, 'research')
+---
+
+{
+  model.status === 'unavailable' ? (
+    <div class="research-page research-page--unavailable">
+      <ContentState
+        variant="unavailable"
+        locale={locale}
+        headingLevel="h1"
+        title={getResearchUnavailableCopy(locale).title}
+        message={getResearchUnavailableCopy(locale).message}
+        actionLabel={locale === 'en' ? 'Back to research' : 'بازگشت به پژوهش'}
+        actionHref={researchHref}
+      />
+    </div>
+  ) : (
+    <LongFormDetailTemplate class="research-page research-page--detail">
+      <SectionLead
+        slot="lead"
+        eyebrow={getResearchRouteTitle(locale)}
+        title={model.statement.title}
+      />
+
+      <div slot="body" class="research-page__detail">
+        {model.statement.statement_pdf?.url ? (
+          <div class="research-page__pdf-download">
+            <Link
+              href={model.statement.statement_pdf.url}
+              label={
+                locale === 'en'
+                  ? 'Download Statement PDF'
+                  : 'دانلود نسخه پی‌دی‌اف بیانیه'
+              }
+              variant="standalone"
+            />
+          </div>
+        ) : null}
+
+        {'story' in model.statement &&
+        model.statement.story &&
+        hasStoryContent(model.statement.story) ? (
+          <StoryDocument story={model.statement.story} locale={locale} />
+        ) : model.statement.body?.trim() ? (
+          <div class="research-page__prose">
+            {splitBodyParagraphs(model.statement.body).map((paragraph) => (
+              <p>{paragraph}</p>
+            ))}
+          </div>
+        ) : null}
+
+        {model.statement.relatedRecords?.length ? (
+          <section
+            class="research-page__section"
+            aria-labelledby="statement-related-title"
+          >
+            <h2
+              id="statement-related-title"
+              class="research-page__section-title"
+            >
+              {locale === 'en' ? 'Related Work' : 'آثار مرتبط'}
+            </h2>
+            <ul class="research-page__list">
+              {model.statement.relatedRecords.map((ref) => (
+                <li class="research-page__item">
+                  <strong>{ref.title}</strong>
+                  {ref.summary ? <p>{ref.summary}</p> : null}
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
+      </div>
+
+      <p slot="related" class="research-page__back">
+        <Link
+          href={researchHref}
+          label={locale === 'en' ? '← Back to research' : '← بازگشت به پژوهش'}
+          variant="standalone"
+        />
+      </p>
+    </LongFormDetailTemplate>
+  )
+}

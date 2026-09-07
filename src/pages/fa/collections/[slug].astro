@@ -1,0 +1,36 @@
+---
+import SiteLayout from '../../../layouts/SiteLayout.astro'
+import DetailPage from '../../../components/collections/DetailPage.astro'
+import {
+  fetchCollectionDetail,
+  listCollectionSlugs,
+  resolveCollectionAlternateAvailability,
+} from '../../../lib/collections-content'
+import '../../../styles/page-families.css'
+import '../../../styles/product-collections.css'
+
+export async function getStaticPaths() {
+  const slugs = await listCollectionSlugs('fa')
+  return slugs.map((slug) => ({ params: { slug } }))
+}
+
+const locale = 'fa' as const
+const slug = Astro.params.slug ?? ''
+const model = await fetchCollectionDetail(locale, slug)
+
+if (model.status === 'unavailable') {
+  return new Response(null, { status: 404, statusText: 'Not Found' })
+}
+
+const alternateAvailable = await resolveCollectionAlternateAvailability(locale, slug)
+const pageTitle = `${model.collection.title} — طه محمدی`
+---
+
+<SiteLayout
+  title={pageTitle}
+  locale={locale}
+  pathSegment={`collections/${slug}`}
+  alternateAvailable={alternateAvailable}
+>
+  <DetailPage locale={locale} model={model} />
+</SiteLayout>

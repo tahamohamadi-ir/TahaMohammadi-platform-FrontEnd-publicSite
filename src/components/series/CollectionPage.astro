@@ -1,0 +1,64 @@
+---
+import SectionLead from '../ui/SectionLead.astro'
+import ContentState from '../state/ContentState.astro'
+import Link from '../ui/Link.astro'
+import {
+  getSeriesRouteTitle,
+  getSeriesUnavailableCopy,
+  type SeriesIndexModel,
+} from '../../lib/series-content'
+import { localePath, type Locale } from '../../lib/navigation'
+
+interface Props {
+  locale: Locale
+  model: SeriesIndexModel
+}
+
+const { locale, model } = Astro.props
+const seriesBaseHref = localePath(locale, 'blog/series')
+---
+
+{
+  model.status === 'unavailable' ? (
+    <div class="series-page series-page--unavailable">
+      <ContentState
+        variant="unavailable"
+        locale={locale}
+        headingLevel="h1"
+        title={getSeriesUnavailableCopy(locale).title}
+        message={getSeriesUnavailableCopy(locale).message}
+        actionLabel={locale === 'en' ? 'Back to home' : 'بازگشت به خانه'}
+        actionHref={localePath(locale, 'home')}
+      />
+    </div>
+  ) : (
+    <div class="series-page">
+      <SectionLead
+        eyebrow={getSeriesRouteTitle(locale)}
+        title={getSeriesRouteTitle(locale)}
+        summary={
+          locale === 'en'
+            ? 'Structured article series and sequential reading paths.'
+            : 'مجموعه مقالات منظم و مسیرهای مطالعه گام‌به‌گام.'
+        }
+      />
+
+      <ul class="series-page__grid">
+        {model.series.map((item) => (
+          <li class="series-page__card">
+            <h2 class="series-page__card-title">
+              <Link
+                href={`${seriesBaseHref.replace(/\/$/, '')}/${item.slug}`}
+                label={item.title}
+                variant="standalone"
+              />
+            </h2>
+            {item.description ? (
+              <p class="series-page__card-desc">{item.description}</p>
+            ) : null}
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}

@@ -1,0 +1,29 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro'
+import ContentState from '../components/state/ContentState.astro'
+import '../styles/shell.css'
+
+const pageTitle = 'Page Not Found — Taha Mohammadi'
+---
+
+<BaseLayout
+  title={pageTitle}
+  lang="en"
+  dir="ltr"
+  canonical="/404"
+  description="The requested page could not be found."
+>
+  <main id="main-content" class="site-main site-main--utility" tabindex="-1">
+    <div class="utility-container" style="max-width: 48rem; margin: 6rem auto; padding: 0 1.5rem;">
+      <ContentState
+        variant="unavailable"
+        locale="en"
+        headingLevel="h1"
+        title="Page Not Found / صفحه مورد نظر یافت نشد"
+        message="The page you requested does not exist or has been moved. / صفحه درخواست‌شده وجود ندارد یا منتقل شده است."
+        actionLabel="Return to Home / بازگشت به خانه"
+        actionHref="/"
+      />
+    </div>
+  </main>
+</BaseLayout>

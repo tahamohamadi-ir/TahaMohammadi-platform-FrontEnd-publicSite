@@ -1,0 +1,126 @@
+---
+import LongFormDetailTemplate from '../templates/LongFormDetailTemplate.astro'
+import SectionLead from '../ui/SectionLead.astro'
+import ContentState from '../state/ContentState.astro'
+import Link from '../ui/Link.astro'
+import StoryDocument from '../story/StoryDocument.astro'
+import { hasStoryContent } from '../../lib/story-content'
+import {
+  getCollectionsRouteTitle,
+  getCollectionsUnavailableCopy,
+  type CollectionDetailModel,
+} from '../../lib/collections-content'
+import { localePath, type Locale } from '../../lib/navigation'
+import { canonicalPath, type RouteFamily } from '../../lib/routes'
+
+interface Props {
+  locale: Locale
+  model: CollectionDetailModel
+}
+
+const { locale, model } = Astro.props
+const collectionsHref = localePath(locale, 'collections')
+
+function resolveItemHref(item: { contentType: string; slug: string; href?: string }): string | undefined {
+  if (item.href) return item.href
+  if (!item.contentType || !item.slug) return undefined
+  try {
+    return canonicalPath(item.contentType as RouteFamily, locale, item.slug)
+  } catch {
+    return undefined
+  }
+}
+---
+
+{
+  model.status === 'unavailable' ? (
+    <div class="collections-page collections-page--unavailable">
+      <ContentState
+        variant="unavailable"
+        locale={locale}
+        headingLevel="h1"
+        title={getCollectionsUnavailableCopy(locale).title}
+        message={getCollectionsUnavailableCopy(locale).message}
+        actionLabel={locale === 'en' ? 'Back to collections' : 'بازگشت به مجموعه‌ها'}
+        actionHref={collectionsHref}
+      />
+    </div>
+  ) : (
+    <LongFormDetailTemplate class="collections-page collections-page--detail">
+      <SectionLead
+        slot="lead"
+        eyebrow={getCollectionsRouteTitle(locale)}
+        title={model.collection.title}
+        summary={model.collection.description}
+      />
+
+      <div slot="body" class="collections-page__detail">
+        {model.collection.curatorName || model.collection.criteria ? (
+          <aside class="collections-page__curator-block" aria-label={locale === 'en' ? 'Curation Details' : 'مشخصات گردآوری'}>
+            {model.collection.curatorName ? (
+              <p class="collections-page__curator-meta">
+                <strong>{locale === 'en' ? 'Curated by:' : 'گردآورنده:'}</strong>{' '}
+                {[model.collection.curatorName, model.collection.curatorTitle, model.collection.curatedDate]
+                  .filter(Boolean)
+                  .join(' · ')}
+              </p>
+            ) : null}
+            {model.collection.criteria ? (
+              <p class="collections-page__criteria">
+                <strong>{locale === 'en' ? 'Selection criteria:' : 'معیار گزینش:'}</strong>{' '}
+                {model.collection.criteria}
+              </p>
+            ) : null}
+          </aside>
+        ) : null}
+
+        {model.collection.cover?.url ? (
+          <figure class="collections-page__cover">
+            <img
+              src={model.collection.cover.url}
+              alt={model.collection.cover.alt || model.collection.title}
+              loading="lazy"
+              decoding="async"
+            />
+          </figure>
+        ) : null}
+
+        {hasStoryContent(model.collection.story) ? (
+          <div class="collections-page__story">
+            <StoryDocument story={model.collection.story} locale={locale} />
+          </div>
+        ) : null}
+
+        {model.collection.items && model.collection.items.length > 0 ? (
+          <section class="collections-page__items" aria-labelledby="collection-items-heading">
+            <h2 id="collection-items-heading" class="collections-page__items-heading">
+              {locale === 'en' ? 'Included Works' : 'آثار گنجانده‌شده'}
+            </h2>
+            <ul class="collections-page__items-list">
+              {model.collection.items.map((item) => {
+                const itemHref = resolveItemHref(item)
+                return (
+                  <li class="collections-page__item-card">
+                    {item.contentType ? (
+                      <span class="collections-page__item-type">{item.contentType}</span>
+                    ) : null}
+                    <h3 class="collections-page__item-title">
+                      {itemHref ? (
+                        <Link href={itemHref} label={item.title} variant="standalone" />
+                      ) : (
+                        item.title
+                      )}
+                    </h3>
+                    {item.summary ? (
+                      <p class="collections-page__item-summary">{item.summary}</p>
+                    ) : null}
+                  </li>
+                )
+              })}
+            </ul>
+          </section>
+        ) : null}
+      </div>
+    </LongFormDetailTemplate>
+  )
+}

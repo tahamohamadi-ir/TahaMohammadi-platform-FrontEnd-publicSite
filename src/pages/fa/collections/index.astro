@@ -1,62 +1,23 @@
 ---
 import SiteLayout from '../../../layouts/SiteLayout.astro'
-import ContentState from '../../../components/state/ContentState.astro'
-import type { components } from '../../../generated/public-api'
-import { parseJsonResponse } from '../../../lib/api/client'
+import CollectionPage from '../../../components/collections/CollectionPage.astro'
 import {
-  buildPublicApiUrl,
-  canFetchPublicApi,
-} from '../../../lib/api/resolve-url'
+  fetchCollectionsIndex,
+  getCollectionsRouteTitle,
+} from '../../../lib/collections-content'
+import '../../../styles/page-families.css'
+import '../../../styles/product-collections.css'
 
 const locale = 'fa' as const
-const collections = canFetchPublicApi()
-  ? await fetch(
-      buildPublicApiUrl(`/api/v1/collections/${locale}?page=1&pageSize=50`),
-    )
-      .then(parseJsonResponse<components['schemas']['CollectionListOut']>)
-      .then((payload) => payload.items ?? [])
-      .catch(() => [])
-  : []
+const model = await fetchCollectionsIndex(locale)
+const pageTitle = `${getCollectionsRouteTitle(locale)} — طه محمدی`
 ---
 
 <SiteLayout
-  title="مجموعه‌ها — طاها محمدی"
+  title={pageTitle}
   locale={locale}
   pathSegment="collections"
-  alternateAvailable={false}
+  alternateAvailable={true}
 >
-  <main class="product-index" id="main-content">
-    <header class="product-index__lead">
-      <p>پژوهش گزیده</p><h1>مجموعه‌ها</h1>
-    </header>
-    {
-      collections.length ? (
-        <ul class="product-index__list">
-          {collections.map((collection) => (
-            <li>
-              <article>
-                <h2>{collection.title}</h2>
-                {collection.description ? (
-                  <p>{collection.description}</p>
-                ) : null}
-                <p>
-                  {[collection.curatorName, collection.curatedDate]
-                    .filter(Boolean)
-                    .join(' · ')}
-                </p>
-              </article>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <ContentState
-          variant="empty"
-          locale={locale}
-          headingLevel="h2"
-          title="هنوز مجموعه‌ای منتشر نشده است"
-          message="مجموعه‌های منتشرشده پس از آماده‌شدن در اینجا نمایش داده می‌شوند."
-        />
-      )
-    }
-  </main>
+  <CollectionPage locale={locale} model={model} />
 </SiteLayout>

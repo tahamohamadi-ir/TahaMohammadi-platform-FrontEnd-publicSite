@@ -1,0 +1,44 @@
+---
+import SiteLayout from '../../../../../layouts/SiteLayout.astro'
+import LessonDetailContent from '../../../../../components/teaching/LessonDetailContent.astro'
+import {
+  fetchLessonDetail,
+  listCourseLessonParams,
+  resolveLessonAlternateAvailability,
+} from '../../../../../lib/lessons-content'
+import '../../../../../styles/page-families.css'
+import '../../../../../styles/pf06-alignment.css'
+import '../../../../../styles/product-teaching.css'
+
+export async function getStaticPaths() {
+  const paramsList = await listCourseLessonParams('fa')
+  return paramsList.map(({ courseSlug, lessonSlug }) => ({
+    params: { courseSlug, lessonSlug },
+  }))
+}
+
+const locale = 'fa' as const
+const courseSlug = Astro.params.courseSlug ?? ''
+const lessonSlug = Astro.params.lessonSlug ?? ''
+const model = await fetchLessonDetail(locale, courseSlug, lessonSlug)
+
+if (model.status === 'unavailable') {
+  return new Response(null, { status: 404, statusText: 'Not Found' })
+}
+
+const alternateAvailable = await resolveLessonAlternateAvailability(
+  locale,
+  courseSlug,
+  lessonSlug,
+)
+const pageTitle = `${model.lesson.title} — طاها محمدی`
+---
+
+<SiteLayout
+  title={pageTitle}
+  locale={locale}
+  pathSegment={`education/${courseSlug}/lessons/${lessonSlug}`}
+  alternateAvailable={alternateAvailable}
+>
+  <LessonDetailContent locale={locale} model={model} />
+</SiteLayout>

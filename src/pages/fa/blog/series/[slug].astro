@@ -1,0 +1,36 @@
+---
+import SiteLayout from '../../../../layouts/SiteLayout.astro'
+import DetailPage from '../../../../components/series/DetailPage.astro'
+import {
+  fetchSeriesDetail,
+  listSeriesSlugs,
+  resolveSeriesAlternateAvailability,
+} from '../../../../lib/series-content'
+import '../../../../styles/page-families.css'
+import '../../../../styles/product-series.css'
+
+export async function getStaticPaths() {
+  const slugs = await listSeriesSlugs('fa')
+  return slugs.map((slug) => ({ params: { slug } }))
+}
+
+const locale = 'fa' as const
+const slug = Astro.params.slug ?? ''
+const model = await fetchSeriesDetail(locale, slug)
+
+if (model.status === 'unavailable') {
+  return new Response(null, { status: 404, statusText: 'Not Found' })
+}
+
+const alternateAvailable = await resolveSeriesAlternateAvailability(locale, slug)
+const pageTitle = `${model.series.title} — طه محمدی`
+---
+
+<SiteLayout
+  title={pageTitle}
+  locale={locale}
+  pathSegment={`blog/series/${slug}`}
+  alternateAvailable={alternateAvailable}
+>
+  <DetailPage locale={locale} model={model} />
+</SiteLayout>

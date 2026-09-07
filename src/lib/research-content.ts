@@ -40,6 +40,13 @@ export type ResearchDetailModel =
       record: ResearchTopicDetailOut | ResearchStatementOut
     }
 
+export type ResearchStatementDetailModel =
+  | { status: 'unavailable' }
+  | {
+      status: 'ready'
+      statement: ResearchStatementOut
+    }
+
 const researchNavItem = primaryNav.find((item) => item.slug === 'research')
 
 export function getResearchRouteTitle(locale: Locale): string {
@@ -285,4 +292,34 @@ export async function resolveResearchAlternateAvailability(
   const alternate: Locale = locale === 'en' ? 'fa' : 'en'
   const model = await fetchResearchIndex(alternate)
   return model.status === 'ready'
+}
+
+export async function fetchResearchStatementDetail(
+  locale: Locale,
+  slug: string,
+): Promise<ResearchStatementDetailModel> {
+  if (!canFetchPublicApi()) {
+    return { status: 'unavailable' }
+  }
+  const statement = await getResearchStatement(locale, slug)
+  if (statement) {
+    return { status: 'ready', statement }
+  }
+  return { status: 'unavailable' }
+}
+
+export async function listResearchStatementSlugs(
+  locale: Locale,
+): Promise<string[]> {
+  const statements = await listResearchStatements(locale)
+  return statements.map((statement) => statement.slug)
+}
+
+export async function resolveResearchStatementAlternateAvailability(
+  locale: Locale,
+  slug: string,
+): Promise<boolean> {
+  const alternate: Locale = locale === 'en' ? 'fa' : 'en'
+  const statement = await getResearchStatement(alternate, slug)
+  return statement !== null
 }

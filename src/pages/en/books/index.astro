@@ -1,47 +1,23 @@
 ---
 import SiteLayout from '../../../layouts/SiteLayout.astro'
-import ContentState from '../../../components/state/ContentState.astro'
-import { listBooks } from '../../../lib/writing-content'
+import CollectionPage from '../../../components/books/CollectionPage.astro'
+import {
+  fetchBooksIndex,
+  getBooksRouteTitle,
+} from '../../../lib/books-content'
+import '../../../styles/page-families.css'
+import '../../../styles/product-books.css'
 
 const locale = 'en' as const
-const books = await listBooks(locale)
+const model = await fetchBooksIndex(locale)
+const pageTitle = `${getBooksRouteTitle(locale)} — Taha Mohammadi`
 ---
 
 <SiteLayout
-  title="Books — Taha Mohammadi"
+  title={pageTitle}
   locale={locale}
   pathSegment="books"
-  alternateAvailable={false}
+  alternateAvailable={true}
 >
-  <main class="product-index" id="main-content">
-    <header class="product-index__lead">
-      <p>Research library</p><h1>Books</h1>
-    </header>
-    {
-      books.length ? (
-        <ul class="product-index__list">
-          {books.map((book) => (
-            <li>
-              <article>
-                <h2>{book.title}</h2>
-                <p>
-                  {[book.authors, book.publisher, book.publication_date]
-                    .filter(Boolean)
-                    .join(' · ')}
-                </p>
-              </article>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <ContentState
-          variant="empty"
-          locale={locale}
-          headingLevel="h2"
-          title="No books yet"
-          message="Published books will appear here when they are available."
-        />
-      )
-    }
-  </main>
+  <CollectionPage locale={locale} model={model} />
 </SiteLayout>
