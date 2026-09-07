@@ -18,6 +18,19 @@ Owner: PUBLIC (`Front-End/public-site`)
 - Linting:
   - `npm run lint` -> Clean 0 errors.
 
+## 2026-09-07 — Profile hero identity fallback removal (CM-02)
+
+- `PageFamilyProfileHeroShell` fell back to `shellCopy.brandName` and the
+  hardcoded `getGatewayRoleLine` when no CMS title existed, resurrecting
+  owner identity on every empty profile hero (about/cv/research).
+- Now: title falls back to the `getCmsPlaceholderCopy` line (same honest
+  pattern as `displaySummary`); role renders only from the new optional
+  `roleLine` prop (no caller passes it yet — hidden until a CMS source
+  is wired, follow-up). `shellCopy`/`getGatewayRoleLine` imports removed.
+- Regression: `product-about.test.ts` asserts unavailable renders in
+  en+fa contain no hardcoded name/role. `public-200` + `product-about`
+  6/6, lint/format clean, build 42 pages.
+
 ## Exact Paths Modified
 
 - `src/styles/pf07-alignment.css`

@@ -26,6 +26,19 @@ describe('PU-18 About Product Family (F13)', () => {
     expect(html).toContain('Awaiting approved CMS copy')
   })
 
+  it('does not resurrect hardcoded identity when profile is unavailable', async () => {
+    for (const locale of ['en', 'fa'] as const) {
+      const html = await render(AboutPageContent, {
+        locale,
+        model: { status: 'unavailable' },
+      })
+      expect(html).not.toContain('Taha Mohammadi')
+      expect(html).not.toContain('طاها محمدی')
+      expect(html).not.toContain('طه محمدی')
+      expect(html).not.toContain('Researcher · Engineer · Designer')
+    }
+  })
+
   it('renders complete about profile when ready in English', async () => {
     const html = await render(AboutPageContent, {
       locale: 'en',
