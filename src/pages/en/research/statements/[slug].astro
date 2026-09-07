@@ -1,0 +1,38 @@
+---
+import SiteLayout from '../../../../layouts/SiteLayout.astro'
+import ResearchStatementDetailContent from '../../../../components/research/ResearchStatementDetailContent.astro'
+import {
+  fetchResearchStatementDetail,
+  listResearchStatementSlugs,
+  resolveResearchStatementAlternateAvailability,
+} from '../../../../lib/research-content'
+import '../../../../styles/page-families.css'
+import '../../../../styles/pf05-alignment.css'
+import '../../../../styles/product-research.css'
+
+export async function getStaticPaths() {
+  const slugs = await listResearchStatementSlugs('en')
+  return slugs.map((slug) => ({ params: { slug } }))
+}
+
+const locale = 'en' as const
+const slug = Astro.params.slug ?? ''
+const model = await fetchResearchStatementDetail(locale, slug)
+
+if (model.status === 'unavailable') {
+  return new Response(null, { status: 404, statusText: 'Not Found' })
+}
+
+const alternateAvailable =
+  await resolveResearchStatementAlternateAvailability(locale, slug)
+const pageTitle = `${model.statement.title} — Taha Mohammadi`
+---
+
+<SiteLayout
+  title={pageTitle}
+  locale={locale}
+  pathSegment={`research/statements/${slug}`}
+  alternateAvailable={alternateAvailable}
+>
+  <ResearchStatementDetailContent locale={locale} model={model} />
+</SiteLayout>

@@ -1,0 +1,133 @@
+---
+import LongFormDetailTemplate from '../templates/LongFormDetailTemplate.astro'
+import SectionLead from '../ui/SectionLead.astro'
+import ContentState from '../state/ContentState.astro'
+import Link from '../ui/Link.astro'
+import StoryDocument from '../story/StoryDocument.astro'
+import { hasStoryContent } from '../../lib/story-content'
+import {
+  getBooksRouteTitle,
+  getBooksUnavailableCopy,
+  type BookDetailModel,
+} from '../../lib/books-content'
+import { localePath, type Locale } from '../../lib/navigation'
+
+interface Props {
+  locale: Locale
+  model: BookDetailModel
+}
+
+const { locale, model } = Astro.props
+const booksHref = localePath(locale, 'books')
+---
+
+{
+  model.status === 'unavailable' ? (
+    <div class="books-page books-page--unavailable">
+      <ContentState
+        variant="unavailable"
+        locale={locale}
+        headingLevel="h1"
+        title={getBooksUnavailableCopy(locale).title}
+        message={getBooksUnavailableCopy(locale).message}
+        actionLabel={locale === 'en' ? 'Back to books' : 'بازگشت به کتاب‌ها'}
+        actionHref={booksHref}
+      />
+    </div>
+  ) : (
+    <LongFormDetailTemplate class="books-page books-page--detail">
+      <SectionLead
+        slot="lead"
+        eyebrow={getBooksRouteTitle(locale)}
+        title={model.book.title}
+        summary={model.book.description}
+      />
+
+      <div slot="body" class="books-page__detail">
+        {model.book.cover?.url ? (
+          <figure class="books-page__cover">
+            <img
+              src={model.book.cover.url}
+              alt={model.book.cover.alt || model.book.title}
+              loading="lazy"
+              decoding="async"
+            />
+          </figure>
+        ) : null}
+
+        <dl class="books-page__meta">
+          {model.book.authors ? (
+            <>
+              <dt>{locale === 'en' ? 'Authors' : 'نویسندگان'}</dt>
+              <dd>{model.book.authors}</dd>
+            </>
+          ) : null}
+          {model.book.publisher ? (
+            <>
+              <dt>{locale === 'en' ? 'Publisher' : 'ناشر'}</dt>
+              <dd>{model.book.publisher}</dd>
+            </>
+          ) : null}
+          {model.book.publication_date ? (
+            <>
+              <dt>{locale === 'en' ? 'Published' : 'تاریخ نشر'}</dt>
+              <dd>{model.book.publication_date}</dd>
+            </>
+          ) : null}
+          {model.book.isbn ? (
+            <>
+              <dt>{locale === 'en' ? 'ISBN' : 'شابک'}</dt>
+              <dd>{model.book.isbn}</dd>
+            </>
+          ) : null}
+          {model.book.license ? (
+            <>
+              <dt>{locale === 'en' ? 'License' : 'مجوز'}</dt>
+              <dd>{model.book.license}</dd>
+            </>
+          ) : null}
+          {model.book.access_state ? (
+            <>
+              <dt>{locale === 'en' ? 'Access' : 'دسترسی'}</dt>
+              <dd>{model.book.access_state}</dd>
+            </>
+          ) : null}
+        </dl>
+
+        {'story' in model.book &&
+        model.book.story &&
+        hasStoryContent(model.book.story) ? (
+          <StoryDocument story={model.book.story} locale={locale} />
+        ) : model.book.description?.trim() ? (
+          <div class="books-page__prose">
+            <p>{model.book.description}</p>
+          </div>
+        ) : null}
+
+        {model.book.relatedRecords?.length ? (
+          <section class="books-page__section">
+            <h2 class="books-page__section-title">
+              {locale === 'en' ? 'Related Work' : 'آثار مرتبط'}
+            </h2>
+            <ul class="books-page__grid">
+              {model.book.relatedRecords.map((ref) => (
+                <li class="books-page__card">
+                  <strong>{ref.title}</strong>
+                  {ref.summary ? <p>{ref.summary}</p> : null}
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
+      </div>
+
+      <p slot="related" class="books-page__back">
+        <Link
+          href={booksHref}
+          label={locale === 'en' ? '← Back to books' : '← بازگشت به کتاب‌ها'}
+          variant="standalone"
+        />
+      </p>
+    </LongFormDetailTemplate>
+  )
+}

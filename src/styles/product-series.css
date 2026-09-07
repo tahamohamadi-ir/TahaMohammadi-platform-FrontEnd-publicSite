@@ -1,0 +1,123 @@
+/* ==========================================================================
+   Product Series Styling — PU-16-series / F12
+   Article series, multi-part essays & sequential curriculum reading
+   ========================================================================== */
+
+.series-page {
+  width: 100%;
+}
+
+.series-page--detail {
+  padding-bottom: 4rem;
+}
+
+.series-page__grid {
+  list-style: none;
+  padding: 0;
+  margin: 2rem 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+@media (min-width: 640px) {
+  .series-page__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .series-page__grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.series-page__card {
+  padding: 1.5rem;
+  background: var(--color-surface, #ffffff);
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+[data-theme='dark'] .series-page__card {
+  background: var(--color-surface, #1e293b);
+  border-color: var(--color-border, #334155);
+}
+
+.series-page__card:hover {
+  transform: translateY(-2px);
+  border-color: var(--color-accent, #2563eb);
+}
+
+.series-page__card-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.series-page__card-desc {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--color-text, #0f172a);
+  margin: 0;
+}
+
+.series-page__detail {
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.series-page__items-heading {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 1.25rem 0;
+}
+
+.series-page__items-list {
+  list-style: decimal;
+  padding-inline-start: 1.5rem;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.series-page__item-card {
+  padding: 1.25rem;
+  background: var(--color-surface, #ffffff);
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+[data-theme='dark'] .series-page__item-card {
+  background: var(--color-surface, #1e293b);
+  border-color: var(--color-border, #334155);
+}
+
+.series-page__item-number {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-accent, #2563eb);
+}
+
+.series-page__item-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.series-page__item-summary {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--color-text-muted, #64748b);
+  margin: 0;
+}

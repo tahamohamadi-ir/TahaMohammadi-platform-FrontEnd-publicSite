@@ -3,6 +3,8 @@ import LongFormDetailTemplate from '../templates/LongFormDetailTemplate.astro'
 import SectionLead from '../ui/SectionLead.astro'
 import ContentState from '../state/ContentState.astro'
 import Link from '../ui/Link.astro'
+import StoryDocument from '../story/StoryDocument.astro'
+import { hasStoryContent } from '../../lib/story-content'
 import {
   formatReadingTime,
   getWritingRouteTitle,
@@ -90,7 +92,11 @@ const writingHref = localePath(locale, 'blog')
           </ul>
         ) : null}
 
-        {model.article.body?.trim() ? (
+        {'story' in model.article &&
+        model.article.story &&
+        hasStoryContent(model.article.story) ? (
+          <StoryDocument story={model.article.story} locale={locale} />
+        ) : model.article.body?.trim() ? (
           <div
             class="writing-page__prose writing-page__body-html"
             set:html={model.article.body}

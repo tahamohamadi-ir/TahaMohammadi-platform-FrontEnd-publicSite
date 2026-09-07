@@ -1,0 +1,197 @@
+/* ==========================================================================
+   Product Creative / Gallery Styling — PU-15-creative / F08
+   Creative work cards, gallery lightbox/figure layout, creators & rights
+   ========================================================================== */
+
+.creative-page {
+  width: 100%;
+}
+
+.creative-page--detail {
+  padding-bottom: 4rem;
+}
+
+.creative-page__list {
+  list-style: none;
+  padding: 0;
+  margin: 2rem 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+@media (min-width: 640px) {
+  .creative-page__list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .creative-page__list {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.creative-page__card {
+  padding: 1.5rem;
+  background: var(--color-surface, #ffffff);
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+[data-theme='dark'] .creative-page__card {
+  background: var(--color-surface, #1e293b);
+  border-color: var(--color-border, #334155);
+}
+
+.creative-page__card:hover {
+  transform: translateY(-2px);
+  border-color: var(--color-accent, #2563eb);
+}
+
+.creative-page__card-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.creative-page__card-link {
+  color: var(--color-fg-strong, #0f172a);
+  text-decoration: none;
+}
+
+.creative-page__card-link:hover {
+  color: var(--color-accent, #2563eb);
+  text-decoration: underline;
+}
+
+[data-theme='dark'] .creative-page__card-link {
+  color: var(--color-fg-strong, #f8fafc);
+}
+
+.creative-page__card-summary {
+  font-size: 0.9375rem;
+  color: var(--color-fg-subtle, #64748b);
+  line-height: 1.6;
+  margin: 0;
+}
+
+[data-theme='dark'] .creative-page__card-summary {
+  color: var(--color-fg-subtle, #94a3b8);
+}
+
+.creative-page__detail {
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.creative-page__meta {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.5rem 1.5rem;
+  font-size: 0.9375rem;
+  padding: 1.25rem;
+  background: var(--color-surface-subtle, #f8fafc);
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 0.5rem;
+}
+
+[data-theme='dark'] .creative-page__meta {
+  background: var(--color-surface-subtle, #0f172a);
+  border-color: var(--color-border, #334155);
+}
+
+.creative-page__meta dt {
+  color: var(--color-fg-subtle, #64748b);
+  font-weight: 600;
+}
+
+[data-theme='dark'] .creative-page__meta dt {
+  color: var(--color-fg-subtle, #94a3b8);
+}
+
+.creative-page__meta dd {
+  color: var(--color-fg-strong, #0f172a);
+  margin: 0;
+}
+
+[data-theme='dark'] .creative-page__meta dd {
+  color: var(--color-fg-strong, #f8fafc);
+}
+
+.creative-page__section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.creative-page__section-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-fg-strong, #0f172a);
+  margin: 0;
+}
+
+[data-theme='dark'] .creative-page__section-title {
+  color: var(--color-fg-strong, #f8fafc);
+}
+
+.creative-page__prose {
+  font-size: 1.0625rem;
+  line-height: 1.8;
+  color: var(--color-fg, #334155);
+}
+
+[data-theme='dark'] .creative-page__prose {
+  color: var(--color-fg, #cbd5e1);
+}
+
+.creative-page__media-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .creative-page__media-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.creative-page__figure {
+  margin: 0;
+}
+
+.creative-page__figure img {
+  width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-border, #e2e8f0);
+}
+
+[data-theme='dark'] .creative-page__figure img {
+  border-color: var(--color-border, #334155);
+}
+
+.creative-page__figure figcaption {
+  font-size: 0.875rem;
+  color: var(--color-fg-subtle, #64748b);
+  margin-top: 0.5rem;
+}
+
+[data-theme='dark'] .creative-page__figure figcaption {
+  color: var(--color-fg-subtle, #94a3b8);
+}
+
+.creative-page__back {
+  margin-top: 2rem;
+}

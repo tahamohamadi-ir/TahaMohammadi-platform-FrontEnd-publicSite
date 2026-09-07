@@ -1,0 +1,133 @@
+---
+import LongFormDetailTemplate from '../templates/LongFormDetailTemplate.astro'
+import SectionLead from '../ui/SectionLead.astro'
+import ContentState from '../state/ContentState.astro'
+import Link from '../ui/Link.astro'
+import StoryDocument from '../story/StoryDocument.astro'
+import { hasStoryContent } from '../../lib/story-content'
+import {
+  formatFileSize,
+  getResourcesRouteTitle,
+  getResourcesUnavailableCopy,
+  type ResourceDetailModel,
+} from '../../lib/resources-content'
+import { localePath, type Locale } from '../../lib/navigation'
+
+interface Props {
+  locale: Locale
+  model: ResourceDetailModel
+}
+
+const { locale, model } = Astro.props
+const resourcesHref = localePath(locale, 'resources')
+---
+
+{
+  model.status === 'unavailable' ? (
+    <div class="resources-page resources-page--unavailable">
+      <ContentState
+        variant="unavailable"
+        locale={locale}
+        headingLevel="h1"
+        title={getResourcesUnavailableCopy(locale).title}
+        message={getResourcesUnavailableCopy(locale).message}
+        actionLabel={locale === 'en' ? 'Back to resources' : 'بازگشت به منابع'}
+        actionHref={resourcesHref}
+      />
+    </div>
+  ) : (
+    <LongFormDetailTemplate class="resources-page resources-page--detail">
+      <SectionLead
+        slot="lead"
+        eyebrow={getResourcesRouteTitle(locale)}
+        title={model.resource.title}
+        summary={model.resource.description}
+      />
+
+      <div slot="body" class="resources-page__detail">
+        <dl class="resources-page__meta">
+          {model.resource.download_type ? (
+            <>
+              <dt>{locale === 'en' ? 'Type' : 'نوع پرونده'}</dt>
+              <dd>{model.resource.download_type}</dd>
+            </>
+          ) : null}
+          {model.resource.language ? (
+            <>
+              <dt>{locale === 'en' ? 'Language' : 'زبان'}</dt>
+              <dd>{model.resource.language}</dd>
+            </>
+          ) : null}
+          {model.resource.mime ? (
+            <>
+              <dt>{locale === 'en' ? 'Format' : 'قالب'}</dt>
+              <dd>{model.resource.mime}</dd>
+            </>
+          ) : null}
+          {model.resource.size_bytes ? (
+            <>
+              <dt>{locale === 'en' ? 'Size' : 'حجم'}</dt>
+              <dd>{formatFileSize(model.resource.size_bytes)}</dd>
+            </>
+          ) : null}
+          {model.resource.license ? (
+            <>
+              <dt>{locale === 'en' ? 'License' : 'مجوز'}</dt>
+              <dd>{model.resource.license}</dd>
+            </>
+          ) : null}
+          {model.resource.access_state ? (
+            <>
+              <dt>{locale === 'en' ? 'Access' : 'دسترسی'}</dt>
+              <dd>{model.resource.access_state}</dd>
+            </>
+          ) : null}
+        </dl>
+
+        {model.resource.file?.url ? (
+          <div class="resources-page__action">
+            <Link
+              href={model.resource.file.url}
+              label={locale === 'en' ? 'Download Resource' : 'دانلود فایل منبع'}
+              variant="standalone"
+            />
+          </div>
+        ) : null}
+
+        {'story' in model.resource &&
+        model.resource.story &&
+        hasStoryContent(model.resource.story) ? (
+          <StoryDocument story={model.resource.story} locale={locale} />
+        ) : model.resource.description?.trim() ? (
+          <div class="resources-page__prose">
+            <p>{model.resource.description}</p>
+          </div>
+        ) : null}
+
+        {model.resource.relatedRecords?.length ? (
+          <section class="resources-page__section">
+            <h2 class="resources-page__section-title">
+              {locale === 'en' ? 'Related Work' : 'آثار مرتبط'}
+            </h2>
+            <ul class="resources-page__grid">
+              {model.resource.relatedRecords.map((ref) => (
+                <li class="resources-page__card">
+                  <strong>{ref.title}</strong>
+                  {ref.summary ? <p>{ref.summary}</p> : null}
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
+      </div>
+
+      <p slot="related" class="resources-page__back">
+        <Link
+          href={resourcesHref}
+          label={locale === 'en' ? '← Back to resources' : '← بازگشت به منابع'}
+          variant="standalone"
+        />
+      </p>
+    </LongFormDetailTemplate>
+  )
+}

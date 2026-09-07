@@ -11,6 +11,51 @@ import {
   HOME_PROJECT_ASSET_BY_SLUG,
   HOME_RAIL_ASSET_BY_PATH,
 } from './media/project-mappings'
+import type { components } from '../generated/public-api'
+import { parseJsonResponse } from './api/client'
+import { buildPublicApiUrl, canFetchPublicApi } from './api/resolve-url'
+import { fetchLocalizedSiteSettings } from './site-settings-content'
+
+export type ProfileOut = components['schemas']['ProfileOut']
+export type HomeCompositionOut = components['schemas']['HomeCompositionOut']
+export type LandingOut = components['schemas']['LandingOut']
+
+export async function fetchPrimaryProfile(locale: Locale): Promise<ProfileOut | null> {
+  if (!canFetchPublicApi()) return null
+  try {
+    const response = await fetch(buildPublicApiUrl(`/api/profiles/${locale}`), {
+      headers: { Accept: 'application/json' },
+    })
+    const profiles = await parseJsonResponse<ProfileOut[]>(response)
+    return Array.isArray(profiles) && profiles.length > 0 ? profiles[0] : null
+  } catch {
+    return null
+  }
+}
+
+export async function fetchHomeComposition(locale: Locale): Promise<HomeCompositionOut | null> {
+  if (!canFetchPublicApi()) return null
+  try {
+    const response = await fetch(buildPublicApiUrl(`/api/home-composition/${locale}`), {
+      headers: { Accept: 'application/json' },
+    })
+    return await parseJsonResponse<HomeCompositionOut>(response)
+  } catch {
+    return null
+  }
+}
+
+export async function fetchHomeLanding(locale: Locale): Promise<LandingOut | null> {
+  if (!canFetchPublicApi()) return null
+  try {
+    const response = await fetch(buildPublicApiUrl(`/api/landings/${locale}/home`), {
+      headers: { Accept: 'application/json' },
+    })
+    return await parseJsonResponse<LandingOut>(response)
+  } catch {
+    return null
+  }
+}
 
 /** profile.identity.{locale}.data.name */
 const displayName: Record<Locale, string> = {
@@ -185,6 +230,29 @@ export function getHomeHeroContent(locale: Locale): HomeHeroContent {
     focusChips: focusChipsFa,
     focusAreasLabel: focusAreasLabel.fa,
   }
+}
+
+export async function loadHomeHeroContent(locale: Locale): Promise<HomeHeroContent> {
+  const [siteSettings, profile] = await Promise.all([
+    fetchLocalizedSiteSettings(locale),
+    fetchPrimaryProfile(locale),
+  ])
+
+  if (siteSettings || profile) {
+    const rawName = siteSettings?.brandName || profile?.title || displayName[locale]
+    const [given, ...rest] = rawName.split(' ')
+    return {
+      name: rawName,
+      namePrimary: locale === 'en' ? given : rawName,
+      nameAccent: locale === 'en' && rest.length > 0 ? ` ${rest.join(' ')}` : '',
+      role: siteSettings?.tagline || professionalRole[locale],
+      intro: profile?.body || introCopy[locale],
+      focusChips: locale === 'en' ? focusChipsEn : focusChipsFa,
+      focusAreasLabel: siteSettings?.contentCopy?.['hero.focus_areas'] || focusAreasLabel[locale],
+    }
+  }
+
+  return getHomeHeroContent(locale)
 }
 
 export interface HomeResearchContent {

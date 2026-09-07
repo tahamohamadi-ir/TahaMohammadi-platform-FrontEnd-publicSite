@@ -1,0 +1,62 @@
+/* ==========================================================================
+   PF-01 & PF-02 Creative / Works Alignment — PU-15-creative / CA-15
+   Visual gallery grid, creative medium badges, detail exhibition shells
+   ========================================================================== */
+
+.pf01-pf02-alignment {
+  display: block;
+}
+
+.pf-creative-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  margin: 2.5rem 0;
+}
+
+@media (min-width: 640px) {
+  .pf-creative-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .pf-creative-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.pf-creative-grid__item {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-surface, #ffffff);
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 0.75rem;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+[data-theme='dark'] .pf-creative-grid__item {
+  background: var(--color-surface, #1e293b);
+  border-color: var(--color-border, #334155);
+}
+
+.pf-creative-grid__item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.pf-creative-badge {
+  display: inline-block;
+  padding: 0.25rem 0.625rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  border-radius: 9999px;
+  background: var(--color-surface-subtle, #f1f5f9);
+  color: var(--color-fg-subtle, #475569);
+}
+
+[data-theme='dark'] .pf-creative-badge {
+  background: var(--color-surface-subtle, #334155);
+  color: var(--color-fg-subtle, #cbd5e1);
+}

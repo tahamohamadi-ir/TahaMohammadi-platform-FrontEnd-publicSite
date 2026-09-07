@@ -7,29 +7,32 @@ Owner: PUBLIC (`Front-End/public-site`)
 
 - Implemented core story document content models and utilities in `src/lib/story-content.ts`:
   - Defined TypeScript interfaces `StoryBlock`, `StorySection`, `StoryDocument`, and `StoryTocItem`.
+  - Implemented `parseHeadingLevel(raw)` supporting numeric and string heading values (h1-h6).
   - Implemented `extractTableOfContents(story)` extracting structured TOC items from heading blocks with level support and deterministic ID fallbacks.
   - Implemented `hasStoryContent(story)` checking for non-empty renderable sections and blocks.
   - Implemented `formatFileSize(bytes)` supporting B, KB, and MB sizing representations.
 - Created unit tests in `src/lib/story-content.test.ts`:
-  - Verified content detection, structured multi-level TOC generation, edge cases (missing IDs, empty whitespace), and file size formatting.
-- Created `src/styles/story.css`:
+  - Verified heading level parsing, content detection, structured multi-level TOC generation, edge cases (missing IDs, empty whitespace), and file size formatting (5/5 passed).
+- Created and updated `src/styles/story.css`:
   - Semantic typography for story prose and layout grids (1col, 2col, auto-fit grid).
-  - Clean styling for all §I03 story blocks: headings with anchor links, text, syntax-styled code pre blocks, responsive table wrappers, math display regions, downloadable file cards, references citation lists, related record cards, quotes, media figures, and accessible accordions.
+  - Clean styling for all 21 §I03 story block types: headings with anchor links, text, syntax-styled code pre blocks, responsive table wrappers, math display regions, downloadable and unavailable file cards, references citation lists, related record cards, quotes, media figures, accessible accordions/tabs, CTA buttons, gallery grids, responsive video/audio players, timelines, metric counters, before/after comparisons, and snap-scroll sliders.
   - Full `@media print` support: forces all details/accordions open, avoids page breaks inside code/tables, renders link destinations, and ensures high contrast black-and-white printing.
-- Created `src/components/story/StoryBlock.astro`:
-  - Renders typed blocks with exact-locale labels (fa/en) for files, references, related items, code copy.
-  - Supports `heading` (h1-h6 with anchor links), `text` / `paragraph`, `code`, `table`, `math`, `file`, `references`, `related`, `quote`, `figure`/`image`, `accordion`/`tabs` (`<details>/<summary>` native no-JS structure), and `divider`.
+- Implemented `src/components/story/StoryBlock.astro`:
+  - Full support for all 21 block types with exact-locale labels (fa/en) and no-JS fallback.
+  - Uses `canonicalPath` for safe route generation of related records with fallback to static cards when unrouted.
+  - Employs dedicated disabled presentation for restricted or unavailable file attachments (no false download links).
 - Created `src/components/story/StoryDocument.astro`:
   - Main container component rendering TOC navigation and section layouts with full no-JS and RTL/LTR direction support.
 
 ## Verification Evidence
 
 - Unit test suite:
-  - `npm test -- src/lib/story-content.test.ts` -> 4/4 passed.
+  - `npm test -- src/lib/story-content.test.ts` -> 5/5 passed.
+  - `npm test -- --run` -> 64 test files / 377 tests passed.
 - Linting:
   - `npm run lint` -> Clean 0 errors.
 - Astro build:
-  - `npm run build` -> 33 pages built, Pagefind indexed en and fa pages, complete in 3.56s.
+  - `npm run build` -> 41 pages built, Pagefind indexed en and fa pages, complete in 5.81s.
 - Design authority:
   - `npm run validate:design` -> PASS (24 components, 6 templates, V2 overlay 2.1.0 validated).
 

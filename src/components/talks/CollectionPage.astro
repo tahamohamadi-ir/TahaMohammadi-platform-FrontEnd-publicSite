@@ -1,0 +1,66 @@
+---
+import SectionLead from '../ui/SectionLead.astro'
+import ContentState from '../state/ContentState.astro'
+import Link from '../ui/Link.astro'
+import {
+  getTalksRouteTitle,
+  getTalksUnavailableCopy,
+  type TalksIndexModel,
+} from '../../lib/talks-content'
+import { localePath, type Locale } from '../../lib/navigation'
+
+interface Props {
+  locale: Locale
+  model: TalksIndexModel
+}
+
+const { locale, model } = Astro.props
+const talksHref = localePath(locale, 'talks')
+---
+
+{
+  model.status === 'unavailable' ? (
+    <div class="talks-page talks-page--unavailable">
+      <ContentState
+        variant="unavailable"
+        locale={locale}
+        headingLevel="h1"
+        title={getTalksUnavailableCopy(locale).title}
+        message={getTalksUnavailableCopy(locale).message}
+        actionLabel={locale === 'en' ? 'Back to home' : 'بازگشت به خانه'}
+        actionHref={localePath(locale, 'home')}
+      />
+    </div>
+  ) : (
+    <div class="talks-page">
+      <SectionLead
+        eyebrow={getTalksRouteTitle(locale)}
+        title={getTalksRouteTitle(locale)}
+        summary={
+          locale === 'en'
+            ? 'Keynotes, invited lectures, conference sessions, and seminar presentations.'
+            : 'سخنرانی‌های کلیدی، ارائه‌های همایشی و سمینارهای علمی.'
+        }
+      />
+
+      <ul class="talks-page__grid">
+        {model.talks.map((talk) => (
+          <li class="talks-page__card">
+            <h2 class="talks-page__card-title">
+              <Link
+                href={`${talksHref.replace(/\/$/, '')}/${talk.slug}`}
+                label={talk.title}
+                variant="standalone"
+              />
+            </h2>
+            <p class="talks-page__card-meta">
+              {[talk.speakers, talk.event_name, talk.event_date]
+                .filter(Boolean)
+                .join(' · ')}
+            </p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}

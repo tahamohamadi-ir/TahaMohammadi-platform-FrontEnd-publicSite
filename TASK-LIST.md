@@ -1,3 +1,5 @@
+> Current content-completion execution: 2026-09-07. See the central reviews/IMPLEMENTATION-2026-09-07.md and execution-tasks.json; earlier narrative counts are historical.
+
 # Public Site Task List
 
 <!-- PRODUCT-V2.1 -->

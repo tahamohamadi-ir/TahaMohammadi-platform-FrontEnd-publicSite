@@ -1,24 +1,34 @@
 ---
-import type { StoryBlock } from '../../lib/story-content'
-import { formatFileSize } from '../../lib/story-content'
+import type { StoryBlock, StoryRelatedRecord } from '../../lib/story-content'
+import { formatFileSize, parseHeadingLevel } from '../../lib/story-content'
 
 interface Props {
   block: StoryBlock
   locale?: string
+  resolvedRecords?: ReadonlyMap<string, StoryRelatedRecord>
 }
 
-const { block, locale = 'en' } = Astro.props
+const { block, locale = 'en', resolvedRecords = new Map() } = Astro.props
 const { blockType, settings = {} } = block
 
 const isFa = locale === 'fa'
 const labels = {
   download: isFa ? 'دریافت فایل' : 'Download file',
+  unavailable: isFa ? 'فایل در دسترس نیست' : 'File unavailable',
   references: isFa ? 'منابع و مراجع' : 'References',
   related: isFa ? 'مطالب مرتبط' : 'Related Records',
   copyCode: isFa ? 'کپی کد' : 'Copy code',
+  videoNotSupported: isFa
+    ? 'مرورگر شما از پخش ویدیو پشتیبانی نمی‌کند.'
+    : 'Your browser does not support the video tag.',
+  audioNotSupported: isFa
+    ? 'مرورگر شما از پخش صوت پشتیبانی نمی‌کند.'
+    : 'Your browser does not support the audio element.',
+  before: isFa ? 'قبل' : 'Before',
+  after: isFa ? 'بعد' : 'After',
 }
 
-const headingLevel = Number(settings.level) || 2
+const headingLevel = parseHeadingLevel(settings.level)
 const headingId = typeof settings.id === 'string' ? settings.id : ''
 const headingText = typeof settings.text === 'string' ? settings.text : ''
 
@@ -55,6 +65,9 @@ interface MediaFileRef {
   size?: number
   width?: number
   height?: number
+  alt?: string
+  altFa?: string
+  altEn?: string
 }
 const fileData = (settings.file ||
   settings.download ||
@@ -75,28 +88,38 @@ const refItems: ReferenceItem[] = Array.isArray(settings.items)
   ? (settings.items as ReferenceItem[])
   : []
 
-interface RelatedRecordItem {
-  family?: string
-  id?: string
-  title?: string
-  slug?: string
-  summary?: string
-  routeFamily?: string
-}
-const relatedRecords: RelatedRecordItem[] = Array.isArray(settings.records)
-  ? (settings.records as RelatedRecordItem[])
+const relatedRecords: StoryRelatedRecord[] = Array.isArray(settings.records)
+  ? settings.records.flatMap((ref) => {
+      const record = ref && resolvedRecords.get(`${ref.family}:${ref.id}`)
+      return record ? [record] : []
+    })
   : []
 
-const quoteText = typeof settings.text === 'string' ? settings.text : ''
-const quoteAuthor = typeof settings.author === 'string' ? settings.author : ''
+const quoteText =
+  typeof settings.body === 'string'
+    ? settings.body
+    : typeof settings.text === 'string'
+      ? settings.text
+      : typeof settings.quote === 'string'
+        ? settings.quote
+        : ''
+const quoteAuthor =
+  typeof settings.author === 'string'
+    ? settings.author
+    : typeof settings.source === 'string'
+      ? settings.source
+      : ''
 const quoteCitation =
   typeof settings.citation === 'string' ? settings.citation : ''
 
 const figureMedia = (settings.media || null) as MediaFileRef | null
+const mediaAlt = (media: MediaFileRef | null | undefined) =>
+  (isFa ? media?.altFa : media?.altEn) || media?.alt || ''
 const figureCaption =
   typeof settings.caption === 'string' ? settings.caption : ''
 const figureAlt =
   (typeof settings.alt === 'string' ? settings.alt : null) ||
+  mediaAlt(figureMedia) ||
   figureCaption ||
   ''
 
@@ -107,6 +130,60 @@ interface AccordionItem {
 const accordionItems: AccordionItem[] = Array.isArray(settings.items)
   ? (settings.items as AccordionItem[])
   : []
+
+const ctaUrl = typeof settings.url === 'string' ? settings.url : '#'
+const ctaLabel =
+  typeof settings.label === 'string'
+    ? settings.label
+    : typeof settings.text === 'string'
+      ? settings.text
+      : 'Learn more'
+const ctaStyle = settings.style === 'secondary' ? 'secondary' : 'primary'
+const ctaExternal = Boolean(settings.external)
+
+const galleryCaption =
+  typeof settings.caption === 'string' ? settings.caption : ''
+const galleryItems = Array.isArray(settings.media)
+  ? (settings.media as Array<MediaFileRef & { caption?: string }>).map((item) => ({
+      url: typeof item.url === 'string' ? item.url : '',
+      alt: mediaAlt(item) || item.caption || '',
+      caption: typeof item.caption === 'string' ? item.caption : '',
+      width: typeof item.width === 'number' ? item.width : undefined,
+      height: typeof item.height === 'number' ? item.height : undefined,
+    }))
+  : []
+
+const mediaUrl = figureMedia?.url || ''
+const mediaCaption =
+  typeof settings.caption === 'string' ? settings.caption : ''
+const videoPoster =
+  typeof settings.poster === 'string' ? settings.poster : undefined
+
+const timelineItems = Array.isArray(settings.items)
+  ? (settings.items as Array<Record<string, unknown>>).map((item) => ({
+      date: item.date ? String(item.date) : '',
+      title: item.title ? String(item.title) : '',
+      body: item.body ? String(item.body) : '',
+    }))
+  : []
+
+const counterItems = Array.isArray(settings.items)
+  ? (settings.items as Array<Record<string, unknown>>).map((item) => ({
+      value: item.value !== undefined ? String(item.value) : '',
+      label: item.label ? String(item.label) : '',
+    }))
+  : []
+
+const beforeMedia = settings.beforeMedia as MediaFileRef | undefined
+const afterMedia = settings.afterMedia as MediaFileRef | undefined
+const beforeUrl = beforeMedia?.url || ''
+const beforeLabel =
+  typeof settings.beforeLabel === 'string'
+    ? settings.beforeLabel
+    : labels.before
+const afterUrl = afterMedia?.url || ''
+const afterLabel =
+  typeof settings.afterLabel === 'string' ? settings.afterLabel : labels.after
 ---
 
 {
@@ -277,17 +354,33 @@ const accordionItems: AccordionItem[] = Array.isArray(settings.items)
 {
   blockType === 'file' && (
     <div class="story-block story-block--file">
-      <a href={fileUrl || '#'} class="story-file" download={Boolean(fileUrl)}>
-        <div class="story-file__info">
-          <span class="story-file__title">{fileTitle}</span>
-          {(fileSize || fileMime) && (
-            <span class="story-file__meta">
-              {[fileMime, fileSize].filter(Boolean).join(' • ')}
-            </span>
-          )}
+      {fileUrl ? (
+        <a href={fileUrl} class="story-file" download={Boolean(fileUrl)}>
+          <div class="story-file__info">
+            <span class="story-file__title">{fileTitle}</span>
+            {(fileSize || fileMime) && (
+              <span class="story-file__meta">
+                {[fileMime, fileSize].filter(Boolean).join(' • ')}
+              </span>
+            )}
+          </div>
+          <span class="story-file__action">{labels.download}</span>
+        </a>
+      ) : (
+        <div class="story-file story-file--unavailable">
+          <div class="story-file__info">
+            <span class="story-file__title">{fileTitle}</span>
+            {(fileSize || fileMime) && (
+              <span class="story-file__meta">
+                {[fileMime, fileSize].filter(Boolean).join(' • ')}
+              </span>
+            )}
+          </div>
+          <span class="story-file__action story-file__action--disabled">
+            {labels.unavailable}
+          </span>
         </div>
-        <span class="story-file__action">{labels.download}</span>
-      </a>
+      )}
     </div>
   )
 }
@@ -324,17 +417,21 @@ const accordionItems: AccordionItem[] = Array.isArray(settings.items)
       <h3 class="story-related__title">{labels.related}</h3>
       <ul class="story-related__list">
         {relatedRecords.map((record) => {
-          const family = record.family || 'record'
-          const title = record.title || `${family} #${record.id}`
-          const href = record.slug
-            ? `/${locale}/${record.routeFamily || family}/${record.slug}`
-            : '#'
+          const { family, title, href } = record
+
           return (
             <li class="story-related__item">
-              <a href={href} class="story-related__card">
-                <span class="story-related__family">{family}</span>
-                <span class="story-related__record-title">{title}</span>
-              </a>
+              {href ? (
+                <a href={href} class="story-related__card">
+                  <span class="story-related__family">{family}</span>
+                  <span class="story-related__record-title">{title}</span>
+                </a>
+              ) : (
+                <div class="story-related__card story-related__card--static">
+                  <span class="story-related__family">{family}</span>
+                  <span class="story-related__record-title">{title}</span>
+                </div>
+              )}
             </li>
           )
         })}
@@ -390,3 +487,151 @@ const accordionItems: AccordionItem[] = Array.isArray(settings.items)
 }
 
 {blockType === 'divider' && <hr class="story-divider" />}
+
+{
+  blockType === 'cta' && (
+    <div class="story-block story-block--cta">
+      <a
+        href={ctaUrl}
+        class={`story-cta story-cta--${ctaStyle}`}
+        target={ctaExternal ? '_blank' : undefined}
+        rel={ctaExternal ? 'noopener noreferrer' : undefined}
+      >
+        {ctaLabel}
+      </a>
+    </div>
+  )
+}
+
+{
+  blockType === 'gallery' && galleryItems.length > 0 && (
+    <div class="story-block story-block--gallery story-gallery">
+      {galleryCaption && <h4 class="story-gallery__caption">{galleryCaption}</h4>}
+      <div class="story-gallery__grid">
+        {galleryItems.map((item) => (
+          <figure class="story-gallery__item">
+            {item.url && (
+              <img
+                src={item.url}
+                alt={item.alt}
+                loading="lazy"
+                width={item.width}
+                height={item.height}
+              />
+            )}
+            {item.caption && <figcaption>{item.caption}</figcaption>}
+          </figure>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+{
+  blockType === 'video' && (
+    <div class="story-block story-block--video story-media">
+      {mediaUrl && (
+        <video
+          src={mediaUrl}
+          controls
+          poster={videoPoster}
+          class="story-video"
+          preload="metadata"
+        >
+          {labels.videoNotSupported}
+        </video>
+      )}
+      {mediaCaption && <div class="story-media__caption">{mediaCaption}</div>}
+    </div>
+  )
+}
+
+{
+  blockType === 'audio' && (
+    <div class="story-block story-block--audio story-media">
+      {mediaUrl && (
+        <audio src={mediaUrl} controls class="story-audio" preload="metadata">
+          {labels.audioNotSupported}
+        </audio>
+      )}
+      {mediaCaption && <div class="story-media__caption">{mediaCaption}</div>}
+    </div>
+  )
+}
+
+{
+  blockType === 'timeline' && timelineItems.length > 0 && (
+    <div class="story-block story-block--timeline story-timeline">
+      <ul class="story-timeline__list">
+        {timelineItems.map((item) => (
+          <li class="story-timeline__item">
+            <div class="story-timeline__marker">
+              {item.date && <span class="story-timeline__date">{item.date}</span>}
+            </div>
+            <div class="story-timeline__content">
+              {item.title && <h4 class="story-timeline__title">{item.title}</h4>}
+              {item.body && (
+                <div class="story-timeline__body" set:html={item.body} />
+              )}
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+
+{
+  blockType === 'counters' && counterItems.length > 0 && (
+    <div class="story-block story-block--counters story-counters">
+      <div class="story-counters__grid">
+        {counterItems.map((item) => (
+          <div class="story-counter__item">
+            <span class="story-counter__value">{item.value}</span>
+            {item.label && (
+              <span class="story-counter__label">{item.label}</span>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+{
+  blockType === 'before_after' && (
+    <div class="story-block story-block--before-after story-before-after">
+      <div class="story-before-after__frame">
+        {beforeUrl && (
+          <figure class="story-before-after__side">
+            <img src={beforeUrl} alt={mediaAlt(beforeMedia) || beforeLabel} loading="lazy" />
+            <figcaption>{beforeLabel}</figcaption>
+          </figure>
+        )}
+        {afterUrl && (
+          <figure class="story-before-after__side">
+            <img src={afterUrl} alt={mediaAlt(afterMedia) || afterLabel} loading="lazy" />
+            <figcaption>{afterLabel}</figcaption>
+          </figure>
+        )}
+      </div>
+    </div>
+  )
+}
+
+{
+  blockType === 'slider' && galleryItems.length > 0 && (
+    <div class="story-block story-block--slider story-slider">
+      <div class="story-slider__track">
+        {galleryItems.map((item) => (
+          <figure class="story-slider__item">
+            {item.url && (
+              <img src={item.url} alt={item.alt} loading="lazy" />
+            )}
+            {item.caption && <figcaption>{item.caption}</figcaption>}
+          </figure>
+        ))}
+      </div>
+    </div>
+  )
+}

@@ -1,0 +1,71 @@
+---
+import SectionLead from '../ui/SectionLead.astro'
+import ContentState from '../state/ContentState.astro'
+import Link from '../ui/Link.astro'
+import {
+  getCollectionsRouteTitle,
+  getCollectionsUnavailableCopy,
+  type CollectionsIndexModel,
+} from '../../lib/collections-content'
+import { localePath, type Locale } from '../../lib/navigation'
+
+interface Props {
+  locale: Locale
+  model: CollectionsIndexModel
+}
+
+const { locale, model } = Astro.props
+const collectionsHref = localePath(locale, 'collections')
+---
+
+{
+  model.status === 'unavailable' ? (
+    <div class="collections-page collections-page--unavailable">
+      <ContentState
+        variant="unavailable"
+        locale={locale}
+        headingLevel="h1"
+        title={getCollectionsUnavailableCopy(locale).title}
+        message={getCollectionsUnavailableCopy(locale).message}
+        actionLabel={locale === 'en' ? 'Back to home' : 'بازگشت به خانه'}
+        actionHref={localePath(locale, 'home')}
+      />
+    </div>
+  ) : (
+    <div class="collections-page">
+      <SectionLead
+        eyebrow={getCollectionsRouteTitle(locale)}
+        title={getCollectionsRouteTitle(locale)}
+        summary={
+          locale === 'en'
+            ? 'Curated dossiers, thematic selections, and synthesized research packages.'
+            : 'پرونده‌های پژوهشی گردآوری‌شده، گزیده‌های موضوعی و بسته‌های پژوهشی.'
+        }
+      />
+
+      <ul class="collections-page__grid">
+        {model.collections.map((col) => (
+          <li class="collections-page__card">
+            <h2 class="collections-page__card-title">
+              <Link
+                href={`${collectionsHref.replace(/\/$/, '')}/${col.slug}`}
+                label={col.title}
+                variant="standalone"
+              />
+            </h2>
+            {col.curatorName ? (
+              <p class="collections-page__card-meta">
+                {[col.curatorName, col.curatorTitle, col.curatedDate]
+                  .filter(Boolean)
+                  .join(' · ')}
+              </p>
+            ) : null}
+            {col.description ? (
+              <p class="collections-page__card-desc">{col.description}</p>
+            ) : null}
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
