@@ -70,15 +70,27 @@ const alternateHref = buildLanguageToggleHref(
   <script is:inline define:vars={{ pagePath: currentPath, locale }}>
     if (typeof window !== 'undefined' && typeof navigator !== 'undefined') {
       try {
-        const clean = (pagePath.split('#')[0].split('?')[0] || '/').trim();
-        const formatted = clean.startsWith('/') ? clean : '/' + clean;
-        const body = JSON.stringify({ event: 'page_view', pagePath: formatted, locale: locale });
+        const clean = (pagePath.split('#')[0].split('?')[0] || '/').trim()
+        const formatted = clean.startsWith('/') ? clean : '/' + clean
+        const body = JSON.stringify({
+          event: 'page_view',
+          pagePath: formatted,
+          locale: locale,
+        })
         if (typeof navigator.sendBeacon === 'function') {
-          navigator.sendBeacon('/api/v1/analytics/events', new Blob([body], { type: 'application/json' }));
+          navigator.sendBeacon(
+            '/api/v1/analytics/events',
+            new Blob([body], { type: 'application/json' }),
+          )
         } else if (typeof fetch === 'function') {
-          fetch('/api/v1/analytics/events', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: body, keepalive: true }).catch(() => {
+          fetch('/api/v1/analytics/events', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: body,
+            keepalive: true,
+          }).catch(() => {
             // Silently swallow network/offline telemetry errors
-          });
+          })
         }
       } catch {
         // Silently swallow client errors

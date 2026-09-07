@@ -2,10 +2,7 @@ import { experimental_AstroContainer as AstroContainer } from 'astro/container'
 import { describe, expect, it } from 'vitest'
 import CollectionPage from '../components/series/CollectionPage.astro'
 import DetailPage from '../components/series/DetailPage.astro'
-import {
-  getSeriesRouteTitle,
-  getSeriesUnavailableCopy,
-} from './series-content'
+import { getSeriesRouteTitle, getSeriesUnavailableCopy } from './series-content'
 
 type Component = Parameters<
   Awaited<ReturnType<typeof AstroContainer.create>>['renderToString']
@@ -41,7 +38,8 @@ describe('PU-16 Series Product Family (F12)', () => {
             locale: 'en',
             slug: 'nlp-to-sql-systems',
             title: 'Designing Reliable NLP-to-SQL Systems',
-            description: 'A multi-part guide on edge architectures for natural language database interfaces.',
+            description:
+              'A multi-part guide on edge architectures for natural language database interfaces.',
           },
         ],
       },
@@ -104,7 +102,8 @@ describe('PU-16 Series Product Family (F12)', () => {
               contentType: 'article',
               slug: 'schema-linking-under-resource-constraints',
               title: 'Schema Linking Under Resource Constraints',
-              summary: 'Pruning large database schemas on constrained hardware.',
+              summary:
+                'Pruning large database schemas on constrained hardware.',
             },
           ],
         },

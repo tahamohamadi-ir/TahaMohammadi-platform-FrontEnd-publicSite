@@ -38,7 +38,8 @@ const brandNameDisplay =
       ? shellCopy.brandName.en.toUpperCase()
       : shellCopy.brandName.fa
 
-const roleLine = siteSettings !== null ? siteSettings.tagline : GATEWAY_ROLE_LINE
+const roleLine =
+  siteSettings !== null ? siteSettings.tagline : GATEWAY_ROLE_LINE
 
 const navItems =
   siteSettings !== null
@@ -62,7 +63,8 @@ const mainMenuLabel =
 const menuToggleLabel =
   siteSettings?.contentCopy?.['menu.toggle'] ?? shellCopy.menuToggle[locale]
 const searchLabel =
-  siteSettings?.contentCopy?.['nav.search'] ?? (locale === 'en' ? 'Search' : 'جستجو')
+  siteSettings?.contentCopy?.['nav.search'] ??
+  (locale === 'en' ? 'Search' : 'جستجو')
 ---
 
 <header class="site-header" data-visual-id="Header">
@@ -123,9 +125,7 @@ const searchLabel =
       />
       <ThemeToggle locale={locale} />
       <details class="site-header__drawer">
-        <summary class="site-header__menu-trigger"
-          >{menuToggleLabel}</summary
-        >
+        <summary class="site-header__menu-trigger">{menuToggleLabel}</summary>
         <nav
           class="site-header__nav site-header__nav--mobile"
           aria-label={mainMenuLabel}

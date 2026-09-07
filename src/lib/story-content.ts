@@ -10,16 +10,26 @@ import { fetchRecordResolutions, workRefToHref } from './hero-graph-content'
 export type StoryBlock = components['schemas']['StoryBlockOut']
 export type StorySection = components['schemas']['StorySectionOut']
 export type StoryDocument = components['schemas']['StoryDocumentOut']
-export type StoryRelatedRecord = components['schemas']['WorkRefOut'] & { href: string }
+export type StoryRelatedRecord = components['schemas']['WorkRefOut'] & {
+  href: string
+}
 
 /** Resolve one document's references in batches, preserving per-block order. */
-export async function resolveStoryReferences(story: StoryDocument, locale: Locale): Promise<Map<string, StoryRelatedRecord>> {
+export async function resolveStoryReferences(
+  story: StoryDocument,
+  locale: Locale,
+): Promise<Map<string, StoryRelatedRecord>> {
   const refs = new Map<string, { family: string; id: string }>()
   for (const section of story.sections ?? []) {
     for (const block of section.blocks ?? []) {
-      if (block.blockType !== 'related' || !Array.isArray(block.settings?.records)) continue
+      if (
+        block.blockType !== 'related' ||
+        !Array.isArray(block.settings?.records)
+      )
+        continue
       for (const ref of block.settings.records) {
-        if (ref && typeof ref.family === 'string' && typeof ref.id === 'string') refs.set(`${ref.family}:${ref.id}`, ref)
+        if (ref && typeof ref.family === 'string' && typeof ref.id === 'string')
+          refs.set(`${ref.family}:${ref.id}`, ref)
       }
     }
   }
@@ -27,7 +37,13 @@ export async function resolveStoryReferences(story: StoryDocument, locale: Local
   const records = new Map<string, StoryRelatedRecord>()
   for (const [key, record] of resolved) {
     const href = workRefToHref(record, locale)
-    if (refs.has(key) && href && typeof record.title === 'string' && record.title.trim()) records.set(key, { ...record, href })
+    if (
+      refs.has(key) &&
+      href &&
+      typeof record.title === 'string' &&
+      record.title.trim()
+    )
+      records.set(key, { ...record, href })
   }
   return records
 }

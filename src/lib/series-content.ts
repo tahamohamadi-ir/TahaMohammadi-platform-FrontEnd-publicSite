@@ -36,12 +36,10 @@ export interface SeriesDetailOut extends SeriesListOut {
 }
 
 export type SeriesIndexModel =
-  | { status: 'unavailable' }
-  | { status: 'ready'; series: SeriesListOut[] }
+  { status: 'unavailable' } | { status: 'ready'; series: SeriesListOut[] }
 
 export type SeriesDetailModel =
-  | { status: 'unavailable' }
-  | { status: 'ready'; series: SeriesDetailOut }
+  { status: 'unavailable' } | { status: 'ready'; series: SeriesDetailOut }
 
 export function getSeriesRouteTitle(locale: Locale): string {
   return locale === 'en' ? 'Article Series' : 'مجموعه مقالات'

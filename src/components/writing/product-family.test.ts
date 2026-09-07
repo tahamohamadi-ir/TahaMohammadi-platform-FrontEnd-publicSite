@@ -25,7 +25,8 @@ describe('PU-15 Articles Product Family', () => {
           locale: 'en',
           slug: 'engineering-reliable-distributed-systems',
           title: 'Engineering Reliable Distributed Systems',
-          excerpt: 'Patterns and trade-offs in distributed consensus and replication.',
+          excerpt:
+            'Patterns and trade-offs in distributed consensus and replication.',
           reading_time_minutes: 8,
           license: 'CC-BY-4.0',
           published_at: '2026-02-01T00:00:00Z',
@@ -91,7 +92,9 @@ describe('PU-15 Articles Product Family', () => {
     })
 
     expect(html).toContain('Memory Models in Practice')
-    expect(html).toContain('Modern CPU architectures require explicit memory ordering fences.')
+    expect(html).toContain(
+      'Modern CPU architectures require explicit memory ordering fences.',
+    )
   })
 
   it('renders writing page ready view with article list', async () => {
@@ -104,7 +107,8 @@ describe('PU-15 Articles Product Family', () => {
             locale: 'en',
             slug: 'engineering-reliable-distributed-systems',
             title: 'Engineering Reliable Distributed Systems',
-            excerpt: 'Patterns and trade-offs in distributed consensus and replication.',
+            excerpt:
+              'Patterns and trade-offs in distributed consensus and replication.',
             reading_time_minutes: 8,
             published_at: '2026-02-01T00:00:00Z',
             topic_tags: [],
@@ -115,7 +119,9 @@ describe('PU-15 Articles Product Family', () => {
     })
 
     expect(html).toContain('Engineering Reliable Distributed Systems')
-    expect(html).toContain('/en/writing/engineering-reliable-distributed-systems')
+    expect(html).toContain(
+      '/en/writing/engineering-reliable-distributed-systems',
+    )
   })
 
   it('renders Persian article detail with proper RTL labels', async () => {

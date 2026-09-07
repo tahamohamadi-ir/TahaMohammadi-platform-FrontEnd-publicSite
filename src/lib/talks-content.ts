@@ -36,12 +36,10 @@ export interface TalkDetailOut extends TalkListOut {
 }
 
 export type TalksIndexModel =
-  | { status: 'unavailable' }
-  | { status: 'ready'; talks: TalkListOut[] }
+  { status: 'unavailable' } | { status: 'ready'; talks: TalkListOut[] }
 
 export type TalkDetailModel =
-  | { status: 'unavailable' }
-  | { status: 'ready'; talk: TalkDetailOut }
+  { status: 'unavailable' } | { status: 'ready'; talk: TalkDetailOut }
 
 export function getTalksRouteTitle(locale: Locale): string {
   return locale === 'en' ? 'Talks & Presentations' : 'سخنرانی‌ها و ارائه‌ها'
@@ -99,7 +97,9 @@ export async function listTalks(locale: Locale): Promise<TalkListOut[]> {
   }
 }
 
-export async function fetchTalksIndex(locale: Locale): Promise<TalksIndexModel> {
+export async function fetchTalksIndex(
+  locale: Locale,
+): Promise<TalksIndexModel> {
   if (!canFetchPublicApi()) {
     return { status: 'unavailable' }
   }

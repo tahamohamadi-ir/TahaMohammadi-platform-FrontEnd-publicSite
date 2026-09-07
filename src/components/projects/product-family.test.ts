@@ -25,7 +25,8 @@ describe('PU-14 Projects Product Family', () => {
           locale: 'en',
           slug: 'autonomous-robotics-platform',
           title: 'Autonomous Robotics Platform',
-          objective: 'End-to-end robotics control and verification architecture.',
+          objective:
+            'End-to-end robotics control and verification architecture.',
           project_type: 'Robotics',
           role: 'Principal Architect',
           start_date: '2025-01-01',
@@ -34,7 +35,8 @@ describe('PU-14 Projects Product Family', () => {
           code_availability: 'open',
           data_availability: 'open',
           demo_availability: 'live',
-          methods_summary: 'Distributed ROS2 nodes with hardware-in-the-loop simulation.',
+          methods_summary:
+            'Distributed ROS2 nodes with hardware-in-the-loop simulation.',
           code_url: 'https://github.com/example/robotics',
           data_url: 'https://data.example.com/robotics',
           demo_url: 'https://demo.example.com/robotics',
@@ -93,7 +95,8 @@ describe('PU-14 Projects Product Family', () => {
           code_availability: 'open',
           data_availability: 'none',
           demo_availability: 'none',
-          methods_summary: 'Integer quantization using symmetric channel-wise scale factors.',
+          methods_summary:
+            'Integer quantization using symmetric channel-wise scale factors.',
           code_url: 'https://github.com/example/edge-opt',
           data_url: null,
           demo_url: null,
@@ -102,19 +105,25 @@ describe('PU-14 Projects Product Family', () => {
           case_study: {
             problem: 'Latency was exceeding the 20ms real-time constraint.',
             constraints: 'Thermal throttling on fanless SBC hardware.',
-            technical_decisions: 'Adopted 8-bit integer tensor representations.',
+            technical_decisions:
+              'Adopted 8-bit integer tensor representations.',
             trade_offs: '0.2% drop in accuracy for a 3.4x speedup.',
             outcomes_summary: 'Sub-15ms latency achieved reliably.',
-            lessons_learned: 'Memory bandwidth dominates computation cost on edge NPUs.',
+            lessons_learned:
+              'Memory bandwidth dominates computation cost on edge NPUs.',
           },
         },
       },
     })
 
     expect(html).toContain('Edge Inference Optimizer')
-    expect(html).toContain('Integer quantization using symmetric channel-wise scale factors.')
+    expect(html).toContain(
+      'Integer quantization using symmetric channel-wise scale factors.',
+    )
     expect(html).toContain('Case study')
-    expect(html).toContain('Latency was exceeding the 20ms real-time constraint.')
+    expect(html).toContain(
+      'Latency was exceeding the 20ms real-time constraint.',
+    )
     expect(html).toContain('Sub-15ms latency achieved reliably.')
   })
 
@@ -128,7 +137,8 @@ describe('PU-14 Projects Product Family', () => {
             locale: 'en',
             slug: 'autonomous-robotics-platform',
             title: 'Autonomous Robotics Platform',
-            objective: 'End-to-end robotics control and verification architecture.',
+            objective:
+              'End-to-end robotics control and verification architecture.',
             project_type: 'Robotics',
             published_at: '2025-12-31T00:00:00Z',
             code_availability: 'open',

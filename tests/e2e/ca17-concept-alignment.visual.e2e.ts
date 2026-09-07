@@ -25,7 +25,13 @@ test.describe('CA-17 Concept Alignment Visual Acceptance Matrix: All 15 Families
 
 test.describe('CA-17 Concept Alignment: Responsive Breakpoints Matrix', () => {
   const sampleFamilies = CONCEPT_ALIGNMENT_CAPTURES.filter((c) =>
-    ['f01-gateway', 'f02-home-fa', 'f02-home-en', 'f03-research-fa', 'f13-about-fa'].includes(c.id),
+    [
+      'f01-gateway',
+      'f02-home-fa',
+      'f02-home-en',
+      'f03-research-fa',
+      'f13-about-fa',
+    ].includes(c.id),
   )
 
   for (const capture of sampleFamilies) {
@@ -41,8 +47,12 @@ test.describe('CA-17 Concept Alignment: Responsive Breakpoints Matrix', () => {
         await expect(body).toBeVisible()
 
         // Verify content does not horizontally cause unexpected overflow beyond viewport
-        const scrollWidth = await page.evaluate(() => document.documentElement.scrollWidth)
-        const clientWidth = await page.evaluate(() => document.documentElement.clientWidth)
+        const scrollWidth = await page.evaluate(
+          () => document.documentElement.scrollWidth,
+        )
+        const clientWidth = await page.evaluate(
+          () => document.documentElement.clientWidth,
+        )
         expect(scrollWidth).toBeLessThanOrEqual(clientWidth + 2)
       })
     }
@@ -96,8 +106,8 @@ test.describe('CA-17 Concept Alignment: 200% Zoom and Keyboard Accessibility', (
     await page.goto('/fa/')
 
     await page.keyboard.press('Tab')
-    const activeElTag = await page.evaluate(
-      () => document.activeElement?.tagName.toLowerCase(),
+    const activeElTag = await page.evaluate(() =>
+      document.activeElement?.tagName.toLowerCase(),
     )
     expect(['a', 'button', 'input']).toContain(activeElTag)
   })

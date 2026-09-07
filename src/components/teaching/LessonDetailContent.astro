@@ -89,11 +89,15 @@ const positionLabel =
               {model.lesson.resources.map((resource) => (
                 <li class="teaching-page__card">
                   <strong class="teaching-page__card-title">
-                    {workRefToHref(resource, locale) ? <Link
-                      href={workRefToHref(resource, locale)!}
-                      label={resource.title}
-                      variant="standalone"
-                    /> : resource.title}
+                    {workRefToHref(resource, locale) ? (
+                      <Link
+                        href={workRefToHref(resource, locale)!}
+                        label={resource.title}
+                        variant="standalone"
+                      />
+                    ) : (
+                      resource.title
+                    )}
                   </strong>
                   {resource.summary ? (
                     <p class="teaching-page__card-summary">
@@ -108,11 +112,10 @@ const positionLabel =
 
         <nav
           class="teaching-page__pagination"
-          aria-label={
-            locale === 'en' ? 'Lesson navigation' : 'ناوبری درس‌ها'
-          }
+          aria-label={locale === 'en' ? 'Lesson navigation' : 'ناوبری درس‌ها'}
         >
-          {model.lesson.previous && workRefToHref(model.lesson.previous, locale) ? (
+          {model.lesson.previous &&
+          workRefToHref(model.lesson.previous, locale) ? (
             <div class="teaching-page__nav-prev">
               <span class="teaching-page__nav-label">
                 {locale === 'en' ? 'Previous Lesson' : 'درس قبلی'}
@@ -143,11 +146,7 @@ const positionLabel =
       <p slot="related" class="teaching-page__back">
         <Link
           href={courseHref}
-          label={
-            locale === 'en'
-              ? '← Back to course'
-              : '← بازگشت به صفحه دوره'
-          }
+          label={locale === 'en' ? '← Back to course' : '← بازگشت به صفحه دوره'}
           variant="standalone"
         />
       </p>

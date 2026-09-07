@@ -35,40 +35,60 @@ describe('PU-17-home: Product Home Integration Tests (§I04)', () => {
   })
 
   it('integrates live CMS settings and profile in loadHomeHeroContent', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockImplementation((url: string) => {
-      if (url.includes('/api/v1/site/en')) {
-        return Promise.resolve(new Response(JSON.stringify({
-          locale: 'en',
-          revision: 'rev-test-1',
-          brandName: 'Dr. Taha Mohammadi',
-          tagline: 'Principal AI Researcher & Systems Architect',
-          footerText: 'Footer note',
-          seo: { title: 'Taha', description: 'Desc' },
-          navLinks: [],
-          audienceLinks: [],
-          scene: { graphPreset: 'atlas-v2', portalPreset: 'arch-v2', motion: 'full', density: 'standard' },
-          contentCopy: { 'hero.focus_areas': 'Key Research Thrusts' },
-          updatedAt: '2026-09-07T00:00:00Z',
-        }), { status: 200, headers: { 'Content-Type': 'application/json' } }))
-      }
-      if (url.includes('/api/profiles/en')) {
-        return Promise.resolve(new Response(JSON.stringify([
-          {
-            slug: 'main',
-            title: 'Dr. Taha Mohammadi',
-            body: 'Researching inspectable foundation models and human-AI decision systems.',
-            locale: 'en',
-          }
-        ]), { status: 200, headers: { 'Content-Type': 'application/json' } }))
-      }
-      return Promise.resolve(new Response(null, { status: 404 }))
-    }))
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockImplementation((url: string) => {
+        if (url.includes('/api/v1/site/en')) {
+          return Promise.resolve(
+            new Response(
+              JSON.stringify({
+                locale: 'en',
+                revision: 'rev-test-1',
+                brandName: 'Dr. Taha Mohammadi',
+                tagline: 'Principal AI Researcher & Systems Architect',
+                footerText: 'Footer note',
+                seo: { title: 'Taha', description: 'Desc' },
+                navLinks: [],
+                audienceLinks: [],
+                scene: {
+                  graphPreset: 'atlas-v2',
+                  portalPreset: 'arch-v2',
+                  motion: 'full',
+                  density: 'standard',
+                },
+                contentCopy: { 'hero.focus_areas': 'Key Research Thrusts' },
+                updatedAt: '2026-09-07T00:00:00Z',
+              }),
+              { status: 200, headers: { 'Content-Type': 'application/json' } },
+            ),
+          )
+        }
+        if (url.includes('/api/profiles/en')) {
+          return Promise.resolve(
+            new Response(
+              JSON.stringify([
+                {
+                  slug: 'main',
+                  title: 'Dr. Taha Mohammadi',
+                  body: 'Researching inspectable foundation models and human-AI decision systems.',
+                  locale: 'en',
+                },
+              ]),
+              { status: 200, headers: { 'Content-Type': 'application/json' } },
+            ),
+          )
+        }
+        return Promise.resolve(new Response(null, { status: 404 }))
+      }),
+    )
 
     const content = await loadHomeHeroContent('en')
     expect(content.name).toBe('Dr. Taha Mohammadi')
     expect(content.namePrimary).toBe('Dr.')
     expect(content.role).toBe('Principal AI Researcher & Systems Architect')
-    expect(content.intro).toBe('Researching inspectable foundation models and human-AI decision systems.')
+    expect(content.intro).toBe(
+      'Researching inspectable foundation models and human-AI decision systems.',
+    )
     expect(content.focusAreasLabel).toBe('Key Research Thrusts')
   })
 

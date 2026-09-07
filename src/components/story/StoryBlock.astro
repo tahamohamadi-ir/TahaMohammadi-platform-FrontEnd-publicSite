@@ -144,13 +144,15 @@ const ctaExternal = Boolean(settings.external)
 const galleryCaption =
   typeof settings.caption === 'string' ? settings.caption : ''
 const galleryItems = Array.isArray(settings.media)
-  ? (settings.media as Array<MediaFileRef & { caption?: string }>).map((item) => ({
-      url: typeof item.url === 'string' ? item.url : '',
-      alt: mediaAlt(item) || item.caption || '',
-      caption: typeof item.caption === 'string' ? item.caption : '',
-      width: typeof item.width === 'number' ? item.width : undefined,
-      height: typeof item.height === 'number' ? item.height : undefined,
-    }))
+  ? (settings.media as Array<MediaFileRef & { caption?: string }>).map(
+      (item) => ({
+        url: typeof item.url === 'string' ? item.url : '',
+        alt: mediaAlt(item) || item.caption || '',
+        caption: typeof item.caption === 'string' ? item.caption : '',
+        width: typeof item.width === 'number' ? item.width : undefined,
+        height: typeof item.height === 'number' ? item.height : undefined,
+      }),
+    )
   : []
 
 const mediaUrl = figureMedia?.url || ''
@@ -506,7 +508,9 @@ const afterLabel =
 {
   blockType === 'gallery' && galleryItems.length > 0 && (
     <div class="story-block story-block--gallery story-gallery">
-      {galleryCaption && <h4 class="story-gallery__caption">{galleryCaption}</h4>}
+      {galleryCaption && (
+        <h4 class="story-gallery__caption">{galleryCaption}</h4>
+      )}
       <div class="story-gallery__grid">
         {galleryItems.map((item) => (
           <figure class="story-gallery__item">
@@ -566,10 +570,14 @@ const afterLabel =
         {timelineItems.map((item) => (
           <li class="story-timeline__item">
             <div class="story-timeline__marker">
-              {item.date && <span class="story-timeline__date">{item.date}</span>}
+              {item.date && (
+                <span class="story-timeline__date">{item.date}</span>
+              )}
             </div>
             <div class="story-timeline__content">
-              {item.title && <h4 class="story-timeline__title">{item.title}</h4>}
+              {item.title && (
+                <h4 class="story-timeline__title">{item.title}</h4>
+              )}
               {item.body && (
                 <div class="story-timeline__body" set:html={item.body} />
               )}
@@ -604,13 +612,21 @@ const afterLabel =
       <div class="story-before-after__frame">
         {beforeUrl && (
           <figure class="story-before-after__side">
-            <img src={beforeUrl} alt={mediaAlt(beforeMedia) || beforeLabel} loading="lazy" />
+            <img
+              src={beforeUrl}
+              alt={mediaAlt(beforeMedia) || beforeLabel}
+              loading="lazy"
+            />
             <figcaption>{beforeLabel}</figcaption>
           </figure>
         )}
         {afterUrl && (
           <figure class="story-before-after__side">
-            <img src={afterUrl} alt={mediaAlt(afterMedia) || afterLabel} loading="lazy" />
+            <img
+              src={afterUrl}
+              alt={mediaAlt(afterMedia) || afterLabel}
+              loading="lazy"
+            />
             <figcaption>{afterLabel}</figcaption>
           </figure>
         )}
@@ -625,9 +641,7 @@ const afterLabel =
       <div class="story-slider__track">
         {galleryItems.map((item) => (
           <figure class="story-slider__item">
-            {item.url && (
-              <img src={item.url} alt={item.alt} loading="lazy" />
-            )}
+            {item.url && <img src={item.url} alt={item.alt} loading="lazy" />}
             {item.caption && <figcaption>{item.caption}</figcaption>}
           </figure>
         ))}

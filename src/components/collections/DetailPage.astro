@@ -21,7 +21,11 @@ interface Props {
 const { locale, model } = Astro.props
 const collectionsHref = localePath(locale, 'collections')
 
-function resolveItemHref(item: { contentType: string; slug: string; href?: string }): string | undefined {
+function resolveItemHref(item: {
+  contentType: string
+  slug: string
+  href?: string
+}): string | undefined {
   if (item.href) return item.href
   if (!item.contentType || !item.slug) return undefined
   try {
@@ -41,7 +45,9 @@ function resolveItemHref(item: { contentType: string; slug: string; href?: strin
         headingLevel="h1"
         title={getCollectionsUnavailableCopy(locale).title}
         message={getCollectionsUnavailableCopy(locale).message}
-        actionLabel={locale === 'en' ? 'Back to collections' : 'بازگشت به مجموعه‌ها'}
+        actionLabel={
+          locale === 'en' ? 'Back to collections' : 'بازگشت به مجموعه‌ها'
+        }
         actionHref={collectionsHref}
       />
     </div>
@@ -56,18 +62,29 @@ function resolveItemHref(item: { contentType: string; slug: string; href?: strin
 
       <div slot="body" class="collections-page__detail">
         {model.collection.curatorName || model.collection.criteria ? (
-          <aside class="collections-page__curator-block" aria-label={locale === 'en' ? 'Curation Details' : 'مشخصات گردآوری'}>
+          <aside
+            class="collections-page__curator-block"
+            aria-label={locale === 'en' ? 'Curation Details' : 'مشخصات گردآوری'}
+          >
             {model.collection.curatorName ? (
               <p class="collections-page__curator-meta">
-                <strong>{locale === 'en' ? 'Curated by:' : 'گردآورنده:'}</strong>{' '}
-                {[model.collection.curatorName, model.collection.curatorTitle, model.collection.curatedDate]
+                <strong>
+                  {locale === 'en' ? 'Curated by:' : 'گردآورنده:'}
+                </strong>{' '}
+                {[
+                  model.collection.curatorName,
+                  model.collection.curatorTitle,
+                  model.collection.curatedDate,
+                ]
                   .filter(Boolean)
                   .join(' · ')}
               </p>
             ) : null}
             {model.collection.criteria ? (
               <p class="collections-page__criteria">
-                <strong>{locale === 'en' ? 'Selection criteria:' : 'معیار گزینش:'}</strong>{' '}
+                <strong>
+                  {locale === 'en' ? 'Selection criteria:' : 'معیار گزینش:'}
+                </strong>{' '}
                 {model.collection.criteria}
               </p>
             ) : null}
@@ -92,8 +109,14 @@ function resolveItemHref(item: { contentType: string; slug: string; href?: strin
         ) : null}
 
         {model.collection.items && model.collection.items.length > 0 ? (
-          <section class="collections-page__items" aria-labelledby="collection-items-heading">
-            <h2 id="collection-items-heading" class="collections-page__items-heading">
+          <section
+            class="collections-page__items"
+            aria-labelledby="collection-items-heading"
+          >
+            <h2
+              id="collection-items-heading"
+              class="collections-page__items-heading"
+            >
               {locale === 'en' ? 'Included Works' : 'آثار گنجانده‌شده'}
             </h2>
             <ul class="collections-page__items-list">
@@ -102,17 +125,25 @@ function resolveItemHref(item: { contentType: string; slug: string; href?: strin
                 return (
                   <li class="collections-page__item-card">
                     {item.contentType ? (
-                      <span class="collections-page__item-type">{item.contentType}</span>
+                      <span class="collections-page__item-type">
+                        {item.contentType}
+                      </span>
                     ) : null}
                     <h3 class="collections-page__item-title">
                       {itemHref ? (
-                        <Link href={itemHref} label={item.title} variant="standalone" />
+                        <Link
+                          href={itemHref}
+                          label={item.title}
+                          variant="standalone"
+                        />
                       ) : (
                         item.title
                       )}
                     </h3>
                     {item.summary ? (
-                      <p class="collections-page__item-summary">{item.summary}</p>
+                      <p class="collections-page__item-summary">
+                        {item.summary}
+                      </p>
                     ) : null}
                   </li>
                 )

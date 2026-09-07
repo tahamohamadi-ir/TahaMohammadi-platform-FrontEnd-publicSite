@@ -17,13 +17,46 @@ async function render(
 }
 
 describe('PU-15 Lessons Product Family', () => {
-  afterEach(() => { vi.unstubAllGlobals(); vi.unstubAllEnvs() })
+  afterEach(() => {
+    vi.unstubAllGlobals()
+    vi.unstubAllEnvs()
+  })
   it('renders the public loader output with real WorkRef resources and neighbors', async () => {
     vi.stubEnv('PUBLIC_API_BASE_URL', 'https://api.example.test')
-    const resource: components['schemas']['WorkRefOut'] = { family: 'download', id: '5', locale: 'en', routeFamily: 'resources', slug: 'lecture-notes', title: 'Lecture notes', summary: 'Published notes' }
-    const lesson: components['schemas']['LessonDetailOut'] = { locale: 'en', courseSlug: 'course', slug: 'lesson', title: 'Published lesson', summary: '', position: 0, resources: [resource], next: { ...resource, family: 'lesson', routeFamily: 'education', courseSlug: 'course', slug: 'next-lesson', title: 'Next lesson' } }
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(JSON.stringify(lesson))))
-    const html = await render(LessonDetailContent, { locale: 'en', model: await fetchLessonDetail('en', 'course', 'lesson') })
+    const resource: components['schemas']['WorkRefOut'] = {
+      family: 'download',
+      id: '5',
+      locale: 'en',
+      routeFamily: 'resources',
+      slug: 'lecture-notes',
+      title: 'Lecture notes',
+      summary: 'Published notes',
+    }
+    const lesson: components['schemas']['LessonDetailOut'] = {
+      locale: 'en',
+      courseSlug: 'course',
+      slug: 'lesson',
+      title: 'Published lesson',
+      summary: '',
+      position: 0,
+      resources: [resource],
+      next: {
+        ...resource,
+        family: 'lesson',
+        routeFamily: 'education',
+        courseSlug: 'course',
+        slug: 'next-lesson',
+        title: 'Next lesson',
+      },
+    }
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(new Response(JSON.stringify(lesson))),
+    )
+    const html = await render(LessonDetailContent, {
+      locale: 'en',
+      model: await fetchLessonDetail('en', 'course', 'lesson'),
+    })
     expect(html).toContain('href="/en/resources/lecture-notes/"')
     expect(html).toContain('Published notes')
     expect(html).toContain('href="/en/education/course/lessons/next-lesson/"')
@@ -37,13 +70,19 @@ describe('PU-15 Lessons Product Family', () => {
           locale: 'en',
           slug: 'raft-consensus-mechanisms',
           title: 'Raft Consensus Mechanisms',
-          summary: 'Detailed look at leader election, log replication, and safety guarantees.',
+          summary:
+            'Detailed look at leader election, log replication, and safety guarantees.',
           courseSlug: 'distributed-systems-engineering',
           position: 2,
           resources: [
             {
-              title: 'In Search of an Understandable Consensus Algorithm (Ongaro & Ousterhout)',
-              family: 'download', id: '10', locale: 'en', routeFamily: 'resources', slug: 'raft-paper',
+              title:
+                'In Search of an Understandable Consensus Algorithm (Ongaro & Ousterhout)',
+              family: 'download',
+              id: '10',
+              locale: 'en',
+              routeFamily: 'resources',
+              slug: 'raft-paper',
               summary: 'Primary research paper for the Raft protocol.',
             },
           ],
@@ -115,7 +154,8 @@ describe('PU-15 Lessons Product Family', () => {
           locale: 'en',
           slug: 'intro-to-clock-synchronization',
           title: 'Introduction to Clock Synchronization',
-          summary: 'Lamport timestamps and vector clocks in asynchronous networks.',
+          summary:
+            'Lamport timestamps and vector clocks in asynchronous networks.',
           courseSlug: 'distributed-systems-engineering',
           position: 0,
           resources: [],
@@ -127,7 +167,9 @@ describe('PU-15 Lessons Product Family', () => {
     })
 
     expect(html).toContain('Introduction to Clock Synchronization')
-    expect(html).toContain('Lamport timestamps and vector clocks in asynchronous networks.')
+    expect(html).toContain(
+      'Lamport timestamps and vector clocks in asynchronous networks.',
+    )
     expect(html).toContain('Lesson 1')
   })
 

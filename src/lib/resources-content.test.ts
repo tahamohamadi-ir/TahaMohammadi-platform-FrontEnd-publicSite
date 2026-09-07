@@ -26,7 +26,8 @@ describe('PU-16 Resources Product Family', () => {
             locale: 'en',
             slug: 'distributed-tracer-runtime',
             title: 'Distributed Tracer Runtime v2.4',
-            description: 'High-performance eBPF tracing agent for Kubernetes clusters.',
+            description:
+              'High-performance eBPF tracing agent for Kubernetes clusters.',
             download_type: 'Binary Package',
             language: 'en',
             license: 'Apache-2.0',
@@ -111,7 +112,8 @@ describe('PU-16 Resources Product Family', () => {
           locale: 'en',
           slug: 'consensus-benchmark-dataset',
           title: 'Consensus Protocol Benchmark Dataset',
-          description: 'Network partition traces under varying adversarial conditions.',
+          description:
+            'Network partition traces under varying adversarial conditions.',
           download_type: 'Dataset',
           language: 'en',
           license: 'CC0-1.0',
@@ -129,7 +131,9 @@ describe('PU-16 Resources Product Family', () => {
     })
 
     expect(html).toContain('Consensus Protocol Benchmark Dataset')
-    expect(html).toContain('Network partition traces under varying adversarial conditions.')
+    expect(html).toContain(
+      'Network partition traces under varying adversarial conditions.',
+    )
     expect(html).toContain('50.0 MB')
   })
 

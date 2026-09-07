@@ -37,12 +37,10 @@ export interface ResourceDetailOut extends ResourceListOut {
 }
 
 export type ResourcesIndexModel =
-  | { status: 'unavailable' }
-  | { status: 'ready'; resources: ResourceListOut[] }
+  { status: 'unavailable' } | { status: 'ready'; resources: ResourceListOut[] }
 
 export type ResourceDetailModel =
-  | { status: 'unavailable' }
-  | { status: 'ready'; resource: ResourceDetailOut }
+  { status: 'unavailable' } | { status: 'ready'; resource: ResourceDetailOut }
 
 export function getResourcesRouteTitle(locale: Locale): string {
   return locale === 'en' ? 'Resources & Downloads' : 'منابع و فایل‌ها'
@@ -98,7 +96,9 @@ async function fetchAllPagedItems<T extends { published_at?: string | null }>(
   return collected
 }
 
-export async function listResources(locale: Locale): Promise<ResourceListOut[]> {
+export async function listResources(
+  locale: Locale,
+): Promise<ResourceListOut[]> {
   if (!canFetchPublicApi()) return []
   try {
     return await fetchAllPagedItems<ResourceListOut>(`/api/downloads/${locale}`)

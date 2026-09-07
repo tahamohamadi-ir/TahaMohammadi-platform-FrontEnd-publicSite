@@ -32,7 +32,8 @@ describe('PU-14 Publications Product Family', () => {
           access_state: 'open',
           doi: '10.1000/182',
           abstract: 'An empirical investigation of sparse attention.',
-          citation_text: 'Mohammadi, T. (2025). Neural Attention Mechanisms. NeurIPS.',
+          citation_text:
+            'Mohammadi, T. (2025). Neural Attention Mechanisms. NeurIPS.',
           published_at: '2025-12-01T00:00:00Z',
           updated_at: null,
           url: 'https://example.com/paper',
@@ -67,7 +68,9 @@ describe('PU-14 Publications Product Family', () => {
     })
 
     expect(html).toContain('Experimental Results')
-    expect(html).toContain('Comprehensive evaluation across 12 benchmark suites.')
+    expect(html).toContain(
+      'Comprehensive evaluation across 12 benchmark suites.',
+    )
     expect(html).toContain('Neural Attention Mechanisms')
     expect(html).toContain('10.1000/182')
   })
@@ -87,8 +90,10 @@ describe('PU-14 Publications Product Family', () => {
           academic_stage: 'published',
           access_state: 'open',
           doi: '10.1000/183',
-          abstract: 'Dissecting transformer latent circuits with attribution graphs.',
-          citation_text: 'Mohammadi, T. (2026). Transformer Interpretability. ICLR.',
+          abstract:
+            'Dissecting transformer latent circuits with attribution graphs.',
+          citation_text:
+            'Mohammadi, T. (2026). Transformer Interpretability. ICLR.',
           published_at: '2026-05-01T00:00:00Z',
           updated_at: null,
           url: null,
@@ -98,8 +103,12 @@ describe('PU-14 Publications Product Family', () => {
     })
 
     expect(html).toContain('Transformer Interpretability')
-    expect(html).toContain('Dissecting transformer latent circuits with attribution graphs.')
-    expect(html).toContain('Mohammadi, T. (2026). Transformer Interpretability. ICLR.')
+    expect(html).toContain(
+      'Dissecting transformer latent circuits with attribution graphs.',
+    )
+    expect(html).toContain(
+      'Mohammadi, T. (2026). Transformer Interpretability. ICLR.',
+    )
   })
 
   it('renders publication index ready view with publication list', async () => {
