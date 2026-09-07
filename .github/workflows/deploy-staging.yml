@@ -300,23 +300,7 @@ jobs:
           # 9. Align host Caddy reverse proxy for admin SPA
           if sudo -n true 2>/dev/null; then
             echo "=== Aligning Caddy /admin/* upstream ==="
-            sudo python3 -c '
-import re
-path = "/etc/caddy/Caddyfile"
-try:
-    with open(path, "r", encoding="utf-8") as f:
-        content = f.read()
-    pattern = r"(handle\s+/admin/\*\s*\{\s*reverse_proxy\s+)127\.0\.0\.1:18000"
-    new_content, count = re.subn(pattern, r"\g<1>127.0.0.1:13081", content)
-    if count > 0:
-        with open(path, "w", encoding="utf-8") as f:
-            f.write(new_content)
-        print(f"Updated /etc/caddy/Caddyfile: /admin/* -> 127.0.0.1:13081 ({count} change)")
-    else:
-        print("No Caddyfile update required or already aligned.")
-except Exception as e:
-    print(f"Caddy update notice: {e}")
-'
+            sudo python3 -c "import re; p='/etc/caddy/Caddyfile'; s=open(p).read(); open(p,'w').write(re.sub(r'(handle\s+/admin/\*\s*\{\s*reverse_proxy\s+)127\.0\.0\.1:18000', r'\g<1>127.0.0.1:13081', s))"
             sudo caddy validate --config /etc/caddy/Caddyfile && (sudo systemctl reload caddy || sudo caddy reload --config /etc/caddy/Caddyfile) || true
           fi
 
