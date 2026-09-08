@@ -44,6 +44,10 @@ function normalizeColor(value: string) {
 }
 
 test.describe('WP-10 foundation acceptance', () => {
+  test('canonicalizes minified three-digit computed hex without changing the authority token @foundation', () => {
+    expect(normalizeColor('#fff')).toBe('#ffffff')
+  })
+
   const matrix = [
     {
       id: 'gateway-1440-light',
