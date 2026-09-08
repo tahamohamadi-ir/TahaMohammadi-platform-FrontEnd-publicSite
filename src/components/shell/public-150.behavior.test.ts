@@ -79,7 +79,7 @@ describe('PUBLIC-150 behavior', () => {
     expect(html).not.toMatch(/<a[^>]*href=/)
   })
 
-  it('omits unnamed shell controls when localized settings are unavailable', async () => {
+  it('omits owner-gated shell controls but keeps structural navigation when localized settings are unavailable', async () => {
     const headerHtml = await renderComponent(Header, {
       locale: 'en',
       currentPath: '/en/',
@@ -90,7 +90,12 @@ describe('PUBLIC-150 behavior', () => {
     expect(headerHtml).not.toMatch(/site-header__brand/)
     expect(headerHtml).not.toMatch(/site-header__search-link/)
     expect(headerHtml).not.toMatch(/theme-toggle--shell/)
-    expect(headerHtml).not.toMatch(/site-header__drawer/)
+    // Structural routes stay reachable without CMS; the drawer uses existing
+    // structural menu labels and does not restore owner copy.
+    expect(headerHtml).toMatch(/site-header__nav--desktop/)
+    expect(headerHtml).toMatch(/site-header__drawer/)
+    expect(headerHtml).toContain('href="/en/about/"')
+    expect(headerHtml).toContain('>Menu<')
     expect(skipHtml).not.toMatch(/class="skip-link"/)
   })
 

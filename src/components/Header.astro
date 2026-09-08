@@ -38,22 +38,20 @@ const managedNavItems = (siteSettings?.navLinks ?? []).map((link) => ({
       link.href !== `/${locale}/` &&
       currentPath.startsWith(link.href)),
 }))
-// The route registry is an approved structural fallback when a published
-// settings snapshot is incomplete. A missing snapshot remains fail-closed.
+// The route registry is an approved structural fallback when the published
+// settings snapshot is missing or incomplete. Brand, biography and other
+// owner copy remain fail-closed; only structural routes and chrome labels
+// fall back so approved pages stay reachable without CMS.
 const navItems = managedNavItems.length
   ? managedNavItems
-  : siteSettings
-    ? primaryNav.map((item) => ({
-        label: item.label[locale],
-        href: localePath(locale, item.pathSegment),
-        active: isNavActive(currentPath, locale, item.pathSegment),
-      }))
-    : []
+  : primaryNav.map((item) => ({
+      label: item.label[locale],
+      href: localePath(locale, item.pathSegment),
+      active: isNavActive(currentPath, locale, item.pathSegment),
+    }))
 const copy = siteSettings?.contentCopy ?? {}
-const mainMenuLabel =
-  copy['menu.main'] ?? (siteSettings ? shellCopy.mainMenu[locale] : '')
-const menuToggleLabel =
-  copy['menu.toggle'] ?? (siteSettings ? shellCopy.menuToggle[locale] : '')
+const mainMenuLabel = copy['menu.main'] ?? shellCopy.mainMenu[locale]
+const menuToggleLabel = copy['menu.toggle'] ?? shellCopy.menuToggle[locale]
 const searchLabel = copy['nav.search'] ?? ''
 ---
 
