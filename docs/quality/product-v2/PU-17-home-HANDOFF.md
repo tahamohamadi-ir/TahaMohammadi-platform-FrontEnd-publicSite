@@ -32,3 +32,28 @@ Owner: PUBLIC (`Front-End/public-site`)
 - `src/components/home/HomeHero.astro`
 - `src/components/home/product-home.test.ts`
 - `docs/quality/product-v2/PU-17-home-HANDOFF.md`
+
+## 2026-09-08 — Data-backed Home layout correction
+
+- Staging inventory confirmed three published `ResearchTopic` records per
+  locale, three published projects, and three published publications. It did
+  not contain localized Home copy or selected-record settings.
+- `home.css` now uses an auto-fit card grid so the published record count
+  determines the desktop composition instead of leaving empty fixed columns.
+  Each topic has a bounded card treatment; the Research Fit panel spans the
+  available section width. No profile claim or topic was added.
+- The local publication rail now has a stable label/citation hierarchy and
+  wraps long titles without overflow. Its existing `/[locale]/publications/`
+  route remains unchanged.
+- `npm.cmd test -- src/components/home/product-home.test.ts` → **7/7**;
+  `npm.cmd run lint` and `npm.cmd run build` passed; formatting and
+  `git diff --check` were clean.
+- `wp40-home.e2e.ts` cannot currently prove populated Home visual acceptance
+  in the static test server: the server has no public API settings, so eight
+  assertions expecting the Home H1/graph/skip link fail while the two capture
+  checks pass. This is recorded as an environment/data gate, not weakened.
+
+The structured Profile education/experience records can support a truthful
+Journey, but the current public Home contract does not expose them. No static
+timeline was invented; an additive backend contract and populated settings
+remain required before that UI can be implemented.

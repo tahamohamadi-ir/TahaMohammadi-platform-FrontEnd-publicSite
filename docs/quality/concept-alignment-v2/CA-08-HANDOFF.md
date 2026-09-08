@@ -216,3 +216,22 @@ tests/e2e/public-150-shell.e2e.ts` → **5/5 passed**. The E2E suite now
 
 This repair does not supply CMS content, alter visual acceptance, or change
 packet status; real populated-data visual review remains a coordinator gate.
+
+## 2026-09-08 — Published-settings navigation fallback
+
+- Staging evidence showed that both localized settings snapshots existed and
+  were published, but their `navLinks` arrays were empty. This is distinct
+  from a missing localized-settings response.
+- `Header.astro` now falls back to the read-only, approved route registry
+  (`primaryNav`) only for that incomplete published-settings state. The
+  absent-settings path remains fail-closed and renders no menu.
+- The fallback also supplies existing structural menu labels solely for the
+  accessible desktop/mobile navigation; it does not restore identity, search,
+  theme, footer, or owner copy.
+- Regression evidence: the new empty-`navLinks` assertion failed before the
+  change and passed after it. Final focused component test:
+  `npm.cmd test -- src/components/shell/managed-shell.test.ts` → **3/3**.
+  The shell browser suite also passed: `public-150-shell.e2e.ts` → **7/7**.
+
+This is an uncommitted local correction. It does not change CA-08 acceptance
+state, populate staging settings, publish data, or deploy the public site.

@@ -2,7 +2,13 @@
 import ThemeToggle from './ThemeToggle.astro'
 import LanguageToggle from './LanguageToggle.astro'
 import PromotedPicture from './media/PromotedPicture.astro'
-import { localePath, isNavActive, type Locale } from '../lib/navigation'
+import {
+  localePath,
+  isNavActive,
+  primaryNav,
+  shellCopy,
+  type Locale,
+} from '../lib/navigation'
 import { fetchLocalizedSiteSettings } from '../lib/site-settings-content'
 import { BRAND_MARK_ASSET_ID } from '../lib/media/promoted-media'
 
@@ -24,7 +30,7 @@ const siteSettings = await fetchLocalizedSiteSettings(locale)
 
 const brandNameDisplay = siteSettings?.brandName ?? ''
 const roleLine = siteSettings?.tagline ?? ''
-const navItems = (siteSettings?.navLinks ?? []).map((link) => ({
+const managedNavItems = (siteSettings?.navLinks ?? []).map((link) => ({
   ...link,
   active:
     currentPath === link.href ||
@@ -32,9 +38,22 @@ const navItems = (siteSettings?.navLinks ?? []).map((link) => ({
       link.href !== `/${locale}/` &&
       currentPath.startsWith(link.href)),
 }))
+// The route registry is an approved structural fallback when a published
+// settings snapshot is incomplete. A missing snapshot remains fail-closed.
+const navItems = managedNavItems.length
+  ? managedNavItems
+  : siteSettings
+    ? primaryNav.map((item) => ({
+        label: item.label[locale],
+        href: localePath(locale, item.pathSegment),
+        active: isNavActive(currentPath, locale, item.pathSegment),
+      }))
+    : []
 const copy = siteSettings?.contentCopy ?? {}
-const mainMenuLabel = copy['menu.main'] ?? ''
-const menuToggleLabel = copy['menu.toggle'] ?? ''
+const mainMenuLabel =
+  copy['menu.main'] ?? (siteSettings ? shellCopy.mainMenu[locale] : '')
+const menuToggleLabel =
+  copy['menu.toggle'] ?? (siteSettings ? shellCopy.menuToggle[locale] : '')
 const searchLabel = copy['nav.search'] ?? ''
 ---
 

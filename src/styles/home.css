@@ -446,7 +446,7 @@
   }
 }
 
-/* Research interests — five columns desktop, two tablet, one mobile */
+/* Research interests — the published record count varies by locale. */
 .hm-interests__inner {
   display: flex;
   flex-direction: column;
@@ -470,16 +470,26 @@
   list-style: none;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 640px) {
   .hm-interests__grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
   }
 }
 
-@media (min-width: 1280px) {
-  .hm-interests__grid {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-  }
+.hm-interests__grid > li {
+  display: flex;
+  min-inline-size: 0;
+  padding: var(--space-5);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--color-surface) 72%, var(--color-canvas));
+}
+
+.hm-interests__grid .hm-interests__card {
+  inline-size: 100%;
+  align-content: start;
+  padding: 0;
+  border: 0;
 }
 
 .hm-interests__fit {
@@ -487,7 +497,7 @@
   border: 1px solid color-mix(in srgb, var(--color-signature) 45%, transparent);
   border-radius: var(--radius-md);
   background: color-mix(in srgb, var(--color-signature-soft) 35%, transparent);
-  max-inline-size: var(--layout-prose);
+  inline-size: 100%;
 }
 
 .hm-interests__fit-title {
@@ -632,6 +642,26 @@
   margin: 0;
   padding: 0;
   list-style: none;
+}
+
+@media (min-width: 768px) {
+  .hm-publications .ui-publication-row {
+    grid-template-columns: minmax(10rem, 0.32fr) minmax(0, 1fr);
+    gap: var(--space-6);
+    align-items: start;
+    padding-block: var(--space-5);
+  }
+}
+
+.hm-publications .ui-publication-row__labels {
+  align-content: start;
+}
+
+.hm-publications .ui-publication-row__title {
+  font-family: var(--font-display);
+  font-size: clamp(1.15rem, 2vw, 1.45rem);
+  line-height: 1.32;
+  overflow-wrap: anywhere;
 }
 
 /* Explore rails — three previews; unavailable rails render no anchor */

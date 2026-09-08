@@ -47,4 +47,24 @@ describe('CMS-controlled shell', () => {
     expect(html).not.toContain('I work across software')
     expect(html).not.toContain('pending CMS publication')
   })
+
+  it('keeps the approved structural navigation when published settings have no nav links', async () => {
+    state.settings = {
+      locale: 'en',
+      brandName: 'Edited brand',
+      tagline: '',
+      navLinks: [],
+      contentCopy: {},
+    }
+    const container = await AstroContainer.create()
+    const html = await container.renderToString(Header, {
+      props: { locale: 'en', currentPath: '/en/research/' },
+    })
+
+    expect(html).toContain('href="/en/about/"')
+    expect(html).toContain('href="/en/research/"')
+    expect(html).toContain('>Research<')
+    expect(html).toContain('aria-current="page"')
+    expect(html).toContain('site-header__drawer')
+  })
 })
