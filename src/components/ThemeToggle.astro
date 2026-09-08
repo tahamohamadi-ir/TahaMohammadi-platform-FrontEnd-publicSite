@@ -1,5 +1,6 @@
 ---
-import { shellCopy, type Locale } from '../lib/navigation'
+import { getManagedCopy } from '../lib/site-settings-content'
+import { type Locale } from '../lib/navigation'
 import { Monitor, Moon, Sun } from 'lucide-astro'
 
 interface Props {
@@ -7,26 +8,40 @@ interface Props {
 }
 
 const { locale = 'en' } = Astro.props
-const themeLabel = shellCopy.themeToggle[locale]
+const copy = await getManagedCopy(locale)
+const themeLabel = copy['theme.toggle'] ?? ''
 ---
 
-<button
-  type="button"
-  class="theme-toggle theme-toggle--shell"
-  data-theme-toggle
-  data-theme-mode="system"
-  data-visual-id="ThemeToggle"
-  aria-label={themeLabel}
-  aria-pressed="mixed"
-  title={themeLabel}
->
-  <span class="theme-toggle__icon theme-toggle__icon--system" aria-hidden="true"
-    ><Monitor size={18} /></span
-  >
-  <span class="theme-toggle__icon theme-toggle__icon--light" aria-hidden="true"
-    ><Sun size={18} /></span
-  >
-  <span class="theme-toggle__icon theme-toggle__icon--dark" aria-hidden="true"
-    ><Moon size={18} /></span
-  >
-</button>
+{
+  themeLabel && (
+    <button
+      type="button"
+      class="theme-toggle theme-toggle--shell"
+      data-theme-toggle
+      data-theme-mode="system"
+      data-visual-id="ThemeToggle"
+      aria-label={themeLabel}
+      aria-pressed="mixed"
+      title={themeLabel}
+    >
+      <span
+        class="theme-toggle__icon theme-toggle__icon--system"
+        aria-hidden="true"
+      >
+        <Monitor size={18} />
+      </span>
+      <span
+        class="theme-toggle__icon theme-toggle__icon--light"
+        aria-hidden="true"
+      >
+        <Sun size={18} />
+      </span>
+      <span
+        class="theme-toggle__icon theme-toggle__icon--dark"
+        aria-hidden="true"
+      >
+        <Moon size={18} />
+      </span>
+    </button>
+  )
+}

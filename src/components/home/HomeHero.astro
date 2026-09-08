@@ -15,23 +15,35 @@ import {
   loadHomeHeroContent,
   getHomeResearchContent,
 } from '../../lib/home-content'
-import { getProfileHeroCtaLabels } from '../../lib/page-family-empty-chrome'
+import { getManagedCopy } from '../../lib/site-settings-content'
 import { localePath, type Locale } from '../../lib/navigation'
 
 interface Props {
   locale: Locale
   graph?: HeroGraphModel
   selectedId?: string | null
+  showIdentity?: boolean
+  showGraph?: boolean
 }
 
-const { locale, selectedId = null } = Astro.props
+const {
+  locale,
+  selectedId = null,
+  showIdentity = true,
+  showGraph = true,
+} = Astro.props
 const graph: HeroGraphModel = Astro.props.graph ?? {
   status: 'unavailable',
   locale,
 }
 const content = await loadHomeHeroContent(locale)
-const research = getHomeResearchContent(locale)
-const ctaLabels = getProfileHeroCtaLabels(locale)
+const research = await getHomeResearchContent(locale)
+const copy = await getManagedCopy(locale)
+const ctaLabels = {
+  research: copy['hero.cta.research'],
+  cv: copy['hero.cta.cv'],
+  contact: copy['hero.cta.contact'],
+}
 ---
 
 <section
@@ -39,68 +51,79 @@ const ctaLabels = getProfileHeroCtaLabels(locale)
   data-hero-layout="integrated"
   data-graph-status={graph.status}
 >
-  <div class="hm-hero__copy">
-    <header class="hm-hero__lead">
-      <p class="hm-hero__role">{content.role}</p>
-      {
-        locale === 'en' ? (
-          <h1 class="hm-hero__name">
-            <span class="hm-hero__name-primary">{content.namePrimary}</span>
-            <span class="hm-hero__name-accent">{content.nameAccent}</span>
-          </h1>
-        ) : (
-          <h1 class="hm-hero__name">{content.name}</h1>
-        )
-      }
-      <p class="hm-hero__intro">{content.intro}</p>
-    </header>
-
-    <div class="hm-hero__actions">
-      <Button
-        label={ctaLabels.research}
-        href={localePath(locale, 'research')}
-        variant="primary"
-        class="hm-hero__cta"
-      >
-        <ArrowRight class="hm-hero__cta-icon" aria-hidden="true" />
-      </Button>
-      <Button
-        label={ctaLabels.cv}
-        href={localePath(locale, 'cv')}
-        variant="secondary"
-        class="hm-hero__cta"
-      >
-        <FileText class="hm-hero__cta-icon" aria-hidden="true" />
-      </Button>
-      <Button
-        label={ctaLabels.contact}
-        href={localePath(locale, 'contact')}
-        variant="secondary"
-        class="hm-hero__cta"
-      >
-        <Mail class="hm-hero__cta-icon" aria-hidden="true" />
-      </Button>
-    </div>
-
-    <p class="hm-hero__research">{research.lead}</p>
-
-    {
-      content.focusChips.length > 0 && (
-        <div class="hm-hero__focus">
-          <p class="hm-hero__focus-label">{content.focusAreasLabel}</p>
-          <ul class="hm-hero__focus-list">
-            {content.focusChips.map((chip) => (
-              <li>
-                <Chip label={chip} />
-              </li>
+  {
+    showIdentity && (
+      <div class="hm-hero__copy">
+        <header class="hm-hero__lead">
+          {content.role && <p class="hm-hero__role">{content.role}</p>}
+          {content.name &&
+            (locale === 'en' ? (
+              <h1 class="hm-hero__name">
+                <span class="hm-hero__name-primary">{content.namePrimary}</span>
+                <span class="hm-hero__name-accent">{content.nameAccent}</span>
+              </h1>
+            ) : (
+              <h1 class="hm-hero__name">{content.name}</h1>
             ))}
-          </ul>
-        </div>
-      )
-    }
-  </div>
+          {content.intro && <p class="hm-hero__intro">{content.intro}</p>}
+        </header>
 
-  <div class="hm-hero__graph">
-    <HeroGraph locale={locale} graph={graph} selectedId={selectedId} />
-  </div>
+        <div class="hm-hero__actions">
+          {ctaLabels.research && (
+            <Button
+              label={ctaLabels.research}
+              href={localePath(locale, 'research')}
+              variant="primary"
+              class="hm-hero__cta"
+            >
+              <ArrowRight class="hm-hero__cta-icon" aria-hidden="true" />
+            </Button>
+          )}
+          {ctaLabels.cv && (
+            <Button
+              label={ctaLabels.cv}
+              href={localePath(locale, 'cv')}
+              variant="secondary"
+              class="hm-hero__cta"
+            >
+              <FileText class="hm-hero__cta-icon" aria-hidden="true" />
+            </Button>
+          )}
+          {ctaLabels.contact && (
+            <Button
+              label={ctaLabels.contact}
+              href={localePath(locale, 'contact')}
+              variant="secondary"
+              class="hm-hero__cta"
+            >
+              <Mail class="hm-hero__cta-icon" aria-hidden="true" />
+            </Button>
+          )}
+        </div>
+
+        {research.lead && <p class="hm-hero__research">{research.lead}</p>}
+
+        {content.focusChips.length > 0 && (
+          <div class="hm-hero__focus">
+            <p class="hm-hero__focus-label">{content.focusAreasLabel}</p>
+            <ul class="hm-hero__focus-list">
+              {content.focusChips.map((chip) => (
+                <li>
+                  <Chip label={chip} />
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+    )
+  }
+
+  {
+    showGraph && (
+      <div class="hm-hero__graph">
+        <HeroGraph locale={locale} graph={graph} selectedId={selectedId} />
+      </div>
+    )
+  }
 </section>

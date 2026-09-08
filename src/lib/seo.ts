@@ -48,3 +48,31 @@ export function buildPageSeo(
     ),
   }
 }
+
+export interface DetailSeoProps {
+  description?: string
+  socialImage?: string
+}
+
+function cleanSeoText(value: unknown): string | undefined {
+  if (typeof value !== 'string') return undefined
+  const trimmed = value.trim()
+  return trimmed ? trimmed : undefined
+}
+
+/**
+ * Pick layout SEO props from a detail record's `seo` payload (PU-16/PU-24,
+ * CM-03). Accepts the typed `PublicSeoOut` shape and untyped record maps;
+ * absent or blank values stay undefined so layouts omit the meta tags.
+ */
+export function pickDetailSeo(seo: unknown): DetailSeoProps {
+  if (typeof seo !== 'object' || seo === null || Array.isArray(seo)) return {}
+  const record = seo as Record<string, unknown>
+  const description = cleanSeoText(record.description)
+  const socialImage =
+    cleanSeoText(record.image) ?? cleanSeoText(record.socialImage)
+  return {
+    ...(description ? { description } : {}),
+    ...(socialImage ? { socialImage } : {}),
+  }
+}

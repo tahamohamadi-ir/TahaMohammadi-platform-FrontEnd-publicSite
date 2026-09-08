@@ -13,16 +13,17 @@ interface Props {
 }
 
 const { locale, publication } = Astro.props
-const writingIndexHref = localePath(locale, 'blog')
-const draftNote = getStubPublicationDraftNote(locale)
-const backLabel = getStubBackToWritingLabel(locale)
-const manuscriptLabel = getHomePublicationsContent(locale).manuscriptLabel
+const writingIndexHref = localePath(locale, 'publications')
+const draftNote = await getStubPublicationDraftNote(locale)
+const backLabel = await getStubBackToWritingLabel(locale)
+const manuscriptLabel = (await getHomePublicationsContent(locale))
+  .manuscriptLabel
 ---
 
 <article class="page-shell">
   <header class="page-shell__header">
     <p class="page-shell__eyebrow">{manuscriptLabel}</p>
-    <h1 class="page-shell__title" lang={locale === 'fa' ? 'en' : undefined}>
+    <h1 class="page-shell__title">
       {publication.title}
     </h1>
     <p class="page-shell__status">{publication.statusLabel}</p>

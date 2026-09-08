@@ -1,135 +1,231 @@
 import { experimental_AstroContainer as AstroContainer } from 'astro/container'
-import { describe, expect, it, vi, beforeEach } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import type { Locale } from '../../lib/navigation'
+type Component = Parameters<
+  Awaited<ReturnType<typeof AstroContainer.create>>['renderToString']
+>[0]
+const render = async (component: Component, props: Record<string, unknown>) =>
+  (await AstroContainer.create()).renderToString(component, { props })
+const published_at = '2026-09-01T00:00:00Z'
+function mockCms(
+  locale: Locale,
+  name = 'Edited identity',
+  includeRecords = true,
+) {
+  vi.stubGlobal(
+    'fetch',
+    vi.fn(async (input: string) => {
+      const url = new URL(input, 'https://api.example.test')
+      const records = includeRecords
+        ? [
+            {
+              family: 'project',
+              id: '1',
+              locale,
+              slug: 'selected-project',
+              title: 'Selected project',
+              summary: 'CMS project summary',
+              routeFamily: 'projects',
+            },
+            {
+              family: 'publication',
+              id: '2',
+              locale,
+              slug: 'selected-paper',
+              title: 'Selected paper',
+              summary: 'CMS publication summary',
+              routeFamily: 'publications',
+            },
+          ]
+        : []
+      const copy = {
+        'hero.focus_areas': 'Focus label',
+        'hero.cta.research': 'Research action',
+        'hero.cta.cv': 'CV action',
+        'hero.cta.contact': 'Contact action',
+        'home.projects.title': 'Project section',
+        'home.projects.view_all': 'Project index',
+        'home.projects.view_record': 'Read project',
+        'home.publications.title': 'Publication section',
+        'home.publications.view_all': 'Publication index',
+        'home.interests.title': 'Interests section',
+        'home.interests.lead': 'Research lead',
+        'home.collaboration.title': 'Collaboration section',
+        'home.collaboration.body': 'Managed availability',
+        'home.collaboration.contact': 'Contact owner',
+        'home.explore.title': 'Explore section',
+        'home.explore.gallery.title': 'Gallery',
+        'home.explore.gallery.action': 'Browse gallery',
+        'home.unavailable.title': 'Home unavailable',
+        'home.unavailable.message': 'No published Home modules',
+      }
+      const data: Record<string, unknown> = {
+        ['/api/v1/site/' + locale]: {
+          locale,
+          brandName: name,
+          tagline: 'Edited role',
+          contentCopy: copy,
+          featuredRecords: records.map(({ family, id }) => ({ family, id })),
+        },
+        ['/api/profiles/' + locale]: [
+          {
+            locale,
+            slug: 'about',
+            title: name,
+            body: 'Published biography',
+            published_at,
+          },
+        ],
+        ['/api/landings/' + locale + '/home']: {
+          locale,
+          slug: 'home',
+          title: 'Home',
+          body: 'Edited introduction',
+          published_at,
+        },
+        ['/api/research/topics/' + locale]: {
+          count: 1,
+          items: [
+            {
+              locale,
+              slug: 'topic',
+              title: locale === 'fa' ? 'موضوع پژوهش' : 'Research topic',
+              summary: 'Published topic summary',
+              published_at,
+            },
+          ],
+        },
+        ['/api/research/statements/' + locale]: [
+          {
+            locale,
+            slug: 'statement',
+            title: 'Published research statement',
+            body: 'Published statement body',
+            published_at,
+          },
+        ],
+        ['/api/v1/records/' + locale + '/resolve']: {
+          items: records,
+          unresolved: [],
+        },
+      }
+      return data[url.pathname]
+        ? new Response(JSON.stringify(data[url.pathname]))
+        : new Response(null, { status: 404 })
+    }),
+  )
+}
+beforeEach(() => vi.stubEnv('PUBLIC_API_BASE_URL', 'https://api.example.test'))
+afterEach(() => {
+  vi.unstubAllGlobals()
+  vi.unstubAllEnvs()
+})
+
 import HomeHero from './HomeHero.astro'
+import HomeContent from './HomeContent.astro'
 import HomeFeaturedProjects from './HomeFeaturedProjects.astro'
 import HomeFeaturedPublications from './HomeFeaturedPublications.astro'
 import HomeJourney from './HomeJourney.astro'
 import HomeResearchInterests from './HomeResearchInterests.astro'
-import { loadHomeHeroContent, getHomeHeroContent } from '../../lib/home-content'
+import HomeExploreRails from './HomeExploreRails.astro'
+import HomeCollaborationCta from './HomeCollaborationCta.astro'
+import { homeModuleOrder } from '../../lib/home-content'
 
-type Component = Parameters<
-  Awaited<ReturnType<typeof AstroContainer.create>>['renderToString']
->[0]
-
-async function render(
-  component: Component,
-  props: Record<string, unknown> = {},
-) {
-  const container = await AstroContainer.create()
-  return container.renderToString(component, { props })
-}
-
-describe('PU-17-home: Product Home Integration Tests (§I04)', () => {
-  beforeEach(() => {
-    vi.unstubAllGlobals()
+describe('PU-17 Home CMS integration', () => {
+  it.each(['en', 'fa'] as const)(
+    'renders published identity, introduction and focus in %s',
+    async (locale) => {
+      mockCms(locale, locale === 'fa' ? 'هویت ویرایش شده' : 'Edited identity')
+      const html = await render(HomeHero, { locale })
+      expect(html).toContain(locale === 'fa' ? 'هویت ویرایش شده' : 'Edited')
+      expect(html).toContain('Edited introduction')
+      expect(html).toContain('Published statement body')
+      expect(html).toContain('Edited role')
+      expect(html).toContain(locale === 'fa' ? 'موضوع پژوهش' : 'Research topic')
+      expect(html).toContain('href="/' + locale + '/research/"')
+    },
+  )
+  it('reflects edited text on the next render and removes deleted selected records', async () => {
+    mockCms('en', 'First identity')
+    expect(await render(HomeHero, { locale: 'en' })).toContain('First')
+    expect(await render(HomeFeaturedProjects, { locale: 'en' })).toContain(
+      'href="/en/projects/selected-project/"',
+    )
+    mockCms('en', 'Second identity', false)
+    const updated = await render(HomeHero, { locale: 'en' })
+    expect(updated).toContain('Second')
+    expect(updated).not.toContain('First')
+    expect(await render(HomeFeaturedProjects, { locale: 'en' })).not.toContain(
+      'Selected project',
+    )
+    expect(
+      await render(HomeFeaturedPublications, { locale: 'en' }),
+    ).not.toContain('Selected paper')
   })
-
-  it('loads synchronous fallback hero content when API is unreachable', () => {
-    const en = getHomeHeroContent('en')
-    expect(en.name).toBe('Taha Mohammadi')
-    expect(en.focusChips.length).toBeGreaterThan(0)
-
-    const fa = getHomeHeroContent('fa')
-    expect(fa.name).toBe('طه محمدی')
-    expect(fa.focusChips.length).toBeGreaterThan(0)
+  it('links selected publications to the actual publication detail family', async () => {
+    mockCms('en')
+    const html = await render(HomeFeaturedPublications, { locale: 'en' })
+    expect(html).toContain('href="/en/publications/selected-paper/"')
+    expect(html).toContain('href="/en/publications/"')
+    expect(html).not.toContain('Manuscript draft')
   })
-
-  it('integrates live CMS settings and profile in loadHomeHeroContent', async () => {
+  it('leaves all optional content absent on API failure instead of showing local records', async () => {
     vi.stubGlobal(
       'fetch',
-      vi.fn().mockImplementation((url: string) => {
-        if (url.includes('/api/v1/site/en')) {
-          return Promise.resolve(
-            new Response(
-              JSON.stringify({
-                locale: 'en',
-                revision: 'rev-test-1',
-                brandName: 'Dr. Taha Mohammadi',
-                tagline: 'Principal AI Researcher & Systems Architect',
-                footerText: 'Footer note',
-                seo: { title: 'Taha', description: 'Desc' },
-                navLinks: [],
-                audienceLinks: [],
-                scene: {
-                  graphPreset: 'atlas-v2',
-                  portalPreset: 'arch-v2',
-                  motion: 'full',
-                  density: 'standard',
-                },
-                contentCopy: { 'hero.focus_areas': 'Key Research Thrusts' },
-                updatedAt: '2026-09-07T00:00:00Z',
-              }),
-              { status: 200, headers: { 'Content-Type': 'application/json' } },
-            ),
-          )
-        }
-        if (url.includes('/api/profiles/en')) {
-          return Promise.resolve(
-            new Response(
-              JSON.stringify([
-                {
-                  slug: 'main',
-                  title: 'Dr. Taha Mohammadi',
-                  body: 'Researching inspectable foundation models and human-AI decision systems.',
-                  locale: 'en',
-                },
-              ]),
-              { status: 200, headers: { 'Content-Type': 'application/json' } },
-            ),
-          )
-        }
-        return Promise.resolve(new Response(null, { status: 404 }))
-      }),
+      vi.fn().mockResolvedValue(new Response(null, { status: 404 })),
     )
-
-    const content = await loadHomeHeroContent('en')
-    expect(content.name).toBe('Dr. Taha Mohammadi')
-    expect(content.namePrimary).toBe('Dr.')
-    expect(content.role).toBe('Principal AI Researcher & Systems Architect')
-    expect(content.intro).toBe(
-      'Researching inspectable foundation models and human-AI decision systems.',
+    for (const component of [
+      HomeFeaturedProjects,
+      HomeFeaturedPublications,
+      HomeResearchInterests,
+      HomeJourney,
+      HomeExploreRails,
+      HomeCollaborationCta,
+    ]) {
+      const html = await render(component, { locale: 'en' })
+      expect(html).not.toContain('<section')
+      expect(html).not.toContain('Taha')
+      expect(html).not.toContain('PARS-SQL')
+    }
+  })
+  it('uses published module visibility and order and merges the graph into one hero', async () => {
+    mockCms('en')
+    const composition = {
+      revision: 'r1',
+      modules: [
+        { key: 'identity', order: 10 },
+        { key: 'graph', order: 11 },
+        { key: 'publications', order: 1 },
+        { key: 'projects', order: 2 },
+      ],
+    }
+    expect(homeModuleOrder(composition)).toEqual([
+      'publications',
+      'projects',
+      'identity',
+    ])
+    const html = await render(HomeContent, {
+      locale: 'en',
+      composition,
+      graph: { locale: 'en', status: 'unavailable' },
+    })
+    expect(html.indexOf('data-home-module="publications"')).toBeLessThan(
+      html.indexOf('data-home-module="projects"'),
     )
-    expect(content.focusAreasLabel).toBe('Key Research Thrusts')
+    expect(html.match(/data-home-module="hero"/g)).toHaveLength(1)
+    expect(html).not.toContain('data-home-module="research-fit"')
+    expect(html).toContain('data-hero-layout="integrated"')
+    expect(html).not.toContain('portal-orbit')
   })
-
-  it('renders HomeHero with integrated layout in both EN and FA', async () => {
-    const enHtml = await render(HomeHero, { locale: 'en' })
-    expect(enHtml).toMatch(/data-hero-layout="integrated"/)
-    expect(enHtml).toMatch(/class="hm-hero__name"/)
-
-    const faHtml = await render(HomeHero, { locale: 'fa' })
-    expect(faHtml).toMatch(/data-hero-layout="integrated"/)
-    expect(faHtml).toMatch(/class="hm-hero__name"/)
-  })
-
-  it('renders HomeFeaturedProjects and resolves links only for published slugs', async () => {
-    const publishedSlugs = new Set(['pars-sql-vtd-edge'])
-    const html = await render(HomeFeaturedProjects, {
+  it('renders the managed unavailable message when no home modules are published', async () => {
+    mockCms('en')
+    const html = await render(HomeContent, {
       locale: 'en',
-      publishedProjectSlugs: publishedSlugs,
+      composition: null,
+      graph: { locale: 'en', status: 'unavailable' },
     })
-
-    expect(html).toMatch(/class="hm-projects"/)
-    // The published slug should be linked
-    expect(html).toMatch(/href="\/en\/projects\/pars-sql-vtd-edge\/"/)
-  })
-
-  it('renders HomeFeaturedPublications and preserves truthful non-links for unconfirmed manuscripts', async () => {
-    const html = await render(HomeFeaturedPublications, {
-      locale: 'en',
-      publishedArticleSlugs: new Set<string>(),
-    })
-
-    expect(html).toMatch(/class="hm-publications"/)
-    // When no articles are published, cards should not have fake links
-    expect(html).not.toMatch(/href="\/en\/blog\/undefined\/"/)
-  })
-
-  it('renders HomeResearchInterests and HomeJourney without crashing', async () => {
-    const interestsHtml = await render(HomeResearchInterests, { locale: 'en' })
-    expect(interestsHtml).toMatch(/class="hm-interests"/)
-
-    const journeyHtml = await render(HomeJourney, { locale: 'en' })
-    expect(journeyHtml).toMatch(/class="hm-journey"/)
+    expect(html).toContain('Home unavailable')
+    expect(html).not.toContain('Edited identity')
+    expect(html).not.toContain('Selected project')
   })
 })

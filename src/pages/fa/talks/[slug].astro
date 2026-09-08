@@ -1,5 +1,6 @@
 ---
 import SiteLayout from '../../../layouts/SiteLayout.astro'
+import { pickDetailSeo } from '../../../lib/seo'
 import DetailPage from '../../../components/talks/DetailPage.astro'
 import {
   fetchTalkDetail,
@@ -24,6 +25,7 @@ if (model.status === 'unavailable') {
 
 const alternateAvailable = await resolveTalkAlternateAvailability(locale, slug)
 const pageTitle = `${model.talk.title} — طاها محمدی`
+const detailSeo = pickDetailSeo(model.talk.seo)
 ---
 
 <SiteLayout
@@ -31,6 +33,8 @@ const pageTitle = `${model.talk.title} — طاها محمدی`
   locale={locale}
   pathSegment={`talks/${slug}`}
   alternateAvailable={alternateAvailable}
+  description={detailSeo.description}
+  socialImage={detailSeo.socialImage}
 >
   <DetailPage locale={locale} model={model} />
 </SiteLayout>

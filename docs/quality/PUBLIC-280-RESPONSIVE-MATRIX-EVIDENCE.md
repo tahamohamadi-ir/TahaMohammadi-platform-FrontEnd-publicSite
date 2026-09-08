@@ -60,5 +60,14 @@ Compare each implementation screenshot against the matching concept at the same 
 
 - **Overflow gate:** applies at all six widths (`scrollWidth <= innerWidth`); PF-01 320px header overflow cleared on EN creative index (`shell.css`).
 - **PUBLIC-270:** 1440/390 index captures must stay green before owner compare at six widths.
+- **2026-09-07 (PUBLIC `9d59e71+`, CSS `pf05-alignment.css`):**
+  `PUBLIC-270` went red on `/en|fa/research/` @390
+  (`scrollWidth > innerWidth`; unconditional `padding: 2rem` + unguarded
+  `1fr` grid). Fix: base padding `1rem` (`2rem` restored ≥1024px),
+  `minmax(0,1fr)` + `min-width: 0` guards. Re-run -> **37/37 passed**.
+- **2026-09-07: `PUBLIC-280` full six-width matrix -> 202/202 passed**
+  (49.6s, real Chromium; 202 PNG captures in git-ignored
+  `test-results/visual/`). Structural gates only (lang/dir/theme/h1 +
+  no-overflow); owner/reference pixel compare still required.
 - **PUBLIC-190:** structure complete; visual acceptance open until independent QA `PASS` and explicit owner approval. Do not mark PASS without owner evidence.
 - **PF-02 detail:** detail routes remain open until published creative detail pages exist in the static build.

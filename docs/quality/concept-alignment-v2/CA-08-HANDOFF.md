@@ -155,8 +155,83 @@ acceptance untouched.
 - [x] Before/after evidence recorded with fixture-vs-published labels
       (shell carries no published-record content; states are static).
 
+## 2026-09-07 — CMS-controlled shell regressions (CA-08/CM-02)
+
+- `src/components/shell/managed-shell.test.ts` (2 tests): Header/Footer
+  render through AstroContainer with mocked `fetchLocalizedSiteSettings`;
+  absent settings must not resurrect identity, biography, role line or
+  menu; explicitly empty published footer stays empty and real nav edits
+  are honored.
+- `src/lib/home-content.test.ts` (4 tests): Home loaders return honest
+  empty states when APIs are unavailable; updated published profile,
+  landing and exact-locale research records flow through.
+- Run 2026-09-07: `npm test -- src/components/shell/managed-shell.test.ts
+src/lib/home-content.test.ts` -> **6/6 passed**.
+  `npm run lint` -> clean. `npm run build` -> 42 pages.
+
+## 2026-09-07 — Stale shell tests rewritten + brand pipeline restored
+
+- `public-150.behavior.test.ts` still asserted the pre-CMS shell
+  (hardcoded brand/skip/drawer copy, `ContactCTA` import, promo/social
+  placeholders): 4 failures. Rewritten to the CMS contract with a
+  `site-settings-content` mock — copy-driven brand/skip/drawer asserts,
+  promo gated by `footer.cta`, honest-empty footer. Now **8/8 passed**.
+- Owner decision: restore promoted-media images (dropped in the rewire).
+  `Header`/`Footer` render `PromotedPicture` `brand.mark` again (footer
+  picture inside the conditional brand link — no image without published
+  brand); `HomeFeaturedProjects` (`home.project.preview`) and
+  `HomeExploreRails` (`home.rail.preview` in `MediaTile`) render guarded
+  on optional `assetId`, so missing CMS media stays imageless without
+  breaking layout. `PUBLIC-261` shell+home wiring tests green again.
+- `PageFamilyJourneyFlowShell` rendered nothing when empty while every
+  sibling shell renders empty chrome (`PUBLIC-200` red). It now always
+  renders the section shell with a `getCmsPlaceholderCopy` line when no
+  milestones exist.
+- Full suite: **87 files / 451 tests passed**. `npm run lint` clean.
+  `npm run build` -> 42 pages.
+
 ---
 
 ## 10. Stop Marker
 
 **CA-08_HANDOFF_READY**
+
+## 2026-09-07 — CMS-unavailable shell guard
+
+- The static E2E server has no public API base, so localized settings are
+  correctly absent. The prior browser assertions instead expected the retired
+  hardcoded brand and menu, while the rendered header contained unnamed
+  brand/search/theme/menu controls and an empty skip link.
+- Header, ThemeToggle, and SkipLink now omit controls whose published label or
+  data is absent. The desktop/mobile navigation is also omitted when there are
+  no published navigation items; no fallback identity, link, or copy was
+  restored.
+- A new component regression first failed against the unnamed controls, then
+  passed after the guard. The managed-settings unit fixture continues to cover
+  named brand and native drawer behavior when published settings are present.
+- Browser evidence: `npm exec playwright test
+tests/e2e/public-150-shell.e2e.ts` → **5/5 passed**. The E2E suite now
+  checks the honest unavailable state, while component tests cover the
+  CMS-populated behavior.
+
+This repair does not supply CMS content, alter visual acceptance, or change
+packet status; real populated-data visual review remains a coordinator gate.
+
+## 2026-09-08 — Published-settings navigation fallback
+
+- Staging evidence showed that both localized settings snapshots existed and
+  were published, but their `navLinks` arrays were empty. This is distinct
+  from a missing localized-settings response.
+- `Header.astro` now falls back to the read-only, approved route registry
+  (`primaryNav`) only for that incomplete published-settings state. The
+  absent-settings path remains fail-closed and renders no menu.
+- The fallback also supplies existing structural menu labels solely for the
+  accessible desktop/mobile navigation; it does not restore identity, search,
+  theme, footer, or owner copy.
+- Regression evidence: the new empty-`navLinks` assertion failed before the
+  change and passed after it. Final focused component test:
+  `npm.cmd test -- src/components/shell/managed-shell.test.ts` → **3/3**.
+  The shell browser suite also passed: `public-150-shell.e2e.ts` → **7/7**.
+
+This is an uncommitted local correction. It does not change CA-08 acceptance
+state, populate staging settings, publish data, or deploy the public site.

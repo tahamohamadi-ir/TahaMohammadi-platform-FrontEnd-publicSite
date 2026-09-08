@@ -13,7 +13,7 @@ interface Props {
 }
 
 const { locale } = Astro.props
-const content = getHomeConstellationContent(locale)
+const content = await getHomeConstellationContent(locale)
 const diagramNodes = content.nodes.slice(0, 3)
 ---
 

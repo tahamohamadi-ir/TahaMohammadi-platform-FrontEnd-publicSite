@@ -8,39 +8,44 @@ interface Props {
 }
 
 const { locale } = Astro.props
-const content = getHomeInterestsContent(locale)
+const content = await getHomeInterestsContent(locale)
 ---
 
-<section class="hm-interests">
-  <div class="hm-interests__inner">
-    <header class="hm-interests__header">
-      <p class="hm-eyebrow">{content.sectionTitle}</p>
-      <h2 id="hm-interests-title" class="hm-interests__title">
-        {content.sectionLead}
-      </h2>
-    </header>
+{
+  (content.cards.length > 0 || content.fitCopy) && (
+    <section class="hm-interests">
+      <div class="hm-interests__inner">
+        <header class="hm-interests__header">
+          <p class="hm-eyebrow">{content.sectionTitle}</p>
+          <h2 id="hm-interests-title" class="hm-interests__title">
+            {content.sectionLead}
+          </h2>
+        </header>
 
-    {
-      content.cards.length > 0 && (
-        <ul class="hm-interests__grid">
-          {content.cards.map((card) => (
-            <li>
-              <ContentRow
-                title={card.title}
-                excerpt={card.excerpt}
-                class="hm-interests__card"
-              />
-            </li>
-          ))}
-        </ul>
-      )
-    }
+        {content.cards.length > 0 && (
+          <ul class="hm-interests__grid">
+            {content.cards.map((card) => (
+              <li>
+                <ContentRow
+                  title={card.title}
+                  excerpt={card.excerpt}
+                  class="hm-interests__card"
+                />
+              </li>
+            ))}
+          </ul>
+        )}
 
-    <aside class="hm-interests__fit" aria-labelledby="hm-interests-fit-title">
-      <h3 id="hm-interests-fit-title" class="hm-interests__fit-title">
-        {content.fitTitle}
-      </h3>
-      <p class="hm-interests__fit-copy">{content.fitCopy}</p>
-    </aside>
-  </div>
-</section>
+        <aside
+          class="hm-interests__fit"
+          aria-labelledby="hm-interests-fit-title"
+        >
+          <h3 id="hm-interests-fit-title" class="hm-interests__fit-title">
+            {content.fitTitle}
+          </h3>
+          <p class="hm-interests__fit-copy">{content.fitCopy}</p>
+        </aside>
+      </div>
+    </section>
+  )
+}

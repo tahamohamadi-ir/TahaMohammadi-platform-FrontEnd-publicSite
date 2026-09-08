@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { buildPageSeo } from './seo'
+import { buildPageSeo, pickDetailSeo } from './seo'
 
 describe('buildPageSeo', () => {
   const origin = 'https://tahamohamadi.ir'
@@ -24,5 +24,29 @@ describe('buildPageSeo', () => {
         { hreflang: 'x-default', href: 'https://tahamohamadi.ir/fa/contact/' },
       ],
     })
+  })
+})
+
+describe('pickDetailSeo', () => {
+  it('forwards typed PublicSeoOut description and image', () => {
+    expect(
+      pickDetailSeo({
+        title: 'Book',
+        description: 'Edited description',
+        image: 'https://cdn.example.test/cover.jpg',
+      }),
+    ).toEqual({
+      description: 'Edited description',
+      socialImage: 'https://cdn.example.test/cover.jpg',
+    })
+  })
+
+  it('omits absent or blank values so layouts skip the meta tags', () => {
+    expect(pickDetailSeo(null)).toEqual({})
+    expect(pickDetailSeo(undefined)).toEqual({})
+    expect(pickDetailSeo({ title: 'Book' })).toEqual({})
+    expect(
+      pickDetailSeo({ title: 'Book', description: '   ', image: '' }),
+    ).toEqual({})
   })
 })

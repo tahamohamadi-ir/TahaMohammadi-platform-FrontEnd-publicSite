@@ -3,11 +3,10 @@ import ThemeToggle from './ThemeToggle.astro'
 import LanguageToggle from './LanguageToggle.astro'
 import PromotedPicture from './media/PromotedPicture.astro'
 import {
-  GATEWAY_ROLE_LINE,
   localePath,
+  isNavActive,
   primaryNav,
   shellCopy,
-  isNavActive,
   type Locale,
 } from '../lib/navigation'
 import { fetchLocalizedSiteSettings } from '../lib/site-settings-content'
@@ -29,127 +28,136 @@ const {
 const homeHref = localePath(locale)
 const siteSettings = await fetchLocalizedSiteSettings(locale)
 
-const brandNameDisplay =
-  siteSettings !== null
-    ? locale === 'en'
-      ? siteSettings.brandName.toUpperCase()
-      : siteSettings.brandName
-    : locale === 'en'
-      ? shellCopy.brandName.en.toUpperCase()
-      : shellCopy.brandName.fa
-
-const roleLine =
-  siteSettings !== null ? siteSettings.tagline : GATEWAY_ROLE_LINE
-
-const navItems =
-  siteSettings !== null
-    ? (siteSettings.navLinks ?? []).map((link) => ({
-        href: link.href,
-        label: link.label,
-        active:
-          currentPath === link.href ||
-          (link.href !== '/' &&
-            link.href !== `/${locale}/` &&
-            currentPath.startsWith(link.href)),
-      }))
-    : primaryNav.map((item) => ({
-        href: localePath(locale, item.pathSegment),
+const brandNameDisplay = siteSettings?.brandName ?? ''
+const roleLine = siteSettings?.tagline ?? ''
+const managedNavItems = (siteSettings?.navLinks ?? []).map((link) => ({
+  ...link,
+  active:
+    currentPath === link.href ||
+    (link.href !== '/' &&
+      link.href !== `/${locale}/` &&
+      currentPath.startsWith(link.href)),
+}))
+// The route registry is an approved structural fallback when a published
+// settings snapshot is incomplete. A missing snapshot remains fail-closed.
+const navItems = managedNavItems.length
+  ? managedNavItems
+  : siteSettings
+    ? primaryNav.map((item) => ({
         label: item.label[locale],
+        href: localePath(locale, item.pathSegment),
         active: isNavActive(currentPath, locale, item.pathSegment),
       }))
-
+    : []
+const copy = siteSettings?.contentCopy ?? {}
 const mainMenuLabel =
-  siteSettings?.contentCopy?.['menu.main'] ?? shellCopy.mainMenu[locale]
+  copy['menu.main'] ?? (siteSettings ? shellCopy.mainMenu[locale] : '')
 const menuToggleLabel =
-  siteSettings?.contentCopy?.['menu.toggle'] ?? shellCopy.menuToggle[locale]
-const searchLabel =
-  siteSettings?.contentCopy?.['nav.search'] ??
-  (locale === 'en' ? 'Search' : 'جستجو')
+  copy['menu.toggle'] ?? (siteSettings ? shellCopy.menuToggle[locale] : '')
+const searchLabel = copy['nav.search'] ?? ''
 ---
 
 <header class="site-header" data-visual-id="Header">
   <div class="site-header__inner">
-    <a href={homeHref} class="site-header__brand" aria-label={brandNameDisplay}>
-      <PromotedPicture
-        assetId={BRAND_MARK_ASSET_ID}
-        mediaSlot="brand.mark"
-        locale={locale}
-        alt=""
-        imgClass="site-header__mark"
-        loading="eager"
-      />
-      <span class="site-header__brand-text">
-        <span class="site-header__brand-name">{brandNameDisplay}</span>
-        <span class="site-header__brand-role">{roleLine}</span>
-      </span>
-    </a>
+    {
+      brandNameDisplay && (
+        <a
+          href={homeHref}
+          class="site-header__brand"
+          aria-label={brandNameDisplay}
+        >
+          <PromotedPicture
+            assetId={BRAND_MARK_ASSET_ID}
+            mediaSlot="brand.mark"
+            locale={locale}
+            alt=""
+            imgClass="site-header__mark"
+            loading="eager"
+          />
+          <span class="site-header__brand-text">
+            <span class="site-header__brand-name">{brandNameDisplay}</span>
+            <span class="site-header__brand-role">{roleLine}</span>
+          </span>
+        </a>
+      )
+    }
 
-    <nav
-      class="site-header__nav site-header__nav--desktop"
-      aria-label={mainMenuLabel}
-    >
-      <ul class="site-header__nav-list">
-        {
-          navItems.map((item) => (
-            <li>
-              <a
-                href={item.href}
-                class:list={[
-                  'site-header__nav-link',
-                  item.active && 'site-header__nav-link--active',
-                ]}
-                aria-current={item.active ? 'page' : undefined}
-              >
-                {item.label}
-              </a>
-            </li>
-          ))
-        }
-      </ul>
-    </nav>
+    {
+      navItems.length > 0 && (
+        <nav
+          class="site-header__nav site-header__nav--desktop"
+          aria-label={mainMenuLabel || undefined}
+        >
+          <ul class="site-header__nav-list">
+            {navItems.map((item) => (
+              <li>
+                <a
+                  href={item.href}
+                  class:list={[
+                    'site-header__nav-link',
+                    item.active && 'site-header__nav-link--active',
+                  ]}
+                  aria-current={item.active ? 'page' : undefined}
+                >
+                  {item.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      )
+    }
 
     <div class="site-header__utilities">
-      <a
-        href={localePath(locale, 'search')}
-        class="site-header__search-link"
-        aria-current={isNavActive(currentPath, locale, 'search')
-          ? 'page'
-          : undefined}
-      >
-        {searchLabel}
-      </a>
+      {
+        searchLabel && (
+          <a
+            href={localePath(locale, 'search')}
+            class="site-header__search-link"
+            aria-current={
+              isNavActive(currentPath, locale, 'search') ? 'page' : undefined
+            }
+          >
+            {searchLabel}
+          </a>
+        )
+      }
       <LanguageToggle
         currentLocale={locale}
         alternateHref={alternateHref}
         available={alternateAvailable}
       />
       <ThemeToggle locale={locale} />
-      <details class="site-header__drawer">
-        <summary class="site-header__menu-trigger">{menuToggleLabel}</summary>
-        <nav
-          class="site-header__nav site-header__nav--mobile"
-          aria-label={mainMenuLabel}
-        >
-          <ul class="site-header__nav-list site-header__nav-list--stacked">
-            {
-              navItems.map((item) => (
-                <li>
-                  <a
-                    href={item.href}
-                    class:list={[
-                      'site-header__nav-link',
-                      item.active && 'site-header__nav-link--active',
-                    ]}
-                    aria-current={item.active ? 'page' : undefined}
-                  >
-                    {item.label}
-                  </a>
-                </li>
-              ))
-            }
-          </ul>
-        </nav>
-      </details>
+      {
+        navItems.length > 0 && menuToggleLabel && (
+          <details class="site-header__drawer">
+            <summary class="site-header__menu-trigger">
+              {menuToggleLabel}
+            </summary>
+            <nav
+              class="site-header__nav site-header__nav--mobile"
+              aria-label={mainMenuLabel || undefined}
+            >
+              <ul class="site-header__nav-list site-header__nav-list--stacked">
+                {navItems.map((item) => (
+                  <li>
+                    <a
+                      href={item.href}
+                      class:list={[
+                        'site-header__nav-link',
+                        item.active && 'site-header__nav-link--active',
+                      ]}
+                      aria-current={item.active ? 'page' : undefined}
+                    >
+                      {item.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          </details>
+        )
+      }
     </div>
   </div>
 </header>

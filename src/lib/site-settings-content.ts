@@ -27,7 +27,9 @@ export async function fetchLocalizedSiteSettings(
     const response = await fetch(buildPublicApiUrl(`/api/v1/site/${locale}`), {
       headers: { Accept: 'application/json' },
     })
-    return await parseJsonResponse<LocalizedSiteSettingsPublicOut>(response)
+    const settings =
+      await parseJsonResponse<LocalizedSiteSettingsPublicOut>(response)
+    return settings?.locale === locale ? settings : null
   } catch {
     return null
   }
@@ -71,4 +73,11 @@ export function hasPublishedDownloads(
   downloads: PublicDownloadOut[] | undefined,
 ): boolean {
   return Boolean(downloads?.length)
+}
+
+/** Published exact-locale copy; missing and explicitly empty values stay empty. */
+export async function getManagedCopy(
+  locale: Locale,
+): Promise<Record<string, string>> {
+  return (await fetchLocalizedSiteSettings(locale))?.contentCopy ?? {}
 }

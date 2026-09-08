@@ -11,10 +11,10 @@ interface Props {
 }
 
 const { locale } = Astro.props
-const content = getHomeFeaturedContent(locale)
+const content = await getHomeFeaturedContent(locale)
 const homeHref = localePath(locale)
-const draftNote = getStubProjectDraftNote(locale)
-const homeLabel = getStubBackToHomeLabel(locale)
+const draftNote = await getStubProjectDraftNote(locale)
+const homeLabel = await getStubBackToHomeLabel(locale)
 ---
 
 <article class="page-shell">

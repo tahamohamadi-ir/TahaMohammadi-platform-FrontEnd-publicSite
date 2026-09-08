@@ -1,8 +1,10 @@
 import { describe, it, expect } from 'vitest'
 import {
   extractTableOfContents,
+  firstStoryMedia,
   hasStoryContent,
   formatFileSize,
+  normalizeStoryMedia,
   parseHeadingLevel,
   type StoryDocument,
 } from './story-content'
@@ -149,5 +151,23 @@ describe('Story Content Utilities', () => {
       text: 'مقدمه بدون شناسه',
       level: 2,
     })
+  })
+
+  it('normalizes projected story media from object and array shapes (PU-13/CM-05)', () => {
+    const single = { url: '/media/a.jpg', alt: 'A' }
+    const multi = [
+      { url: '/media/a.jpg', alt: 'A' },
+      { url: '/media/b.jpg', alt: 'B' },
+    ]
+    // mediaId projection (single object) must not disappear.
+    expect(normalizeStoryMedia(single)).toHaveLength(1)
+    expect(firstStoryMedia(single)?.url).toBe('/media/a.jpg')
+    // mediaIds projection (array) must preserve every item.
+    expect(normalizeStoryMedia(multi)).toHaveLength(2)
+    expect(firstStoryMedia(multi)?.url).toBe('/media/a.jpg')
+    // Absent/invalid media stays empty without throwing.
+    expect(normalizeStoryMedia(undefined)).toEqual([])
+    expect(normalizeStoryMedia(null)).toEqual([])
+    expect(firstStoryMedia(null)).toBeNull()
   })
 })

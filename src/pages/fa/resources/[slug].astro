@@ -1,5 +1,6 @@
 ---
 import SiteLayout from '../../../layouts/SiteLayout.astro'
+import { pickDetailSeo } from '../../../lib/seo'
 import DetailPage from '../../../components/resources/DetailPage.astro'
 import {
   fetchResourceDetail,
@@ -27,6 +28,7 @@ const alternateAvailable = await resolveResourceAlternateAvailability(
   slug,
 )
 const pageTitle = `${model.resource.title} — طاها محمدی`
+const detailSeo = pickDetailSeo(model.resource.seo)
 ---
 
 <SiteLayout
@@ -34,6 +36,8 @@ const pageTitle = `${model.resource.title} — طاها محمدی`
   locale={locale}
   pathSegment={`resources/${slug}`}
   alternateAvailable={alternateAvailable}
+  description={detailSeo.description}
+  socialImage={detailSeo.socialImage}
 >
   <DetailPage locale={locale} model={model} />
 </SiteLayout>

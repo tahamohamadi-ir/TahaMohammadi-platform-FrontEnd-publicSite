@@ -1,5 +1,6 @@
 ---
 import SiteLayout from '../../../layouts/SiteLayout.astro'
+import { pickDetailSeo } from '../../../lib/seo'
 import DetailPage from '../../../components/collections/DetailPage.astro'
 import {
   fetchCollectionDetail,
@@ -27,6 +28,7 @@ const alternateAvailable = await resolveCollectionAlternateAvailability(
   slug,
 )
 const pageTitle = `${model.collection.title} — Taha Mohammadi`
+const detailSeo = pickDetailSeo(model.collection.seo)
 ---
 
 <SiteLayout
@@ -34,6 +36,8 @@ const pageTitle = `${model.collection.title} — Taha Mohammadi`
   locale={locale}
   pathSegment={`collections/${slug}`}
   alternateAvailable={alternateAvailable}
+  description={detailSeo.description}
+  socialImage={detailSeo.socialImage}
 >
   <DetailPage locale={locale} model={model} />
 </SiteLayout>

@@ -31,6 +31,14 @@ Owner: PUBLIC (`Front-End/public-site`)
 - Design authority:
   - `npm run validate:design` -> PASS.
 
+## 2026-09-07 — Detail SEO forwarding (PU-24, CM-03)
+
+- Detail pages (en/fa) now forward `model.publication.seo` through the shared
+  `pickDetailSeo()` helper (`src/lib/seo.ts`, tested in
+  `src/lib/seo.test.ts` -> 4 passed) into `SiteLayout` as
+  `description`/`socialImage`. Absent or blank values omit the meta
+  tags. `npm run lint` clean, `npm run build` -> 42 pages.
+
 ## Exact Paths Modified
 
 - `src/components/publications/PublicationDetailContent.astro`

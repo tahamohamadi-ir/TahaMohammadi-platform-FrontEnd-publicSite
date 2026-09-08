@@ -7,10 +7,9 @@ import {
   getPageFamilyDecorativeAlt,
   getCmsPlaceholderCopy,
   getProfileHeroCtaLabels,
-  getGatewayRoleLine,
   type PageFamilyChromeId,
 } from '../../lib/page-family-empty-chrome'
-import { localePath, shellCopy, type Locale } from '../../lib/navigation'
+import { localePath, type Locale } from '../../lib/navigation'
 
 interface Props {
   locale: Locale
@@ -18,6 +17,7 @@ interface Props {
   eyebrow?: string
   title?: string
   summary?: string
+  roleLine?: string
   class?: string
 }
 
@@ -27,13 +27,15 @@ const {
   eyebrow,
   title,
   summary,
+  roleLine,
   class: className = '',
 } = Astro.props
 const heroMedia = getPageFamilyHeroMedia(family)
 const decorativeAlt = getPageFamilyDecorativeAlt(locale, family)
 const placeholder = getCmsPlaceholderCopy(locale)
 const ctaLabels = getProfileHeroCtaLabels(locale)
-const displayName = title ?? shellCopy.brandName[locale]
+// No CMS record, no identity: never resurrect hardcoded owner facts.
+const displayName = title ?? placeholder
 const displaySummary = summary ?? placeholder
 const portraitLabel =
   locale === 'en'
@@ -54,7 +56,7 @@ const portraitLabel =
       titleScale="display"
       class="pf-index-profile-hero__lead"
     />
-    <p class="pf-index-profile-hero__role">{getGatewayRoleLine(locale)}</p>
+    {roleLine && <p class="pf-index-profile-hero__role">{roleLine}</p>}
 
     <div class="pf-index-profile-hero__actions">
       <Button
