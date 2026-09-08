@@ -18,10 +18,10 @@ Parent groups and retired CA IDs are not assignments. Dependencies and exact fil
 | CA-05                | IMPLEMENTED_UNREVIEWED | `../../Docs/05-delivery/concept-alignment-v2/packets/CA-05.md`                        |
 | CA-06                | IMPLEMENTED_UNREVIEWED | `../../Docs/05-delivery/concept-alignment-v2/packets/CA-06.md`                        |
 | CA-07                | IMPLEMENTED_UNREVIEWED | `../../Docs/05-delivery/concept-alignment-v2/packets/CA-07.md`                        |
-| CA-08                | IMPLEMENTED_UNREVIEWED | `../../Docs/05-delivery/concept-alignment-v2/packets/CA-08.md`                        |
+| CA-08                | ACCEPTED_LOCAL         | `../../Docs/05-delivery/concept-alignment-v2/packets/CA-08.md`                        |
 | PU-SYNC-public       | IMPLEMENTED_UNREVIEWED | `../../Docs/05-delivery/concept-alignment-v2/product-packets/PU-SYNC-public.md`       |
 | PU-13-routes         | NOT_STARTED            | `../../Docs/05-delivery/concept-alignment-v2/product-packets/PU-13-routes.md`         |
-| PU-13-story          | NOT_STARTED            | `../../Docs/05-delivery/concept-alignment-v2/product-packets/PU-13-story.md`          |
+| PU-13-story          | IMPLEMENTED_UNREVIEWED | `../../Docs/05-delivery/concept-alignment-v2/product-packets/PU-13-story.md`          |
 | PU-14-research       | NOT_STARTED            | `../../Docs/05-delivery/concept-alignment-v2/product-packets/PU-14-research.md`       |
 | PU-14-publications   | NOT_STARTED            | `../../Docs/05-delivery/concept-alignment-v2/product-packets/PU-14-publications.md`   |
 | PU-14-projects       | NOT_STARTED            | `../../Docs/05-delivery/concept-alignment-v2/product-packets/PU-14-projects.md`       |
