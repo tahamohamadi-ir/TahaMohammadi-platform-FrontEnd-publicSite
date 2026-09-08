@@ -136,7 +136,8 @@ const accordionItems: AccordionItem[] = Array.isArray(settings.items)
   ? (settings.items as AccordionItem[])
   : []
 
-const ctaUrl = typeof settings.url === 'string' ? settings.url : '#'
+const ctaUrl =
+  typeof settings.url === 'string' && settings.url.trim() ? settings.url : null
 const ctaLabel =
   typeof settings.label === 'string'
     ? settings.label
@@ -492,7 +493,7 @@ const afterLabel =
 {blockType === 'divider' && <hr class="story-divider" />}
 
 {
-  blockType === 'cta' && (
+  blockType === 'cta' && ctaUrl && (
     <div class="story-block story-block--cta">
       <a
         href={ctaUrl}

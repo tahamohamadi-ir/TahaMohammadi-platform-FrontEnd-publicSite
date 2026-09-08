@@ -79,6 +79,21 @@ describe('PUBLIC-150 behavior', () => {
     expect(html).not.toMatch(/<a[^>]*href=/)
   })
 
+  it('omits unnamed shell controls when localized settings are unavailable', async () => {
+    const headerHtml = await renderComponent(Header, {
+      locale: 'en',
+      currentPath: '/en/',
+      alternateAvailable: false,
+    })
+    const skipHtml = await renderComponent(SkipLink, { locale: 'en' })
+
+    expect(headerHtml).not.toMatch(/site-header__brand/)
+    expect(headerHtml).not.toMatch(/site-header__search-link/)
+    expect(headerHtml).not.toMatch(/theme-toggle--shell/)
+    expect(headerHtml).not.toMatch(/site-header__drawer/)
+    expect(skipHtml).not.toMatch(/class="skip-link"/)
+  })
+
   it('keeps Header wired to LanguageToggle and preserves skip-link continuity', async () => {
     shellState.settings = {
       locale: 'fa',
@@ -152,8 +167,11 @@ describe('PUBLIC-150 behavior', () => {
         locale,
         brandName: 'Brand',
         tagline: '',
-        navLinks: [],
-        contentCopy: { 'menu.toggle': toggleByLocale[locale] },
+        navLinks: [{ label: 'Projects', href: `/${locale}/projects/` }],
+        contentCopy: {
+          'menu.main': toggleByLocale[locale],
+          'menu.toggle': toggleByLocale[locale],
+        },
       }
       const html = await renderComponent(Header, {
         locale,

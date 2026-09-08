@@ -40,87 +40,105 @@ const searchLabel = copy['nav.search'] ?? ''
 
 <header class="site-header" data-visual-id="Header">
   <div class="site-header__inner">
-    <a href={homeHref} class="site-header__brand" aria-label={brandNameDisplay}>
-      <PromotedPicture
-        assetId={BRAND_MARK_ASSET_ID}
-        mediaSlot="brand.mark"
-        locale={locale}
-        alt=""
-        imgClass="site-header__mark"
-        loading="eager"
-      />
-      <span class="site-header__brand-text">
-        <span class="site-header__brand-name">{brandNameDisplay}</span>
-        <span class="site-header__brand-role">{roleLine}</span>
-      </span>
-    </a>
+    {
+      brandNameDisplay && (
+        <a
+          href={homeHref}
+          class="site-header__brand"
+          aria-label={brandNameDisplay}
+        >
+          <PromotedPicture
+            assetId={BRAND_MARK_ASSET_ID}
+            mediaSlot="brand.mark"
+            locale={locale}
+            alt=""
+            imgClass="site-header__mark"
+            loading="eager"
+          />
+          <span class="site-header__brand-text">
+            <span class="site-header__brand-name">{brandNameDisplay}</span>
+            <span class="site-header__brand-role">{roleLine}</span>
+          </span>
+        </a>
+      )
+    }
 
-    <nav
-      class="site-header__nav site-header__nav--desktop"
-      aria-label={mainMenuLabel}
-    >
-      <ul class="site-header__nav-list">
-        {
-          navItems.map((item) => (
-            <li>
-              <a
-                href={item.href}
-                class:list={[
-                  'site-header__nav-link',
-                  item.active && 'site-header__nav-link--active',
-                ]}
-                aria-current={item.active ? 'page' : undefined}
-              >
-                {item.label}
-              </a>
-            </li>
-          ))
-        }
-      </ul>
-    </nav>
+    {
+      navItems.length > 0 && (
+        <nav
+          class="site-header__nav site-header__nav--desktop"
+          aria-label={mainMenuLabel || undefined}
+        >
+          <ul class="site-header__nav-list">
+            {navItems.map((item) => (
+              <li>
+                <a
+                  href={item.href}
+                  class:list={[
+                    'site-header__nav-link',
+                    item.active && 'site-header__nav-link--active',
+                  ]}
+                  aria-current={item.active ? 'page' : undefined}
+                >
+                  {item.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      )
+    }
 
     <div class="site-header__utilities">
-      <a
-        href={localePath(locale, 'search')}
-        class="site-header__search-link"
-        aria-current={isNavActive(currentPath, locale, 'search')
-          ? 'page'
-          : undefined}
-      >
-        {searchLabel}
-      </a>
+      {
+        searchLabel && (
+          <a
+            href={localePath(locale, 'search')}
+            class="site-header__search-link"
+            aria-current={
+              isNavActive(currentPath, locale, 'search') ? 'page' : undefined
+            }
+          >
+            {searchLabel}
+          </a>
+        )
+      }
       <LanguageToggle
         currentLocale={locale}
         alternateHref={alternateHref}
         available={alternateAvailable}
       />
       <ThemeToggle locale={locale} />
-      <details class="site-header__drawer">
-        <summary class="site-header__menu-trigger">{menuToggleLabel}</summary>
-        <nav
-          class="site-header__nav site-header__nav--mobile"
-          aria-label={mainMenuLabel}
-        >
-          <ul class="site-header__nav-list site-header__nav-list--stacked">
-            {
-              navItems.map((item) => (
-                <li>
-                  <a
-                    href={item.href}
-                    class:list={[
-                      'site-header__nav-link',
-                      item.active && 'site-header__nav-link--active',
-                    ]}
-                    aria-current={item.active ? 'page' : undefined}
-                  >
-                    {item.label}
-                  </a>
-                </li>
-              ))
-            }
-          </ul>
-        </nav>
-      </details>
+      {
+        navItems.length > 0 && menuToggleLabel && (
+          <details class="site-header__drawer">
+            <summary class="site-header__menu-trigger">
+              {menuToggleLabel}
+            </summary>
+            <nav
+              class="site-header__nav site-header__nav--mobile"
+              aria-label={mainMenuLabel || undefined}
+            >
+              <ul class="site-header__nav-list site-header__nav-list--stacked">
+                {navItems.map((item) => (
+                  <li>
+                    <a
+                      href={item.href}
+                      class:list={[
+                        'site-header__nav-link',
+                        item.active && 'site-header__nav-link--active',
+                      ]}
+                      aria-current={item.active ? 'page' : undefined}
+                    >
+                      {item.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          </details>
+        )
+      }
     </div>
   </div>
 </header>

@@ -57,3 +57,17 @@ Owner: PUBLIC (`Front-End/public-site`)
 - `src/components/story/StoryBlock.astro`
 - `src/components/story/StoryDocument.astro`
 - `docs/quality/product-v2/PU-13-story-HANDOFF.md`
+
+## 2026-09-07 — CTA URL omission guard
+
+- A `cta` block without a non-blank `settings.url` previously rendered a
+  fabricated `href="#"`. `StoryBlock.astro` now omits that CTA instead of
+  presenting a false navigation target.
+- `story-projection.test.ts` first reproduced the rendered `href="#"`, then
+  verifies that an incomplete CTA produces neither a hash link nor its label.
+- Verification after the repair: focused story projection suite **4/4**;
+  full public suite **87 files / 453 tests**; `npm run lint`,
+  `npm run validate:design`, and `npm run build` all passed (42 pages).
+
+This is a regression repair only. It does not change packet status, visual
+acceptance, publication acceptance, or the separate staging journey gate.

@@ -195,3 +195,24 @@ src/lib/home-content.test.ts` -> **6/6 passed**.
 ## 10. Stop Marker
 
 **CA-08_HANDOFF_READY**
+
+## 2026-09-07 — CMS-unavailable shell guard
+
+- The static E2E server has no public API base, so localized settings are
+  correctly absent. The prior browser assertions instead expected the retired
+  hardcoded brand and menu, while the rendered header contained unnamed
+  brand/search/theme/menu controls and an empty skip link.
+- Header, ThemeToggle, and SkipLink now omit controls whose published label or
+  data is absent. The desktop/mobile navigation is also omitted when there are
+  no published navigation items; no fallback identity, link, or copy was
+  restored.
+- A new component regression first failed against the unnamed controls, then
+  passed after the guard. The managed-settings unit fixture continues to cover
+  named brand and native drawer behavior when published settings are present.
+- Browser evidence: `npm exec playwright test
+tests/e2e/public-150-shell.e2e.ts` → **5/5 passed**. The E2E suite now
+  checks the honest unavailable state, while component tests cover the
+  CMS-populated behavior.
+
+This repair does not supply CMS content, alter visual acceptance, or change
+packet status; real populated-data visual review remains a coordinator gate.

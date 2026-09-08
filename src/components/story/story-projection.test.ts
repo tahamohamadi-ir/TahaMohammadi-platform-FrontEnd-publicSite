@@ -130,4 +130,26 @@ describe('Public story projection renders without JavaScript', () => {
     expect(html).not.toContain('href="#"')
     expect(fetcher).toHaveBeenCalledTimes(1)
   })
+
+  it('does not turn a CTA without a URL into an invented hash link', async () => {
+    const html = await render({
+      locale: 'en',
+      title: 'Story',
+      sections: [
+        {
+          layout: '1col',
+          ratio: '1:1',
+          blocks: [
+            {
+              blockType: 'cta',
+              settings: { label: 'Read more' },
+            },
+          ],
+        },
+      ],
+    })
+
+    expect(html).not.toContain('href="#"')
+    expect(html).not.toContain('Read more')
+  })
 })
