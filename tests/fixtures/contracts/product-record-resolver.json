@@ -2,7 +2,7 @@
   "synthetic": true,
   "description": "PU-SYNC-graph synthetic contract fixture for GET /api/v1/records/{locale}/resolve. Contains purely synthetic records for testing contract shapes and ordering; no real profile claims.",
   "contractSection": "I04",
-  "sourceOpenApiSha256": "f3115a5095097e7ccc12efba4c0c59b1f0258914c1ce8a83e867b3b207c33ec9",
+  "sourceOpenApiSha256": "02dcfff0188cd2512853f3998f991be4b96d88d47d43f3404ffdc9452fc1c971",
   "scenarios": {
     "resolveBatchSuccess": {
       "description": "200 OK batch resolution with multiple content families, preserved request order, and unresolved items.",
