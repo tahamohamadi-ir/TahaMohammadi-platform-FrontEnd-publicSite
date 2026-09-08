@@ -21,13 +21,13 @@ export const OPENAPI_HASH_PIN_PATH = path.join(
   'contracts/openapi.public.sha256',
 )
 
-/** Accepted hash recorded at PS-05 (CRLF-encoded bytes). */
+/** Accepted hash recorded at PS-05 (CRLF-encoded bytes), re-pinned 2026-09-08. */
 export const ACCEPTED_PUBLIC_OPENAPI_SHA256 =
-  'f3115a5095097e7ccc12efba4c0c59b1f0258914c1ce8a83e867b3b207c33ec9'
+  '02dcfff0188cd2512853f3998f991be4b96d88d47d43f3404ffdc9452fc1c971'
 
 /** Canonical LF hash of the accepted public OpenAPI artifact (BACKEND-140). */
 export const CANONICAL_PUBLIC_OPENAPI_LF_SHA256 =
-  '9f627d6e31c624cee7a7eaf123a33e3929bdc503b9619439e13f219afe149471'
+  '1cc3f82d229b7bd2bed973d069d4fd9f847b2395ed52a06fb41fc607e0461cea'
 
 export const CONSUMER_RESPONSES_DIR = path.join(
   repositoryRoot,

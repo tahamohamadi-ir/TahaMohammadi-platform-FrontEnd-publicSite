@@ -102,6 +102,11 @@ deploy, or legacy copy.
 - Evidence: contract suite **4/4**, `lint` clean. No consumer code changed:
   `home-content.ts` already reads `featuredRecords` through an optional
   local type, so the re-sync is behavior-preserving.
+- Follow-up in the same sync: the resolver chain pinned the same snapshot
+  in `src/test-harness/contract-fixtures.ts` (accepted + LF-canonical
+  hashes) and `tests/fixtures/contracts/product-record-resolver.json`
+  (`sourceOpenApiSha256`, provenance metadata only — scenarios untouched).
+  Resolver + hero-graph suites **23/23** after the move.
 
 ## 10. Stop Marker
 
