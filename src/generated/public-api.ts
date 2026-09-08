@@ -880,6 +880,32 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/site/{locale}/journey": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Published career timeline for a locale (fail-closed, no fallback).
+         * @description Project the published about profile's experience/education entries.
+         *
+         *     Only the live-published ``about`` profile exposes its child entries;
+         *     entry rows carry no independent publication state, so snapshot fallback
+         *     is deliberately not applied here (it could leak draft child rows).
+         *     Family order is explicit ``ordering``; experience precedes education.
+         *     Degree and field are comma-joined from real record fields.
+         */
+        get: operations["apps_api_api_get_profile_journey"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1570,6 +1596,29 @@ export interface components {
             page_size?: number | null;
         };
         /**
+         * JourneyMilestoneOut
+         * @description One timeline milestone projected from a published profile's entries.
+         */
+        JourneyMilestoneOut: {
+            /** Kind */
+            kind: string;
+            /**
+             * Period
+             * @default
+             */
+            period: string;
+            /**
+             * Subtitle
+             * @default
+             */
+            subtitle: string;
+            /**
+             * Title
+             * @default
+             */
+            title: string;
+        };
+        /**
          * LandingOut
          * @description Public projection of a published landing page.
          */
@@ -1810,6 +1859,16 @@ export interface components {
             count: number;
             /** Items */
             items: components["schemas"]["TalkListOut"][];
+        };
+        /**
+         * ProfileJourneyOut
+         * @description Published career timeline for a locale (fail-closed, no fallback).
+         */
+        ProfileJourneyOut: {
+            /** Locale */
+            locale: string;
+            /** Milestones */
+            milestones?: components["schemas"]["JourneyMilestoneOut"][];
         };
         /**
          * ProfileOut
@@ -3675,6 +3734,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["LocalizedSiteSettingsPublicOut"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelopeOut"];
+                };
+            };
+        };
+    };
+    apps_api_api_get_profile_journey: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                locale: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProfileJourneyOut"];
                 };
             };
             /** @description Not Found */

@@ -1,8 +1,8 @@
 {
   "artifact": "public-openapi.json",
   "sourcePath": "../../Back-End/docs/contracts/openapi/current/public-openapi.json",
-  "sha256": "02dcfff0188cd2512853f3998f991be4b96d88d47d43f3404ffdc9452fc1c971",
-  "acceptedBackendCommit": "247dafeaf178a44e3d898c9e1243341fd40d285a",
+  "sha256": "469bd51ed7e1e0d3bed7c64affaf9d488c8ee124da69496e8f5b8acc36eda914",
+  "acceptedBackendCommit": "6fa953d08d9949a3d45de1423a3e2b89bef75b14",
   "openapiVersion": "0.4.0",
-  "pathCount": 48
+  "pathCount": 49
 }

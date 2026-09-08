@@ -57,3 +57,19 @@ The structured Profile education/experience records can support a truthful
 Journey, but the current public Home contract does not expose them. No static
 timeline was invented; an additive backend contract and populated settings
 remain required before that UI can be implemented.
+
+## 2026-09-08 — Journey wired to the new public projection (owner-directed)
+
+- Backend now exposes `GET /api/v1/site/{locale}/journey` (fail-closed 404
+  unless the `about` profile is live-published). `getHomeJourneyContent`
+  reads it with the shared `read()` helper: 404/exception → `[]`, so the
+  section stays honestly hidden without CMS data.
+- `HomeJourney.astro` renders `TimelineNode` with `label`/`summary`
+  (organization or institution) /`period` — all record fields, no new copy
+  in either locale. `HomeJourneyContent.milestones` is now
+  `{title, subtitle, period}`.
+- Consumer types re-synced a second time (49 paths): pins, generated
+  `public-api.ts` (+journey schemas), resolver-chain pins.
+- Evidence: `product-home` **8/8** (new milestone render test; the API-404
+  test still proves the empty state), contract + resolver + hero-graph
+  suites green, `lint` clean.

@@ -56,6 +56,8 @@ function mockCms(
         'home.explore.title': 'Explore section',
         'home.explore.gallery.title': 'Gallery',
         'home.explore.gallery.action': 'Browse gallery',
+        'home.journey.title': 'Journey section',
+        'home.journey.headline': 'Journey headline',
         'home.unavailable.title': 'Home unavailable',
         'home.unavailable.message': 'No published Home modules',
       }
@@ -107,6 +109,23 @@ function mockCms(
         ['/api/v1/records/' + locale + '/resolve']: {
           items: records,
           unresolved: [],
+        },
+        ['/api/v1/site/' + locale + '/journey']: {
+          locale,
+          milestones: [
+            {
+              kind: 'experience',
+              title: 'CMS role',
+              subtitle: 'CMS org',
+              period: '2020–now',
+            },
+            {
+              kind: 'education',
+              title: 'CMS degree, CMS field',
+              subtitle: 'CMS school',
+              period: '2016–2018',
+            },
+          ],
         },
       }
       return data[url.pathname]
@@ -168,6 +187,16 @@ describe('PU-17 Home CMS integration', () => {
     expect(html).toContain('href="/en/publications/selected-paper/"')
     expect(html).toContain('href="/en/publications/"')
     expect(html).not.toContain('Manuscript draft')
+  })
+  it('renders published journey milestones with periods and organizations', async () => {
+    mockCms('en')
+    const html = await render(HomeJourney, { locale: 'en' })
+    expect(html).toContain('Journey headline')
+    expect(html).toContain('CMS role')
+    expect(html).toContain('CMS org')
+    expect(html).toContain('2020–now')
+    expect(html).toContain('CMS degree, CMS field')
+    expect(html).toContain('CMS school')
   })
   it('leaves all optional content absent on API failure instead of showing local records', async () => {
     vi.stubGlobal(

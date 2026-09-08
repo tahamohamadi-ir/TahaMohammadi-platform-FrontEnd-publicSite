@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest'
 const testDir = path.dirname(fileURLToPath(import.meta.url))
 const repositoryRoot = path.resolve(testDir, '..', '..')
 const acceptedPublicSchemaSha256 =
-  '02dcfff0188cd2512853f3998f991be4b96d88d47d43f3404ffdc9452fc1c971'
+  '469bd51ed7e1e0d3bed7c64affaf9d488c8ee124da69496e8f5b8acc36eda914'
 const generatedPath = path.join(
   repositoryRoot,
   'src',
@@ -39,10 +39,10 @@ describe('PU-SYNC-public product contract (I08)', () => {
     expect(pin.artifact).toBe('public-openapi.json')
     expect(pin.sha256).toBe(acceptedPublicSchemaSha256)
     expect(readFileSync(shaPinPath, 'utf8').trim()).toBe(pin.sha256)
-    // Acceptance 2026-09-06, re-pinned 2026-09-08 (additive featured/brand
-    // fields): 48 paths, version 0.4.0.
+    // Acceptance 2026-09-06, re-pinned 2026-09-08 twice (featured/brand,
+    // then journey projection): 49 paths, version 0.4.0.
     expect(pin.openapiVersion).toBe('0.4.0')
-    expect(pin.pathCount).toBe(48)
+    expect(pin.pathCount).toBe(49)
   })
 
   it('exposes the final public operations in generated types', () => {

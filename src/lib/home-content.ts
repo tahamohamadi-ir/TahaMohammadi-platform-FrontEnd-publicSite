@@ -197,17 +197,34 @@ export async function getHomeInterestsContent(
 export interface HomeJourneyContent {
   title: string
   headline: string
-  milestones: readonly { title: string }[]
+  milestones: readonly { title: string; subtitle: string; period: string }[]
 }
+type JourneyOut = components['schemas']['ProfileJourneyOut']
 export async function getHomeJourneyContent(
   locale: Locale,
 ): Promise<HomeJourneyContent> {
-  const copy = await getManagedCopy(locale)
-  // Public ProfileOut has no timeline fields; do not fabricate timeline records.
+  const [copy, journey] = await Promise.all([
+    getManagedCopy(locale),
+    read<JourneyOut>(`/api/v1/site/${locale}/journey`),
+  ])
+  // The journey endpoint is fail-closed: a missing/unpublished timeline is
+  // null here and renders as an honest empty section (hidden, no fallback).
+  const milestones =
+    journey?.locale === locale && Array.isArray(journey.milestones)
+      ? journey.milestones
+          .filter(
+            (item) => typeof item.title === 'string' && item.title.length > 0,
+          )
+          .map((item) => ({
+            title: item.title as string,
+            subtitle: typeof item.subtitle === 'string' ? item.subtitle : '',
+            period: typeof item.period === 'string' ? item.period : '',
+          }))
+      : []
   return {
     title: copy['home.journey.title'] ?? '',
     headline: copy['home.journey.headline'] ?? '',
-    milestones: [],
+    milestones,
   }
 }
 export interface PublicationCard {
