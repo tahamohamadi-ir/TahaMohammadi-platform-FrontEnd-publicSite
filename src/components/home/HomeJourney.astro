@@ -30,7 +30,12 @@ const content = await getHomeJourneyContent(locale)
 
         <ol class="hm-journey__timeline">
           {content.milestones.map((milestone) => (
-            <TimelineNode label={milestone.title} class="hm-journey__step" />
+            <TimelineNode
+              label={milestone.title}
+              summary={milestone.subtitle || undefined}
+              period={milestone.period || undefined}
+              class="hm-journey__step"
+            />
           ))}
         </ol>
       </div>

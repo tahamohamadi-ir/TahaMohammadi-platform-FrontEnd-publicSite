@@ -107,6 +107,9 @@ deploy, or legacy copy.
   hashes) and `tests/fixtures/contracts/product-record-resolver.json`
   (`sourceOpenApiSha256`, provenance metadata only — scenarios untouched).
   Resolver + hero-graph suites **23/23** after the move.
+- Second re-sync 2026-09-08 (journey projection, owner-directed): pins to
+  `469bd51e…`, 49 paths; generated types gain the journey path/schemas;
+  resolver-chain pins moved identically. Suites re-verified after the move.
 
 ## 10. Stop Marker
 
