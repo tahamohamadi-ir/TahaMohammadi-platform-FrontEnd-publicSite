@@ -91,6 +91,18 @@ deploy, or legacy copy.
 
 ---
 
-## 9. Stop Marker
+## 9. 2026-09-08 — Consumer-type re-sync for additive featured/brand fields
+
+- Backend `247dafe` added optional `featuredRecords`/`brandMedia` to
+  `LocalizedSiteSettingsPublicOut` (48 paths, version 0.4.0 unchanged).
+  Pins moved to `02dcfff0…`: `contracts/openapi.public.sha256`,
+  `src/generated/openapi-hash.json`, and the in-test accepted hash.
+- `npm run generate:api-types` regenerated `src/generated/public-api.ts`
+  (+13 lines: `LocalizedFeaturedRecordOut`, the two optional fields).
+- Evidence: contract suite **4/4**, `lint` clean. No consumer code changed:
+  `home-content.ts` already reads `featuredRecords` through an optional
+  local type, so the re-sync is behavior-preserving.
+
+## 10. Stop Marker
 
 **PU-SYNC-public_HANDOFF_READY**

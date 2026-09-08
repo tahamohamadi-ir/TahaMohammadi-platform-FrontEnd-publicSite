@@ -1656,6 +1656,16 @@ export interface components {
             label: string;
         };
         /**
+         * LocalizedFeaturedRecordOut
+         * @description Canonical resolver-family reference; content remains separately governed.
+         */
+        LocalizedFeaturedRecordOut: {
+            /** Family */
+            family: string;
+            /** Id */
+            id: string;
+        };
+        /**
          * LocalizedNavLinkOut
          * @description One navigation link for localized site settings.
          */
@@ -1714,12 +1724,15 @@ export interface components {
         LocalizedSiteSettingsPublicOut: {
             /** Audiencelinks */
             audienceLinks?: components["schemas"]["LocalizedAudienceLinkOut"][];
+            brandMedia?: components["schemas"]["PublicMediaOut"] | null;
             /** Brandname */
             brandName: string;
             /** Contentcopy */
             contentCopy?: {
                 [key: string]: string;
             };
+            /** Featuredrecords */
+            featuredRecords?: components["schemas"]["LocalizedFeaturedRecordOut"][];
             /** Footertext */
             footerText: string;
             /** Locale */
