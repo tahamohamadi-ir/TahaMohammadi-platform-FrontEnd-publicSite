@@ -16,7 +16,7 @@ describe('CMS-controlled shell', () => {
   beforeEach(() => {
     state.settings = null
   })
-  it('does not resurrect identity, biography or menu when settings are absent', async () => {
+  it('does not resurrect identity or biography when settings are absent', async () => {
     const container = await AstroContainer.create()
     for (const component of [Header, Footer]) {
       const html = await container.renderToString(component, {
@@ -28,6 +28,17 @@ describe('CMS-controlled shell', () => {
       expect(html).not.toContain('I work across software')
       expect(html).not.toContain('pending CMS publication')
     }
+  })
+  it('keeps approved routes reachable when the settings snapshot is unavailable', async () => {
+    const container = await AstroContainer.create()
+    const html = await container.renderToString(Header, {
+      props: { locale: 'en', currentPath: '/en/research/' },
+    })
+
+    expect(html).toContain('href="/en/about/"')
+    expect(html).toContain('href="/en/research/"')
+    expect(html).toContain('>Research<')
+    expect(html).toContain('aria-current="page"')
   })
   it('honors an explicitly empty published footer and real navigation edits', async () => {
     state.settings = {

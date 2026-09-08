@@ -235,3 +235,32 @@ packet status; real populated-data visual review remains a coordinator gate.
 
 This is an uncommitted local correction. It does not change CA-08 acceptance
 state, populate staging settings, publish data, or deploy the public site.
+
+## 2026-09-08 — Missing-snapshot structural navigation
+
+- Live staging after the `832460a` deploy still rendered a static header
+  without navigation. Local reproduction showed the cause: the static build
+  has no public API base, so `fetchLocalizedSiteSettings()` returns `null`
+  (not an empty published snapshot), and the header rendered only the
+  language toggle with no `navItems`.
+- `Header.astro` now falls back to the read-only, approved route registry
+  (`primaryNav`) whenever managed links are empty, whether the snapshot is
+  missing or published-but-incomplete. Structural menu labels
+  (`shellCopy.mainMenu`/`menuToggle`) also fall back so desktop and mobile
+  navigation stay consistent.
+- Brand, role line, search, footer, and all owner copy remain fail-closed:
+  no identity or biography is restored when settings are absent. The first
+  `managed-shell` test was renamed to state exactly that.
+- Regression evidence: the new missing-snapshot assertion failed before the
+  change (`1 failed | 3 passed`, header contained no `/en/about/`) and
+  passes after it: `npx vitest run
+src/components/shell/managed-shell.test.ts` → **4 passed / 0 failed**.
+- `public-150.behavior.test.ts` was updated in the same packet scope: when
+  settings are unavailable, brand, search, theme toggle, and skip link stay
+  omitted, but desktop nav and the native drawer persist with structural
+  labels (`Main menu`/`Menu`).
+- Out of packet scope and unchanged here: staging CMS still publishes an
+  empty payload (`navLinks: []`, `contentCopy: {}`), and the staging deploy
+  workflow rewrites that empty published payload on every run. Home sections
+  therefore still need a separate data/deployment correction with populated
+  settings; this packet only keeps approved routes reachable.
