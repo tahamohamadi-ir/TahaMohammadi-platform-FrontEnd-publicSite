@@ -418,6 +418,54 @@ jobs:
           current = target.read_text(encoding="utf-8")
           fragment = fragment_path.read_text(encoding="utf-8").strip()
 
+          def brace_delta(line: str) -> int:
+              delta = 0
+              quoted = False
+              escaped = False
+              for char in line:
+                  if escaped:
+                      escaped = False
+                      continue
+                  if char == "\\" and quoted:
+                      escaped = True
+                      continue
+                  if char == '"':
+                      quoted = not quoted
+                      continue
+                  if char == "#" and not quoted:
+                      break
+                  if not quoted and char == "{":
+                      delta += 1
+                  elif not quoted and char == "}":
+                      delta -= 1
+              return delta
+
+          def replace_unmanaged_site(text: str, hostname: str, replacement: str) -> str:
+              lines = text.splitlines(keepends=True)
+              starts = [
+                  index
+                  for index, line in enumerate(lines)
+                  if line.strip() == f"{hostname} {{"
+              ]
+              if len(starts) != 1:
+                  raise SystemExit(
+                      f"expected one unmanaged {hostname} block, found {len(starts)}"
+                  )
+              start_index = starts[0]
+              depth = 0
+              end_index = None
+              for index in range(start_index, len(lines)):
+                  depth += brace_delta(lines[index])
+                  if depth == 0:
+                      end_index = index
+                      break
+              if end_index is None:
+                  raise SystemExit(f"unterminated unmanaged {hostname} block")
+              before = "".join(lines[:start_index]).rstrip()
+              after = "".join(lines[end_index + 1 :]).lstrip("\n")
+              suffix = f"\n\n{after}" if after else "\n"
+              return before + "\n\n" + replacement + suffix
+
           if start in current or end in current:
               if current.count(start) != 1 or current.count(end) != 1:
                   raise SystemExit("invalid managed staging marker count")
@@ -426,8 +474,11 @@ jobs:
               updated = prefix.rstrip() + "\n\n" + fragment + suffix
           else:
               if "staging.tahamohamadi.ir" in current:
-                  raise SystemExit("unmanaged staging Caddy block requires operator reconciliation")
-              updated = current.rstrip() + "\n\n" + fragment + "\n"
+                  updated = replace_unmanaged_site(
+                      current, "staging.tahamohamadi.ir", fragment
+                  )
+              else:
+                  updated = current.rstrip() + "\n\n" + fragment + "\n"
 
           candidate.write_text(updated, encoding="utf-8")
           PY

@@ -154,6 +154,7 @@ describe('PUBLIC-320 integrated staging smoke scaffold', () => {
     expect(workflow).toContain(
       '/home/deploy/cms-repo/infra/caddy/Caddyfile.compose',
     )
+    expect(workflow).toContain('def replace_unmanaged_site')
     expect(workflow).toContain('caddy reload --config /etc/caddy/Caddyfile')
     expect(workflow).toContain('pg_dump')
     expect(workflow).toContain('pg_restore --exit-on-error')
