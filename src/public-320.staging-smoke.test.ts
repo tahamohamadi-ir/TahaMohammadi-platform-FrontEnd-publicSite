@@ -159,5 +159,15 @@ describe('PUBLIC-320 integrated staging smoke scaffold', () => {
     expect(workflow).toContain('pg_dump')
     expect(workflow).toContain('pg_restore --exit-on-error')
     expect(workflow).not.toContain('cat "$f"')
+
+    const cmsBuild = workflow.indexOf('build cms admin')
+    const contentSeed = workflow.indexOf('python manage.py seed_site_content')
+    const webBuild = workflow.indexOf('build web')
+    expect(cmsBuild).toBeGreaterThan(-1)
+    expect(contentSeed).toBeGreaterThan(cmsBuild)
+    expect(webBuild).toBeGreaterThan(contentSeed)
+    expect(workflow).not.toContain(
+      'python manage.py seed_site_content </dev/null || true',
+    )
   })
 })

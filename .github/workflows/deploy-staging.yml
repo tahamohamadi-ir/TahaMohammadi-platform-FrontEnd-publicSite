@@ -326,21 +326,24 @@ jobs:
             echo "PUBLIC_API_BASE_URL=https://staging.tahamohamadi.ir" >> .env.stage
           fi
 
-          # 4. Build all services
-          docker compose --env-file .env.stage -f deploy/docker-compose.stage.yml build cms admin web
+          # 4. Build the services needed to prepare the release database.
+          docker compose --env-file .env.stage -f deploy/docker-compose.stage.yml build cms admin
 
           # 5. Database migrations and non-destructive content seed
           # Localized-settings verification is create-missing-only: an
           # existing row's published snapshot is never rewritten here, so a
           # deploy cannot wipe content published from managed copy.
           docker compose --env-file .env.stage -f deploy/docker-compose.stage.yml run -T --rm cms python manage.py migrate --noinput </dev/null
-          docker compose --env-file .env.stage -f deploy/docker-compose.stage.yml run -T --rm cms python manage.py seed_site_content </dev/null || true
+          docker compose --env-file .env.stage -f deploy/docker-compose.stage.yml run -T --rm cms python manage.py seed_site_content </dev/null
           docker compose --env-file .env.stage -f deploy/docker-compose.stage.yml run -T --rm cms python manage.py shell -c "import uuid; from django.utils import timezone; from apps.siteconfig.models import LocalizedSiteSettings; [print(f'Localized settings present for {locale}; existing published snapshot preserved.') if LocalizedSiteSettings.objects.filter(locale=locale).exists() else (LocalizedSiteSettings.objects.create(locale=locale, revision=f'rev-{uuid.uuid4().hex[:12]}', brand_name=brand, status='published', published_at=timezone.now(), published_payload={'locale': locale, 'revision': f'rev-{uuid.uuid4().hex[:12]}', 'brandName': brand, 'contentCopy': {}, 'tagline': '', 'footerText': '', 'seo': {'title': brand, 'description': ''}, 'navLinks': [], 'audienceLinks': [], 'scene': {'graphPreset': 'atlas-v2', 'portalPreset': 'arch-v2', 'motion': 'full', 'density': 'standard'}, 'updatedAt': timezone.now().isoformat()}), print(f'Localized settings created for {locale}.')) for locale, brand in [('fa', 'طه محمدی'), ('en', 'Taha Mohammadi')]]; print('Localized settings verified (create-missing-only).')" </dev/null || true
 
-          # 6. Start/recreate all services
+          # 6. Build the static site only after the public CMS data is ready.
+          docker compose --env-file .env.stage -f deploy/docker-compose.stage.yml build web
+
+          # 7. Start/recreate all services
           docker compose --env-file .env.stage -f deploy/docker-compose.stage.yml up -d --force-recreate mailpit cms admin web
 
-          # 7. Synchronize fresh static web build into the mounted volume
+          # 8. Synchronize fresh static web build into the mounted volume
           web_cid=$(docker compose --env-file .env.stage -f deploy/docker-compose.stage.yml ps -q web)
           if [ -n "${web_cid}" ]; then
             temp_cid=$(docker create "taha-web-stage:${next_release_id}")
@@ -353,14 +356,14 @@ jobs:
             docker exec "${web_cid}" nginx -s reload
           fi
 
-          # 8. Verify service health
+          # 9. Verify service health
           sleep 5
           docker compose --env-file .env.stage -f deploy/docker-compose.stage.yml ps
           test -n "$(docker compose --env-file .env.stage -f deploy/docker-compose.stage.yml ps -q cms)"
           test -n "$(docker compose --env-file .env.stage -f deploy/docker-compose.stage.yml ps -q admin)"
           test -n "$(docker compose --env-file .env.stage -f deploy/docker-compose.stage.yml ps -q web)"
 
-          # 9. Prove a complete stage backup in an isolated restore target.
+          # 10. Prove a complete stage backup in an isolated restore target.
           backup_dir="$STAGING_APP_DIR/backups/$next_release_id"
           install -m 700 -d "$backup_dir"
           db_cid=$(docker compose --env-file .env.stage -f deploy/docker-compose.stage.yml ps -q db)
@@ -401,7 +404,7 @@ jobs:
           docker compose --env-file .env.stage -f deploy/docker-compose.stage.yml run -T --rm -e POSTGRES_DB="$restore_db" cms python manage.py check </dev/null
           docker exec "$db_cid" dropdb -U "$postgres_user" --if-exists --force "$restore_db"
 
-          # 10. Install only the managed staging site block in the active Compose edge.
+          # 11. Install only the managed staging site block in the active Compose edge.
           caddy_path=/home/deploy/cms-repo/infra/caddy/Caddyfile.compose
           caddy_candidate="$STAGING_APP_DIR/deploy/Caddyfile.stage-candidate"
           sha256sum "$caddy_path" > "$backup_dir/caddy-base.sha256"
@@ -496,7 +499,7 @@ jobs:
           rm -f "$caddy_candidate"
           printf 'persistent-compose-edge-file\n' > "$backup_dir/caddy-install.mode"
 
-          # 11. Verify all three services through their isolated host ingress.
+          # 12. Verify all three services through their isolated host ingress.
           curl --fail --silent --show-error --retry 10 --retry-delay 2 \
             -H 'Host: staging.tahamohamadi.ir' -H 'X-Forwarded-Proto: https' \
             http://127.0.0.1:28001/health/ > "$backup_dir/stage-health.json"
