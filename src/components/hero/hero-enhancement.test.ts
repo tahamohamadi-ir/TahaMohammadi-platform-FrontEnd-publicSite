@@ -342,6 +342,51 @@ describe('CA-06 hero enhancement eligibility', () => {
 })
 
 describe('CA-06 fallbacks preserve content', () => {
+  it('keeps synchronous WebGL initialization failure in fallback', async () => {
+    const { region } = buildReadyRegion('ready')
+    const scene = mockScene()
+    const handle = await enhanceHeroRegion(region as never, {
+      doc: mockDocWithSingleRegion(region) as never,
+      loadScene: async () => ({
+        createGraphScene: (options) => {
+          options.onError?.('webgl-unavailable')
+          return scene
+        },
+      }),
+      loadController: async () => ({
+        createGraphController: () => mockController() as never,
+      }),
+      loadMotion: async () => ({
+        createGraphMotion: () => mockMotion() as never,
+      }),
+    })
+    expect(handle.state).toBe('fallback')
+    expect(handle.reason).toBe('webgl-unavailable')
+    expect(scene.dispose).toHaveBeenCalled()
+  })
+  it('binds native controls and projected labels to the same live controller', async () => {
+    const { region, detail, stage } = buildReadyRegion('ready')
+    const labels = new MockElement('div')
+    labels.setAttribute('data-graph-labels', '')
+    stage.appendChild(labels)
+    const controller = vi.fn(() => mockController() as never)
+    const handle = await enhanceHeroRegion(region as never, {
+      doc: mockDocWithSingleRegion(region) as never,
+      loadScene: async () => ({ createGraphScene: () => mockScene() as never }),
+      loadController: async () => ({ createGraphController: controller }),
+      loadMotion: async () => ({
+        createGraphMotion: () => mockMotion() as never,
+      }),
+    })
+    expect(controller).toHaveBeenCalledWith(
+      expect.objectContaining({
+        container: region,
+        detailElement: detail,
+        labelsContainer: expect.anything(),
+      }),
+    )
+    handle.dispose()
+  })
   it('load rejection never hides semantic content and reports no success', async () => {
     const { region, canvas, nodesList, detail } = buildReadyRegion('ready')
     const doc = mockDocWithSingleRegion(region)

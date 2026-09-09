@@ -87,9 +87,9 @@
   display: grid;
   gap: var(--space-5, 1.25rem);
   padding: var(--space-6, 1.5rem);
-  border: 1px solid var(--color-border-subtle, currentColor);
-  border-radius: var(--radius-lg, 0.75rem);
-  background: var(--color-surface, transparent);
+  border: 0;
+  border-radius: 0;
+  background: transparent;
   color: var(--color-ink, inherit);
   max-inline-size: 100%;
   box-sizing: border-box;
@@ -109,6 +109,11 @@
   display: grid;
   place-items: center;
   overflow: hidden;
+  background: radial-gradient(
+    ellipse at center,
+    color-mix(in srgb, var(--color-brand) 6%, transparent),
+    transparent 67%
+  );
 }
 
 .hg-orbit {
@@ -147,9 +152,9 @@
 
 .hg-label {
   position: absolute;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, calc(-100% - 12px));
   padding: 3px 8px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   line-height: 1.4;
   border-radius: 4px;
@@ -170,9 +175,11 @@
 }
 
 .hg-label.is-selected {
-  background: var(--color-signature);
-  color: var(--color-inverse, #fff);
+  background: var(--color-surface);
+  color: var(--color-ink);
   border-color: var(--color-signature);
+  box-shadow: 0 0 0 2px
+    color-mix(in srgb, var(--color-signature) 25%, transparent);
 }
 
 /* Enhancement states: only the canvas/labels layer changes. Copy, list,
@@ -203,6 +210,12 @@
   border: 1px solid var(--color-border-subtle, currentColor);
   border-radius: var(--radius-md, 0.5rem);
   padding-inline: var(--space-3, 0.75rem);
+  background: var(--color-surface);
+}
+
+.hg-node__details[open] {
+  border-color: var(--color-brand);
+  box-shadow: inset 3px 0 0 var(--color-brand);
 }
 
 .hg-node__summary {

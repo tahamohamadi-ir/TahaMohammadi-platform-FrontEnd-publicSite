@@ -257,4 +257,23 @@ describe('PU-17 Home CMS integration', () => {
     expect(html).not.toContain('Edited identity')
     expect(html).not.toContain('Selected project')
   })
+  it.each([
+    ['en', 'Content unavailable', 'Published content is not available yet.'],
+    ['fa', 'محتوا در دسترس نیست', 'محتوای منتشرشده هنوز در دسترس نیست.'],
+  ] as const)(
+    'keeps the unavailable state readable when managed copy is absent in %s',
+    async (locale, title, message) => {
+      vi.stubGlobal(
+        'fetch',
+        vi.fn(async () => new Response(null, { status: 404 })),
+      )
+      const html = await render(HomeContent, {
+        locale,
+        composition: null,
+        graph: { locale, status: 'unavailable' },
+      })
+      expect(html).toContain(title)
+      expect(html).toContain(message)
+    },
+  )
 })

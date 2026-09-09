@@ -61,18 +61,19 @@ const heroCopy = getContactHeroCopy(locale)
   const portal = document.querySelector('[data-contact-portal-pulse]')
   const glow = portal?.querySelector('.pf-index-contact-hero__portal-glow')
 
-  if (
-    portal &&
-    glow &&
-    !window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  ) {
-    gsap.to(glow, {
-      opacity: 0.35,
-      scale: 1.08,
-      duration: 2.4,
-      ease: 'sine.inOut',
-      yoyo: true,
-      repeat: -1,
+  if (portal && glow) {
+    const media = gsap.matchMedia()
+    media.add('(prefers-reduced-motion: no-preference)', () => {
+      gsap.fromTo(
+        glow,
+        { opacity: 0.15 },
+        {
+          opacity: 0.35,
+          duration: 0.8,
+          ease: 'sine.out',
+        },
+      )
     })
+    window.addEventListener('pagehide', () => media.revert(), { once: true })
   }
 </script>

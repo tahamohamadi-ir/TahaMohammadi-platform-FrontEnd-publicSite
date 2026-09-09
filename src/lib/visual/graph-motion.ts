@@ -74,6 +74,16 @@ export function createGraphMotion(
   // Master GSAP context for clean scoped lifecycle
   const ctx = gsap.context(() => {}, interactionTarget)
   const mm = gsap.matchMedia()
+  const pending = new Set<() => void>()
+  function stopMotion() {
+    for (const tween of ctx.getTweens()) tween.kill()
+    for (const resolve of pending) resolve()
+    pending.clear()
+    gsap.set(canvas, { opacity: 1, scale: 1, rotationX: 0, rotationY: 0 })
+    if (labelsContainer) gsap.set(labelsContainer, { opacity: 1 })
+    if (detailElement) gsap.set(detailElement, { opacity: 1, y: 0 })
+    triggerRender()
+  }
 
   // Track pointer tilt listeners
   let removePointerListeners: (() => void) | null = null
@@ -82,6 +92,7 @@ export function createGraphMotion(
   mm.add('(prefers-reduced-motion: reduce)', () => {
     isReducedMotion = true
     scene.setMotion('reduced')
+    stopMotion()
   })
 
   mm.add('(prefers-reduced-motion: no-preference)', () => {
@@ -100,7 +111,13 @@ export function createGraphMotion(
     let currentTiltY = 0
 
     const handlePointerMove = (e: PointerEvent) => {
-      if (isDisposed || isReducedMotion || currentPreference !== 'full') return
+      if (
+        isDisposed ||
+        document.hidden ||
+        isReducedMotion ||
+        currentPreference !== 'full'
+      )
+        return
 
       const rect = interactionTarget.getBoundingClientRect()
       if (rect.width <= 0 || rect.height <= 0) return
@@ -135,7 +152,7 @@ export function createGraphMotion(
     }
 
     const handlePointerLeave = () => {
-      if (isDisposed) return
+      if (isDisposed || isReducedMotion || currentPreference !== 'full') return
       if (currentTiltX === 0 && currentTiltY === 0) return
 
       ctx.add(() => {
@@ -168,9 +185,9 @@ export function createGraphMotion(
   const handleVisibilityChange = () => {
     if (document.hidden) {
       // Pause any active tweens in our context
-      ctx.pause()
+      for (const tween of ctx.getTweens()) tween.pause()
     } else {
-      ctx.resume()
+      for (const tween of ctx.getTweens()) tween.resume()
       triggerRender()
     }
   }
@@ -190,9 +207,13 @@ export function createGraphMotion(
       }
 
       return new Promise<void>((resolve) => {
+        pending.add(resolve)
         ctx.add(() => {
           const tl = gsap.timeline({
-            onComplete: () => resolve(),
+            onComplete: () => {
+              pending.delete(resolve)
+              resolve()
+            },
           })
 
           // 750ms settle within 600-900ms ceiling
@@ -212,7 +233,7 @@ export function createGraphMotion(
           if (labelsContainer) {
             tl.fromTo(
               labelsContainer,
-              { opacity: 0 },
+              { opacity: 1 },
               {
                 opacity: 1.0,
                 duration: 0.5,
@@ -241,9 +262,13 @@ export function createGraphMotion(
       }
 
       return new Promise<void>((resolve) => {
+        pending.add(resolve)
         ctx.add(() => {
           const tl = gsap.timeline({
-            onComplete: () => resolve(),
+            onComplete: () => {
+              pending.delete(resolve)
+              resolve()
+            },
           })
 
           // 220ms selection within 180-280ms ceiling
@@ -286,14 +311,15 @@ export function createGraphMotion(
       scene.setMotion(preference)
 
       if (isReducedMotion) {
-        gsap.set(canvas, { rotationX: 0, rotationY: 0, scale: 1, opacity: 1 })
-        triggerRender()
+        stopMotion()
       }
     },
 
     dispose() {
       if (isDisposed) return
       isDisposed = true
+      for (const resolve of pending) resolve()
+      pending.clear()
 
       document.removeEventListener('visibilitychange', handleVisibilityChange)
 

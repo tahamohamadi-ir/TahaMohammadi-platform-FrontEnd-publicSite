@@ -27,8 +27,8 @@ export const CONCEPT_ALIGNMENT_CAPTURES: ConceptAlignmentCapture[] = [
     family: 'F01',
     name: 'Language Gateway',
     path: '/',
-    locale: 'fa',
-    dir: 'rtl',
+    locale: 'en',
+    dir: 'ltr',
   },
 
   // F02 — Home
@@ -302,8 +302,8 @@ export const CONCEPT_ALIGNMENT_CAPTURES: ConceptAlignmentCapture[] = [
     id: 'f15-404-fa',
     family: 'F15',
     name: '404 Fallback',
-    path: '/fa/non-existent-page-fallback/',
-    locale: 'fa',
-    dir: 'rtl',
+    path: '/404.html',
+    locale: 'en',
+    dir: 'ltr',
   },
 ]

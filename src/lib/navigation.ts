@@ -129,5 +129,14 @@ export const shellCopy = {
   contact: { en: 'Contact', fa: 'تماس' },
   cv: { en: 'CV', fa: 'رزومه' },
   brandName: { en: 'Taha Mohammadi', fa: 'طه محمدی' },
+  search: { en: 'Search', fa: 'جستجو' },
   themeToggle: { en: 'Toggle color theme', fa: 'تغییر پوستهٔ رنگی' },
+  homeUnavailableTitle: {
+    en: 'Content unavailable',
+    fa: 'محتوا در دسترس نیست',
+  },
+  homeUnavailableMessage: {
+    en: 'Published content is not available yet.',
+    fa: 'محتوای منتشرشده هنوز در دسترس نیست.',
+  },
 } as const satisfies Record<string, Record<Locale, string>>

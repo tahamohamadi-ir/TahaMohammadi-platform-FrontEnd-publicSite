@@ -2,6 +2,8 @@
 
 # Public Site Task List
 
+2026-09-08 owner-requested scene refinement: CA-04/05/06/07 renderer, integration and motion changes are implemented and locally verified. The owner rejected the first gateway appearance; the current revision replaces it with a grounded, illuminated architectural threshold and depth-aware orbital arrival, pending owner visual review. The existing contact GSAP effect was bounded under the same explicit all-GSAP request. A 2026-09-09 deployed-state check confirmed both public hosts still serve the earlier gateway assets and reach an unpublished Home composition; the local Home now renders the approved operational unavailable copy instead of an empty main region. [Scope and verification](docs/quality/concept-alignment-v2/SCENE-POLISH-2026-09-08.md). No central acceptance or release status is promoted by this entry.
+
 <!-- PRODUCT-V2.1 -->
 
 ## Active V2.1 packets — PUBLIC

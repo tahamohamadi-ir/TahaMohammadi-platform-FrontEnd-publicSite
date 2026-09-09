@@ -380,7 +380,7 @@ export async function enhanceHeroRegion(
   if (!labelsLayer) {
     try {
       const creator =
-        options.doc?.createElement ??
+        options.doc?.createElement?.bind(options.doc) ??
         (typeof document !== 'undefined'
           ? document.createElement.bind(document)
           : null)
@@ -410,6 +410,7 @@ export async function enhanceHeroRegion(
   }
 
   const labelById = new Map(payload.nodes.map((node) => [node.id, node.label]))
+  let activeLabelId: string | null = options.initialSelectedId ?? null
   const renderLabels = (labels: ProjectedLabel[]) => {
     if (!labelsLayer) return
     try {
@@ -419,7 +420,7 @@ export async function enhanceHeroRegion(
         appendChild?: (child: unknown) => void
       }
       const creator =
-        options.doc?.createElement ??
+        options.doc?.createElement?.bind(options.doc) ??
         (typeof document !== 'undefined'
           ? document.createElement.bind(document)
           : null)
@@ -441,7 +442,8 @@ export async function enhanceHeroRegion(
         chip.setAttribute('tabindex', '-1')
         chip.textContent = labelById.get(item.id) ?? item.id
         try {
-          ;(chip as unknown as { className: string }).className = 'hg-label'
+          ;(chip as unknown as { className: string }).className =
+            item.id === activeLabelId ? 'hg-label is-selected' : 'hg-label'
           const style = (
             chip as unknown as {
               style?: { setProperty(name: string, value: string): void }
@@ -570,10 +572,20 @@ export async function enhanceHeroRegion(
       onFrame: renderLabels,
       onError: onSceneError,
     })
+    if (handle.state === 'fallback') {
+      sceneHandle.dispose()
+      sceneHandle = null
+      handle.dispose = () => disposeAll()
+      return handle
+    }
 
     controllerHandle = controllerModule.createGraphController({
+      container: typedRegion,
+      labelsContainer: labelsLayer,
+      detailElement,
       initialSelectedId: selectedId,
       onSelectionChange: (state: { selectedId: string | null }) => {
+        activeLabelId = state.selectedId
         try {
           sceneHandle?.setSelection(state.selectedId)
         } catch {

@@ -1,6 +1,6 @@
 ---
 import { getManagedCopy } from '../lib/site-settings-content'
-import { type Locale } from '../lib/navigation'
+import { shellCopy, type Locale } from '../lib/navigation'
 import { Monitor, Moon, Sun } from 'lucide-astro'
 
 interface Props {
@@ -9,7 +9,9 @@ interface Props {
 
 const { locale = 'en' } = Astro.props
 const copy = await getManagedCopy(locale)
-const themeLabel = copy['theme.toggle'] ?? ''
+const themeLabel = Object.hasOwn(copy, 'theme.toggle')
+  ? copy['theme.toggle']
+  : shellCopy.themeToggle[locale]
 ---
 
 {

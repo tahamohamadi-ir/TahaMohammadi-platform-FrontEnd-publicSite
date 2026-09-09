@@ -11,7 +11,7 @@ import {
   type HomeCompositionOut,
 } from '../../lib/home-content'
 import type { HeroGraphModel } from '../../lib/hero-graph-content'
-import type { Locale } from '../../lib/navigation'
+import { shellCopy, type Locale } from '../../lib/navigation'
 import { getManagedCopy } from '../../lib/site-settings-content'
 import '../templates/template-base.css'
 
@@ -24,6 +24,12 @@ const { locale, composition, graph } = Astro.props
 const modules = homeModuleOrder(composition)
 const visible = new Set(composition?.modules?.map((item) => item.key) ?? [])
 const copy = await getManagedCopy(locale)
+const unavailableTitle = Object.hasOwn(copy, 'home.unavailable.title')
+  ? copy['home.unavailable.title']
+  : shellCopy.homeUnavailableTitle[locale]
+const unavailableMessage = Object.hasOwn(copy, 'home.unavailable.message')
+  ? copy['home.unavailable.message']
+  : shellCopy.homeUnavailableMessage[locale]
 const components = {
   'research-fit': HomeResearchInterests,
   journey: HomeJourney,
@@ -43,12 +49,13 @@ const components = {
     {
       modules.length === 0 && (
         <section role="status" class="hm-unavailable">
-          {copy['home.unavailable.title'] && (
-            <h1>{copy['home.unavailable.title']}</h1>
-          )}
-          {copy['home.unavailable.message'] && (
-            <p>{copy['home.unavailable.message']}</p>
-          )}
+          <div class="hm-unavailable__orbit" aria-hidden="true">
+            <span class="hm-unavailable__signal" />
+          </div>
+          <div class="hm-unavailable__copy">
+            {unavailableTitle && <h1>{unavailableTitle}</h1>}
+            {unavailableMessage && <p>{unavailableMessage}</p>}
+          </div>
         </section>
       )
     }

@@ -33,16 +33,16 @@ test.describe('PUBLIC-150 shell muted label contrast', () => {
 
 test.describe('CA-08 shared chrome navigation', () => {
   for (const locale of ['en', 'fa'] as const) {
-    test(`omits CMS-controlled controls without published settings (${locale}) @a11y`, async ({
+    test(`keeps operational controls without published settings (${locale}) @a11y`, async ({
       page,
     }) => {
       await page.setViewportSize({ width: 390, height: 844 })
       await page.goto(`/${locale}/`)
 
       await expect(page.locator('.site-header__brand')).toHaveCount(0)
-      await expect(page.locator('.site-header__search-link')).toHaveCount(0)
-      await expect(page.locator('.theme-toggle--shell')).toHaveCount(0)
-      await expect(page.locator('.site-header__drawer')).toHaveCount(0)
+      await expect(page.locator('.site-header__search-link')).toBeVisible()
+      await expect(page.locator('.theme-toggle--shell')).toBeVisible()
+      await expect(page.locator('.site-header__drawer')).toBeVisible()
       await expect
         .poll(() =>
           page.evaluate(
@@ -55,10 +55,10 @@ test.describe('CA-08 shared chrome navigation', () => {
 })
 
 test.describe('PUBLIC-150 shell skip-link destination focus', () => {
-  test('omits an unnamed skip link when published copy is unavailable @a11y', async ({
+  test('uses approved operational copy when published copy is unavailable @a11y', async ({
     page,
   }) => {
     await page.goto('/en/')
-    await expect(page.locator('.skip-link')).toHaveCount(0)
+    await expect(page.locator('.skip-link')).toHaveText('Skip to main content')
   })
 })

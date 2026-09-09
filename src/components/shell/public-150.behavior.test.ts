@@ -79,7 +79,7 @@ describe('PUBLIC-150 behavior', () => {
     expect(html).not.toMatch(/<a[^>]*href=/)
   })
 
-  it('omits owner-gated shell controls but keeps structural navigation when localized settings are unavailable', async () => {
+  it('keeps operational controls and structural navigation when localized settings are unavailable', async () => {
     const headerHtml = await renderComponent(Header, {
       locale: 'en',
       currentPath: '/en/',
@@ -88,15 +88,46 @@ describe('PUBLIC-150 behavior', () => {
     const skipHtml = await renderComponent(SkipLink, { locale: 'en' })
 
     expect(headerHtml).not.toMatch(/site-header__brand/)
-    expect(headerHtml).not.toMatch(/site-header__search-link/)
-    expect(headerHtml).not.toMatch(/theme-toggle--shell/)
+    expect(headerHtml).toMatch(/site-header__search-link/)
+    expect(headerHtml).toContain('>Search<')
+    expect(headerHtml).toMatch(/theme-toggle--shell/)
+    expect(headerHtml).toMatch(/aria-label="Toggle color theme"/)
     // Structural routes stay reachable without CMS; the drawer uses existing
     // structural menu labels and does not restore owner copy.
     expect(headerHtml).toMatch(/site-header__nav--desktop/)
     expect(headerHtml).toMatch(/site-header__drawer/)
     expect(headerHtml).toContain('href="/en/about/"')
     expect(headerHtml).toContain('>Menu<')
-    expect(skipHtml).not.toMatch(/class="skip-link"/)
+    expect(skipHtml).toMatch(/class="skip-link"/)
+    expect(skipHtml).toContain('>Skip to main content<')
+  })
+
+  it('honors deliberately published empty operational labels', async () => {
+    shellState.settings = {
+      locale: 'en',
+      brandName: '',
+      tagline: '',
+      navLinks: [],
+      contentCopy: {
+        'skip.main': '',
+        'theme.toggle': '',
+        'nav.search': '',
+      },
+    }
+    try {
+      const headerHtml = await renderComponent(Header, {
+        locale: 'en',
+        currentPath: '/en/',
+        alternateAvailable: false,
+      })
+      const skipHtml = await renderComponent(SkipLink, { locale: 'en' })
+
+      expect(headerHtml).not.toMatch(/site-header__search-link/)
+      expect(headerHtml).not.toMatch(/theme-toggle--shell/)
+      expect(skipHtml).not.toMatch(/class="skip-link"/)
+    } finally {
+      shellState.settings = null
+    }
   })
 
   it('keeps Header wired to LanguageToggle and preserves skip-link continuity', async () => {

@@ -118,15 +118,38 @@ export const createGraphController: GraphControllerFactory = (
       detailElement ||
       container?.querySelector<HTMLElement>('[data-graph-detail]')
     if (detailPanel) {
+      const selection = detailPanel.querySelector<HTMLElement>(
+        '[data-detail-selection]',
+      )
+      const prompt = detailPanel.querySelector<HTMLElement>(
+        '[data-detail-prompt]',
+      )
+      if (selection) {
+        selection.hidden = id == null
+        selection.replaceChildren()
+        if (prompt) prompt.hidden = id != null
+        const node = Array.from(
+          container?.querySelectorAll<HTMLElement>('[data-graph-node]') ?? [],
+        ).find((el) => el.getAttribute('data-graph-node') === id)
+        if (node) {
+          const title = document.createElement('p')
+          title.className = 'hg-detail__label'
+          title.textContent =
+            node.querySelector('summary')?.textContent?.trim() ?? ''
+          selection.appendChild(title)
+          const body = node.querySelector('.hg-node__body')
+          if (body) selection.appendChild(body.cloneNode(true))
+        }
+      }
       detailPanel.setAttribute(
         'data-has-selection',
         id != null ? 'true' : 'false',
       )
       if (id != null) {
         // If node summary/title exists in the container, populate detail panel
-        const nodeEl = container?.querySelector<HTMLElement>(
-          `[data-graph-node="${id}"]`,
-        )
+        const nodeEl = Array.from(
+          container?.querySelectorAll<HTMLElement>('[data-graph-node]') ?? [],
+        ).find((el) => el.getAttribute('data-graph-node') === id)
         const label =
           nodeEl?.getAttribute('data-label') ||
           nodeEl?.querySelector('summary')?.textContent ||

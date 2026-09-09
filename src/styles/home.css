@@ -3,6 +3,148 @@
    own internals. Class prefix `hm-` keeps this module disjoint from legacy
    global.css home rules, which stay untouched for other consumers. */
 
+.hm-unavailable {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  min-block-size: clamp(30rem, calc(100svh - 13rem), 48rem);
+  place-items: center;
+  overflow: hidden;
+  border-block: 1px solid var(--color-border-subtle);
+  background:
+    radial-gradient(
+      circle at 50% 48%,
+      color-mix(in srgb, var(--color-brand) 12%, transparent),
+      transparent 30%
+    ),
+    linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--color-surface) 72%, transparent),
+      color-mix(in srgb, var(--color-canvas) 96%, transparent)
+    );
+}
+
+.hm-unavailable::before,
+.hm-unavailable::after {
+  position: absolute;
+  z-index: -1;
+  inline-size: clamp(21rem, 58vw, 48rem);
+  block-size: clamp(9rem, 24vw, 19rem);
+  content: '';
+  border: 1px solid color-mix(in srgb, var(--color-brand) 38%, transparent);
+  border-radius: 50%;
+}
+
+.hm-unavailable::before {
+  transform: rotate(-8deg);
+  box-shadow:
+    0 0 0 2.75rem color-mix(in srgb, var(--color-brand) 7%, transparent),
+    0 0 0 5.5rem color-mix(in srgb, var(--color-signature) 5%, transparent);
+}
+
+.hm-unavailable::after {
+  transform: rotate(14deg) scale(0.72);
+  border-color: color-mix(in srgb, var(--color-signature) 42%, transparent);
+}
+
+.hm-unavailable__orbit {
+  position: absolute;
+  z-index: -1;
+  inline-size: clamp(17rem, 38vw, 31rem);
+  aspect-ratio: 1;
+  border: 1px solid color-mix(in srgb, var(--color-brand) 22%, transparent);
+  border-radius: 50%;
+  background: repeating-radial-gradient(
+    circle,
+    transparent 0 2.25rem,
+    color-mix(in srgb, var(--color-signature) 24%, transparent) 2.3rem,
+    transparent 2.36rem 4.5rem
+  );
+  opacity: 0.68;
+}
+
+.hm-unavailable__orbit::before,
+.hm-unavailable__orbit::after {
+  position: absolute;
+  inset: 50%;
+  inline-size: 0.42rem;
+  block-size: 0.42rem;
+  content: '';
+  border-radius: 50%;
+  background: var(--color-brand);
+  box-shadow: 0 0 1.25rem
+    color-mix(in srgb, var(--color-brand) 72%, transparent);
+}
+
+.hm-unavailable__orbit::before {
+  transform: translate(-9rem, -5.25rem);
+}
+
+.hm-unavailable__orbit::after {
+  transform: translate(8.5rem, 4.75rem);
+}
+
+.hm-unavailable__signal {
+  position: absolute;
+  inset: 50%;
+  inline-size: 0.72rem;
+  block-size: 0.72rem;
+  border: 1px solid var(--color-signature);
+  background: var(--color-canvas);
+  transform: translate(-50%, -50%) rotate(45deg);
+  box-shadow:
+    0 0 0 0.55rem color-mix(in srgb, var(--color-brand) 8%, transparent),
+    0 0 2rem color-mix(in srgb, var(--color-brand) 38%, transparent);
+}
+
+.hm-unavailable__copy {
+  inline-size: min(32rem, calc(100% - var(--space-8)));
+  padding: clamp(var(--space-8), 5vw, var(--space-12));
+  border: 1px solid
+    color-mix(in srgb, var(--color-border-strong) 72%, transparent);
+  border-radius: 1.25rem;
+  background: color-mix(in srgb, var(--color-surface) 88%, transparent);
+  box-shadow: var(--shadow-atlas-glow-strong);
+  text-align: center;
+  backdrop-filter: blur(18px);
+}
+
+.hm-unavailable__copy h1 {
+  margin: 0;
+  color: var(--color-ink);
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 4vw, 2.75rem);
+  font-weight: 560;
+  letter-spacing: -0.025em;
+  line-height: 1.08;
+}
+
+.hm-unavailable__copy p {
+  max-inline-size: 27rem;
+  margin: var(--space-4) auto 0;
+  color: var(--color-ink-secondary);
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+[dir='rtl'] .hm-unavailable__copy h1 {
+  letter-spacing: 0;
+}
+
+@media (max-width: 420px) {
+  .hm-unavailable {
+    min-block-size: 32rem;
+  }
+
+  .hm-unavailable__orbit::before {
+    transform: translate(-7rem, -4.5rem);
+  }
+
+  .hm-unavailable__orbit::after {
+    transform: translate(6.5rem, 4rem);
+  }
+}
+
 /* Shared section rhythm */
 .hm-eyebrow {
   margin: 0;

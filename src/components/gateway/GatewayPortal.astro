@@ -20,28 +20,6 @@ import { GATEWAY_ATMOSPHERE_ASSETS } from '../../lib/media/promoted-media'
   data-gateway-state="idle"
   aria-hidden="true"
 >
-  <svg class="gw__orbital" viewBox="0 0 400 400" focusable="false">
-    <circle
-      cx="200"
-      cy="200"
-      r="148"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="1"
-      opacity="0.22"></circle>
-    <circle
-      cx="200"
-      cy="200"
-      r="108"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="1"
-      opacity="0.32"></circle>
-    <circle cx="200" cy="52" r="5" class="gw__orbital-glow"></circle>
-    <circle cx="348" cy="200" r="5" class="gw__orbital-glow"></circle>
-    <circle cx="200" cy="348" r="5" class="gw__orbital-glow"></circle>
-    <circle cx="52" cy="200" r="5" class="gw__orbital-glow"></circle>
-  </svg>
   <canvas
     class="gw__portal-canvas"
     data-gateway-canvas
@@ -91,6 +69,7 @@ import { GATEWAY_ATMOSPHERE_ASSETS } from '../../lib/media/promoted-media'
     const setFallback = () => {
       portal.setAttribute('data-gateway-state', 'fallback')
       canvas.hidden = true
+      if (fallback) fallback.style.opacity = ''
     }
 
     let scene: {
@@ -128,7 +107,9 @@ import { GATEWAY_ATMOSPHERE_ASSETS } from '../../lib/media/promoted-media'
       setFallback()
       return
     }
-    if (!scene) {
+    if (!scene || portal.dataset.gatewayState === 'fallback') {
+      scene?.dispose()
+      scene = null
       setFallback()
       return
     }
@@ -187,6 +168,9 @@ import { GATEWAY_ATMOSPHERE_ASSETS } from '../../lib/media/promoted-media'
     )
 
     portal.setAttribute('data-gateway-state', 'ready')
+    // The first demand render happens in resize(). Keep its frame visible
+    // while the motion module loads; motion must never own availability.
+    canvas.style.opacity = '1'
     canvas.hidden = false
     resize()
 
@@ -201,6 +185,10 @@ import { GATEWAY_ATMOSPHERE_ASSETS } from '../../lib/media/promoted-media'
       })
       await motion.playEntrance()
     } catch {
+      motion?.dispose()
+      scene?.dispose()
+      motion = null
+      scene = null
       setFallback()
     }
   }

@@ -3,6 +3,7 @@ import SiteLayout from '../../layouts/SiteLayout.astro'
 import HomeContent from '../../components/home/HomeContent.astro'
 import { fetchHomeComposition, fetchHomeLanding } from '../../lib/home-content'
 import { loadHeroGraph } from '../../lib/hero-graph-content'
+import { shellCopy } from '../../lib/navigation'
 import '../../styles/home.css'
 
 const locale = 'fa' as const
@@ -17,7 +18,9 @@ const graph = composition?.modules?.some((item) => item.key === 'graph')
 ---
 
 <SiteLayout
-  title={landing?.seo_title || landing?.title || ''}
+  title={landing?.seo_title ||
+    landing?.title ||
+    shellCopy.homeUnavailableTitle.fa}
   description={landing?.seo_description || ''}
   locale={locale}
   alternateAvailable={Boolean(alternateLanding)}

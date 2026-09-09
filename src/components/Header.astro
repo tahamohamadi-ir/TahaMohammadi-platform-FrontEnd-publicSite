@@ -52,7 +52,9 @@ const navItems = managedNavItems.length
 const copy = siteSettings?.contentCopy ?? {}
 const mainMenuLabel = copy['menu.main'] ?? shellCopy.mainMenu[locale]
 const menuToggleLabel = copy['menu.toggle'] ?? shellCopy.menuToggle[locale]
-const searchLabel = copy['nav.search'] ?? ''
+const searchLabel = Object.hasOwn(copy, 'nav.search')
+  ? copy['nav.search']
+  : shellCopy.search[locale]
 ---
 
 <header class="site-header" data-visual-id="Header">

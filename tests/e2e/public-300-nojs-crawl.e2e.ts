@@ -71,10 +71,21 @@ async function assertRouteReadable(page: Page, route: NoJsAuditRoute) {
       break
     case 'home':
       await assertLocaleShell(page, route)
-      await expect(page.locator('.hm-hero__lead h1')).toContainText(
-        getBrandName(route.locale!),
-      )
-      await expect(page.locator('.hm-graph__node-label')).toHaveCount(3)
+      if (
+        (await page
+          .locator('[data-home-state]')
+          .getAttribute('data-home-state')) === 'unavailable'
+      ) {
+        await expect(page.locator('.hm-unavailable')).toBeVisible()
+        await expect(page.locator('.hm-unavailable h1')).toContainText(
+          route.locale === 'fa' ? 'محتوا در دسترس نیست' : 'Content unavailable',
+        )
+      } else {
+        await expect(page.locator('.hm-hero__lead h1')).toContainText(
+          getBrandName(route.locale!),
+        )
+        await expect(page.locator('.hm-graph__node-label')).toHaveCount(3)
+      }
       break
     case 'locale-index':
       await assertLocaleShell(page, route)

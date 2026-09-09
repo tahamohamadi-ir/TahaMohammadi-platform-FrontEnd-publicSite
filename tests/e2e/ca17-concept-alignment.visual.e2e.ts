@@ -10,8 +10,7 @@ test.describe('CA-17 Concept Alignment Visual Acceptance Matrix: All 15 Families
       page,
     }) => {
       const response = await page.goto(capture.path)
-      const expectedStatus = capture.id.includes('404') ? 404 : 200
-      expect(response?.status()).toBe(expectedStatus)
+      expect(response?.status()).toBe(200)
 
       const html = page.locator('html')
       await expect(html).toHaveAttribute('lang', capture.locale)

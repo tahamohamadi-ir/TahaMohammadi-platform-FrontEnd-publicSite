@@ -41,6 +41,12 @@ const stagingConfigPath = path.join(
 )
 const envExamplePath = path.join(repositoryRoot, '.env.example')
 const packageJsonPath = path.join(repositoryRoot, 'package.json')
+const stagingWorkflowPath = path.join(
+  repositoryRoot,
+  '.github',
+  'workflows',
+  'deploy-staging.yml',
+)
 
 describe('PUBLIC-320 integrated staging smoke scaffold', () => {
   it('skips live probes when PUBLIC_STAGING_SITE_URL is unset', () => {
@@ -117,5 +123,27 @@ describe('PUBLIC-320 integrated staging smoke scaffold', () => {
     expect(envExample).toContain(STAGING_ENV_KEYS.siteUrl)
     expect(packageJson).toContain('"test:smoke"')
     expect(packageJson).toContain('@smoke')
+  })
+
+  it('keeps staging ingress, artifacts, backup, and restore isolated from production', () => {
+    const workflow = readFileSync(stagingWorkflowPath, 'utf8')
+
+    expect(workflow).toContain('https://staging.tahamohamadi.ir')
+    expect(workflow).toContain(
+      'stage-${public_sha:0:8}-${admin_sha:0:8}-${backend_sha:0:8}',
+    )
+    expect(workflow).toContain('checkout --detach "$backend_sha"')
+    expect(workflow).toContain('checkout --detach "$admin_sha"')
+    expect(workflow).toContain('checkout --detach "$DEPLOY_SHA"')
+    expect(workflow).not.toContain('next_release_id="prod-')
+    expect(workflow).not.toContain('PUBLIC_SITE_URL=https://tahamohamadi.ir')
+    expect(workflow).toContain('127.0.0.1:18001:8000')
+    expect(workflow).toContain('127.0.0.1:13080:8080')
+    expect(workflow).toContain('127.0.0.1:13081:8080')
+    expect(workflow).toContain('# BEGIN TAHA STAGING MANAGED')
+    expect(workflow).toContain('# END TAHA STAGING MANAGED')
+    expect(workflow).toContain('pg_dump')
+    expect(workflow).toContain('pg_restore --exit-on-error')
+    expect(workflow).not.toContain('cat "$f"')
   })
 })

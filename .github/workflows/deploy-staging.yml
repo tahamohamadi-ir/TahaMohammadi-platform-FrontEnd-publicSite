@@ -104,22 +104,27 @@ jobs:
           if [ -d "src/backend/.git" ]; then
             git -C src/backend reset --hard HEAD
             git -C src/backend fetch --prune origin main
-            git -C src/backend checkout -B main origin/main
           else
             git clone https://github.com/tahamohamadi-ir/TahaMohammadi-platform-backEnd.git src/backend
+            git -C src/backend fetch --prune origin main
           fi
+          backend_sha=$(git -C src/backend rev-parse origin/main)
+          git -C src/backend checkout --detach "$backend_sha"
 
           if [ -d "src/admin/.git" ]; then
             git -C src/admin reset --hard HEAD
             git -C src/admin fetch --prune origin main
-            git -C src/admin checkout -B main origin/main
           else
             git clone https://github.com/tahamohamadi-ir/TahaMohammadi-platform-FrontEnd-adminPanel.git src/admin
+            git -C src/admin fetch --prune origin main
           fi
+          admin_sha=$(git -C src/admin rev-parse origin/main)
+          git -C src/admin checkout --detach "$admin_sha"
 
           git -C src/public reset --hard HEAD
           git -C src/public fetch --prune origin main
           git -C src/public checkout --detach "$DEPLOY_SHA"
+          public_sha=$(git -C src/public rev-parse HEAD)
 
           # 2. Update deploy configuration files
           mkdir -p deploy
@@ -153,6 +158,41 @@ jobs:
               try_files $uri $uri/ /index.html;
             }
           }
+          EOF
+
+          cat <<'EOF' > deploy/Caddyfile.staging.fragment
+          # BEGIN TAHA STAGING MANAGED
+          staging.tahamohamadi.ir {
+            header X-Robots-Tag "noindex, nofollow, noarchive"
+            redir /admin /admin/ 308
+
+            handle /admin/* {
+              reverse_proxy 127.0.0.1:13081
+            }
+            handle /health/* {
+              reverse_proxy 127.0.0.1:18001
+            }
+            handle /static/* {
+              reverse_proxy 127.0.0.1:18001
+            }
+            handle /api/v1/internal/* {
+              respond "Not Found" 404
+            }
+            handle /api/* {
+              reverse_proxy 127.0.0.1:18001
+            }
+            handle /media/* {
+              reverse_proxy 127.0.0.1:18001
+            }
+            handle /preview/* {
+              reverse_proxy 127.0.0.1:18001
+            }
+            handle /staff/* {
+              reverse_proxy 127.0.0.1:18001
+            }
+            reverse_proxy 127.0.0.1:13080
+          }
+          # END TAHA STAGING MANAGED
           EOF
 
           cat <<'EOF' > deploy/docker-compose.stage.yml
@@ -193,10 +233,12 @@ jobs:
                 EMAIL_HOST: mailpit
                 EMAIL_PORT: "1025"
                 EMAIL_USE_TLS: "false"
-                OTP_TOTP_ISSUER: tahamohamadi.ir
+                OTP_TOTP_ISSUER: staging.tahamohamadi.ir
                 REBUILD_TRIGGER_ENABLED: "false"
               volumes:
                 - stage_cms_media:/app/media
+              ports:
+                - "127.0.0.1:18001:8000"
               networks: [stage_internal, stage_ingress]
               depends_on:
                 db:
@@ -207,13 +249,15 @@ jobs:
                 context: ..
                 dockerfile: deploy/Dockerfile.public
                 args:
-                  PUBLIC_SITE_URL: ${PUBLIC_SITE_URL:-https://tahamohamadi.ir}
-                  PUBLIC_API_BASE_URL: ${PUBLIC_API_BASE_URL:-https://tahamohamadi.ir}
+                  PUBLIC_SITE_URL: ${PUBLIC_SITE_URL:-https://staging.tahamohamadi.ir}
+                  PUBLIC_API_BASE_URL: ${PUBLIC_API_BASE_URL:-https://staging.tahamohamadi.ir}
               image: taha-web-stage:${RELEASE_ID}
               restart: unless-stopped
               volumes:
                 - stage_public_html:/usr/share/nginx/html
                 - stage_edge_deny:/etc/nginx/conf.d
+              ports:
+                - "127.0.0.1:13080:8080"
               networks: [stage_ingress]
 
             admin:
@@ -222,6 +266,8 @@ jobs:
                 dockerfile: deploy/Dockerfile.admin
               image: taha-admin-stage:${RELEASE_ID}
               restart: unless-stopped
+              ports:
+                - "127.0.0.1:13081:8080"
               networks: [stage_ingress]
 
           networks:
@@ -239,7 +285,7 @@ jobs:
           EOF
 
           # 3. Update environment configuration in .env.stage
-          next_release_id="prod-${DEPLOY_SHA:0:12}"
+          next_release_id="stage-${public_sha:0:8}-${admin_sha:0:8}-${backend_sha:0:8}"
 
           if grep -q '^RELEASE_ID=' .env.stage; then
             sed -i "s/^RELEASE_ID=.*/RELEASE_ID=${next_release_id}/" .env.stage
@@ -248,21 +294,21 @@ jobs:
           fi
 
           if grep -q '^ALLOWED_HOSTS=' .env.stage; then
-            sed -i "s/^ALLOWED_HOSTS=.*/ALLOWED_HOSTS=tahamohamadi.ir,www.tahamohamadi.ir,staging.tahamohamadi.ir,localhost,127.0.0.1/" .env.stage
+            sed -i "s/^ALLOWED_HOSTS=.*/ALLOWED_HOSTS=staging.tahamohamadi.ir,localhost,127.0.0.1/" .env.stage
           else
-            echo "ALLOWED_HOSTS=tahamohamadi.ir,www.tahamohamadi.ir,staging.tahamohamadi.ir,localhost,127.0.0.1" >> .env.stage
+            echo "ALLOWED_HOSTS=staging.tahamohamadi.ir,localhost,127.0.0.1" >> .env.stage
           fi
 
           if grep -q '^PUBLIC_SITE_URL=' .env.stage; then
-            sed -i "s|^PUBLIC_SITE_URL=.*|PUBLIC_SITE_URL=https://tahamohamadi.ir|" .env.stage
+            sed -i "s|^PUBLIC_SITE_URL=.*|PUBLIC_SITE_URL=https://staging.tahamohamadi.ir|" .env.stage
           else
-            echo "PUBLIC_SITE_URL=https://tahamohamadi.ir" >> .env.stage
+            echo "PUBLIC_SITE_URL=https://staging.tahamohamadi.ir" >> .env.stage
           fi
 
           if grep -q '^PUBLIC_API_BASE_URL=' .env.stage; then
-            sed -i "s|^PUBLIC_API_BASE_URL=.*|PUBLIC_API_BASE_URL=https://tahamohamadi.ir|" .env.stage
+            sed -i "s|^PUBLIC_API_BASE_URL=.*|PUBLIC_API_BASE_URL=https://staging.tahamohamadi.ir|" .env.stage
           else
-            echo "PUBLIC_API_BASE_URL=https://tahamohamadi.ir" >> .env.stage
+            echo "PUBLIC_API_BASE_URL=https://staging.tahamohamadi.ir" >> .env.stage
           fi
 
           # 4. Build all services
@@ -277,7 +323,7 @@ jobs:
           docker compose --env-file .env.stage -f deploy/docker-compose.stage.yml run -T --rm cms python manage.py shell -c "import uuid; from django.utils import timezone; from apps.siteconfig.models import LocalizedSiteSettings; [print(f'Localized settings present for {locale}; existing published snapshot preserved.') if LocalizedSiteSettings.objects.filter(locale=locale).exists() else (LocalizedSiteSettings.objects.create(locale=locale, revision=f'rev-{uuid.uuid4().hex[:12]}', brand_name=brand, status='published', published_at=timezone.now(), published_payload={'locale': locale, 'revision': f'rev-{uuid.uuid4().hex[:12]}', 'brandName': brand, 'contentCopy': {}, 'tagline': '', 'footerText': '', 'seo': {'title': brand, 'description': ''}, 'navLinks': [], 'audienceLinks': [], 'scene': {'graphPreset': 'atlas-v2', 'portalPreset': 'arch-v2', 'motion': 'full', 'density': 'standard'}, 'updatedAt': timezone.now().isoformat()}), print(f'Localized settings created for {locale}.')) for locale, brand in [('fa', 'طه محمدی'), ('en', 'Taha Mohammadi')]]; print('Localized settings verified (create-missing-only).')" </dev/null || true
 
           # 6. Start/recreate all services
-          docker compose --env-file .env.stage -f deploy/docker-compose.stage.yml up -d --force-recreate cms admin web
+          docker compose --env-file .env.stage -f deploy/docker-compose.stage.yml up -d --force-recreate mailpit cms admin web
 
           # 7. Synchronize fresh static web build into the mounted volume
           web_cid=$(docker compose --env-file .env.stage -f deploy/docker-compose.stage.yml ps -q web)
@@ -299,18 +345,94 @@ jobs:
           test -n "$(docker compose --env-file .env.stage -f deploy/docker-compose.stage.yml ps -q admin)"
           test -n "$(docker compose --env-file .env.stage -f deploy/docker-compose.stage.yml ps -q web)"
 
-          # 9. Ensure Caddy routes /admin/* to Django CMS on 127.0.0.1:18000
-          if sudo -n true 2>/dev/null; then
-            echo "=== Ensuring Caddy /admin/* upstream points to 127.0.0.1:18000 ==="
-            sudo python3 -c "import re; p='/etc/caddy/Caddyfile'; s=open(p).read(); open(p,'w').write(re.sub(r'(handle\s+/admin/\*\s*\{\s*reverse_proxy\s+)127\.0\.0\.1:13081', r'\g<1>127.0.0.1:18000', s))"
-            sudo caddy validate --config /etc/caddy/Caddyfile && (sudo systemctl reload caddy || sudo caddy reload --config /etc/caddy/Caddyfile) || true
-          fi
+          # 9. Prove a complete stage backup in an isolated restore target.
+          backup_dir="$STAGING_APP_DIR/backups/$next_release_id"
+          install -m 700 -d "$backup_dir"
+          db_cid=$(docker compose --env-file .env.stage -f deploy/docker-compose.stage.yml ps -q db)
+          cms_cid=$(docker compose --env-file .env.stage -f deploy/docker-compose.stage.yml ps -q cms)
+          test -n "$db_cid"
+          test -n "$cms_cid"
+          postgres_user=$(docker exec "$db_cid" printenv POSTGRES_USER)
+          postgres_db=$(docker exec "$db_cid" printenv POSTGRES_DB)
+          test -n "$postgres_user"
+          test -n "$postgres_db"
 
-          echo "=== CADDY CONFIG DIAGNOSTIC ==="
-          for f in /etc/caddy/Caddyfile /etc/caddy/*.caddy /etc/caddy/conf.d/*; do
-            if [ -f "$f" ]; then
-              echo "--- FILE: $f ---"
-              cat "$f" || true
-            fi
-          done
+          docker exec "$db_cid" pg_dump -U "$postgres_user" -d "$postgres_db" -Fc -f /tmp/stage.dump
+          docker cp "$db_cid:/tmp/stage.dump" "$backup_dir/database.dump"
+          docker exec "$db_cid" rm /tmp/stage.dump
+          test -s "$backup_dir/database.dump"
+
+          docker exec "$cms_cid" tar -C /app/media -cf - . > "$backup_dir/media.tar"
+          test -s "$backup_dir/media.tar"
+          printf '%s\n' "$backend_sha" > "$backup_dir/backend.sha"
+          printf '%s\n' "$admin_sha" > "$backup_dir/admin.sha"
+          printf '%s\n' "$public_sha" > "$backup_dir/public.sha"
+          docker image inspect "taha-cms-stage:$next_release_id" --format '{{.Id}}' > "$backup_dir/backend-image.id"
+          docker image inspect "taha-admin-stage:$next_release_id" --format '{{.Id}}' > "$backup_dir/admin-image.id"
+          docker image inspect "taha-web-stage:$next_release_id" --format '{{.Id}}' > "$backup_dir/public-image.id"
+
+          restore_db="${postgres_db}_restore_probe"
+          docker exec "$db_cid" dropdb -U "$postgres_user" --if-exists --force "$restore_db"
+          docker exec "$db_cid" createdb -U "$postgres_user" -O "$postgres_user" "$restore_db"
+          docker cp "$backup_dir/database.dump" "$db_cid:/tmp/stage-restore.dump"
+          docker exec "$db_cid" pg_restore --exit-on-error --no-owner -U "$postgres_user" -d "$restore_db" /tmp/stage-restore.dump
+          docker exec "$db_cid" rm /tmp/stage-restore.dump
+
+          source_tables=$(docker exec "$db_cid" psql -U "$postgres_user" -d "$postgres_db" -Atc "select count(*) from information_schema.tables where table_schema='public'")
+          restored_tables=$(docker exec "$db_cid" psql -U "$postgres_user" -d "$restore_db" -Atc "select count(*) from information_schema.tables where table_schema='public'")
+          test "$source_tables" = "$restored_tables"
+          docker compose --env-file .env.stage -f deploy/docker-compose.stage.yml run -T --rm -e POSTGRES_DB="$restore_db" cms python manage.py migrate --plan </dev/null | tee "$backup_dir/restore-migration-plan.txt"
+          grep -q "No planned migration operations" "$backup_dir/restore-migration-plan.txt"
+          docker compose --env-file .env.stage -f deploy/docker-compose.stage.yml run -T --rm -e POSTGRES_DB="$restore_db" cms python manage.py check </dev/null
+          docker exec "$db_cid" dropdb -U "$postgres_user" --if-exists --force "$restore_db"
+
+          # 10. Install only the managed staging site block and validate before reload.
+          sudo -n true
+          caddy_path=/etc/caddy/Caddyfile
+          caddy_candidate=/etc/caddy/Caddyfile.stage-candidate
+          caddy_backup="/etc/caddy/Caddyfile.before-$next_release_id"
+          sudo cp "$caddy_path" "$caddy_backup"
+          sudo python3 - "$caddy_path" "$caddy_candidate" deploy/Caddyfile.staging.fragment <<'PY'
+          import pathlib
+          import sys
+
+          target = pathlib.Path(sys.argv[1])
+          candidate = pathlib.Path(sys.argv[2])
+          fragment_path = pathlib.Path(sys.argv[3])
+          start = "# BEGIN TAHA STAGING MANAGED"
+          end = "# END TAHA STAGING MANAGED"
+          current = target.read_text(encoding="utf-8")
+          fragment = fragment_path.read_text(encoding="utf-8").strip()
+
+          if start in current or end in current:
+              if current.count(start) != 1 or current.count(end) != 1:
+                  raise SystemExit("invalid managed staging marker count")
+              prefix, remainder = current.split(start, 1)
+              _, suffix = remainder.split(end, 1)
+              updated = prefix.rstrip() + "\n\n" + fragment + suffix
+          else:
+              if "staging.tahamohamadi.ir" in current:
+                  raise SystemExit("unmanaged staging Caddy block requires operator reconciliation")
+              updated = current.rstrip() + "\n\n" + fragment + "\n"
+
+          candidate.write_text(updated, encoding="utf-8")
+          PY
+          sudo caddy validate --config "$caddy_candidate" --adapter caddyfile
+          sudo install -m 644 "$caddy_candidate" "$caddy_path"
+          sudo rm -f "$caddy_candidate"
+          sudo systemctl reload caddy
+
+          # 11. Verify all three services through their isolated host ingress.
+          curl --fail --silent --show-error --retry 10 --retry-delay 2 \
+            -H 'Host: staging.tahamohamadi.ir' -H 'X-Forwarded-Proto: https' \
+            http://127.0.0.1:18001/health/ > "$backup_dir/stage-health.json"
+          curl --fail --silent --show-error --retry 10 --retry-delay 2 \
+            http://127.0.0.1:13080/ > /dev/null
+          curl --fail --silent --show-error --retry 10 --retry-delay 2 \
+            http://127.0.0.1:13081/admin/ > /dev/null
+          curl --fail --silent --show-error --retry 10 --retry-delay 2 \
+            --resolve staging.tahamohamadi.ir:443:127.0.0.1 \
+            https://staging.tahamohamadi.ir/ > /dev/null
+
+          echo "Staging release $next_release_id deployed with isolated ingress and restore verification."
           REMOTE

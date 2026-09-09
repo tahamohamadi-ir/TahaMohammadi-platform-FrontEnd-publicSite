@@ -147,6 +147,12 @@ html[data-theme='dark'] .pf-index-featured__card {
   aspect-ratio: 16 / 10;
 }
 
+@media (max-width: 479px) {
+  .pf-index-featured__media {
+    min-block-size: 0;
+  }
+}
+
 .pf-index-featured__media .pf-index-featured__image,
 .pf-index-featured__media img {
   inline-size: 100%;
@@ -2900,6 +2906,18 @@ html[data-theme='dark'] .pf-index-featured__card {
   border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-lg);
   background: var(--color-surface);
+}
+
+.pf-index-how-i-work__icon {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+}
+
+.pf-index-how-i-work__card-title,
+.pf-index-how-i-work__card-copy {
+  grid-column: 2;
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
 }
 
 .pf-index-how-i-work__icon {

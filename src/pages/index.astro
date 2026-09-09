@@ -2,15 +2,24 @@
 import BaseLayout from '../layouts/BaseLayout.astro'
 import ThemeToggle from '../components/ThemeToggle.astro'
 import GatewayPortal from '../components/gateway/GatewayPortal.astro'
+import PromotedPicture from '../components/media/PromotedPicture.astro'
+import { BRAND_MARK_ASSET_ID } from '../lib/media/promoted-media'
+import { Sun, Moon, Monitor } from 'lucide-astro'
 import { fetchLocalizedSiteSettings } from '../lib/site-settings-content'
 const settings = await fetchLocalizedSiteSettings('en')
 const copy = settings?.contentCopy ?? {}
 const name = settings?.brandName ?? ''
+// Operational gateway labels from the existing siteconfig public-copy seed.
+// They do not supply a missing personal identity or professional claim.
+const prompt = copy['gateway.prompt'] ?? 'Choose your language'
 import '../styles/gateway.css'
 ---
 
 <BaseLayout
-  title={settings?.seo?.title || copy['gateway.title'] || name}
+  title={settings?.seo?.title ||
+    copy['gateway.title'] ||
+    name ||
+    'Language gateway'}
   lang="en"
   dir="ltr"
   gateway
@@ -19,24 +28,88 @@ import '../styles/gateway.css'
     <div class="gw__scrim" aria-hidden="true"></div>
 
     <header class="gw__toolbar">
-      <ThemeToggle />
+      {
+        copy['theme.toggle'] ? (
+          <ThemeToggle />
+        ) : (
+          <button
+            type="button"
+            class="theme-toggle theme-toggle--shell"
+            data-theme-toggle
+            data-theme-mode="system"
+            aria-label="Toggle color theme"
+            aria-pressed="mixed"
+          >
+            <span
+              class="theme-toggle__icon theme-toggle__icon--system"
+              aria-hidden="true"
+            >
+              <Monitor size={18} />
+            </span>
+            <span
+              class="theme-toggle__icon theme-toggle__icon--light"
+              aria-hidden="true"
+            >
+              <Sun size={18} />
+            </span>
+            <span
+              class="theme-toggle__icon theme-toggle__icon--dark"
+              aria-hidden="true"
+            >
+              <Moon size={18} />
+            </span>
+          </button>
+        )
+      }
     </header>
 
-    <section class="gw__hero" aria-labelledby="gateway-name">
-      <h1 id="gateway-name" class="gw__title">{name}</h1>
+    <main
+      class="gw__hero"
+      aria-labelledby={name ? 'gateway-name' : 'gateway-prompt'}
+    >
+      <div class="gw__brand" aria-hidden="true">
+        <PromotedPicture
+          assetId={BRAND_MARK_ASSET_ID}
+          mediaSlot="brand.mark"
+          locale="en"
+          alt=""
+          imgClass="gw__mark"
+          loading="eager"
+        />
+      </div>
+      {
+        name && (
+          <h1 id="gateway-name" class="gw__title">
+            {name}
+          </h1>
+        )
+      }
       {settings?.tagline && <p class="gw__roles">{settings.tagline}</p>}
 
       <GatewayPortal />
-    </section>
+    </main>
 
     <footer class="gw__footer">
-      <p class="gw__prompt">{copy['gateway.prompt']}</p>
-      <nav aria-label={copy['gateway.selection']} class="gw__nav">
+      {
+        name ? (
+          <p id="gateway-prompt" class="gw__prompt">
+            {prompt}
+          </p>
+        ) : (
+          <h1 id="gateway-prompt" class="gw__prompt">
+            {prompt}
+          </h1>
+        )
+      }
+      <nav
+        aria-label={copy['gateway.selection'] ?? 'Language selection'}
+        class="gw__nav"
+      >
         <a href="/en/" class="gw__locale" lang="en"
-          >{copy['gateway.en'] || 'EN'}</a
+          >{copy['gateway.en'] ?? 'English'}</a
         >
         <a href="/fa/" class="gw__locale" lang="fa"
-          >{copy['gateway.fa'] || 'FA'}</a
+          >{copy['gateway.fa'] ?? 'فارسی'}</a
         >
       </nav>
     </footer>
