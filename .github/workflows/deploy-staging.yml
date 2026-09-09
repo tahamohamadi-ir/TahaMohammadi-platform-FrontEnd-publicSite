@@ -418,17 +418,10 @@ jobs:
           candidate.write_text(updated, encoding="utf-8")
           PY
           caddy validate --config "$caddy_candidate" --adapter caddyfile
-          if sudo -n true 2>/dev/null; then
-            caddy_backup="/etc/caddy/Caddyfile.before-$next_release_id"
-            sudo cp "$caddy_path" "$caddy_backup"
-            sudo install -m 644 "$caddy_candidate" "$caddy_path"
-            sudo rm -f "$caddy_candidate"
-            sudo systemctl reload caddy
-            printf 'persistent-system-config\n' > "$backup_dir/caddy-install.mode"
-          else
-            caddy reload --config "$caddy_candidate" --adapter caddyfile
-            printf 'runtime-admin-api-reload\n' > "$backup_dir/caddy-install.mode"
-          fi
+          install -m 600 "$caddy_candidate" /tmp/Caddyfile.deploy
+          sudo -n /opt/taha/bin/caddy-sync.sh /tmp/Caddyfile.deploy
+          rm -f /tmp/Caddyfile.deploy "$caddy_candidate"
+          printf 'persistent-privileged-helper\n' > "$backup_dir/caddy-install.mode"
 
           # 11. Verify all three services through their isolated host ingress.
           curl --fail --silent --show-error --retry 10 --retry-delay 2 \
