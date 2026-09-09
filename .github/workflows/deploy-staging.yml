@@ -94,10 +94,9 @@ jobs:
         if: steps.staging.outputs.configured == 'true'
         env:
           DEPLOY_SHA: ${{ github.sha }}
-          DEPLOY_REF: ${{ github.ref_name }}
         run: |
           ssh -i ~/.ssh/id_ed25519 -o BatchMode=yes -o StrictHostKeyChecking=yes -p "$STAGING_SSH_PORT" "$STAGING_SSH_USER@$STAGING_SSH_HOST" \
-            "STAGING_APP_DIR='$STAGING_APP_DIR' DEPLOY_SHA='$DEPLOY_SHA' DEPLOY_REF='$DEPLOY_REF' bash -se" <<'REMOTE'
+            "STAGING_APP_DIR='$STAGING_APP_DIR' DEPLOY_SHA='$DEPLOY_SHA' bash -se" <<'REMOTE'
           set -euo pipefail
           cd "$STAGING_APP_DIR"
 
@@ -123,7 +122,7 @@ jobs:
           git -C src/admin checkout --detach "$admin_sha"
 
           git -C src/public reset --hard HEAD
-          git -C src/public fetch --prune origin "$DEPLOY_REF"
+          git -C src/public fetch --prune origin "$DEPLOY_SHA"
           fetched_public_sha=$(git -C src/public rev-parse FETCH_HEAD)
           test "$fetched_public_sha" = "$DEPLOY_SHA"
           git -C src/public checkout --detach "$DEPLOY_SHA"
@@ -170,30 +169,30 @@ jobs:
             redir /admin /admin/ 308
 
             handle /admin/* {
-              reverse_proxy 127.0.0.1:13081
+              reverse_proxy 127.0.0.1:23081
             }
             handle /health/* {
-              reverse_proxy 127.0.0.1:18001
+              reverse_proxy 127.0.0.1:28001
             }
             handle /static/* {
-              reverse_proxy 127.0.0.1:18001
+              reverse_proxy 127.0.0.1:28001
             }
             handle /api/v1/internal/* {
               respond "Not Found" 404
             }
             handle /api/* {
-              reverse_proxy 127.0.0.1:18001
+              reverse_proxy 127.0.0.1:28001
             }
             handle /media/* {
-              reverse_proxy 127.0.0.1:18001
+              reverse_proxy 127.0.0.1:28001
             }
             handle /preview/* {
-              reverse_proxy 127.0.0.1:18001
+              reverse_proxy 127.0.0.1:28001
             }
             handle /staff/* {
-              reverse_proxy 127.0.0.1:18001
+              reverse_proxy 127.0.0.1:28001
             }
-            reverse_proxy 127.0.0.1:13080
+            reverse_proxy 127.0.0.1:23080
           }
           # END TAHA STAGING MANAGED
           EOF
@@ -241,7 +240,7 @@ jobs:
               volumes:
                 - stage_cms_media:/app/media
               ports:
-                - "127.0.0.1:18001:8000"
+                - "127.0.0.1:28001:8000"
               networks: [stage_internal, stage_ingress]
               depends_on:
                 db:
@@ -260,7 +259,7 @@ jobs:
                 - stage_public_html:/usr/share/nginx/html
                 - stage_edge_deny:/etc/nginx/conf.d
               ports:
-                - "127.0.0.1:13080:8080"
+                - "127.0.0.1:23080:8080"
               networks: [stage_ingress]
 
             admin:
@@ -270,7 +269,7 @@ jobs:
               image: taha-admin-stage:${RELEASE_ID}
               restart: unless-stopped
               ports:
-                - "127.0.0.1:13081:8080"
+                - "127.0.0.1:23081:8080"
               networks: [stage_ingress]
 
           networks:
@@ -428,11 +427,11 @@ jobs:
           # 11. Verify all three services through their isolated host ingress.
           curl --fail --silent --show-error --retry 10 --retry-delay 2 \
             -H 'Host: staging.tahamohamadi.ir' -H 'X-Forwarded-Proto: https' \
-            http://127.0.0.1:18001/health/ > "$backup_dir/stage-health.json"
+            http://127.0.0.1:28001/health/ > "$backup_dir/stage-health.json"
           curl --fail --silent --show-error --retry 10 --retry-delay 2 \
-            http://127.0.0.1:13080/ > /dev/null
+            http://127.0.0.1:23080/ > /dev/null
           curl --fail --silent --show-error --retry 10 --retry-delay 2 \
-            http://127.0.0.1:13081/admin/ > /dev/null
+            http://127.0.0.1:23081/admin/ > /dev/null
           curl --fail --silent --show-error --retry 10 --retry-delay 2 \
             --resolve staging.tahamohamadi.ir:443:127.0.0.1 \
             https://staging.tahamohamadi.ir/ > /dev/null

@@ -135,16 +135,16 @@ describe('PUBLIC-320 integrated staging smoke scaffold', () => {
     expect(workflow).toContain('checkout --detach "$backend_sha"')
     expect(workflow).toContain('checkout --detach "$admin_sha"')
     expect(workflow).toContain('checkout --detach "$DEPLOY_SHA"')
-    expect(workflow).toContain('DEPLOY_REF: ${{ github.ref_name }}')
+    expect(workflow).not.toContain('DEPLOY_REF:')
     expect(workflow).toContain(
-      'git -C src/public fetch --prune origin "$DEPLOY_REF"',
+      'git -C src/public fetch --prune origin "$DEPLOY_SHA"',
     )
     expect(workflow).toContain('test "$fetched_public_sha" = "$DEPLOY_SHA"')
     expect(workflow).not.toContain('next_release_id="prod-')
     expect(workflow).not.toContain('PUBLIC_SITE_URL=https://tahamohamadi.ir')
-    expect(workflow).toContain('127.0.0.1:18001:8000')
-    expect(workflow).toContain('127.0.0.1:13080:8080')
-    expect(workflow).toContain('127.0.0.1:13081:8080')
+    expect(workflow).toContain('127.0.0.1:28001:8000')
+    expect(workflow).toContain('127.0.0.1:23080:8080')
+    expect(workflow).toContain('127.0.0.1:23081:8080')
     expect(workflow).toContain('# BEGIN TAHA STAGING MANAGED')
     expect(workflow).toContain('# END TAHA STAGING MANAGED')
     expect(workflow).toContain('pg_dump')
