@@ -94,9 +94,10 @@ jobs:
         if: steps.staging.outputs.configured == 'true'
         env:
           DEPLOY_SHA: ${{ github.sha }}
+          DEPLOY_REF: ${{ github.ref_name }}
         run: |
           ssh -i ~/.ssh/id_ed25519 -o BatchMode=yes -o StrictHostKeyChecking=yes -p "$STAGING_SSH_PORT" "$STAGING_SSH_USER@$STAGING_SSH_HOST" \
-            "STAGING_APP_DIR='$STAGING_APP_DIR' DEPLOY_SHA='$DEPLOY_SHA' bash -se" <<'REMOTE'
+            "STAGING_APP_DIR='$STAGING_APP_DIR' DEPLOY_SHA='$DEPLOY_SHA' DEPLOY_REF='$DEPLOY_REF' bash -se" <<'REMOTE'
           set -euo pipefail
           cd "$STAGING_APP_DIR"
 
@@ -122,7 +123,9 @@ jobs:
           git -C src/admin checkout --detach "$admin_sha"
 
           git -C src/public reset --hard HEAD
-          git -C src/public fetch --prune origin main
+          git -C src/public fetch --prune origin "$DEPLOY_REF"
+          fetched_public_sha=$(git -C src/public rev-parse FETCH_HEAD)
+          test "$fetched_public_sha" = "$DEPLOY_SHA"
           git -C src/public checkout --detach "$DEPLOY_SHA"
           public_sha=$(git -C src/public rev-parse HEAD)
 
