@@ -147,9 +147,14 @@ describe('PUBLIC-320 integrated staging smoke scaffold', () => {
     expect(workflow).toContain('127.0.0.1:23081:8080')
     expect(workflow).toContain('# BEGIN TAHA STAGING MANAGED')
     expect(workflow).toContain('# END TAHA STAGING MANAGED')
+    expect(workflow).toContain('name: host-edge')
+    expect(workflow).toContain('taha-stage-cms')
+    expect(workflow).toContain('taha-stage-web')
+    expect(workflow).toContain('taha-stage-admin')
     expect(workflow).toContain(
-      'sudo -n /opt/taha/bin/caddy-sync.sh /tmp/Caddyfile.deploy',
+      '/home/deploy/cms-repo/infra/caddy/Caddyfile.compose',
     )
+    expect(workflow).toContain('caddy reload --config /etc/caddy/Caddyfile')
     expect(workflow).toContain('pg_dump')
     expect(workflow).toContain('pg_restore --exit-on-error')
     expect(workflow).not.toContain('cat "$f"')

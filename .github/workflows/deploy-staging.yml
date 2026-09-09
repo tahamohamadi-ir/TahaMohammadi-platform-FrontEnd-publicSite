@@ -169,30 +169,30 @@ jobs:
             redir /admin /admin/ 308
 
             handle /admin/* {
-              reverse_proxy 127.0.0.1:23081
+              reverse_proxy taha-stage-admin:8080
             }
             handle /health/* {
-              reverse_proxy 127.0.0.1:28001
+              reverse_proxy taha-stage-cms:8000
             }
             handle /static/* {
-              reverse_proxy 127.0.0.1:28001
+              reverse_proxy taha-stage-cms:8000
             }
             handle /api/v1/internal/* {
               respond "Not Found" 404
             }
             handle /api/* {
-              reverse_proxy 127.0.0.1:28001
+              reverse_proxy taha-stage-cms:8000
             }
             handle /media/* {
-              reverse_proxy 127.0.0.1:28001
+              reverse_proxy taha-stage-cms:8000
             }
             handle /preview/* {
-              reverse_proxy 127.0.0.1:28001
+              reverse_proxy taha-stage-cms:8000
             }
             handle /staff/* {
-              reverse_proxy 127.0.0.1:28001
+              reverse_proxy taha-stage-cms:8000
             }
-            reverse_proxy 127.0.0.1:23080
+            reverse_proxy taha-stage-web:8080
           }
           # END TAHA STAGING MANAGED
           EOF
@@ -241,7 +241,11 @@ jobs:
                 - stage_cms_media:/app/media
               ports:
                 - "127.0.0.1:28001:8000"
-              networks: [stage_internal, stage_ingress]
+              networks:
+                stage_internal: {}
+                stage_ingress: {}
+                host-edge:
+                  aliases: [taha-stage-cms]
               depends_on:
                 db:
                   condition: service_healthy
@@ -260,7 +264,10 @@ jobs:
                 - stage_edge_deny:/etc/nginx/conf.d
               ports:
                 - "127.0.0.1:23080:8080"
-              networks: [stage_ingress]
+              networks:
+                stage_ingress: {}
+                host-edge:
+                  aliases: [taha-stage-web]
 
             admin:
               build:
@@ -270,12 +277,18 @@ jobs:
               restart: unless-stopped
               ports:
                 - "127.0.0.1:23081:8080"
-              networks: [stage_ingress]
+              networks:
+                stage_ingress: {}
+                host-edge:
+                  aliases: [taha-stage-admin]
 
           networks:
             stage_internal:
               internal: true
             stage_ingress: {}
+            host-edge:
+              external: true
+              name: host-edge
 
           volumes:
             stage_postgres_data: {}
@@ -388,10 +401,11 @@ jobs:
           docker compose --env-file .env.stage -f deploy/docker-compose.stage.yml run -T --rm -e POSTGRES_DB="$restore_db" cms python manage.py check </dev/null
           docker exec "$db_cid" dropdb -U "$postgres_user" --if-exists --force "$restore_db"
 
-          # 10. Install only the managed staging site block and validate before reload.
-          caddy_path=/etc/caddy/Caddyfile
+          # 10. Install only the managed staging site block in the active Compose edge.
+          caddy_path=/home/deploy/cms-repo/infra/caddy/Caddyfile.compose
           caddy_candidate="$STAGING_APP_DIR/deploy/Caddyfile.stage-candidate"
           sha256sum "$caddy_path" > "$backup_dir/caddy-base.sha256"
+          cp "$caddy_path" "$backup_dir/Caddyfile.compose.before"
           python3 - "$caddy_path" "$caddy_candidate" deploy/Caddyfile.staging.fragment <<'PY'
           import pathlib
           import sys
@@ -417,11 +431,19 @@ jobs:
 
           candidate.write_text(updated, encoding="utf-8")
           PY
-          caddy validate --config "$caddy_candidate" --adapter caddyfile
-          install -m 600 "$caddy_candidate" /tmp/Caddyfile.deploy
-          sudo -n /opt/taha/bin/caddy-sync.sh /tmp/Caddyfile.deploy
-          rm -f /tmp/Caddyfile.deploy "$caddy_candidate"
-          printf 'persistent-privileged-helper\n' > "$backup_dir/caddy-install.mode"
+          edge_cid=$(docker ps --filter name=taha-cms-caddy-1 --format '{{.ID}}' | head -n 1)
+          test -n "$edge_cid"
+          docker cp "$caddy_candidate" "$edge_cid:/tmp/Caddyfile.stage-candidate"
+          docker exec "$edge_cid" caddy validate --config /tmp/Caddyfile.stage-candidate --adapter caddyfile
+          cat "$caddy_candidate" > "$caddy_path"
+          if ! docker exec "$edge_cid" caddy reload --config /etc/caddy/Caddyfile --adapter caddyfile; then
+            cat "$backup_dir/Caddyfile.compose.before" > "$caddy_path"
+            docker exec "$edge_cid" caddy reload --config /etc/caddy/Caddyfile --adapter caddyfile
+            exit 1
+          fi
+          docker exec "$edge_cid" rm -f /tmp/Caddyfile.stage-candidate
+          rm -f "$caddy_candidate"
+          printf 'persistent-compose-edge-file\n' > "$backup_dir/caddy-install.mode"
 
           # 11. Verify all three services through their isolated host ingress.
           curl --fail --silent --show-error --retry 10 --retry-delay 2 \
