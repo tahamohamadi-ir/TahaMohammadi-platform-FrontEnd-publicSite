@@ -389,12 +389,10 @@ jobs:
           docker exec "$db_cid" dropdb -U "$postgres_user" --if-exists --force "$restore_db"
 
           # 10. Install only the managed staging site block and validate before reload.
-          sudo -n true
           caddy_path=/etc/caddy/Caddyfile
-          caddy_candidate=/etc/caddy/Caddyfile.stage-candidate
-          caddy_backup="/etc/caddy/Caddyfile.before-$next_release_id"
-          sudo cp "$caddy_path" "$caddy_backup"
-          sudo python3 - "$caddy_path" "$caddy_candidate" deploy/Caddyfile.staging.fragment <<'PY'
+          caddy_candidate="$STAGING_APP_DIR/deploy/Caddyfile.stage-candidate"
+          sha256sum "$caddy_path" > "$backup_dir/caddy-base.sha256"
+          python3 - "$caddy_path" "$caddy_candidate" deploy/Caddyfile.staging.fragment <<'PY'
           import pathlib
           import sys
 
@@ -419,10 +417,18 @@ jobs:
 
           candidate.write_text(updated, encoding="utf-8")
           PY
-          sudo caddy validate --config "$caddy_candidate" --adapter caddyfile
-          sudo install -m 644 "$caddy_candidate" "$caddy_path"
-          sudo rm -f "$caddy_candidate"
-          sudo systemctl reload caddy
+          caddy validate --config "$caddy_candidate" --adapter caddyfile
+          if sudo -n true 2>/dev/null; then
+            caddy_backup="/etc/caddy/Caddyfile.before-$next_release_id"
+            sudo cp "$caddy_path" "$caddy_backup"
+            sudo install -m 644 "$caddy_candidate" "$caddy_path"
+            sudo rm -f "$caddy_candidate"
+            sudo systemctl reload caddy
+            printf 'persistent-system-config\n' > "$backup_dir/caddy-install.mode"
+          else
+            caddy reload --config "$caddy_candidate" --adapter caddyfile
+            printf 'runtime-admin-api-reload\n' > "$backup_dir/caddy-install.mode"
+          fi
 
           # 11. Verify all three services through their isolated host ingress.
           curl --fail --silent --show-error --retry 10 --retry-delay 2 \

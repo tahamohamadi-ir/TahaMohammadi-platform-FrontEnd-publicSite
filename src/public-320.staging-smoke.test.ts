@@ -147,6 +147,10 @@ describe('PUBLIC-320 integrated staging smoke scaffold', () => {
     expect(workflow).toContain('127.0.0.1:23081:8080')
     expect(workflow).toContain('# BEGIN TAHA STAGING MANAGED')
     expect(workflow).toContain('# END TAHA STAGING MANAGED')
+    expect(workflow).toContain('if sudo -n true 2>/dev/null; then')
+    expect(workflow).toContain(
+      'caddy reload --config "$caddy_candidate" --adapter caddyfile',
+    )
     expect(workflow).toContain('pg_dump')
     expect(workflow).toContain('pg_restore --exit-on-error')
     expect(workflow).not.toContain('cat "$f"')
