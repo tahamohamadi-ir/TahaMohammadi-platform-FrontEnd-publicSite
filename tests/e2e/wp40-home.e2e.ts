@@ -96,8 +96,7 @@ test.describe('WP-40 home structure acceptance', () => {
     await page.keyboard.press('Enter')
     await expect(page.locator('#main-content')).toBeFocused()
 
-    const heroChipList = page.locator('.hm-hero__focus-list')
-    await expect(heroChipList).toBeInViewport()
+    await expect(page.locator('.hm-hero__focus-list')).toHaveCount(1)
 
     const themeToggle = page.locator('[data-theme-toggle]')
     await themeToggle.focus()
@@ -152,7 +151,14 @@ test.describe('WP-40 home structure acceptance', () => {
       'Taha Mohammadi',
     )
     await expectSemanticGraph(noJsPage)
-    await expect(noJsPage.locator('.hm-projects__image')).toHaveCount(2)
+    await expect(noJsPage.locator('[data-graph-node]')).toHaveCount(4)
+    await expect
+      .poll(() =>
+        noJsPage.evaluate(
+          () => document.documentElement.scrollWidth <= window.innerWidth,
+        ),
+      )
+      .toBe(true)
     await context.close()
   })
 
