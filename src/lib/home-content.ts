@@ -60,6 +60,47 @@ export interface HomeHeroContent {
   focusChips: readonly string[]
   focusAreasLabel: string
 }
+
+function decodeTextEntities(value: string): string {
+  return value
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&amp;/gi, '&')
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/&quot;/gi, '"')
+    .replace(/&#(?:39|x27);/gi, "'")
+}
+
+function plainAuthoredText(value: string): string {
+  return decodeTextEntities(value)
+    .replace(/<[^>]*>/g, '')
+    .replace(/\[([^\]]+)\]\([^)]*\)/g, '$1')
+    .replace(/(^|\s)[*_~`]{1,3}|[*_~`]{1,3}(?=\s|$)/g, '$1')
+    .replace(/^[-+>]\s+/gm, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
+/** Select the first authored prose paragraph, excluding Markdown headings. */
+export function summarizeHomeLanding(body: string): string {
+  const blocks = body
+    .replace(/\r\n?/g, '\n')
+    .split(/\n\s*\n/)
+    .map((block) => block.trim())
+    .filter((block) => block.length > 0 && !/^#{1,6}\s/.test(block))
+  const preferred = blocks.find(
+    (block) => plainAuthoredText(block).length >= 60 && !/^\*\*/.test(block),
+  )
+  return plainAuthoredText(preferred ?? blocks[0] ?? '')
+}
+
+/** Return a safe plain-text lead from an authored HTML or text statement. */
+export function summarizeResearchStatement(body: string): string {
+  const firstHtmlParagraph = body.match(/<p(?:\s[^>]*)?>([\s\S]*?)<\/p>/i)?.[1]
+  const firstTextParagraph = body.replace(/\r\n?/g, '\n').split(/\n\s*\n/, 1)[0]
+  return plainAuthoredText(firstHtmlParagraph ?? firstTextParagraph ?? '')
+}
+
 export async function getHomeHeroContent(
   locale: Locale,
 ): Promise<HomeHeroContent> {
@@ -78,7 +119,7 @@ export async function getHomeHeroContent(
     namePrimary: locale === 'en' ? given : name,
     nameAccent: locale === 'en' && rest.length ? ' ' + rest.join(' ') : '',
     role: localized?.tagline ?? '',
-    intro: landing?.body ?? '',
+    intro: summarizeHomeLanding(landing?.body ?? ''),
     focusChips: topics
       .filter((item) => item.locale === locale)
       .map((item) => item.title),
@@ -96,10 +137,11 @@ export async function getHomeResearchContent(
 ): Promise<HomeResearchContent> {
   const statements = await listResearchStatements(locale)
   const statement = statements.find((item) => item.locale === locale)
+  const lead = summarizeResearchStatement(statement?.body ?? '')
   return {
     title: statement?.title ?? '',
-    excerpt: statement?.body ?? '',
-    lead: statement?.body ?? '',
+    excerpt: lead,
+    lead,
   }
 }
 export interface FeaturedProjectCard {

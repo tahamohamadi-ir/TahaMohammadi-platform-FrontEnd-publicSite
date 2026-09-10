@@ -5,6 +5,8 @@ import {
   getHomePublicationsContent,
   getHomeInterestsContent,
   getHomeJourneyContent,
+  summarizeHomeLanding,
+  summarizeResearchStatement,
 } from './home-content'
 
 const published_at = '2026-09-01T00:00:00Z'
@@ -15,6 +17,30 @@ afterEach(() => {
 })
 
 describe('CMS-only Home content', () => {
+  it('turns authored Markdown and HTML into concise, safe hero copy', () => {
+    expect(
+      summarizeHomeLanding(`## Research · Engineering · Design
+
+Design · Interaction · Engineering · Data · AI
+
+I build and study human-centered intelligent systems across interaction, data and AI.
+
+### Explore by perspective
+
+One identity, multiple entry paths.`),
+    ).toBe(
+      'I build and study human-centered intelligent systems across interaction, data and AI.',
+    )
+    expect(
+      summarizeResearchStatement(
+        '<p>Software engineer and applied AI researcher.</p><p>Second paragraph.</p>',
+      ),
+    ).toBe('Software engineer and applied AI researcher.')
+    expect(summarizeResearchStatement('<script>alert(1)</script>Safe')).toBe(
+      'alert(1)Safe',
+    )
+  })
+
   it('does not restore owner facts or selected works when APIs are unavailable', async () => {
     vi.stubGlobal(
       'fetch',
