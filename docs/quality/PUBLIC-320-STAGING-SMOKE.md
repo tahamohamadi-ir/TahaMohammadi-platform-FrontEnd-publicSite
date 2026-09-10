@@ -1,9 +1,13 @@
 # PUBLIC-320 Integrated Staging Smoke Evidence
 
-**Packet:** PUBLIC-320  
-**Authority:** `Docs/02-architecture/DEPLOYMENT-TOPOLOGY.md`, accepted public OpenAPI, `PUBLIC-310` contract fixtures  
-**Environment:** isolated staging topology at `http://127.0.0.1:23080`  
-**Last verified:** 2026-09-10  
+**Packet:** PUBLIC-320
+
+**Authority:** `Docs/02-architecture/DEPLOYMENT-TOPOLOGY.md`, accepted public OpenAPI, `PUBLIC-310` contract fixtures
+
+**Environment:** isolated staging topology at `http://127.0.0.1:23080`
+
+**Last verified:** 2026-09-10
+
 **Status:** live integrated public smoke **10/10 passed** against the real
 public/CMS reverse-proxy boundary.
 
