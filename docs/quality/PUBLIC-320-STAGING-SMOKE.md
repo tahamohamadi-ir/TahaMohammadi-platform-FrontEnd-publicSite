@@ -4,12 +4,17 @@
 
 **Authority:** `Docs/02-architecture/DEPLOYMENT-TOPOLOGY.md`, accepted public OpenAPI, `PUBLIC-310` contract fixtures
 
-**Environment:** isolated staging topology at `http://127.0.0.1:23080`
+**Environment:** live staging topology at `https://staging.tahamohamadi.ir`
+(isolated service behind the managed Caddy edge on host loopback
+`127.0.0.1:23080`)
+
+**Release set:** PUBLIC `f3e9032` / ADMIN `f1cfa37` / BACKEND `9c2c704`
+(staging release `stage-f3e90323-f1cfa37d-9c2c7045`)
 
 **Last verified:** 2026-09-10
 
 **Status:** live integrated public smoke **10/10 passed** against the real
-public/CMS reverse-proxy boundary.
+public/CMS reverse-proxy boundary (11.4 s).
 
 This checklist does **not** close `PUBLIC-190`. Passing local scaffold validation does not claim visual acceptance or production readiness.
 
