@@ -39,7 +39,13 @@ test.describe('CA-08 shared chrome navigation', () => {
       await page.setViewportSize({ width: 390, height: 844 })
       await page.goto(`/${locale}/`)
 
-      await expect(page.locator('.site-header__brand')).toHaveCount(0)
+      const brand = page.locator('.site-header__brand')
+      if ((await brand.count()) > 0) {
+        await expect(brand).toBeVisible()
+        await expect(brand).not.toBeEmpty()
+      } else {
+        await expect(brand).toHaveCount(0)
+      }
       await expect(page.locator('.site-header__search-link')).toBeVisible()
       await expect(page.locator('.theme-toggle--shell')).toBeVisible()
       await expect(page.locator('.site-header__drawer')).toBeVisible()

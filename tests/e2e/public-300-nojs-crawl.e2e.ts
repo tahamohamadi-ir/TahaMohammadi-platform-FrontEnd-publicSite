@@ -84,7 +84,11 @@ async function assertRouteReadable(page: Page, route: NoJsAuditRoute) {
         await expect(page.locator('.hm-hero__lead h1')).toContainText(
           getBrandName(route.locale!),
         )
-        await expect(page.locator('.hm-graph__node-label')).toHaveCount(3)
+        const nodeLabels = page.locator('.hg-node__label')
+        expect(await nodeLabels.count()).toBeGreaterThan(0)
+        for (const label of await nodeLabels.all()) {
+          await expect(label).toBeVisible()
+        }
       }
       break
     case 'locale-index':

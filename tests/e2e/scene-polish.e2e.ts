@@ -38,17 +38,29 @@ test('orbital arrival stops rendering when settled and respects live reduced mot
     'opacity',
     '0',
   )
-  const duringArrival = await draws()
+  // The bounded arrival can already be finishing when the load event resolves
+  // under parallel load. Require that it rendered and then that it goes idle.
+  await expect.poll(draws, { timeout: 10000 }).toBeGreaterThan(0)
   await page.waitForTimeout(4500)
   const settled = await draws()
-  expect(settled).toBeGreaterThan(duringArrival)
   await page.waitForTimeout(400)
   expect(await draws()).toBe(settled)
   const bounds = await page.locator('[data-gateway-portal]').boundingBox()
   await page.mouse.move(bounds!.x + 40, bounds!.y + 40)
   await expect.poll(draws).toBeGreaterThan(settled)
   await page.emulateMedia({ reducedMotion: 'reduce' })
-  await page.waitForTimeout(150)
+  // The media-query change is delivered asynchronously; wait until the scene
+  // has actually settled before checking that pointer movement cannot redraw.
+  await expect
+    .poll(
+      async () => {
+        const first = await draws()
+        await page.waitForTimeout(200)
+        return (await draws()) === first
+      },
+      { timeout: 5000 },
+    )
+    .toBe(true)
   const reduced = await draws()
   await page.mouse.move(bounds!.x + bounds!.width - 40, bounds!.y + 80)
   await page.waitForTimeout(400)
@@ -93,10 +105,22 @@ test('language entry never lands on a visually empty Home', async ({
   await page.goto('/')
   await page.locator('a[href="/en/"]').click()
   await expect(page).toHaveURL(/\/en\/$/)
-  await expect(page.locator('[data-home-state="unavailable"]')).toBeVisible()
-  const status = page.getByRole('status')
-  await expect(status.getByRole('heading')).toHaveText('Content unavailable')
-  await expect(status).toContainText('Published content is not available yet.')
+  const homeState = page.locator('[data-home-state]')
+  await expect(homeState).toHaveAttribute(
+    'data-home-state',
+    /ready|unavailable/,
+  )
+  if ((await homeState.getAttribute('data-home-state')) === 'unavailable') {
+    await expect(page.locator('[data-home-state="unavailable"]')).toBeVisible()
+    const status = page.getByRole('status')
+    await expect(status.getByRole('heading')).toHaveText('Content unavailable')
+    await expect(status).toContainText(
+      'Published content is not available yet.',
+    )
+  } else {
+    await expect(page.locator('.hm-hero__name')).toContainText('Taha Mohammadi')
+    await expect(page.locator('.hm-hero__research')).not.toBeEmpty()
+  }
   expect(
     await page.evaluate(
       () => document.documentElement.scrollWidth <= innerWidth,

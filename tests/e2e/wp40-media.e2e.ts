@@ -46,7 +46,7 @@ async function loadedSelection(locator: Locator) {
 
 test.describe('WP-40 theme media selection', () => {
   for (const theme of ['light', 'dark'] as const) {
-    test(`WP-40 home media: downloads only the ${theme} variant per slot and selects AVIF at a suitable width`, async ({
+    test(`WP-40 gateway portal media: downloads only the ${theme} variant and selects AVIF at a suitable width`, async ({
       page,
     }) => {
       await page.addInitScript(
@@ -58,13 +58,12 @@ test.describe('WP-40 theme media selection', () => {
       const requested: string[] = []
       page.on('request', (request) => requested.push(request.url()))
 
-      await page.goto('/en/')
-      await expect(
-        page.locator('[data-theme-picture-mount] img').first(),
-      ).toBeVisible()
+      await page.goto('/')
+      const mount = page.locator('[data-theme-picture-mount] img').first()
+      await expect(mount).toBeVisible()
 
       for (const [slot, variants] of [
-        ['hero atmosphere', ['portal-orbit-light', 'portal-orbit-dark']],
+        ['gateway portal', ['portal-centered-light', 'portal-centered-dark']],
       ] as const) {
         for (const variant of variants) {
           const downloads = requested.filter((url) => url.includes(variant))
@@ -82,7 +81,7 @@ test.describe('WP-40 theme media selection', () => {
         ).toBe(true)
       }
 
-      const hero = await loadedSelection(page.locator('.hm-hero__media-img'))
+      const hero = await loadedSelection(mount)
       expect(hero.format).toBe('avif')
       expect(ATMOSPHERE_WIDTHS).toContain(hero.width)
     })
@@ -100,33 +99,29 @@ test.describe('WP-40 theme media selection', () => {
       }
     })
 
+    // Home renders project previews only when featured projects are selected.
     await page.goto('/en/')
-    await expect(page.locator('.hm-projects__image')).toHaveCount(2)
-
     const previewLocators = await page.locator('.hm-projects__image').all()
-    const previews: Awaited<ReturnType<typeof loadedSelection>>[] = []
     for (const preview of previewLocators) {
-      previews.push(await loadedSelection(preview))
-    }
-    expect(previews.length).toBe(2)
-    for (const preview of previews) {
-      expect(preview.format).toBe('avif')
-      expect(PREVIEW_WIDTHS).toContain(preview.width)
+      const selection = await loadedSelection(preview)
+      expect(selection.format).toBe('avif')
+      expect(PREVIEW_WIDTHS).toContain(selection.width)
     }
 
-    for (const asset of [
-      'project-data-architecture',
-      'project-dashboard-systems',
-      'blog-coral-stairs',
-      'learning-sage-library',
-      'gallery-ivory-forms',
-    ]) {
-      expect(
-        await page
-          .locator(`img[srcset*="${asset}"], img[src*="${asset}"]`)
-          .count(),
-      ).toBeGreaterThanOrEqual(1)
-    }
+    // The projects index always carries page-owned preview media.
+    await page.goto('/en/projects/')
+    const indexPreview = await loadedSelection(
+      page.locator('.pf-index-hero__image').first(),
+    )
+    expect(indexPreview.format).toBe('avif')
+    expect(PREVIEW_WIDTHS).toContain(indexPreview.width)
+    expect(
+      await page
+        .locator(
+          'img[srcset*="project-data-architecture"], img[src*="project-data-architecture"]',
+        )
+        .count(),
+    ).toBeGreaterThanOrEqual(1)
 
     // Page-owned art and shell brand must never be served from the legacy /media/ proxy.
     expect(

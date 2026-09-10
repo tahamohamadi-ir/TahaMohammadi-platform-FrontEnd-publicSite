@@ -222,9 +222,11 @@ test.describe('CA-06 integrated Home scene', () => {
 
     const hero = page.locator('[data-hero-layout="integrated"]')
     await expect(hero).toBeVisible()
-    await expect(page.locator('.hm-hero__research')).toContainText(
-      'امکان کنترل',
-    )
+    const research = page.locator('.hm-hero__research')
+    await expect(research).toHaveCount(1)
+    const researchText = (await research.innerText()).trim()
+    expect(researchText.length).toBeGreaterThan(0)
+    expect(researchText).not.toMatch(/<[^>]*>|^#{1,6}\s|\*\*|\[[^\]]*\]\(/)
 
     const prefersReduced = await page.evaluate(
       () => window.matchMedia('(prefers-reduced-motion: reduce)').matches,

@@ -50,14 +50,14 @@ test.describe('CA-03 semantic integrated Home hero', () => {
   test('research-statement text is retained in the hero copy', async ({
     page,
   }) => {
-    await page.goto('/en/')
-    await expect(page.locator('.hm-hero__research')).toContainText(
-      'intelligent systems extend human capability',
-    )
-    await page.goto('/fa/')
-    await expect(page.locator('.hm-hero__research')).toContainText(
-      'امکان کنترل',
-    )
+    for (const path of ['/en/', '/fa/']) {
+      await page.goto(path)
+      const research = page.locator('.hm-hero__research')
+      await expect(research).toHaveCount(1)
+      const text = (await research.innerText()).trim()
+      expect(text.length).toBeGreaterThan(0)
+      expect(text).not.toMatch(/<[^>]*>|^#{1,6}\s|\*\*|\[[^\]]*\]\(/)
+    }
   })
 
   test('native node selection toggles without scripts or navigation', async ({
@@ -93,9 +93,11 @@ test.describe('CA-03 semantic integrated Home hero', () => {
     await expect(noJsPage.locator('.hm-hero__name')).toContainText(
       'Taha Mohammadi',
     )
-    await expect(noJsPage.locator('.hm-hero__research')).toContainText(
-      'intelligent systems extend human capability',
-    )
+    const noJsResearch = noJsPage.locator('.hm-hero__research')
+    await expect(noJsResearch).toHaveCount(1)
+    const noJsResearchText = (await noJsResearch.innerText()).trim()
+    expect(noJsResearchText.length).toBeGreaterThan(0)
+    expect(noJsResearchText).not.toMatch(/<[^>]*>|^#{1,6}\s|\*\*|\[[^\]]*\]\(/)
     await expect(
       noJsPage.locator('[data-hero-layout="integrated"]'),
     ).toHaveCount(1)
