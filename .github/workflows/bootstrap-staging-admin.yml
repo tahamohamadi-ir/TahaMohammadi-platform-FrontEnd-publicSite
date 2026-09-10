@@ -1,0 +1,94 @@
+name: Bootstrap staging admin
+
+on:
+  workflow_dispatch:
+    inputs:
+      role:
+        description: Role to grant
+        required: true
+        default: staff
+        type: choice
+        options:
+          - staff
+          - superuser
+
+permissions:
+  contents: read
+
+jobs:
+  bootstrap:
+    name: Create or update staging admin
+    runs-on: ubuntu-latest
+    environment: staging
+    env:
+      STAGING_SSH_PRIVATE_KEY: ${{ secrets.STAGING_SSH_PRIVATE_KEY }}
+      STAGING_SSH_KNOWN_HOSTS: ${{ secrets.STAGING_SSH_KNOWN_HOSTS }}
+      STAGING_SSH_HOST: ${{ secrets.STAGING_SSH_HOST }}
+      STAGING_SSH_PORT: ${{ secrets.STAGING_SSH_PORT }}
+      STAGING_SSH_USER: ${{ secrets.STAGING_SSH_USER }}
+      STAGING_APP_DIR: ${{ secrets.STAGING_APP_DIR }}
+      STAGING_ADMIN_EMAIL: ${{ secrets.STAGING_ADMIN_EMAIL }}
+      STAGING_ADMIN_USERNAME: ${{ secrets.STAGING_ADMIN_USERNAME }}
+      STAGING_ADMIN_PASSWORD: ${{ secrets.STAGING_ADMIN_PASSWORD }}
+    steps:
+      - name: Check configuration
+        id: staging
+        shell: bash
+        run: |
+          required=(
+            STAGING_SSH_PRIVATE_KEY
+            STAGING_SSH_KNOWN_HOSTS
+            STAGING_SSH_HOST
+            STAGING_SSH_PORT
+            STAGING_SSH_USER
+            STAGING_APP_DIR
+            STAGING_ADMIN_EMAIL
+            STAGING_ADMIN_USERNAME
+            STAGING_ADMIN_PASSWORD
+          )
+          for name in "${required[@]}"; do
+            if [[ -z "${!name}" ]]; then
+              echo "configured=false" >> "$GITHUB_OUTPUT"
+              echo "::notice::Bootstrap skipped: required repository secrets are not configured."
+              exit 0
+            fi
+          done
+          echo "configured=true" >> "$GITHUB_OUTPUT"
+
+      - name: Configure staging SSH access
+        if: steps.staging.outputs.configured == 'true'
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$STAGING_SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          printf '%s\n' "$STAGING_SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Create or update staging admin
+        if: steps.staging.outputs.configured == 'true'
+        shell: bash
+        run: |
+          ssh -i ~/.ssh/id_ed25519 -o BatchMode=yes -o StrictHostKeyChecking=yes -p "$STAGING_SSH_PORT" "$STAGING_SSH_USER@$STAGING_SSH_HOST" \
+            "STAGING_APP_DIR='$STAGING_APP_DIR' ADMIN_EMAIL='$STAGING_ADMIN_EMAIL' ADMIN_USERNAME='$STAGING_ADMIN_USERNAME' ADMIN_ROLE='${{ inputs.role }}' ADMIN_PASSWORD='$STAGING_ADMIN_PASSWORD' bash -se" <<'REMOTE'
+          set -euo pipefail
+          cd "$STAGING_APP_DIR"
+          docker compose --env-file .env.stage -f deploy/docker-compose.stage.yml run -T --rm \
+            -e ADMIN_EMAIL -e ADMIN_USERNAME -e ADMIN_ROLE -e ADMIN_PASSWORD \
+            cms python manage.py shell -c '
+          import os
+          from django.contrib.auth import get_user_model
+          User = get_user_model()
+          email = os.environ["ADMIN_EMAIL"]
+          user, created = User.objects.get_or_create(
+              email=email, defaults={"username": os.environ["ADMIN_USERNAME"]}
+          )
+          user.username = os.environ["ADMIN_USERNAME"]
+          user.is_active = True
+          user.is_staff = True
+          if os.environ["ADMIN_ROLE"] == "superuser":
+              user.is_superuser = True
+          user.set_password(os.environ["ADMIN_PASSWORD"])
+          user.save()
+          print("staging admin created" if created else "staging admin updated", email)
+          '
+          REMOTE
