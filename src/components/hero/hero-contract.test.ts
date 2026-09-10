@@ -331,6 +331,12 @@ describe('CA-03 Home integration', () => {
   it('ships responsive hero graph styles for both themes and locales', () => {
     const css = readSource('src/styles/hero-graph.css')
     expect(css).toContain('.hm-hero--integrated')
+    expect(css).toMatch(
+      /\.hm-hero\.hm-hero--integrated\s*\{[\s\S]*?grid-template-columns:\s*minmax\(0,\s*1fr\)/,
+    )
+    expect(css).toMatch(
+      /@media \(min-width:\s*1024px\)[\s\S]*?\.hm-hero\.hm-hero--integrated\s*\{[\s\S]*?repeat\(12/,
+    )
     expect(css).toContain('.hg-scene')
     expect(css).toContain('520px')
     expect(css).toContain('280px')

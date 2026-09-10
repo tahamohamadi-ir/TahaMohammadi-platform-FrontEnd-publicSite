@@ -2,22 +2,24 @@
 
 **Packet:** PUBLIC-320  
 **Authority:** `Docs/02-architecture/DEPLOYMENT-TOPOLOGY.md`, accepted public OpenAPI, `PUBLIC-310` contract fixtures  
-**Environment:** deployed staging only when `PUBLIC_STAGING_SITE_URL` is set  
-**Status:** scaffold shipped; live integrated smoke **skipped** until `BACKEND-180` staging deployment and owner credentials exist.
+**Environment:** isolated staging topology at `http://127.0.0.1:23080`  
+**Last verified:** 2026-09-10  
+**Status:** live integrated public smoke **10/10 passed** against the real
+public/CMS reverse-proxy boundary.
 
 This checklist does **not** close `PUBLIC-190`. Passing local scaffold validation does not claim visual acceptance or production readiness.
 
 ---
 
-## Automated gate (scaffold)
+## Automated and live gates
 
-| Gate                    | Command                                                  | Result          | Notes                              |
-| ----------------------- | -------------------------------------------------------- | --------------- | ---------------------------------- |
-| Build                   | `npm run build`                                          | required        | unchanged production surface       |
-| Vitest staging scaffold | `npm test` (includes `public-320.staging-smoke.test.ts`) | required        | env contract + probe wiring        |
-| Design authority        | `npm run validate:design`                                | required        | semantic token contract            |
-| SEO                     | `npm run validate:seo`                                   | required        | sitemap/hreflang/canonical         |
-| Live staging smoke      | `npm run test:smoke`                                     | skip when unset | requires `PUBLIC_STAGING_SITE_URL` |
+| Gate                    | Command                                                  | Result       | Notes                                      |
+| ----------------------- | -------------------------------------------------------- | ------------ | ------------------------------------------ |
+| Build                   | `npm run build`                                          | PASS         | 42 static pages                            |
+| Vitest staging scaffold | `npm test` (includes `public-320.staging-smoke.test.ts`) | PASS         | environment contract + probe wiring        |
+| Design authority        | `npm run validate:design`                                | PASS         | semantic token contract                    |
+| SEO                     | `npm run validate:seo`                                   | PASS         | sitemap, hreflang, canonical               |
+| Live staging smoke      | `npm run test:smoke`                                     | PASS (10/10) | same-origin public/CMS integration, 11.0 s |
 
 **Harness:** `src/test-harness/staging-smoke.ts`, `src/public-320.staging-smoke.test.ts`, `tests/e2e/public-320-staging-smoke.e2e.ts`, `playwright.staging.config.ts`
 
@@ -37,7 +39,9 @@ PUBLIC_STAGING_SITE_URL=https://staging.example.com
 # PUBLIC_STAGING_API_BASE_URL=
 ```
 
-When `PUBLIC_STAGING_SITE_URL` is unset, Playwright reports skipped tests with an explicit reason referencing `BACKEND-180`.
+When `PUBLIC_STAGING_SITE_URL` is unset, Playwright still reports skipped tests
+with an explicit reason. The recorded run supplied the isolated staging URL
+explicitly.
 
 ---
 
@@ -60,13 +64,17 @@ Response bodies are **not** asserted against fixtures in smoke; contract shape v
 
 ---
 
-## Blockers
+## Integration observations
 
-| Blocker                   | Owner      | Notes                                                     |
-| ------------------------- | ---------- | --------------------------------------------------------- |
-| `BACKEND-180`             | Backend    | Session, CSRF, MFA, preview, contact disposable-env smoke |
-| Staging deployment (`R7`) | Platform   | Host routing, TLS, proxy headers, sanitized data          |
-| `PUBLIC_STAGING_SITE_URL` | Operations | No staging URL is checked into this repository            |
+| Observation                    | Result                                                                       |
+| ------------------------------ | ---------------------------------------------------------------------------- |
+| `BACKEND-180` smoke            | PASS; disposable backend environment covered the server-side boundary        |
+| Public and CMS host routing    | PASS through the staging edge                                                |
+| Home composition EN / FA       | HTTP 200; eight published modules per locale                                 |
+| Home graph EN / FA             | HTTP 200; four nodes, three edges, four published related records per locale |
+| Staging indexing protection    | `X-Robots-Tag: noindex, nofollow, noarchive`                                 |
+| Internal API boundary          | `/api/v1/internal/*` remains unavailable through the public edge             |
+| Owner-authenticated admin flow | Tracked separately in the R8 sign-off package; public smoke needs no login   |
 
 ---
 

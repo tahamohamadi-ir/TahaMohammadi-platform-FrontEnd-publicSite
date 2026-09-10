@@ -8,8 +8,9 @@
  * the scene (no zero-opacity text rules).
  */
 
-.hm-hero--integrated {
+.hm-hero.hm-hero--integrated {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-8, 2rem);
   max-inline-size: 1280px;
   margin-inline: auto;
@@ -306,16 +307,16 @@
 
 /* 768: stack when copy and graph cannot share a row. */
 @media (min-width: 768px) {
-  .hm-hero--integrated {
+  .hm-hero.hm-hero--integrated {
     grid-template-columns: repeat(8, minmax(0, 1fr));
     gap: var(--space-6, 1.5rem);
   }
 
-  .hm-hero__copy {
+  .hm-hero--integrated > .hm-hero__copy {
     grid-column: 1 / -1;
   }
 
-  .hm-hero__graph {
+  .hm-hero--integrated > .hm-hero__graph {
     grid-column: 1 / -1;
   }
 
@@ -327,17 +328,17 @@
 
 /* 1024–1440: 12 columns, copy 5 and graph 7. DOM order keeps focus order. */
 @media (min-width: 1024px) {
-  .hm-hero--integrated {
+  .hm-hero.hm-hero--integrated {
     grid-template-columns: repeat(12, minmax(0, 1fr));
     gap: 24px 32px;
     padding-block: 4.5rem 6rem;
   }
 
-  .hm-hero__copy {
+  .hm-hero--integrated > .hm-hero__copy {
     grid-column: span 5;
   }
 
-  .hm-hero__graph {
+  .hm-hero--integrated > .hm-hero__graph {
     grid-column: span 7;
   }
 
