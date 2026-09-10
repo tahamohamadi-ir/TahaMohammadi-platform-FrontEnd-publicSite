@@ -15,12 +15,18 @@ const content = await getHomeInterestsContent(locale)
   (content.cards.length > 0 || content.fitCopy) && (
     <section class="hm-interests">
       <div class="hm-interests__inner">
-        <header class="hm-interests__header">
-          <p class="hm-eyebrow">{content.sectionTitle}</p>
-          <h2 id="hm-interests-title" class="hm-interests__title">
-            {content.sectionLead}
-          </h2>
-        </header>
+        {(content.sectionTitle || content.sectionLead) && (
+          <header class="hm-interests__header">
+            {content.sectionTitle && (
+              <p class="hm-eyebrow">{content.sectionTitle}</p>
+            )}
+            {content.sectionLead && (
+              <h2 id="hm-interests-title" class="hm-interests__title">
+                {content.sectionLead}
+              </h2>
+            )}
+          </header>
+        )}
 
         {content.cards.length > 0 && (
           <ul class="hm-interests__grid">
@@ -36,15 +42,21 @@ const content = await getHomeInterestsContent(locale)
           </ul>
         )}
 
-        <aside
-          class="hm-interests__fit"
-          aria-labelledby="hm-interests-fit-title"
-        >
-          <h3 id="hm-interests-fit-title" class="hm-interests__fit-title">
-            {content.fitTitle}
-          </h3>
-          <p class="hm-interests__fit-copy">{content.fitCopy}</p>
-        </aside>
+        {content.fitCopy && (
+          <aside
+            class="hm-interests__fit"
+            aria-labelledby={
+              content.fitTitle ? 'hm-interests-fit-title' : undefined
+            }
+          >
+            {content.fitTitle && (
+              <h3 id="hm-interests-fit-title" class="hm-interests__fit-title">
+                {content.fitTitle}
+              </h3>
+            )}
+            <p class="hm-interests__fit-copy">{content.fitCopy}</p>
+          </aside>
+        )}
       </div>
     </section>
   )

@@ -11,6 +11,7 @@ function mockCms(
   locale: Locale,
   name = 'Edited identity',
   includeRecords = true,
+  includeCopy = true,
 ) {
   vi.stubGlobal(
     'fetch',
@@ -38,29 +39,31 @@ function mockCms(
             },
           ]
         : []
-      const copy = {
-        'hero.focus_areas': 'Focus label',
-        'hero.cta.research': 'Research action',
-        'hero.cta.cv': 'CV action',
-        'hero.cta.contact': 'Contact action',
-        'home.projects.title': 'Project section',
-        'home.projects.view_all': 'Project index',
-        'home.projects.view_record': 'Read project',
-        'home.publications.title': 'Publication section',
-        'home.publications.view_all': 'Publication index',
-        'home.interests.title': 'Interests section',
-        'home.interests.lead': 'Research lead',
-        'home.collaboration.title': 'Collaboration section',
-        'home.collaboration.body': 'Managed availability',
-        'home.collaboration.contact': 'Contact owner',
-        'home.explore.title': 'Explore section',
-        'home.explore.gallery.title': 'Gallery',
-        'home.explore.gallery.action': 'Browse gallery',
-        'home.journey.title': 'Journey section',
-        'home.journey.headline': 'Journey headline',
-        'home.unavailable.title': 'Home unavailable',
-        'home.unavailable.message': 'No published Home modules',
-      }
+      const copy = includeCopy
+        ? {
+            'hero.focus_areas': 'Focus label',
+            'hero.cta.research': 'Research action',
+            'hero.cta.cv': 'CV action',
+            'hero.cta.contact': 'Contact action',
+            'home.projects.title': 'Project section',
+            'home.projects.view_all': 'Project index',
+            'home.projects.view_record': 'Read project',
+            'home.publications.title': 'Publication section',
+            'home.publications.view_all': 'Publication index',
+            'home.interests.title': 'Interests section',
+            'home.interests.lead': 'Research lead',
+            'home.collaboration.title': 'Collaboration section',
+            'home.collaboration.body': 'Managed availability',
+            'home.collaboration.contact': 'Contact owner',
+            'home.explore.title': 'Explore section',
+            'home.explore.gallery.title': 'Gallery',
+            'home.explore.gallery.action': 'Browse gallery',
+            'home.journey.title': 'Journey section',
+            'home.journey.headline': 'Journey headline',
+            'home.unavailable.title': 'Home unavailable',
+            'home.unavailable.message': 'No published Home modules',
+          }
+        : {}
       const data: Record<string, unknown> = {
         ['/api/v1/site/' + locale]: {
           locale,
@@ -197,6 +200,18 @@ describe('PU-17 Home CMS integration', () => {
     expect(html).toContain('2020–now')
     expect(html).toContain('CMS degree, CMS field')
     expect(html).toContain('CMS school')
+  })
+  it('omits empty headings and fit callouts until managed copy is published', async () => {
+    mockCms('en', 'Edited identity', true, false)
+    const interests = await render(HomeResearchInterests, { locale: 'en' })
+    const journey = await render(HomeJourney, { locale: 'en' })
+
+    expect(interests).toContain('Research topic')
+    expect(interests).not.toContain('hm-interests__header')
+    expect(interests).not.toContain('hm-interests__fit')
+    expect(journey).toContain('CMS role')
+    expect(journey).not.toContain('hm-journey__header')
+    expect(interests + journey).not.toMatch(/<h[23][^>]*>\s*<\/h[23]>/)
   })
   it('leaves all optional content absent on API failure instead of showing local records', async () => {
     vi.stubGlobal(

@@ -16,17 +16,23 @@ const content = await getHomeJourneyContent(locale)
   content.milestones.length > 0 && (
     <section class="hm-journey">
       <div class="hm-journey__inner">
-        <header class="hm-journey__header">
-          <p class="hm-eyebrow hm-journey__eyebrow">
-            <span class="hm-journey__icon" aria-hidden="true">
-              <Waypoints size={14} />
-            </span>
-            {content.title}
-          </p>
-          <h2 id="hm-journey-title" class="hm-journey__headline">
-            {content.headline}
-          </h2>
-        </header>
+        {(content.title || content.headline) && (
+          <header class="hm-journey__header">
+            {content.title && (
+              <p class="hm-eyebrow hm-journey__eyebrow">
+                <span class="hm-journey__icon" aria-hidden="true">
+                  <Waypoints size={14} />
+                </span>
+                {content.title}
+              </p>
+            )}
+            {content.headline && (
+              <h2 id="hm-journey-title" class="hm-journey__headline">
+                {content.headline}
+              </h2>
+            )}
+          </header>
+        )}
 
         <ol class="hm-journey__timeline">
           {content.milestones.map((milestone) => (
