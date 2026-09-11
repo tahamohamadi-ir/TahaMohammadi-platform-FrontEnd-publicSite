@@ -9,6 +9,7 @@ import {
   PublicApiError,
   type PublishedRecord,
 } from './api/client'
+import { splitAuthoredParagraphs } from './authored-text'
 import type { Locale } from './navigation'
 
 function resolveApiBaseUrl(): string {
@@ -34,6 +35,12 @@ export interface AboutExperienceEntry {
   summary?: string | null
 }
 
+/**
+ * Normalized published profile consumed by the About page. The public API
+ * returns camelCase keys (`shortBio`, `longBio`, `publishedAt`); this model
+ * exposes the page-facing names and keeps `published_at` for the shared
+ * published-only assertion.
+ */
 export interface PublishedAboutProfile extends PublishedRecord {
   locale: Locale
   slug: string
@@ -42,6 +49,7 @@ export interface PublishedAboutProfile extends PublishedRecord {
   body?: string | null
   engineering_title?: string | null
   engineering_body?: string | null
+  availability?: string | null
   education?: AboutEducationEntry[]
   experience?: AboutExperienceEntry[]
 }
@@ -90,7 +98,51 @@ export async function fetchAboutProfile(
     const response = await fetch(url, {
       headers: { Accept: 'application/json' },
     })
-    const profile = await parseJsonResponse<PublishedAboutProfile>(response)
+    const raw = await parseJsonResponse<Record<string, unknown>>(response)
+    const asString = (value: unknown): string =>
+      typeof value === 'string' ? value : ''
+    const asNullable = (value: unknown): string | null =>
+      typeof value === 'string' && value.trim() ? value : null
+    const mapEntries = <T>(
+      value: unknown,
+      map: (item: Record<string, unknown>) => T,
+    ): T[] =>
+      Array.isArray(value)
+        ? value
+            .filter(
+              (item): item is Record<string, unknown> =>
+                Boolean(item) && typeof item === 'object',
+            )
+            .map(map)
+        : []
+    const profile: PublishedAboutProfile = {
+      locale: (typeof raw.locale === 'string' ? raw.locale : locale) as Locale,
+      slug: asString(raw.slug),
+      title: asString(raw.title) || getAboutRouteTitle(locale),
+      excerpt: asNullable(raw.shortBio),
+      body: asNullable(raw.longBio),
+      engineering_title: null,
+      engineering_body: null,
+      availability: asNullable(raw.availability),
+      published_at: asNullable(raw.publishedAt),
+      education: mapEntries(raw.education, (item) => ({
+        id: asString(item.slug),
+        title: asString(item.degree) || asString(item.field),
+        institution: asNullable(item.institution),
+        period: asNullable(item.period),
+        summary: asNullable(item.thesis),
+      })),
+      experience: mapEntries(raw.experience, (item) => ({
+        id: asString(item.slug),
+        title: asString(item.role),
+        organization: asNullable(item.organization),
+        period: asNullable(item.period),
+        summary:
+          Array.isArray(item.bullets) && typeof item.bullets[0] === 'string'
+            ? item.bullets[0]
+            : null,
+      })),
+    }
     assertPublishedOnly(profile)
     if (profile.locale !== locale) {
       throw new PublicApiError('Locale mismatch', 'validation')
@@ -114,11 +166,7 @@ export async function fetchAboutProfile(
 }
 
 export function splitBodyParagraphs(body: string | null | undefined): string[] {
-  if (!body?.trim()) return []
-  return body
-    .split(/\n{2,}/)
-    .map((paragraph) => paragraph.trim())
-    .filter(Boolean)
+  return splitAuthoredParagraphs(body)
 }
 
 export async function resolveAboutAlternateAvailability(
