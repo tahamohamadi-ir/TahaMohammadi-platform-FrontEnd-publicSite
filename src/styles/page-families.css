@@ -29,12 +29,22 @@
 }
 
 .pf-index-hero__media {
+  position: relative;
   overflow: hidden;
   border-radius: var(--radius-xl);
   border: 1px solid var(--color-border-subtle);
   background: var(--color-surface-muted, var(--color-surface));
   min-block-size: clamp(16rem, 38vw, 28rem);
   box-shadow: var(--shadow-atlas-glow);
+}
+
+.pf-index-hero__media > picture,
+.pf-index-hero__media > .theme-picture,
+.pf-index-hero__media > .theme-picture > .theme-picture__mount,
+.pf-index-hero__media > .theme-picture > .theme-picture__picture {
+  position: absolute;
+  inset: 0;
+  display: block;
 }
 
 html[data-theme='dark'] .pf-index-hero__media {

@@ -10,6 +10,7 @@ import PageFamilyCollaborateBandShell from '../page-family/PageFamilyCollaborate
 import ContentState from '../state/ContentState.astro'
 import {
   formatProjectAvailability,
+  formatProjectType,
   getProjectsRouteTitle,
   getProjectsUnavailableCopy,
   type ProjectsIndexModel,
@@ -188,11 +189,17 @@ const filterLabels =
               {project.objective ? (
                 <p class="projects-page__card-summary">{project.objective}</p>
               ) : null}
-              <p class="projects-page__card-meta">
-                {[project.project_type, formatProjectAvailability(project)]
+              {(() => {
+                const meta = [
+                  formatProjectType(project.project_type, locale),
+                  formatProjectAvailability(project, locale),
+                ]
                   .filter(Boolean)
-                  .join(' · ')}
-              </p>
+                  .join(' · ')
+                return meta ? (
+                  <p class="projects-page__card-meta">{meta}</p>
+                ) : null
+              })()}
             </article>
           </li>
         ))}

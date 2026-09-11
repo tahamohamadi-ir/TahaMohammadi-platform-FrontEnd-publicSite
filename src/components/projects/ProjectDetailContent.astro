@@ -7,6 +7,7 @@ import StoryDocument from '../story/StoryDocument.astro'
 import { hasStoryContent } from '../../lib/story-content'
 import {
   formatProjectAvailability,
+  formatProjectType,
   getProjectsRouteTitle,
   getProjectsUnavailableCopy,
   type ProjectDetailModel,
@@ -67,7 +68,7 @@ function formatDateRange(
           {model.project.project_type ? (
             <>
               <dt>{locale === 'en' ? 'Type' : 'نوع'}</dt>
-              <dd>{model.project.project_type}</dd>
+              <dd>{formatProjectType(model.project.project_type, locale)}</dd>
             </>
           ) : null}
           {model.project.role ? (
@@ -87,10 +88,10 @@ function formatDateRange(
               </dd>
             </>
           ) : null}
-          {formatProjectAvailability(model.project) ? (
+          {formatProjectAvailability(model.project, locale) ? (
             <>
               <dt>{locale === 'en' ? 'Availability' : 'دسترس‌پذیری'}</dt>
-              <dd>{formatProjectAvailability(model.project)}</dd>
+              <dd>{formatProjectAvailability(model.project, locale)}</dd>
             </>
           ) : null}
           {model.project.license ? (
