@@ -177,11 +177,11 @@ const filterLabels =
       <ul slot="records" class="projects-page__list">
         {model.projects.map((project) => (
           <li>
-            <article class="projects-page__card">
+            <article class="projects-page__card" data-glow-card>
               <h2 class="projects-page__card-title">
                 <a
                   href={localePath(locale, `projects/${project.slug}`)}
-                  class="projects-page__card-link"
+                  class="projects-page__card-link card-stretch-link"
                 >
                   {project.title}
                 </a>

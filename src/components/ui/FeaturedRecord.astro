@@ -25,6 +25,7 @@ const {
     <article
       class={['ui-featured-record', className].filter(Boolean).join(' ')}
       data-visual-id="FeaturedRecord"
+      data-glow-card
     >
       <div class="ui-featured-record__media">
         <slot name="media" />
@@ -37,7 +38,7 @@ const {
           <slot name="metadata" />
         </div>
         {href && actionLabel ? (
-          <a href={href} class="ui-featured-record__action">
+          <a href={href} class="ui-featured-record__action card-stretch-link">
             {actionLabel}
           </a>
         ) : null}

@@ -1702,3 +1702,59 @@ html[data-theme='light'] .home-hero__atmosphere-img--light {
   border-color: var(--color-brand);
   color: var(--color-brand);
 }
+
+/* Card interactions: whole-card links and a pointer-following glow. */
+[data-glow-card] {
+  position: relative;
+  isolation: isolate;
+  transition:
+    border-color 180ms ease,
+    box-shadow 240ms ease,
+    transform 240ms ease;
+}
+
+[data-glow-card]::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: radial-gradient(
+    260px circle at var(--glow-x, 50%) var(--glow-y, 50%),
+    color-mix(in srgb, var(--color-brand) 15%, transparent),
+    transparent 65%
+  );
+  opacity: 0;
+  transition: opacity 260ms ease;
+  pointer-events: none;
+}
+
+[data-glow-card]:hover::before,
+[data-glow-card]:focus-within::before {
+  opacity: 1;
+}
+
+[data-glow-card]:hover,
+[data-glow-card]:focus-within {
+  border-color: color-mix(in srgb, var(--color-brand) 42%, transparent);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--color-brand) 26%, transparent),
+    0 18px 44px -20px color-mix(in srgb, var(--color-brand) 42%, transparent);
+}
+
+[data-glow-card] .card-stretch-link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  border-radius: inherit;
+}
+
+[data-glow-card] .card-stretch-link:focus-visible {
+  outline: none;
+}
+
+[data-glow-card]:has(.card-stretch-link:focus-visible) {
+  outline: 2px solid var(--color-control-focus, var(--color-brand));
+  outline-offset: 2px;
+}

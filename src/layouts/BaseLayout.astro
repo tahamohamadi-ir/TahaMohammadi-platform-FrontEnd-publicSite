@@ -184,5 +184,40 @@ const {
     ]}
   >
     <slot />
+
+    <script>
+      const finePointer = window.matchMedia('(pointer: fine)')
+      const reducedMotion = window.matchMedia(
+        '(prefers-reduced-motion: reduce)',
+      )
+      if (!reducedMotion.matches && finePointer.matches) {
+        let frame = 0
+        let active: HTMLElement | null = null
+        document.addEventListener(
+          'pointermove',
+          (event) => {
+            const target = (event.target as Element | null)?.closest?.(
+              '[data-glow-card]',
+            )
+            if (!(target instanceof HTMLElement)) return
+            active = target
+            if (frame) cancelAnimationFrame(frame)
+            frame = requestAnimationFrame(() => {
+              if (!active) return
+              const rect = active.getBoundingClientRect()
+              active.style.setProperty(
+                '--glow-x',
+                `${event.clientX - rect.left}px`,
+              )
+              active.style.setProperty(
+                '--glow-y',
+                `${event.clientY - rect.top}px`,
+              )
+            })
+          },
+          { passive: true },
+        )
+      }
+    </script>
   </body>
 </html>

@@ -141,11 +141,11 @@ const tabRegion = locale === 'en' ? 'Research sections' : 'بخش‌های پژ�
             <ul class="research-page__list">
               {model.topics.map((topic) => (
                 <li>
-                  <article class="research-page__card">
+                  <article class="research-page__card" data-glow-card>
                     <h3 class="research-page__card-title">
                       <a
                         href={localePath(locale, `research/${topic.slug}`)}
-                        class="research-page__card-link"
+                        class="research-page__card-link card-stretch-link"
                       >
                         {topic.title}
                       </a>
@@ -181,12 +181,13 @@ const tabRegion = locale === 'en' ? 'Research sections' : 'بخش‌های پژ�
             <ul class="research-page__list">
               {model.projects.map((project) => (
                 <li>
-                  <article class="research-page__card">
+                  <article class="research-page__card" data-glow-card>
                     <h3 class="research-page__card-title">
                       <Link
                         href={localePath(locale, `projects/${project.slug}`)}
                         label={project.title}
                         variant="standalone"
+                        class="research-page__card-link card-stretch-link"
                       />
                     </h3>
                     {project.objective ? (
