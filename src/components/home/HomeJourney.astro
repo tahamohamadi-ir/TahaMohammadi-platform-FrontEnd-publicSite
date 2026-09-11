@@ -40,6 +40,13 @@ const content = await getHomeJourneyContent(locale)
               label={milestone.title}
               summary={milestone.subtitle || undefined}
               period={milestone.period || undefined}
+              icon={
+                milestone.kind === 'experience'
+                  ? 'experience'
+                  : milestone.kind === 'education'
+                    ? 'education'
+                    : 'milestone'
+              }
               class="hm-journey__step"
             />
           ))}

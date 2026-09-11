@@ -98,8 +98,11 @@
 
 .hg__heading {
   margin: 0;
-  font-size: var(--font-size-lg, 1.125rem);
-  font-weight: 600;
+  font-size: var(--font-size-xs, 0.8125rem);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-brand, inherit);
 }
 
 .hg-scene {
@@ -218,13 +221,22 @@
 
 .hg-node__details {
   border: 1px solid var(--color-border-subtle, currentColor);
-  border-radius: var(--radius-md, 0.5rem);
-  padding-inline: var(--space-3, 0.75rem);
-  background: var(--color-surface);
+  border-radius: var(--radius-pill, 999px);
+  padding-inline: var(--space-4, 1rem);
+  background: color-mix(in srgb, var(--color-surface) 65%, transparent);
+  transition:
+    border-color 160ms ease,
+    background 160ms ease;
+}
+
+.hg-node__details:hover {
+  border-color: color-mix(in srgb, var(--color-brand) 45%, transparent);
 }
 
 .hg-node__details[open] {
   border-color: var(--color-brand);
+  border-radius: var(--radius-md, 0.5rem);
+  background: var(--color-surface);
   box-shadow: inset 3px 0 0 var(--color-brand);
 }
 
@@ -276,15 +288,29 @@
 
 .hg-edges__list {
   margin: 0;
-  padding-inline-start: var(--space-5, 1.25rem);
-  display: grid;
-  gap: var(--space-1, 0.25rem);
-  font-size: var(--font-size-sm, 0.875rem);
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2, 0.5rem);
+  font-size: var(--font-size-xs, 0.8125rem);
+}
+
+.hg-edges__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 3px 10px;
+  border-radius: var(--radius-pill, 999px);
+  background: color-mix(in srgb, var(--color-ink) 5%, transparent);
+  color: var(--color-ink-secondary, inherit);
 }
 
 .hg-detail {
-  border-block-start: 1px solid var(--color-border-subtle, currentColor);
-  padding-block-start: var(--space-4, 1rem);
+  border: 1px solid var(--color-border-subtle, currentColor);
+  border-radius: var(--radius-md, 0.5rem);
+  padding: var(--space-4, 1rem);
+  background: color-mix(in srgb, var(--color-surface) 70%, transparent);
   min-block-size: 4.5rem;
 }
 
@@ -298,6 +324,10 @@
   margin: 0;
   font-size: var(--font-size-sm, 0.875rem);
   line-height: var(--font-line-height-base, 1.7);
+}
+
+.hg-detail__prompt {
+  color: var(--color-ink-secondary, inherit);
 }
 
 .hg-detail__links {

@@ -239,7 +239,12 @@ export async function getHomeInterestsContent(
 export interface HomeJourneyContent {
   title: string
   headline: string
-  milestones: readonly { title: string; subtitle: string; period: string }[]
+  milestones: readonly {
+    title: string
+    subtitle: string
+    period: string
+    kind: string
+  }[]
 }
 type JourneyOut = components['schemas']['ProfileJourneyOut']
 export async function getHomeJourneyContent(
@@ -261,6 +266,7 @@ export async function getHomeJourneyContent(
             title: item.title as string,
             subtitle: typeof item.subtitle === 'string' ? item.subtitle : '',
             period: typeof item.period === 'string' ? item.period : '',
+            kind: typeof item.kind === 'string' ? item.kind : '',
           }))
       : []
   return {

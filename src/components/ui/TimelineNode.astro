@@ -1,4 +1,6 @@
 ---
+import { Briefcase, GraduationCap, Waypoints } from 'lucide-astro'
+
 interface Props {
   typeLabel?: string
   label: string
@@ -6,6 +8,7 @@ interface Props {
   summary?: string
   href?: string
   detailLabel?: string
+  icon?: 'experience' | 'education' | 'milestone'
   class?: string
 }
 
@@ -16,6 +19,7 @@ const {
   summary,
   href,
   detailLabel,
+  icon = 'milestone',
   class: className = '',
 } = Astro.props
 ---
@@ -23,8 +27,19 @@ const {
 <li
   class={['ui-timeline-node', className].filter(Boolean).join(' ')}
   data-visual-id="TimelineNode"
+  data-kind={icon}
 >
-  <div class="ui-timeline-node__marker" aria-hidden="true"></div>
+  <div class="ui-timeline-node__marker" aria-hidden="true">
+    {
+      icon === 'experience' ? (
+        <Briefcase size={16} />
+      ) : icon === 'education' ? (
+        <GraduationCap size={16} />
+      ) : (
+        <Waypoints size={16} />
+      )
+    }
+  </div>
   <div class="ui-timeline-node__content">
     {typeLabel ? <p class="ui-timeline-node__type">{typeLabel}</p> : null}
     <h3 class="ui-timeline-node__label">{label}</h3>
@@ -49,13 +64,33 @@ const {
     padding-block-end: var(--space-6);
   }
 
+  .ui-timeline-node::before {
+    content: '';
+    position: absolute;
+    inset-block-start: 2.5rem;
+    inset-block-end: 0.5rem;
+    inset-inline-start: calc(1.125rem - 0.5px);
+    inline-size: 1px;
+    background: repeating-linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--color-brand) 45%, transparent) 0 4px,
+      transparent 4px 9px
+    );
+  }
+
+  .ui-timeline-node:last-child::before {
+    display: none;
+  }
+
   .ui-timeline-node__marker {
-    inline-size: var(--space-3);
-    block-size: var(--space-3);
-    margin-block-start: var(--space-2);
+    inline-size: 2.25rem;
+    block-size: 2.25rem;
+    display: grid;
+    place-items: center;
     border-radius: var(--radius-pill);
-    background: var(--color-brand);
-    box-shadow: 0 0 0 4px var(--color-brand-soft);
+    background: var(--color-brand-soft);
+    color: var(--color-brand);
+    border: 1px solid color-mix(in srgb, var(--color-brand) 22%, transparent);
   }
 
   .ui-timeline-node__type {
