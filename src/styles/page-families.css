@@ -693,23 +693,20 @@ html[data-theme='dark'] .pf-index-featured__card {
   aspect-ratio: 1;
 }
 
-.pf-index-constellation__backplate {
+.pf-index-constellation__canvas::before {
+  content: '';
   position: absolute;
-  inset: 0;
-  overflow: hidden;
-  border-radius: var(--radius-lg);
-  opacity: 0.42;
+  inset: 6%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at center,
+    color-mix(in srgb, var(--color-brand) 7%, transparent),
+    transparent 68%
+  );
 }
 
-.pf-index-constellation__backplate .pf-index-constellation__backplate-img,
-.pf-index-constellation__backplate img,
-.pf-index-constellation__backplate .theme-picture,
-.pf-index-constellation__backplate .theme-picture__mount,
-.pf-index-constellation__backplate .theme-picture__picture {
-  inline-size: 100%;
-  block-size: 100%;
-  object-fit: cover;
-  display: block;
+.pf-index-constellation__halo {
+  fill: color-mix(in srgb, var(--color-brand) 8%, transparent);
 }
 
 .pf-index-constellation__svg {
@@ -777,9 +774,15 @@ html[data-theme='dark'] .pf-index-featured__card {
 
 .pf-index-constellation__node-label {
   fill: var(--color-ink);
-  font-size: 9px;
+  font-size: 11px;
   font-family: var(--font-body);
   letter-spacing: 0.02em;
+}
+
+.pf-index-constellation__node-label--center {
+  font-size: 12px;
+  font-weight: 700;
+  fill: var(--color-brand);
 }
 
 @media (prefers-reduced-motion: no-preference) {

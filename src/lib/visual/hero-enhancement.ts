@@ -410,6 +410,19 @@ export async function enhanceHeroRegion(
   }
 
   const labelById = new Map(payload.nodes.map((node) => [node.id, node.label]))
+  const degree = new Map<string, number>()
+  for (const edge of payload.edges) {
+    degree.set(edge.source, (degree.get(edge.source) ?? 0) + 1)
+    degree.set(edge.target, (degree.get(edge.target) ?? 0) + 1)
+  }
+  let hubId: string | null = null
+  let hubDegree = -1
+  for (const [id, value] of degree) {
+    if (value > hubDegree) {
+      hubDegree = value
+      hubId = id
+    }
+  }
   let activeLabelId: string | null = options.initialSelectedId ?? null
   const renderLabels = (labels: ProjectedLabel[]) => {
     if (!labelsLayer) return
@@ -442,8 +455,11 @@ export async function enhanceHeroRegion(
         chip.setAttribute('tabindex', '-1')
         chip.textContent = labelById.get(item.id) ?? item.id
         try {
+          const labelClasses = ['hg-label']
+          if (item.id === hubId) labelClasses.push('hg-label--hub')
+          if (item.id === activeLabelId) labelClasses.push('is-selected')
           ;(chip as unknown as { className: string }).className =
-            item.id === activeLabelId ? 'hg-label is-selected' : 'hg-label'
+            labelClasses.join(' ')
           const style = (
             chip as unknown as {
               style?: { setProperty(name: string, value: string): void }

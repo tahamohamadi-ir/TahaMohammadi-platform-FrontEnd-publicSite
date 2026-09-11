@@ -1,12 +1,10 @@
 ---
-import ThemePicture from '../media/ThemePicture.astro'
 import {
   getResearchConstellationHeadline,
   getResearchConstellationLegend,
   getResearchConstellationNodes,
   type ConstellationNodeIcon,
 } from '../../lib/page-family-empty-chrome'
-import { HOME_GRAPH_BACKPLATE_ASSETS } from '../../lib/media/promoted-media'
 import type { Locale } from '../../lib/navigation'
 
 interface Props {
@@ -72,21 +70,14 @@ const iconPaths: Record<ConstellationNodeIcon, string> = {
 
     <div class="pf-index-constellation__diagram" aria-hidden="true">
       <div class="pf-index-constellation__canvas">
-        <div class="pf-index-constellation__backplate">
-          <ThemePicture
-            lightAssetId={HOME_GRAPH_BACKPLATE_ASSETS.light}
-            darkAssetId={HOME_GRAPH_BACKPLATE_ASSETS.dark}
-            mediaSlot="home.graph.backplate"
-            imgClass="pf-index-constellation__backplate-img"
-          />
-        </div>
-
         <svg
           class="pf-index-constellation__svg"
           viewBox="0 0 400 400"
           role="img"
           aria-label={sectionLabel}
         >
+          <circle class="pf-index-constellation__halo" cx="200" cy="200" r="54"
+          ></circle>
           <circle
             class="pf-index-constellation__orbit pf-index-constellation__orbit--outer"
             cx="200"
@@ -149,7 +140,14 @@ const iconPaths: Record<ConstellationNodeIcon, string> = {
                     </svg>
                   </g>
                   <text
-                    class="pf-index-constellation__node-label"
+                    class={[
+                      'pf-index-constellation__node-label',
+                      index === 0
+                        ? 'pf-index-constellation__node-label--center'
+                        : '',
+                    ]
+                      .filter(Boolean)
+                      .join(' ')}
                     x={node.cx}
                     y={node.cy + radius + 14}
                     text-anchor="middle"
