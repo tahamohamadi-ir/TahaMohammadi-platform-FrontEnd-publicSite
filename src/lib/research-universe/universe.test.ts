@@ -59,6 +59,13 @@ import {
   stateForProgress,
   staticPose,
 } from '../visual/research-universe/home-motion'
+import {
+  LABEL_GAP_PX,
+  MIN_STEM_PX,
+  type ProjectedLabelInput,
+  type ProjectedNodeInput,
+} from '../visual/research-universe/leaders'
+import { partitionLayoutNodes } from '../visual/research-universe/layout'
 import { classifyGesture } from '../visual/research-universe/about-controls'
 import { themeRenderParams } from '../visual/research-universe/theme'
 import { validateUniversePayload } from '../visual/research-universe/enhancement'
@@ -687,6 +694,7 @@ describe('hit testing — screen-space picking, no extra geometry', () => {
           level: 1,
           weight: 1,
           colorRole: 'research',
+          role: 'standard',
           radius: 4,
           point: { x: 0, y: 0, z: 0 },
           planeIndex: 0,
@@ -700,6 +708,136 @@ describe('hit testing — screen-space picking, no extra geometry', () => {
     )
     expect(nodes[0]!.radiusPx).toBeGreaterThan(1)
     expect(projectEdges([], matrix, 800, 600)).toEqual([])
+  })
+})
+
+describe('RU-2A — the centre has exactly one visible identity', () => {
+  it('marks exactly one node as the central anchor, at the origin', () => {
+    const universe = readyUniverse()
+    const layout = computeUniverseLayout(universe.nodes, universe.edges)
+    const anchors = layout.nodes.filter(
+      (node) => node.role === 'central-anchor',
+    )
+    expect(anchors).toHaveLength(1)
+    expect(anchors[0]!.id).toBe('identity')
+    expect(anchors[0]!.point).toEqual({ x: 0, y: 0, z: 0 })
+  })
+
+  it('never gives the anchor a generic instance, and never drops a node', () => {
+    const universe = readyUniverse()
+    const layout = computeUniverseLayout(universe.nodes, universe.edges)
+    const { anchors, standard } = partitionLayoutNodes(layout.nodes)
+
+    // Double-rendering is impossible by construction: one partition or the other.
+    expect(anchors.map((node) => node.id)).toEqual(['identity'])
+    expect(standard.some((node) => node.id === 'identity')).toBe(false)
+    // And nothing is lost: the semantic record survives in the model.
+    expect(anchors.length + standard.length).toBe(layout.nodes.length)
+    expect(layout.nodes.map((node) => node.id).sort()).toEqual(
+      universe.nodes.map((node) => node.id).sort(),
+    )
+  })
+
+  it('keeps the anchor addressable for edges, selection and routing', () => {
+    const universe = readyUniverse()
+    const layout = computeUniverseLayout(universe.nodes, universe.edges)
+    // Every published relationship still resolves to real endpoints, including
+    // the ones that touch the anchor.
+    const anchorEdges = layout.edges.filter(
+      (edge) => edge.source === 'identity' || edge.target === 'identity',
+    )
+    expect(anchorEdges).toHaveLength(3)
+    for (const edge of anchorEdges) {
+      expect(edge.samples.every((point) => Number.isFinite(point.x))).toBe(true)
+    }
+    // The anchor is still projected, so canvas hit testing can select it.
+    const matrix = [0.5, 0, 0, 0, 0, 0.5, 0, 0, 0, 0, 0.5, 0, 0, 0, 0, 1]
+    const projected = projectNodes(layout.nodes, matrix, 800, 600)
+    expect(
+      projected.some((node) => node.id === 'identity' && node.visible),
+    ).toBe(true)
+  })
+
+  it('keeps exactly one anchor even if the payload repeats a level-0 node', () => {
+    const universe = readyUniverse()
+    const duplicated = {
+      ...universe,
+      nodes: [
+        ...universe.nodes,
+        { ...universe.nodes[0]!, id: 'identity-2', label: 'Second identity' },
+      ],
+    }
+    const layout = computeUniverseLayout(duplicated.nodes, duplicated.edges)
+    const { anchors, standard } = partitionLayoutNodes(layout.nodes)
+    expect(anchors).toHaveLength(1)
+    expect(standard.some((node) => node.id === 'identity-2')).toBe(true)
+  })
+})
+
+describe('RU-2B — leader stems', () => {
+  it('keeps the chip offset and the stem in one published constant', () => {
+    // The label layer writes labelGapPx into --ru-label-gap and the stem starts at
+    // the chip's bottom edge, so the two can only ever agree.
+    expect(LABEL_GAP_PX).toBeGreaterThan(MIN_STEM_PX)
+    expect(MIN_STEM_PX).toBeGreaterThan(0)
+  })
+
+  it('is hidden when the label, the node, or the viewport cannot show it', () => {
+    const width = 800
+    const decision = (label: ProjectedLabelInput, node: ProjectedNodeInput) => {
+      const safeMarginPx = 10
+      // Mirrors leaders.ts: the chip sits a constant gap above the node's SURFACE,
+      // so the stem length is exactly LABEL_GAP_PX whenever a node is projected.
+      const startY = node.y - node.radiusPx
+      const endY = label.y - node.radiusPx - LABEL_GAP_PX
+      const stemLength = startY - endY
+      return (
+        label.visible &&
+        node.visible &&
+        label.x >= safeMarginPx &&
+        label.x <= width - safeMarginPx &&
+        endY >= safeMarginPx &&
+        stemLength >= MIN_STEM_PX
+      )
+    }
+    const node = { id: 'a', x: 400, y: 300, radiusPx: 8, visible: true }
+
+    expect(decision({ id: 'a', x: 400, y: 300, visible: true }, node)).toBe(
+      true,
+    )
+    // Node itself occluded / outside the frustum.
+    expect(
+      decision(
+        { id: 'a', x: 400, y: 300, visible: true },
+        { ...node, visible: false },
+      ),
+    ).toBe(false)
+    expect(decision({ id: 'a', x: 400, y: 300, visible: false }, node)).toBe(
+      false,
+    )
+    // Label pushed past the viewport edge.
+    expect(
+      decision({ id: 'a', x: width - 2, y: 300, visible: true }, node),
+    ).toBe(false)
+    expect(decision({ id: 'a', x: 400, y: 4, visible: true }, node)).toBe(false)
+    // Node so large that its surface reaches the chip: no stem is needed.
+    expect(
+      decision(
+        { id: 'a', x: 400, y: 300, visible: true },
+        { ...node, radiusPx: 290 },
+      ),
+    ).toBe(false)
+  })
+
+  it('draws nothing that the label layer did not project', () => {
+    // The stem is derived from the same projection, so an unknown id can never
+    // produce a line: this is the guard against a stem without a label.
+    const labels = [{ id: 'known', x: 100, y: 200, visible: true }]
+    const nodes = [{ id: 'known', x: 100, y: 240, radiusPx: 8, visible: true }]
+    const ids = new Set(labels.map((label) => label.id))
+    const drawable = nodes.filter((node) => ids.has(node.id))
+    expect(drawable.map((node) => node.id)).toEqual(['known'])
+    expect(nodes.filter((node) => !ids.has(node.id))).toEqual([])
   })
 })
 

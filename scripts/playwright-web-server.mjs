@@ -207,7 +207,7 @@ async function main() {
     process.exit(1)
   }
 
-  const withFixture = useSettingsFixture()
+  const withFixture = useSettingsFixture() && !process.env.TM_E2E_API_BASE_URL
 
   // The fixture must outlive this process's blocking serve step, so it is torn
   // down explicitly rather than left orphaned.
@@ -235,11 +235,14 @@ async function main() {
       )
     }
   } else {
-    runBuild(
-      withFixture
-        ? { PUBLIC_API_BASE_URL: `http://127.0.0.1:${settingsPort}` }
-        : {},
-    )
+    // `TM_E2E_API_BASE_URL` points the E2E build at a real published API instead of
+    // the local fixture. Surfaces that depend on CMS-gated composition (the Home
+    // hero) only exist when the full published contract is reachable, so the
+    // Research Universe suites use this path; the default run stays hermetic.
+    const apiBaseUrl =
+      process.env.TM_E2E_API_BASE_URL ??
+      (withFixture ? `http://127.0.0.1:${settingsPort}` : '')
+    runBuild(apiBaseUrl ? { PUBLIC_API_BASE_URL: apiBaseUrl } : {})
   }
 
   await waitForDistReady(sourceDist)

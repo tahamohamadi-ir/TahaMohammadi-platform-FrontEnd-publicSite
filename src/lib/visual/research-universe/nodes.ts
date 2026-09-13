@@ -1,19 +1,25 @@
 /**
- * RU-02 — Node geometry.
+ * RU-02 / RU-2A — Node geometry.
  *
- * Nodes are drawn with two shared `InstancedMesh` tiers (one heavier tier for
- * main domains, one quieter tier for every level-3 output), so raising the node
- * count does not raise the draw-call budget. Visual weight follows meaning:
- * domains are larger and more emissive than outputs.
+ * Nodes are drawn with two shared `InstancedMesh` tiers (one heavier tier for main
+ * domains, one quieter tier for every level-3 output), so raising the node count
+ * does not raise the draw-call budget.
+ *
+ * RU-2A — ONE visible identity for the centre: the level-0 anchor is NOT
+ * instanced. The dedicated central nucleus (see `core-object.ts`) is its visible
+ * representation, and this module keeps the anchor's metadata purely so the
+ * selection ring, hit testing and edge endpoints still resolve to it. The split
+ * comes from `partitionLayoutNodes`, a pure function, so a node cannot be drawn
+ * twice and cannot be dropped: anchors + standard always equals the input.
  *
  * Selection/emphasis is expressed through three signals only — scale, instance
  * colour and the selection ring — which keeps the state model small enough to be
- * tested, and keeps it identical in both presentations.
+ * tested, and identical in both presentations.
  */
 
 import * as THREE from 'three'
 import { UniverseLedger } from './dispose'
-import type { UniverseNode3D } from './layout'
+import { partitionLayoutNodes, type UniverseNode3D } from './layout'
 import {
   NODE_TIER_SEGMENTS,
   roleColor,
@@ -29,10 +35,12 @@ export interface UniverseNodeVisual {
   id: string
   kind: UniverseNode['kind']
   tier: UniverseTier
+  /** `-1` for the anchor: metadata only, no instance is written for it. */
   instance: number
   baseRadius: number
   role: string
   position: THREE.Vector3
+  isAnchor: boolean
 }
 
 export interface EmphasisState {
@@ -47,12 +55,18 @@ export interface EmphasisState {
 export interface UniverseNodeVisuals {
   group: THREE.Group
   visuals: UniverseNodeVisual[]
+  /** The anchor's metadata; empty when the graph has no anchor node. */
+  anchorVisuals: UniverseNodeVisual[]
   tierCounts: Record<UniverseTier, number>
+  /** How many generic instances exist. The anchor must never be counted here. */
+  instancedCount: number
   setEmphasis(state: EmphasisState): void
   applyTheme(theme: UniverseRenderTheme): void
 }
 
 const DIM_LERP = 0.74
+/** The anchor's selection ring clears the nucleus silhouette. */
+const ANCHOR_RING_SCALE = 1.6
 
 export function createUniverseNodes(
   ledger: UniverseLedger,
@@ -63,12 +77,26 @@ export function createUniverseNodes(
   const group = new THREE.Group()
   group.name = 'universe-nodes'
 
+  const { anchors, standard } = partitionLayoutNodes(layoutNodes)
+
   const tiers: Record<UniverseTier, UniverseNode3D[]> = { domain: [], fine: [] }
-  for (const node of layoutNodes) tiers[tierForKind(node.kind)].push(node)
+  for (const node of standard) tiers[tierForKind(node.kind)].push(node)
 
   const visuals: UniverseNodeVisual[] = []
+  const anchorVisuals: UniverseNodeVisual[] = anchors.map((node) => ({
+    id: node.id,
+    kind: node.kind,
+    tier: 'fine',
+    instance: -1,
+    baseRadius: node.radius,
+    role: node.colorRole,
+    position: new THREE.Vector3(node.point.x, node.point.y, node.point.z),
+    isAnchor: true,
+  }))
+
   const meshes: Partial<Record<UniverseTier, THREE.InstancedMesh>> = {}
   const dummy = new THREE.Object3D()
+  let instancedCount = 0
 
   for (const tier of ['domain', 'fine'] as const) {
     const tierNodes = tiers[tier]
@@ -89,8 +117,10 @@ export function createUniverseNodes(
       dummy.scale.setScalar(node.radius)
       dummy.updateMatrix()
       mesh.setMatrixAt(instance, dummy.matrix)
-      const role = roleColor(theme.palette, node.colorRole || 'brand')
-      mesh.setColorAt(instance, role)
+      mesh.setColorAt(
+        instance,
+        roleColor(theme.palette, node.colorRole || 'brand'),
+      )
       visuals.push({
         id: node.id,
         kind: node.kind,
@@ -99,9 +129,11 @@ export function createUniverseNodes(
         baseRadius: node.radius,
         role: node.colorRole,
         position: new THREE.Vector3(node.point.x, node.point.y, node.point.z),
+        isAnchor: false,
       })
     })
 
+    instancedCount += tierNodes.length
     mesh.instanceMatrix.needsUpdate = true
     if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true
     mesh.computeBoundingSphere()
@@ -110,7 +142,7 @@ export function createUniverseNodes(
   }
 
   // Selection ring: one mesh, repositioned, so selection costs no extra draw call
-  // per node.
+  // per node. It serves both partitions, which is why the anchor needs no instance.
   const ringGeometry = ledger.track(new THREE.RingGeometry(1.4, 1.52, 48))
   const selectionRing = new THREE.Mesh(
     ringGeometry,
@@ -125,6 +157,7 @@ export function createUniverseNodes(
     scale: number,
     color: THREE.Color,
   ): void {
+    if (visual.instance < 0) return // the anchor has no instance by design
     const mesh = meshes[visual.tier]
     if (!mesh) return
     dummy.position.copy(visual.position)
@@ -140,7 +173,7 @@ export function createUniverseNodes(
 
     selectionRing.visible = false
 
-    for (const visual of visuals) {
+    for (const visual of [...visuals, ...anchorVisuals]) {
       const isSelected = selectedId != null && visual.id === selectedId
       const inEdge =
         selectedEdge != null &&
@@ -149,15 +182,19 @@ export function createUniverseNodes(
         selectedId == null || incidentIds == null || incidentIds.has(visual.id)
 
       const scale = isSelected ? 1.3 : isIncident ? 1 : 0.9
-      const base = roleColor(theme.palette, visual.role || 'brand')
-      const color = base.clone()
-      if (selectedId != null && !isIncident) color.lerp(canvasColor, DIM_LERP)
-      else if (inEdge) color.lerp(roleColor(theme.palette, 'signature'), 0.25)
-      writeInstance(visual, scale, color)
+      if (!visual.isAnchor) {
+        const base = roleColor(theme.palette, visual.role || 'brand')
+        const color = base.clone()
+        if (selectedId != null && !isIncident) color.lerp(canvasColor, DIM_LERP)
+        else if (inEdge) color.lerp(roleColor(theme.palette, 'signature'), 0.25)
+        writeInstance(visual, scale, color)
+      }
 
       if (isSelected) {
         selectionRing.position.copy(visual.position)
-        selectionRing.scale.setScalar(visual.baseRadius)
+        selectionRing.scale.setScalar(
+          visual.baseRadius * (visual.isAnchor ? ANCHOR_RING_SCALE : 1),
+        )
         selectionRing.visible = true
       }
     }
@@ -170,13 +207,14 @@ export function createUniverseNodes(
     }
   }
 
-  // Initial state: everything at full colour.
   setEmphasis({ selectedId: null, incidentIds: null, selectedEdge: null })
 
   return {
     group,
     visuals,
+    anchorVisuals,
     tierCounts: { domain: tiers.domain.length, fine: tiers.fine.length },
+    instancedCount,
     setEmphasis,
     applyTheme(next: UniverseRenderTheme) {
       materials.selectionMaterial.color.copy(
@@ -213,11 +251,7 @@ export function createUniverseNodes(
       ringMaterial.needsUpdate = true
 
       // Colours are baked per instance, so re-apply them for the new palette.
-      setEmphasis({
-        selectedId: null,
-        incidentIds: null,
-        selectedEdge: null,
-      })
+      setEmphasis({ selectedId: null, incidentIds: null, selectedEdge: null })
     },
   }
 }

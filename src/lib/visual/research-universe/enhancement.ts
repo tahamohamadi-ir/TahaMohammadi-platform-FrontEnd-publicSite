@@ -42,6 +42,7 @@ import {
   buildUniverseTheme,
   type UniverseRenderTheme,
 } from './theme'
+import type { ProjectedNode3D } from './hit-testing'
 
 export const UNIVERSE_ENHANCEMENT_VERSION = 'ru05-1.0.0'
 
@@ -300,6 +301,7 @@ export async function enhanceUniverseRegion(
     render(
       l: ReadonlyArray<ProjectedLabel>,
       m: ReadonlyMap<string, string>,
+      p?: ReadonlyArray<ProjectedNode3D>,
     ): void
     setSelected(i: string | null): void
     clear(): void
@@ -699,8 +701,10 @@ export async function enhanceUniverseRegion(
       universe: payload,
       theme: initialTheme,
       motion: initialMotion,
-      onFrame: (labels: ReadonlyArray<ProjectedLabel>) =>
-        labelLayer?.render(labels, labelById),
+      onFrame: (
+        labels: ReadonlyArray<ProjectedLabel>,
+        projected: ReadonlyArray<ProjectedNode3D>,
+      ) => labelLayer?.render(labels, labelById, projected),
       onError: (code: SceneErrorCode) => enterFallback(code),
     } as never)
   } catch (error) {

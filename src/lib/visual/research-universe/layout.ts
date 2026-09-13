@@ -50,6 +50,12 @@ export interface UniverseNode3D {
   level: UniverseLevel
   weight: number
   colorRole: string
+  /**
+   * Presentation role. RU-2A: the level-0 anchor has ONE visible identity — the
+   * dedicated central nucleus — so it is never also instanced as a generic node.
+   * The semantic record is untouched; only the renderer treats it differently.
+   */
+  role: 'central-anchor' | 'standard'
   /** Visual sphere radius in scene units. */
   radius: number
   point: UniversePoint
@@ -90,6 +96,28 @@ export interface UniverseLayout {
 
 /** How many curve segments each edge is sampled into (hit testing + drawing). */
 export const EDGE_SAMPLES = 20
+
+/**
+ * RU-2A — Split the layout into the node that owns the central nucleus and the
+ * nodes that get a generic instance. Both partitions always come from ONE list,
+ * so a node can never be rendered twice and no semantic record is dropped:
+ * `anchors.length + standard.length === nodes.length`.
+ *
+ * This is a pure function on purpose — the "no accidental double-render" test
+ * asserts it in plain node, without WebGL or a DOM.
+ */
+export function partitionLayoutNodes(nodes: ReadonlyArray<UniverseNode3D>): {
+  anchors: UniverseNode3D[]
+  standard: UniverseNode3D[]
+} {
+  const anchors: UniverseNode3D[] = []
+  const standard: UniverseNode3D[] = []
+  for (const node of nodes) {
+    if (node.role === 'central-anchor') anchors.push(node)
+    else standard.push(node)
+  }
+  return { anchors, standard }
+}
 
 const GOLDEN_ANGLE = 2.399963229728653
 
@@ -264,6 +292,12 @@ export function computeUniverseLayout(
   }
 
   const laid: UniverseNode3D[] = []
+  // Exactly one node owns the central presentation: the first level-0 person in
+  // payload order. A second level-0 node (malformed data) stays a standard node
+  // rather than silently duplicating the nucleus.
+  const anchorId =
+    nodes.find((node) => node.kind === 'person' && node.level === 0)?.id ?? null
+
   nodes.forEach((node, index) => {
     const plane = planeForLevel(planes, node.level)
     const published = azimuthFromPublished(node)
@@ -276,10 +310,10 @@ export function computeUniverseLayout(
     const radiusScale =
       maxRadius > 0 ? 0.82 + 0.36 * Math.min(ownRadius / maxRadius, 1) : 1
 
-    const point =
-      node.kind === 'person'
-        ? { x: 0, y: 0, z: 0 }
-        : pointOnPlane(plane, azimuth, radiusScale)
+    const isAnchor = node.id === anchorId
+    const point = isAnchor
+      ? { x: 0, y: 0, z: 0 }
+      : pointOnPlane(plane, azimuth, radiusScale)
 
     laid.push({
       id: node.id,
@@ -287,6 +321,7 @@ export function computeUniverseLayout(
       level: node.level,
       weight: node.weight,
       colorRole: node.colorRole,
+      role: isAnchor ? 'central-anchor' : 'standard',
       radius: nodeRadiusFor(node.kind, node.weight),
       point,
       planeIndex: plane.index,

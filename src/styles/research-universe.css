@@ -58,7 +58,14 @@
 
 .ru-label {
   position: absolute;
-  transform: translate(-50%, calc(-100% - 12px));
+  /* The offset is shared with the leader stem: --ru-node-radius is the node's
+     projected radius (written per chip by the label layer) and --ru-label-gap is
+     the constant stem length, so the chip sits above the node's SURFACE and the
+     stem keeps a readable length whatever the node's apparent size. */
+  transform: translate(
+    -50%,
+    calc(-100% - var(--ru-node-radius, 0px) - var(--ru-label-gap, 16px))
+  );
   padding: 4px 10px;
   font-size: 12px;
   font-weight: 600;
@@ -86,6 +93,37 @@
   border-color: var(--color-signature);
   box-shadow: 0 0 0 2px
     color-mix(in srgb, var(--color-signature) 25%, transparent);
+}
+
+/* RU-2B — Leader stems. One hairline per label: an instrument annotation, not
+   decoration. No boxes, no shadows, no glow. The colour comes from the existing
+   signature token (champagne on dark, restrained gold on light) and the opacity
+   stays below the relationship curves so a stem can never dominate an edge. */
+.ru-leaders {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.ru-leaders line {
+  stroke: var(--color-signature);
+  stroke-width: 1;
+  stroke-linecap: round;
+  opacity: 0.44;
+}
+
+.ru-leaders line[data-selected='true'] {
+  opacity: 0.85;
+  stroke-width: 1.4;
+}
+
+/* Light theme needs a touch more presence: restrained gold on warm ivory reads
+   lighter than champagne on the night canvas. */
+html[data-theme='light'] .ru-leaders line {
+  opacity: 0.54;
 }
 
 /* The scene slot itself: a calm instrument backdrop, no ornament. */

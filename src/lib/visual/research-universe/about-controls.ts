@@ -121,6 +121,9 @@ export function createAboutControls(
     }
     // Horizontal drag orbits; vertical drag tilts, within the scene's clamps.
     scene.rotateBy(dx * ROTATE_PER_PX, dy * ROTATE_PER_PX)
+    // The scene has no idle loop (render-on-change), so the caller owns the
+    // repaint: without this the drag would change the pose invisibly.
+    scene.render()
     event.preventDefault()
   }
 
@@ -157,6 +160,7 @@ export function createAboutControls(
     event.preventDefault()
     const factor = Math.exp(event.deltaY * ZOOM_PER_WHEEL_UNIT)
     scene.zoomBy(Math.max(0.6, Math.min(1.6, factor)))
+    scene.render()
   }
 
   function onDoubleClick(event: MouseEvent) {
@@ -164,7 +168,10 @@ export function createAboutControls(
     const picked = scene.selectAt(point.x, point.y)
     onPick(picked)
     // Double-click focuses only when it landed on a node, and never throws.
-    if (picked.kind === 'node' && picked.id) scene.focusNode(picked.id)
+    if (picked.kind === 'node' && picked.id) {
+      scene.focusNode(picked.id)
+      scene.render()
+    }
   }
 
   stage.addEventListener('pointerdown', onPointerDown)
@@ -185,6 +192,7 @@ export function createAboutControls(
   return {
     zoomBy(factor) {
       scene.zoomBy(factor)
+      scene.render()
     },
     resetView() {
       scene.resetView(true)
@@ -192,6 +200,7 @@ export function createAboutControls(
     focus(nodeId) {
       if (nodeId) scene.focusNode(nodeId)
       else scene.resetView(true)
+      scene.render()
     },
     isDragging() {
       return dragging

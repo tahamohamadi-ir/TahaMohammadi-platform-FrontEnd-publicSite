@@ -178,5 +178,8 @@ export function createUniverseMaterials(
 
 /** The node tier a node belongs to; domains are visually heavier than outputs. */
 export function tierForKind(kind: UniverseNode['kind']): 'domain' | 'fine' {
-  return kind === 'domain' || kind === 'person' ? 'domain' : 'fine'
+  // RU-2A: the person anchor is rendered by the dedicated central nucleus and is
+  // never instanced, so it deliberately has no tier of its own here. `domain` is
+  // reserved for main domains; everything else is the quieter tier.
+  return kind === 'domain' ? 'domain' : 'fine'
 }

@@ -31,7 +31,12 @@ import {
   fitDistance,
   type UniverseLayout,
 } from './layout'
-import { pickAt, projectEdges, projectNodes } from './hit-testing'
+import {
+  pickAt,
+  projectEdges,
+  projectNodes,
+  type ProjectedNode3D,
+} from './hit-testing'
 import { createSceneCore, type SceneCore } from './scene-core'
 import type { UniverseRenderTheme } from './theme'
 
@@ -90,7 +95,7 @@ export function createAboutScene(options: {
   universe: Pick<ReadyUniverse, 'nodes' | 'edges' | 'anchor'>
   theme: UniverseRenderTheme
   motion?: SceneMotionPreference
-  onFrame?: (labels: ProjectedLabel[]) => void
+  onFrame?: (labels: ProjectedLabel[], projected: ProjectedNode3D[]) => void
   onError?: (code: SceneErrorCode) => void
 }): AboutSceneHandle | null {
   const { canvas, universe, onFrame, onError } = options
@@ -207,6 +212,7 @@ export function createAboutScene(options: {
     if (!onFrame) return
     const { matrix, width, height } = core.projection()
     const projected = projectNodes(layout.nodes, matrix, width, height)
+    // RU-2B: the same projection feeds the labels AND their leader lines.
     onFrame(
       projected.map((node) => ({
         id: node.id,
@@ -214,6 +220,7 @@ export function createAboutScene(options: {
         y: Math.round(node.y * 10) / 10,
         visible: node.visible,
       })),
+      projected,
     )
   }
 

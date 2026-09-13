@@ -11,6 +11,12 @@
  */
 
 import type { ProjectedLabel } from '../scene-contract'
+import {
+  createLeaderLayer,
+  LABEL_GAP_PX,
+  type LeaderLayer,
+  type ProjectedNodeInput,
+} from './leaders'
 
 export interface LabelLayerOptions {
   container: HTMLElement
@@ -19,9 +25,15 @@ export interface LabelLayerOptions {
 }
 
 export interface LabelLayer {
+  /**
+   * `projectedNodes` is optional so an older caller keeps working, but when it is
+   * supplied the leader stems are drawn from exactly the same projection the chips
+   * use, so a stem can never point somewhere the node is not.
+   */
   render(
     labels: ReadonlyArray<ProjectedLabel>,
     labelById: ReadonlyMap<string, string>,
+    projectedNodes?: ReadonlyArray<ProjectedNodeInput>,
   ): void
   setSelected(id: string | null): void
   setVisible(visible: boolean): void
@@ -34,6 +46,17 @@ export function createLabelLayer(options: LabelLayerOptions): LabelLayer {
   const className = options.className ?? 'ru-label'
   const nodes = new Map<string, HTMLElement>()
   let selectedId: string | null = null
+  // RU-2B: leader stems share the chip overlay, so one projection drives both and
+  // they cannot drift apart.
+  const leaders: LeaderLayer = createLeaderLayer({ container, doc })
+
+  // RU-2B: the chip offset and the leader stem are one geometric fact, so it is
+  // published once as a custom property and consumed by both.
+  try {
+    container.style.setProperty('--ru-label-gap', `${LABEL_GAP_PX}px`)
+  } catch {
+    // A non-DOM container in tests: the CSS fallback covers it.
+  }
 
   function create(labelId: string, text: string): HTMLElement {
     const chip = doc.createElement('button')
@@ -53,7 +76,12 @@ export function createLabelLayer(options: LabelLayerOptions): LabelLayer {
   }
 
   return {
-    render(labels, labelById) {
+    render(labels, labelById, projectedNodes) {
+      // RU-2B: one projection drives both the chips and their leader stems.
+      leaders.render(labels, projectedNodes ?? [])
+      const radiusById = new Map(
+        (projectedNodes ?? []).map((node) => [node.id, node.radiusPx]),
+      )
       const seen = new Set<string>()
       for (const label of labels) {
         if (!label.visible) {
@@ -74,6 +102,13 @@ export function createLabelLayer(options: LabelLayerOptions): LabelLayer {
         element.hidden = false
         element.style.left = `${label.x}px`
         element.style.top = `${label.y}px`
+        // RU-2B: the chip is raised above the node's projected SURFACE (not its
+        // centre), so the leader stem has a constant, readable length whatever the
+        // node's apparent size.
+        element.style.setProperty(
+          '--ru-node-radius',
+          `${radiusById.get(label.id) ?? 0}px`,
+        )
       }
       for (const [id, element] of nodes) {
         if (!seen.has(id)) element.hidden = true
@@ -84,6 +119,7 @@ export function createLabelLayer(options: LabelLayerOptions): LabelLayer {
       selectedId = id
       for (const [labelId, element] of nodes)
         applySelected(element, labelId === id)
+      leaders.setSelected(id)
     },
 
     setVisible(visible) {
@@ -93,6 +129,7 @@ export function createLabelLayer(options: LabelLayerOptions): LabelLayer {
     clear() {
       for (const element of nodes.values()) element.remove()
       nodes.clear()
+      leaders.clear()
     },
   }
 }

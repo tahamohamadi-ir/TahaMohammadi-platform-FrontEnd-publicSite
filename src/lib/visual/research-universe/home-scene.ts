@@ -29,7 +29,12 @@ import {
   fitDistance,
   type UniverseLayout,
 } from './layout'
-import { pickAt, projectEdges, projectNodes } from './hit-testing'
+import {
+  pickAt,
+  projectEdges,
+  projectNodes,
+  type ProjectedNode3D,
+} from './hit-testing'
 import { createSceneCore, type SceneCore } from './scene-core'
 import {
   poseForProgress,
@@ -45,7 +50,7 @@ export interface HomeSceneOptions {
   universe: Pick<ReadyUniverse, 'nodes' | 'edges' | 'anchor'>
   theme: UniverseRenderTheme
   motion?: SceneMotionPreference
-  onFrame?: (labels: ProjectedLabel[]) => void
+  onFrame?: (labels: ProjectedLabel[], projected: ProjectedNode3D[]) => void
   onError?: (code: SceneErrorCode) => void
 }
 
@@ -206,7 +211,8 @@ export function createHomeScene(
       y: Math.round(node.y * 10) / 10,
       visible: node.visible,
     }))
-    onFrame(labels)
+    // RU-2B: the same projection feeds the labels AND their leader lines.
+    onFrame(labels, projected)
   }
 
   function captureStats(): void {
