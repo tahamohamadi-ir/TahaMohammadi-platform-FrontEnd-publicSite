@@ -141,10 +141,7 @@ describe('WP-30 promoted media registry', () => {
         height: 941,
       })
     }
-    for (const id of [
-      'portal-world-dark',
-      'portal-world-light',
-    ] as const) {
+    for (const id of ['portal-world-dark', 'portal-world-light'] as const) {
       expect(PROMOTED_ASSET_REGISTRY[id].intrinsic).toEqual({
         width: 1920,
         height: 1080,

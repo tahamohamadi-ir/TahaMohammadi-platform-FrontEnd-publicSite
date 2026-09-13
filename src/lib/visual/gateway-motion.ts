@@ -44,12 +44,7 @@ export interface GatewayMotionOptions {
 }
 
 export type GatewayEntryState =
-  | 'idle'
-  | 'previewing'
-  | 'committed'
-  | 'entering'
-  | 'navigating'
-  | 'disposed'
+  'idle' | 'previewing' | 'committed' | 'entering' | 'navigating' | 'disposed'
 
 export type GatewayEntryProgram = 'flight' | 'instant'
 
@@ -320,7 +315,7 @@ export function createGatewayMotion(
     const deadline =
       program === 'instant'
         ? GATEWAY_ENTRY_TIMING.reduced.deadlineMs
-        : options.entryDeadlineMs ?? timing.deadlineMs
+        : (options.entryDeadlineMs ?? timing.deadlineMs)
     entryDeadlineMs = window.setTimeout(() => {
       entryDeadlineMs = null
       entryTimeline?.kill()
@@ -345,7 +340,11 @@ export function createGatewayMotion(
         },
         0,
       )
-      timeline.call(() => goToSelected(href), undefined, GATEWAY_ENTRY_TIMING.reduced.navigate)
+      timeline.call(
+        () => goToSelected(href),
+        undefined,
+        GATEWAY_ENTRY_TIMING.reduced.navigate,
+      )
       return
     }
 
@@ -566,7 +565,10 @@ export function createGatewayMotion(
       interactionTarget.removeEventListener('pointermove', onPointerMove)
       interactionTarget.removeEventListener('pointerleave', onPointerLeave)
       if (pointerListener !== interactionTarget) {
-        pointerListener.removeEventListener('pointermove', onPointerMove as never)
+        pointerListener.removeEventListener(
+          'pointermove',
+          onPointerMove as never,
+        )
         pointerListener.removeEventListener('pointerleave', onPointerLeave)
       }
       try {

@@ -216,8 +216,7 @@ import { GATEWAY_ATMOSPHERE_ASSETS } from '../../lib/media/promoted-media'
           })
         : null
     visibilityObserver?.observe(portal)
-    if (visibilityObserver)
-      cleanups.push(() => visibilityObserver.disconnect())
+    if (visibilityObserver) cleanups.push(() => visibilityObserver.disconnect())
 
     const onThemeChange = () => {
       if (portal.dataset.gatewayState !== 'ready' || entryCommitted) return

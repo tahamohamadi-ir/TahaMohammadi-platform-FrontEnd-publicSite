@@ -337,7 +337,11 @@ test.describe('PW-2 language entry', () => {
     // only the local deadline can carry the visitor to the selected href.
     await page.evaluate(() => {
       document.querySelector('.gw__nav a[href="/en/"]')?.dispatchEvent(
-        new MouseEvent('click', { bubbles: true, cancelable: true, button: 0 }),
+        new MouseEvent('click', {
+          bubbles: true,
+          cancelable: true,
+          button: 0,
+        }),
       )
       ;(
         window as unknown as { __tmStallGatewayEntry?: () => void }
@@ -374,7 +378,11 @@ test.describe('PW-2 language entry', () => {
     // browser API rather than a stubbed error path.
     await page.evaluate(() => {
       document.querySelector('.gw__nav a[href="/en/"]')?.dispatchEvent(
-        new MouseEvent('click', { bubbles: true, cancelable: true, button: 0 }),
+        new MouseEvent('click', {
+          bubbles: true,
+          cancelable: true,
+          button: 0,
+        }),
       )
       document
         .querySelector<HTMLCanvasElement>('canvas[data-gateway-canvas]')
@@ -392,7 +400,9 @@ test.describe('PW-2 language entry', () => {
     const navigatingAt = at(samples, 'navigating')
     expect(navigatingAt).not.toBeNull()
     // Immediate: far faster than the 2.05s choreography and the 3s deadline.
-    expect((navigatingAt as number) - (committedAt as number)).toBeLessThan(1000)
+    expect((navigatingAt as number) - (committedAt as number)).toBeLessThan(
+      1000,
+    )
     expect(hits).toEqual(['/en/'])
   })
 
@@ -411,9 +421,8 @@ test.describe('PW-2 language entry', () => {
     expect(
       await page.evaluate(
         () =>
-          typeof (
-            window as unknown as { __tmStallGatewayEntry?: () => void }
-          ).__tmStallGatewayEntry,
+          typeof (window as unknown as { __tmStallGatewayEntry?: () => void })
+            .__tmStallGatewayEntry,
       ),
     ).toBe('undefined')
 

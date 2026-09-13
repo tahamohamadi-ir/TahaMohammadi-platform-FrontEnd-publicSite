@@ -161,11 +161,12 @@ export function portalFrame(aspect: number): PortalFrame {
   const safeAspect = Math.max(aspect, 0.2)
   const vFov = THREE.MathUtils.degToRad(PORTAL_COMPOSITION.verticalFovDeg)
   const portalWidth = PORTAL_COMPOSITION.halfWidth * 2
-  let frameWidth =
-    portalWidth / Math.max(portalWidthFraction(safeAspect), 0.2)
+  let frameWidth = portalWidth / Math.max(portalWidthFraction(safeAspect), 0.2)
   let frameHeight = frameWidth / safeAspect
-  const minFrameHeight = PORTAL_COMPOSITION.top / PORTAL_COMPOSITION.maxHeightPortion
-  const maxFrameHeight = PORTAL_COMPOSITION.top / PORTAL_COMPOSITION.minHeightPortion
+  const minFrameHeight =
+    PORTAL_COMPOSITION.top / PORTAL_COMPOSITION.maxHeightPortion
+  const maxFrameHeight =
+    PORTAL_COMPOSITION.top / PORTAL_COMPOSITION.minHeightPortion
   frameHeight = THREE.MathUtils.clamp(
     frameHeight,
     minFrameHeight,
@@ -493,7 +494,10 @@ const EMISSIVE_COLORS: Record<string, readonly [number, number, number]> = {
   core: [1.0, 0.95, 0.86],
 }
 
-const MATERIAL_ROLES: Record<string, { emissive?: string; vertexFalloff?: boolean }> = {
+const MATERIAL_ROLES: Record<
+  string,
+  { emissive?: string; vertexFalloff?: boolean }
+> = {
   Web_GoldLine: { emissive: 'goldLine', vertexFalloff: true },
   Web_GoldLineMid: { emissive: 'goldLineMid', vertexFalloff: true },
   Web_FloorLine: { emissive: 'floor', vertexFalloff: true },
@@ -669,7 +673,12 @@ export async function createPortalScene(
   renderer.setClearColor(0x000000, 0)
 
   const scene = new THREE.Scene()
-  const camera = new THREE.PerspectiveCamera(PORTAL_COMPOSITION.verticalFovDeg, 1, 0.1, 800)
+  const camera = new THREE.PerspectiveCamera(
+    PORTAL_COMPOSITION.verticalFovDeg,
+    1,
+    0.1,
+    800,
+  )
   camera.position.set(0, gazeY, fitDistance)
 
   const environment = studioEnvironment()
@@ -726,7 +735,9 @@ export async function createPortalScene(
   }
   root.traverse((object) => {
     if (!(object instanceof THREE.Mesh)) return
-    const list = Array.isArray(object.material) ? object.material : [object.material]
+    const list = Array.isArray(object.material)
+      ? object.material
+      : [object.material]
     for (const material of list) {
       if (!(material instanceof THREE.MeshStandardMaterial)) continue
       const name = material.name
@@ -915,7 +926,8 @@ export async function createPortalScene(
   // --- theme application ----------------------------------------------------
   const baseMaps = new Map<string, THREE.Texture>()
   for (const entry of materials.stone) {
-    if (entry.material.map) baseMaps.set(entry.material.name, entry.material.map)
+    if (entry.material.map)
+      baseMaps.set(entry.material.name, entry.material.map)
   }
 
   // --- PW-2 activation, intent and entry state ------------------------------
@@ -961,8 +973,7 @@ export async function createPortalScene(
     lights.threshold.intensity = spec.threshold.intensity * (1 + 0.55 * level)
     lights.pool.intensity = spec.pool.intensity * (1 + 0.25 * level)
     lights.coreNear.intensity = spec.coreNear.intensity * (1 + 0.3 * level)
-    lights.passageMid.intensity =
-      spec.passageMid.intensity * (1 + 0.5 * level)
+    lights.passageMid.intensity = spec.passageMid.intensity * (1 + 0.5 * level)
     lights.deep.intensity = spec.deep.intensity * (1 + 0.6 * level)
     beaconHaloMaterial.uniforms.strength.value =
       spec.beaconHalo * (0.8 + 0.2 * arrival) * (1 + 0.3 * level)
@@ -1034,19 +1045,19 @@ export async function createPortalScene(
     }
 
     floorMaterial.color.copy(
-      srgb(
-        theme === 'dark'
-          ? [0.0125, 0.0135, 0.0155]
-          : [0.655, 0.595, 0.49],
-      ),
+      srgb(theme === 'dark' ? [0.0125, 0.0135, 0.0155] : [0.655, 0.595, 0.49]),
     )
     floorMaterial.roughness = theme === 'dark' ? 0.3 : 0.34
     floorMaterial.envMapIntensity = spec.stoneEnv
 
     const backdropUniforms = backdropMaterial_.uniforms
-    ;(backdropUniforms.edge.value as THREE.Color).copy(srgb(spec.atmosphere.edge))
+    ;(backdropUniforms.edge.value as THREE.Color).copy(
+      srgb(spec.atmosphere.edge),
+    )
     ;(backdropUniforms.mid.value as THREE.Color).copy(srgb(spec.atmosphere.mid))
-    ;(backdropUniforms.glow.value as THREE.Color).copy(srgb(spec.atmosphere.glow))
+    ;(backdropUniforms.glow.value as THREE.Color).copy(
+      srgb(spec.atmosphere.glow),
+    )
     backdropUniforms.strength.value = spec.atmosphere.strength
 
     ;(beaconHaloMaterial.uniforms.tint.value as THREE.Color).copy(
@@ -1104,7 +1115,11 @@ export async function createPortalScene(
       // derived from the live runtime hierarchy. No canvas scale, no model
       // scale, no FOV trick, no roll.
       const t = clamp01(entryProgress)
-      entryStartVec.set(entryPath.start[0], entryPath.start[1], entryPath.start[2])
+      entryStartVec.set(
+        entryPath.start[0],
+        entryPath.start[1],
+        entryPath.start[2],
+      )
       entryEndVec.set(entryPath.end[0], entryPath.end[1], entryPath.end[2])
       camera.position.lerpVectors(entryStartVec, entryEndVec, t)
       camera.lookAt(

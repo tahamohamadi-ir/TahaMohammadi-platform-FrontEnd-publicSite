@@ -354,7 +354,8 @@ html[data-theme='light'] .gw::after {
 .gw[data-gateway-program='instant'][data-gateway-entry='committed'] .gw__roles,
 .gw[data-gateway-program='instant'][data-gateway-entry='committed'] .gw__title,
 .gw[data-gateway-program='instant'][data-gateway-entry='committed'] .gw__nav,
-.gw[data-gateway-program='instant'][data-gateway-entry='committed'] .gw__toolbar,
+.gw[data-gateway-program='instant'][data-gateway-entry='committed']
+  .gw__toolbar,
 .gw[data-gateway-program='instant'][data-gateway-entry='committed'] .gw__brand {
   transition-duration: 120ms;
   transition-delay: 0ms;
