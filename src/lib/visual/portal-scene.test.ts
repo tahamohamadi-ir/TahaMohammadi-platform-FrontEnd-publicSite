@@ -2,7 +2,10 @@ import { expect, test, vi } from 'vitest'
 import {
   PORTAL_ASSETS,
   PORTAL_COMPOSITION,
+  PORTAL_ENTRY,
+  PORTAL_PART_NAMES,
   createPortalScene,
+  portalEntryGeometry,
   portalFrame,
   portalThemeFromPalette,
   portalThresholdAnchor,
@@ -76,6 +79,80 @@ test('runtime assets are the frozen PW-1 export files', () => {
   expect(PORTAL_ASSETS.lightMap).toBe(
     '/portal/portal_stone_basecolor_light.jpg',
   )
+})
+
+test('entry reads the frozen runtime hierarchy by exact name', () => {
+  // Names verified against the frozen GLB's node table; the entry must do typed
+  // lookup and degrade gracefully when a name is missing.
+  expect(PORTAL_PART_NAMES).toEqual({
+    threshold: 'HM_ARCHITECTURE',
+    diagram: 'HM_DIAGRAM',
+    diagramPrimary: 'Diag_Primary',
+    diagramSecondary: 'Diag_Secondary',
+    beacon: 'HM_BEACON',
+    glowSquare: 'Core_GlowSquare',
+    streak: 'Core_LightStreak',
+    depthFrame: 'HM_Passage_DepthFrame_A',
+    depthFrames: 'HM_Passage_DepthFrames',
+    passage: 'HM_PASSAGE',
+  })
+})
+
+test('entry path derives forward from world positions and stops short of the beacon', () => {
+  // Real frozen-GLB world positions: threshold at the origin, first passage
+  // depth frame at z = -7.40, beacon core at z = -25.00.
+  const geometry = portalEntryGeometry({
+    threshold: [0, 0, 0],
+    depthFrame: [0, 0, -7.4],
+    beacon: [0, 3.6, -25],
+    camera: [0, 1.2, 58],
+    mobile: false,
+  })
+
+  // Forward comes from the hierarchy (threshold -> first depth frame): -Z and
+  // horizontal only, so the camera never pitches or rolls.
+  expect(geometry.forward[0]).toBeCloseTo(0, 6)
+  expect(geometry.forward[1]).toBe(0)
+  expect(geometry.forward[2]).toBeCloseTo(-1, 6)
+
+  // Crosses the threshold but never reaches the frame share or the beacon.
+  expect(geometry.end[2]).toBeLessThan(0)
+  expect(geometry.end[2]).toBeGreaterThanOrEqual(
+    PORTAL_ENTRY.depthFrameShare * -7.4 - 1e-6,
+  )
+  expect(geometry.end[2]).toBeGreaterThan(-25)
+  // Eye height is preserved: no vertical drift, no FOV trick.
+  expect(geometry.end[1]).toBeCloseTo(1.2, 6)
+  expect(geometry.target[2]).toBeLessThan(geometry.end[2])
+  expect(geometry.target[1]).toBeCloseTo(1.2, 6)
+  // Total travel is the distance from the composed frame, so it is real.
+  expect(geometry.distance).toBeGreaterThan(58)
+  expect(geometry.distance).toBeLessThanOrEqual(58 + PORTAL_ENTRY.maxTravel)
+})
+
+test('mobile entry travels less than desktop and a degenerate hierarchy stays stable', () => {
+  const base = {
+    threshold: [0, 0, 0] as const,
+    depthFrame: [0, 0, -7.4] as const,
+    beacon: [0, 3.6, -25] as const,
+    camera: [0, 1.2, 58] as const,
+  }
+  const desktop = portalEntryGeometry({ ...base, mobile: false })
+  const mobile = portalEntryGeometry({ ...base, mobile: true })
+  expect(mobile.distance).toBeLessThan(desktop.distance)
+  expect(mobile.distance).toBeGreaterThan(58)
+
+  // No passage frames (absent geometry) must not divide by zero or fly away.
+  const degenerate = portalEntryGeometry({
+    threshold: [0, 0, 0],
+    depthFrame: [0, 0, 0],
+    beacon: [0, 0, 0],
+    camera: [0, 1.2, 40],
+    mobile: false,
+  })
+  expect(degenerate.forward[2]).toBeCloseTo(-1, 6)
+  expect(Number.isFinite(degenerate.distance)).toBe(true)
+  expect(degenerate.distance).toBeGreaterThan(0)
 })
 
 test('unavailable WebGL reports the error and rejects instead of rendering', async () => {

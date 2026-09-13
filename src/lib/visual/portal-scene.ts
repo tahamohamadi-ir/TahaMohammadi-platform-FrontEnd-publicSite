@@ -18,8 +18,15 @@
  *   (load, shader, context loss, frame budget) leaves the raster fallback
  *   in place.
  *
- * Rendering is strictly on demand: resize, theme swap, pointer pose, and the
- * bounded entrance arrival re-render; there is no always-running loop.
+ * Rendering is strictly on demand: resize, theme swap, pointer pose, the
+ * bounded entrance arrival and the short committed entry re-render; there is
+ * no always-running loop.
+ *
+ * PW-2 adds the language-entry channels to the same scene handle: a reversible
+ * intent level (hover/focus), a committed activation level (threshold, passage
+ * depth, at most 5° of orbital convergence) and a real camera entry driven by
+ * world-space positions with an atmospheric closure — no canvas scale, no model
+ * scale, no FOV trick.
  */
 
 import * as THREE from 'three'
@@ -65,6 +72,23 @@ export interface PortalSceneHandle {
   setPose(x: number, y: number): void
   setOrbitPhase(phase: number): void
   setSuspended(suspended: boolean): void
+  /**
+   * PW-2 — reversible intent preview (hover / keyboard focus). 0..1 is a
+   * small threshold/beacon/passage response with no camera movement.
+   */
+  setIntent(level: number): void
+  /** PW-2 — portal activation on commit (threshold, orbit, passage depth). */
+  setActivation(level: number): void
+  /** PW-2 — compute the entry path from live world positions. */
+  beginEntry(): void
+  /** PW-2 — camera entry + atmospheric closure, 0..1. */
+  setEntry(progress: number): void
+  /** PW-2 — drop the entry path and restore the composed frame. */
+  endEntry(): void
+  /** Which entry program the current motion preference yields. */
+  entryProgram(): 'flight' | 'instant'
+  /** Travelled distance in meters for the current entry path (0 if none). */
+  entryDistance(): number
   dispose(): void
 }
 
@@ -162,6 +186,121 @@ export function portalFrame(aspect: number): PortalFrame {
     widthFraction: portalWidth / frameWidth,
   }
 }
+
+/**
+ * PW-2 — language-entry travel budget.
+ *
+ * The camera must physically cross the central threshold, so the path is
+ * derived from the live world-space positions of the runtime hierarchy
+ * (threshold -> first passage depth frame -> beacon) instead of an assumed
+ * Blender axis. Travel stops long before the beacon and before the weak
+ * geometry behind the first depth frame, so navigation always happens while
+ * the passage still surrounds the camera.
+ */
+export const PORTAL_ENTRY = {
+  /** Share of the threshold -> beacon distance that may be travelled. */
+  beaconShare: 0.18,
+  /** Hard stop at this share of the first passage depth frame. */
+  depthFrameShare: 0.6,
+  /** Mobile reads calmer with a shorter travel. */
+  mobileScale: 0.75,
+  minTravel: 2.6,
+  maxTravel: 9,
+  /** Keeps the camera aimed down the axis: no yaw, pitch or FOV trick. */
+  lookAhead: 24,
+} as const
+
+export type PortalVec3 = readonly [number, number, number]
+
+export interface PortalEntryGeometry {
+  /** Horizontal unit vector from the threshold to the first depth frame. */
+  forward: PortalVec3
+  /** Composed camera position the entry starts from. */
+  start: PortalVec3
+  /** Camera position at the end of the entry (inside the passage). */
+  end: PortalVec3
+  /** Look-at point at the end of the entry (down the passage axis). */
+  target: PortalVec3
+  /** Total travelled distance in meters. */
+  distance: number
+}
+
+function horizontal([x, , z]: PortalVec3): [number, number] {
+  const length = Math.hypot(x, z)
+  if (!Number.isFinite(length) || length < 1e-4) {
+    // Degenerate hierarchy: keep a stable forward axis rather than throwing.
+    return [0, -1]
+  }
+  return [x / length, z / length]
+}
+
+/**
+ * Derive the entry path from real world-space positions. Pure math so the
+ * budget stays unit-checked (`portal-scene.test.ts`).
+ */
+export function portalEntryGeometry(input: {
+  threshold: PortalVec3
+  depthFrame: PortalVec3
+  beacon: PortalVec3
+  camera: PortalVec3
+  mobile: boolean
+}): PortalEntryGeometry {
+  const { threshold, depthFrame, beacon, camera, mobile } = input
+  const [fx, fz] = horizontal([
+    depthFrame[0] - threshold[0],
+    0,
+    depthFrame[2] - threshold[2],
+  ])
+  const forward: PortalVec3 = [fx, 0, fz]
+  const project = (point: PortalVec3) =>
+    (point[0] - threshold[0]) * fx + (point[2] - threshold[2]) * fz
+  const toBeacon = project(beacon)
+  const toFirstFrame = project(depthFrame)
+
+  const stop = Math.max(
+    PORTAL_ENTRY.minTravel,
+    (Number.isFinite(toFirstFrame) ? toFirstFrame : 0) *
+      PORTAL_ENTRY.depthFrameShare,
+  )
+  const ceiling = Math.min(PORTAL_ENTRY.maxTravel, stop)
+  const share = Number.isFinite(toBeacon)
+    ? toBeacon * PORTAL_ENTRY.beaconShare
+    : PORTAL_ENTRY.minTravel
+  const requested = mobile ? share * PORTAL_ENTRY.mobileScale : share
+  const travel = THREE.MathUtils.clamp(requested, 0, ceiling)
+
+  const end: PortalVec3 = [
+    threshold[0] + forward[0] * travel,
+    camera[1],
+    threshold[2] + forward[2] * travel,
+  ]
+  const target: PortalVec3 = [
+    end[0] + forward[0] * PORTAL_ENTRY.lookAhead,
+    camera[1],
+    end[2] + forward[2] * PORTAL_ENTRY.lookAhead,
+  ]
+  return {
+    forward,
+    start: camera,
+    end,
+    target,
+    distance: Math.hypot(end[0] - camera[0], end[2] - camera[2]),
+  }
+}
+
+/** Hierarchy names the entry reads (verified against the frozen GLB). */
+export const PORTAL_PART_NAMES = {
+  threshold: 'HM_ARCHITECTURE',
+  diagram: 'HM_DIAGRAM',
+  diagramPrimary: 'Diag_Primary',
+  diagramSecondary: 'Diag_Secondary',
+  beacon: 'HM_BEACON',
+  glowSquare: 'Core_GlowSquare',
+  streak: 'Core_LightStreak',
+  depthFrame: 'HM_Passage_DepthFrame_A',
+  depthFrames: 'HM_Passage_DepthFrames',
+  passage: 'HM_PASSAGE',
+} as const
 
 interface ThemeSpec {
   background: readonly [number, number, number]
@@ -610,6 +749,62 @@ export async function createPortalScene(
     }
   })
 
+  // --- PW-2 runtime hierarchy (typed lookup, graceful fallback) ------------
+  // Names verified against the frozen GLB; every read tolerates absence so a
+  // future export cannot break the entry path.
+  const part = (name: string): THREE.Object3D | null =>
+    root.getObjectByName(name) ?? null
+  const parts = {
+    threshold: part(PORTAL_PART_NAMES.threshold),
+    diagram: part(PORTAL_PART_NAMES.diagram),
+    diagramPrimary: part(PORTAL_PART_NAMES.diagramPrimary),
+    diagramSecondary: part(PORTAL_PART_NAMES.diagramSecondary),
+    glowSquare: part(PORTAL_PART_NAMES.glowSquare),
+    depthFrame: part(PORTAL_PART_NAMES.depthFrame),
+    depthFrames: part(PORTAL_PART_NAMES.depthFrames),
+    passage: part(PORTAL_PART_NAMES.passage),
+  }
+
+  /**
+   * Secondary-diagram materials soften while the portal activates — but only
+   * when they are not shared with the primary diagram, otherwise the primary
+   * would dim with them. Absent secondary mesh: no softening, no error.
+   */
+  const secondaryMaterials: Array<{
+    material: THREE.MeshStandardMaterial
+    base: number
+  }> = []
+  if (parts.diagramSecondary) {
+    const primaryNames = new Set<string>()
+    parts.diagramPrimary?.traverse((child) => {
+      if (!(child instanceof THREE.Mesh)) return
+      const list = Array.isArray(child.material)
+        ? child.material
+        : [child.material]
+      for (const material of list) {
+        if (material?.name) primaryNames.add(material.name)
+      }
+    })
+    const softened = new Set<string>()
+    parts.diagramSecondary.traverse((child) => {
+      if (!(child instanceof THREE.Mesh)) return
+      const list = Array.isArray(child.material)
+        ? child.material
+        : [child.material]
+      for (const material of list) {
+        if (!(material instanceof THREE.MeshStandardMaterial)) continue
+        if (primaryNames.has(material.name) || softened.has(material.name)) {
+          continue
+        }
+        softened.add(material.name)
+        secondaryMaterials.push({
+          material,
+          base: material.emissiveIntensity,
+        })
+      }
+    })
+  }
+
   // --- runtime floor (excluded from the GLB on purpose) --------------------
   const floorGeometry = new THREE.PlaneGeometry(420, 420)
   ownedGeometries.push(floorGeometry)
@@ -723,6 +918,84 @@ export async function createPortalScene(
     if (entry.material.map) baseMaps.set(entry.material.name, entry.material.map)
   }
 
+  // --- PW-2 activation, intent and entry state ------------------------------
+  /** Share of the full activation an intent preview is allowed to show. */
+  const INTENT_SHARE = 0.25
+  /** Maximum orbital correction while committed (within the 4–8° budget). */
+  const ORBIT_CONVERGENCE_DEG = 5
+  /** Atmospheric closure: fog density multiplier at the end of the entry. */
+  const FOG_CLOSURE_SCALE = 8
+  /** Below this aspect the entry uses the shorter mobile travel. */
+  const PORTAL_MOBILE_ASPECT = 0.75
+  let intentLevel = 0
+  let activationLevel = 0
+  let entryProgress = 0
+  let entryPath: PortalEntryGeometry | null = null
+  const entryStartVec = new THREE.Vector3()
+  const entryEndVec = new THREE.Vector3()
+  const entryTargetVec = new THREE.Vector3()
+  const cameraBase = new THREE.Vector3()
+
+  const clamp01 = (value: number): number =>
+    Number.isFinite(value) ? THREE.MathUtils.clamp(value, 0, 1) : 0
+  /**
+   * Intent is only ever a share of the committed response; the committed
+   * activation always wins so a preview can never outrun the real entry.
+   */
+  const effectiveActivation = (): number =>
+    Math.max(clamp01(activationLevel), clamp01(intentLevel) * INTENT_SHARE)
+  /** Fog closes through the second half of the entry, not on a hard fade. */
+  const closureAmount = (): number =>
+    THREE.MathUtils.smoothstep(clamp01(entryProgress), 0.35, 1)
+
+  /**
+   * Single place that writes every modulated value, so theme, arrival, intent,
+   * activation and entry compose instead of overwriting each other.
+   */
+  function applyActivation(): void {
+    const spec = THEMES[theme]
+    const level = effectiveActivation()
+    const closure = closureAmount()
+
+    // Threshold + passage depth + a restrained beacon: no LED-strip blowout.
+    lights.threshold.intensity = spec.threshold.intensity * (1 + 0.55 * level)
+    lights.pool.intensity = spec.pool.intensity * (1 + 0.25 * level)
+    lights.coreNear.intensity = spec.coreNear.intensity * (1 + 0.3 * level)
+    lights.passageMid.intensity =
+      spec.passageMid.intensity * (1 + 0.5 * level)
+    lights.deep.intensity = spec.deep.intensity * (1 + 0.6 * level)
+    beaconHaloMaterial.uniforms.strength.value =
+      spec.beaconHalo * (0.8 + 0.2 * arrival) * (1 + 0.3 * level)
+    poolMaterial.uniforms.strength.value = spec.poolHalo * (1 + 0.35 * level)
+
+    // Orbital convergence: a few degrees while committed, never a spin, and
+    // never during the reversible intent preview (reduced motion must contain
+    // no convergence at all).
+    if (parts.diagram) {
+      const radians = THREE.MathUtils.degToRad(
+        ORBIT_CONVERGENCE_DEG * clamp01(activationLevel),
+      )
+      parts.diagram.rotation.y = radians * 0.6
+      parts.diagram.rotation.z = radians * 0.8
+    }
+    for (const soft of secondaryMaterials) {
+      soft.material.emissiveIntensity = soft.base * (1 - 0.35 * level)
+    }
+
+    // Spatial closure: the world is swallowed by atmosphere, not by a fade.
+    fog.density = spec.fog.density * (1 + FOG_CLOSURE_SCALE * closure)
+    backdropMaterial_.uniforms.strength.value =
+      spec.atmosphere.strength * (1 + 0.3 * closure)
+
+    for (const entry of materials.emissive) {
+      const base = spec.emissive[entry.role] ?? 0
+      const settle =
+        entry.role === 'core' ? 0.75 + 0.25 * arrival : 0.86 + 0.14 * arrival
+      entry.material.emissiveIntensity = base * settle
+    }
+    if (materials.core) materials.core.emissive.copy(srgb(spec.coreColor))
+  }
+
   function applyTheme(next: PortalTheme) {
     theme = next
     const spec = THEMES[theme]
@@ -742,10 +1015,9 @@ export async function createPortalScene(
 
     const emissiveSpec = spec.emissive
     for (const entry of materials.emissive) {
+      // Intensity is settled by applyActivation() so arrival, intent,
+      // activation and entry compose in exactly one place.
       entry.material.emissive.copy(srgb(EMISSIVE_COLORS[entry.role]))
-      const base = emissiveSpec[entry.role] ?? 0
-      const settle = entry.role === 'core' ? 0.75 + 0.25 * arrival : 1
-      entry.material.emissiveIntensity = base * settle
     }
     if (materials.nodeDark) {
       materials.nodeDark.color.copy(srgb(spec.nodeDarkBase))
@@ -780,12 +1052,9 @@ export async function createPortalScene(
     ;(beaconHaloMaterial.uniforms.tint.value as THREE.Color).copy(
       srgb(EMISSIVE_COLORS.streak),
     )
-    beaconHaloMaterial.uniforms.strength.value =
-      spec.beaconHalo * (0.8 + 0.2 * arrival)
     ;(poolMaterial.uniforms.tint.value as THREE.Color).copy(
       srgb(EMISSIVE_COLORS.goldLine),
     )
-    poolMaterial.uniforms.strength.value = spec.poolHalo
 
     lights.hemi.color.copy(srgb(spec.hemi.sky))
     lights.hemi.groundColor.copy(srgb(spec.hemi.ground))
@@ -820,16 +1089,35 @@ export async function createPortalScene(
     lights.passageMid.intensity = spec.passageMid.intensity
     lights.deep.color.copy(srgb(spec.deep.color))
     lights.deep.intensity = spec.deep.intensity
+
+    // Modulated values (intent / activation / entry / atmospheric closure)
+    // always ride on top of the theme base values.
+    applyActivation()
   }
 
   function poseCamera() {
     const ramp = (1 - arrival) * 0.035
-    camera.position.set(
-      pose.y * 6,
-      gazeY + pose.x * 4,
-      fitDistance * (1 + ramp),
-    )
-    camera.lookAt(0, gazeY, -2)
+    cameraBase.set(pose.y * 6, gazeY + pose.x * 4, fitDistance * (1 + ramp))
+    if (entryProgress > 0 && entryPath) {
+      // Real 3D translation straight through the threshold: the path starts at
+      // the composed frame position and ends inside the passage on the axis
+      // derived from the live runtime hierarchy. No canvas scale, no model
+      // scale, no FOV trick, no roll.
+      const t = clamp01(entryProgress)
+      entryStartVec.set(entryPath.start[0], entryPath.start[1], entryPath.start[2])
+      entryEndVec.set(entryPath.end[0], entryPath.end[1], entryPath.end[2])
+      camera.position.lerpVectors(entryStartVec, entryEndVec, t)
+      camera.lookAt(
+        entryTargetVec.set(
+          entryPath.target[0],
+          entryPath.target[1],
+          entryPath.target[2],
+        ),
+      )
+    } else {
+      camera.position.copy(cameraBase)
+      camera.lookAt(0, gazeY, -2)
+    }
     camera.updateMatrixWorld()
   }
 
@@ -840,17 +1128,7 @@ export async function createPortalScene(
 
   const setArrival = (phase: number) => {
     arrival = THREE.MathUtils.clamp(phase, 0, 1)
-    const spec = THEMES[theme]
-    for (const entry of materials.emissive) {
-      const base = spec.emissive[entry.role] ?? 0
-      const settle =
-        entry.role === 'core'
-          ? 0.75 + 0.25 * arrival
-          : 0.86 + 0.14 * arrival
-      entry.material.emissiveIntensity = base * settle
-    }
-    beaconHaloMaterial.uniforms.strength.value =
-      spec.beaconHalo * (0.8 + 0.2 * arrival)
+    applyActivation()
     poseCamera()
     renderFrame()
   }
@@ -915,6 +1193,81 @@ export async function createPortalScene(
       if (disposed) return
       setArrival(motion === 'full' ? phase : 1)
     },
+
+    // --- PW-2 language entry ------------------------------------------------
+    setIntent(level) {
+      if (disposed) return
+      const next = clamp01(level)
+      if (next === intentLevel) return
+      intentLevel = next
+      applyActivation()
+      renderFrame()
+    },
+    setActivation(level) {
+      if (disposed) return
+      const next = clamp01(level)
+      if (next === activationLevel) return
+      activationLevel = next
+      applyActivation()
+      renderFrame()
+    },
+    beginEntry() {
+      if (disposed) return
+      const threshold = new THREE.Vector3()
+      const depthFrame = new THREE.Vector3()
+      const beacon = new THREE.Vector3()
+      if (parts.threshold) parts.threshold.getWorldPosition(threshold)
+      if (parts.depthFrame) parts.depthFrame.getWorldPosition(depthFrame)
+      else depthFrame.set(threshold.x, threshold.y, threshold.z - 7)
+      if (parts.glowSquare) parts.glowSquare.getWorldPosition(beacon)
+      else beacon.set(threshold.x, threshold.y, threshold.z - 25)
+      entryPath = portalEntryGeometry({
+        threshold: [threshold.x, threshold.y, threshold.z],
+        depthFrame: [depthFrame.x, depthFrame.y, depthFrame.z],
+        beacon: [beacon.x, beacon.y, beacon.z],
+        camera: [camera.position.x, camera.position.y, camera.position.z],
+        mobile: camera.aspect < PORTAL_MOBILE_ASPECT,
+      })
+      if (entryProgress === 0) {
+        applyActivation()
+        poseCamera()
+        renderFrame()
+      }
+    },
+    setEntry(progress) {
+      if (disposed) return
+      const next = clamp01(progress)
+      if (next === entryProgress) return
+      entryProgress = next
+      applyActivation()
+      poseCamera()
+      renderFrame()
+    },
+    endEntry() {
+      if (disposed) return
+      if (
+        entryProgress === 0 &&
+        !entryPath &&
+        activationLevel === 0 &&
+        intentLevel === 0
+      ) {
+        return
+      }
+      entryProgress = 0
+      entryPath = null
+      activationLevel = 0
+      intentLevel = 0
+      applyActivation()
+      poseCamera()
+      renderFrame()
+    },
+    entryProgram() {
+      return motion === 'full' ? 'flight' : 'instant'
+    },
+    entryDistance() {
+      return entryPath?.distance ?? 0
+    },
+
     setSuspended(next) {
       if (disposed || next === suspended) return
       suspended = next

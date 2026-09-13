@@ -310,3 +310,64 @@ html[data-theme='light'] .gw::after {
     min-inline-size: 0;
   }
 }
+
+/* PW-2 — language entry choreography.
+   Perceivable order: the chosen link acknowledges the choice first, then the
+   identity and controls fade while the world closes and the camera enters.
+   Everything stays in the DOM (opacity only, never `display`/`visibility`) so
+   the anchors keep their semantics until the route actually changes. */
+.gw[data-gateway-entry='committed'] .gw__locale[data-gateway-selected] {
+  border-color: var(--color-brand);
+  color: var(--color-brand);
+  background: color-mix(in srgb, var(--color-brand-soft) 55%, transparent);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--color-brand) 45%, transparent),
+    0 10px 30px color-mix(in srgb, var(--color-brand) 14%, transparent);
+}
+
+.gw[data-gateway-entry='committed'] .gw__prompt,
+.gw[data-gateway-entry='committed'] .gw__roles,
+.gw[data-gateway-entry='committed'] .gw__title,
+.gw[data-gateway-entry='committed'] .gw__nav,
+.gw[data-gateway-entry='committed'] .gw__toolbar {
+  opacity: 0;
+  transition:
+    opacity 480ms var(--motion-ease-out) 300ms,
+    border-color 480ms var(--motion-ease-out) 300ms,
+    color 480ms var(--motion-ease-out) 300ms;
+}
+
+/* The brand mark is allowed to stay a moment longer than the controls. */
+.gw[data-gateway-entry='committed'] .gw__brand {
+  opacity: 0;
+  transition: opacity 520ms var(--motion-ease-out) 550ms;
+}
+
+/* No second language activation and no pointer work once committed. */
+.gw[data-gateway-entry='committed'] .gw__nav {
+  pointer-events: none;
+}
+
+/* Reduced motion (and any instant program): confirmation and a short response,
+   no long fades. */
+.gw[data-gateway-program='instant'][data-gateway-entry='committed'] .gw__prompt,
+.gw[data-gateway-program='instant'][data-gateway-entry='committed'] .gw__roles,
+.gw[data-gateway-program='instant'][data-gateway-entry='committed'] .gw__title,
+.gw[data-gateway-program='instant'][data-gateway-entry='committed'] .gw__nav,
+.gw[data-gateway-program='instant'][data-gateway-entry='committed'] .gw__toolbar,
+.gw[data-gateway-program='instant'][data-gateway-entry='committed'] .gw__brand {
+  transition-duration: 120ms;
+  transition-delay: 0ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gw[data-gateway-entry='committed'] .gw__prompt,
+  .gw[data-gateway-entry='committed'] .gw__roles,
+  .gw[data-gateway-entry='committed'] .gw__title,
+  .gw[data-gateway-entry='committed'] .gw__nav,
+  .gw[data-gateway-entry='committed'] .gw__toolbar,
+  .gw[data-gateway-entry='committed'] .gw__brand {
+    transition-duration: 120ms;
+    transition-delay: 0ms;
+  }
+}

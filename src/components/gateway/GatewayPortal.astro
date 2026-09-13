@@ -41,6 +41,10 @@ import { GATEWAY_ATMOSPHERE_ASSETS } from '../../lib/media/promoted-media'
   // yields to the raster fallback on any failure. Never imports the Home
   // graph path.
   import type { PortalSceneHandle } from '../../lib/visual/portal-scene'
+  import type {
+    GatewayEntryEvent,
+    GatewayMotionHandle,
+  } from '../../lib/visual/gateway-motion'
   import { scenePaletteFromCss } from '../../lib/visual/scene-contract'
 
   function readPalette() {
@@ -76,9 +80,51 @@ import { GATEWAY_ATMOSPHERE_ASSETS } from '../../lib/media/promoted-media'
     }
 
     let scene: PortalSceneHandle | null = null
-    let motion: { playEntrance(): Promise<void>; dispose(): void } | null = null
+    let motion: GatewayMotionHandle | null = null
     const cleanups: Array<() => void> = []
+    const linkCleanups: Array<() => void> = []
     let consecutiveSlowFrames = 0
+
+    // PW-2 DOM ownership: real anchors with real hrefs, real focus order. The
+    // enhancement intercepts activation only while the transition controller
+    // is live; every other path (no JS, no WebGL, scene failure, modified
+    // click, secondary activation) stays a native navigation.
+    const page = document.querySelector<HTMLElement>('.gw')
+    const nav = document.querySelector<HTMLElement>('.gw__nav')
+    const languageLinks = Array.from(
+      document.querySelectorAll<HTMLAnchorElement>('.gw__nav a[href]'),
+    )
+    const themeToggle = document.querySelector<HTMLElement>(
+      '[data-theme-toggle]',
+    )
+    let entryCommitted = false
+
+    const onEntryState = (event: GatewayEntryEvent) => {
+      portal.dataset.gatewayEntry = event.state
+      if (page) {
+        page.setAttribute('data-gateway-entry', event.state)
+        page.setAttribute('data-gateway-program', event.program)
+      }
+      if (event.state === 'entering' || event.state === 'navigating') {
+        // Observable entry evidence: 0 means the camera never flew (reduced
+        // motion / instant program), otherwise it is the real travel in meters.
+        portal.dataset.gatewayTravel = String(
+          Math.round(scene?.entryDistance() ?? 0),
+        )
+      }
+      if (event.state !== 'committed') return
+      // Lock at commit: no second language, no mid-entry theme swap, and the
+      // chosen link confirms itself before anything fades.
+      entryCommitted = true
+      nav?.setAttribute('aria-busy', 'true')
+      if (themeToggle instanceof HTMLButtonElement) themeToggle.disabled = true
+      themeToggle?.setAttribute('aria-disabled', 'true')
+      for (const link of languageLinks) {
+        if (link.getAttribute('href') === event.href) {
+          link.setAttribute('data-gateway-selected', '')
+        }
+      }
+    }
 
     const teardownScene = () => {
       try {
@@ -94,7 +140,24 @@ import { GATEWAY_ATMOSPHERE_ASSETS } from '../../lib/media/promoted-media'
       motion = null
       scene = null
     }
+    const teardownLinks = () => {
+      for (const cleanup of linkCleanups.splice(0)) {
+        try {
+          cleanup()
+        } catch {
+          /* listeners are best-effort */
+        }
+      }
+    }
     const enterFallback = () => {
+      // A failure after commit must never strand the visitor on the gateway:
+      // the controller navigates to the selected href first.
+      try {
+        motion?.failFast()
+      } catch {
+        /* navigation is best-effort here */
+      }
+      teardownLinks()
       teardownScene()
       setFallback()
     }
@@ -157,7 +220,7 @@ import { GATEWAY_ATMOSPHERE_ASSETS } from '../../lib/media/promoted-media'
       cleanups.push(() => visibilityObserver.disconnect())
 
     const onThemeChange = () => {
-      if (portal.dataset.gatewayState !== 'ready') return
+      if (portal.dataset.gatewayState !== 'ready' || entryCommitted) return
       try {
         scene?.setPalette(readPalette())
       } catch {
@@ -179,29 +242,92 @@ import { GATEWAY_ATMOSPHERE_ASSETS } from '../../lib/media/promoted-media'
             /* teardown best-effort */
           }
         }
+        teardownLinks()
+        delete (window as unknown as { __tmStallGatewayEntry?: () => void })
+          .__tmStallGatewayEntry
         teardownScene()
       },
       { once: true },
     )
 
-    portal.setAttribute('data-gateway-state', 'ready')
     // The first demand render happens in resize(). Keep its frame visible
     // while the motion module loads; motion must never own availability.
+    // `ready` is not published here: it announces the entry enhancement, and
+    // that does not exist until the controller and its listeners are wired.
     canvas.style.opacity = '1'
     canvas.hidden = false
     resize()
 
     try {
       const motionModule = await import('../../lib/visual/gateway-motion')
-      motion = motionModule.createGatewayMotion({
+      const controller = motionModule.createGatewayMotion({
         scene,
         canvas,
         stage: portal,
         fallbackElement: fallback,
         motionPreference: motionPreference(),
+        onEntryState,
       })
-      await motion.playEntrance()
+      motion = controller
+
+      // Language anchors keep their real hrefs: activation is only intercepted
+      // while the entry controller is live and willing to accept a commit.
+      for (const link of languageLinks) {
+        const preview = () => controller.previewStart()
+        const leave = () => controller.previewEnd()
+        const activate = (event: Event) => {
+          if (!(event instanceof MouseEvent) || event.defaultPrevented) return
+          if (event.button !== 0) return
+          if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)
+            return
+          if (portal.dataset.gatewayState !== 'ready') return
+          if (entryCommitted) {
+            // Only one activation can commit: the selected href wins.
+            event.preventDefault()
+            return
+          }
+          if (!controller.canIntercept()) return
+          const href = link.getAttribute('href')
+          if (!href) return
+          event.preventDefault()
+          controller.commit(href)
+        }
+        link.addEventListener('pointerenter', preview)
+        link.addEventListener('focus', preview)
+        link.addEventListener('pointerleave', leave)
+        link.addEventListener('blur', leave)
+        link.addEventListener('click', activate)
+        linkCleanups.push(() => {
+          link.removeEventListener('pointerenter', preview)
+          link.removeEventListener('focus', preview)
+          link.removeEventListener('pointerleave', leave)
+          link.removeEventListener('blur', leave)
+          link.removeEventListener('click', activate)
+        })
+      }
+
+      // Explicit seam for the e2e coverage of the stalled-entry failsafe: it
+      // simulates a slow renderer and never navigates on its own. It is the one
+      // failsafe without a real trigger path from a page script, so it stays
+      // for now — but as a non-enumerable, non-writable property (no page
+      // script can swap it) that remains deletable for the pagehide teardown.
+      Object.defineProperty(window, '__tmStallGatewayEntry', {
+        value: () => controller.stallEntryForTest(),
+        writable: false,
+        enumerable: false,
+        configurable: true,
+      })
+
+      // Fully wired: the entry enhancement is live from here on, so this is
+      // the honest moment to advertise `ready`. An activation before it is a
+      // plain native navigation, and a tripped frame budget stays `fallback`.
+      if (portal.dataset.gatewayState !== 'fallback') {
+        portal.setAttribute('data-gateway-state', 'ready')
+      }
+
+      await controller.playEntrance()
     } catch {
+      teardownLinks()
       enterFallback()
     }
   }
