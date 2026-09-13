@@ -5,12 +5,18 @@
  * Avoids shell `&&` chains on Windows and optional dist snapshot so a
  * concurrent `astro build` cannot delete files the harness is serving.
  *
+ * Also runs the deterministic site-settings fixture (see
+ * `scripts/e2e-site-settings-fixture.mjs`) and points the E2E build at it, so
+ * the built gateway satisfies the same site-settings input contract production
+ * satisfies. Nothing here runs during a normal, staging or production build.
+ *
  * Env:
- *   TM_E2E_SKIP_BUILD=1  — skip build (review:visual pre-builds dist)
- *   TM_E2E_PORT          — required listen port (from playwright.config.ts)
- *   TM_E2E_DIST_SNAPSHOT — default 1 when skip-build; copy dist before serve
+ *   TM_E2E_SKIP_BUILD=1     — skip build (review:visual pre-builds dist)
+ *   TM_E2E_PORT             — required listen port (from playwright.config.ts)
+ *   TM_E2E_SETTINGS_PORT    — port for the site-settings fixture server
+ *   TM_E2E_DIST_SNAPSHOT    — default 1 when skip-build; copy dist before serve
  */
-import { spawnSync } from 'node:child_process'
+import { spawn, spawnSync } from 'node:child_process'
 import { cpSync, existsSync, rmSync, statSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -21,6 +27,7 @@ const repositoryRoot = path.resolve(
 )
 
 const port = Number(process.env.TM_E2E_PORT)
+const settingsPort = Number(process.env.TM_E2E_SETTINGS_PORT)
 const skipBuild = process.env.TM_E2E_SKIP_BUILD === '1'
 const snapshotByDefault = skipBuild
 const useSnapshot =
@@ -36,13 +43,81 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
-function runBuild() {
+// --- deterministic site-settings fixture -----------------------------------
+let settingsFixture = null
+
+function useSettingsFixture() {
+  return (
+    Number.isInteger(settingsPort) && settingsPort > 0 && settingsPort <= 65535
+  )
+}
+
+function startSettingsFixture() {
+  settingsFixture = spawn(
+    process.execPath,
+    ['scripts/e2e-site-settings-fixture.mjs'],
+    {
+      cwd: repositoryRoot,
+      stdio: 'inherit',
+      shell: false,
+      env: { ...process.env, TM_E2E_SETTINGS_PORT: String(settingsPort) },
+    },
+  )
+  settingsFixture.on('error', (error) => {
+    console.error(
+      `playwright-web-server: settings fixture failed: ${error.message}`,
+    )
+  })
+}
+
+function stopSettingsFixture() {
+  if (settingsFixture && !settingsFixture.killed) {
+    try {
+      settingsFixture.kill()
+    } catch {
+      /* already gone */
+    }
+  }
+  settingsFixture = null
+}
+
+/** Bounded readiness poll — never wait forever for the fixture. */
+async function waitForSettingsFixture() {
+  const url = `http://127.0.0.1:${settingsPort}/api/v1/site/en`
+  const deadline = Date.now() + 30_000
+
+  while (Date.now() < deadline) {
+    try {
+      const response = await fetch(url, {
+        headers: { accept: 'application/json' },
+      })
+      if (response.ok) {
+        const body = await response.json()
+        if (body?.locale === 'en' && body?.brandName) {
+          return
+        }
+      }
+    } catch {
+      /* not up yet */
+    }
+    await sleep(150)
+  }
+
+  console.error(
+    `playwright-web-server: settings fixture never became ready on ${settingsPort}`,
+  )
+  stopSettingsFixture()
+  process.exit(1)
+}
+
+function runBuild(extraEnv = {}) {
   const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm'
   const result = spawnSync(npm, ['run', 'build', '--silent'], {
     cwd: repositoryRoot,
     stdio: 'inherit',
     // Windows: spawnSync('npm.cmd', …, { shell: false }) often returns EINVAL.
     shell: process.platform === 'win32',
+    env: { ...process.env, ...extraEnv },
   })
 
   if (result.error) {
@@ -132,8 +207,39 @@ async function main() {
     process.exit(1)
   }
 
-  if (!skipBuild) {
-    runBuild()
+  const withFixture = useSettingsFixture()
+
+  // The fixture must outlive this process's blocking serve step, so it is torn
+  // down explicitly rather than left orphaned.
+  process.on('exit', stopSettingsFixture)
+  process.on('SIGINT', () => {
+    stopSettingsFixture()
+    process.exit(130)
+  })
+  process.on('SIGTERM', () => {
+    stopSettingsFixture()
+    process.exit(143)
+  })
+
+  if (withFixture) {
+    startSettingsFixture()
+    await waitForSettingsFixture()
+  }
+
+  if (skipBuild) {
+    if (withFixture) {
+      console.warn(
+        'playwright-web-server: TM_E2E_SKIP_BUILD=1 — reusing an existing dist. ' +
+          'The site-settings fixture cannot change an already-built artifact, so ' +
+          'gateway title assertions (.gw__title) only pass after a real build.',
+      )
+    }
+  } else {
+    runBuild(
+      withFixture
+        ? { PUBLIC_API_BASE_URL: `http://127.0.0.1:${settingsPort}` }
+        : {},
+    )
   }
 
   await waitForDistReady(sourceDist)

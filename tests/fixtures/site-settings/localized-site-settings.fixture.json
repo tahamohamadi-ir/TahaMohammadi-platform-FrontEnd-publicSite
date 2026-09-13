@@ -1,0 +1,31 @@
+{
+  "_comment": "Deterministic localized site settings for the Playwright E2E build only. Served by scripts/e2e-site-settings-fixture.mjs and consumed through the existing PUBLIC_API_BASE_URL seam, so no production or staging build can see it. Deliberately minimal: empty contentCopy keeps every gateway/header/footer copy fallback byte-identical to a settings-less build, so the only behavioural difference is a non-empty brandName (the field that decides whether .gw__title renders). brandName is the canonical value taken from tests/fixtures/contracts/responses/site.get.200.json — not invented, and the same locale-neutral string is used for both locales rather than guessing a localized spelling.",
+  "en": {
+    "locale": "en",
+    "brandName": "Taha Mohammadi",
+    "tagline": "",
+    "footerText": "",
+    "revision": "e2e-settings-fixture",
+    "contentCopy": {},
+    "seo": { "title": "", "description": "" },
+    "scene": {
+      "density": "standard",
+      "graphPreset": "atlas-v2",
+      "motion": "full"
+    }
+  },
+  "fa": {
+    "locale": "fa",
+    "brandName": "Taha Mohammadi",
+    "tagline": "",
+    "footerText": "",
+    "revision": "e2e-settings-fixture",
+    "contentCopy": {},
+    "seo": { "title": "", "description": "" },
+    "scene": {
+      "density": "standard",
+      "graphPreset": "atlas-v2",
+      "motion": "full"
+    }
+  }
+}

@@ -5,6 +5,7 @@ import {
 } from './src/test-harness/playwright-port'
 
 const PORT_ENV = 'TM_E2E_PORT'
+const SETTINGS_PORT_ENV = 'TM_E2E_SETTINGS_PORT'
 
 /**
  * Resolve one Chromium-safe free port per run so the harness never depends on a
@@ -20,6 +21,17 @@ const PORT_ENV = 'TM_E2E_PORT'
  */
 const port = await resolveSafePort({ override: process.env[PORT_ENV] })
 process.env[PORT_ENV] = String(port)
+
+/**
+ * Second port for the deterministic site-settings fixture server. The E2E build
+ * needs `PUBLIC_API_BASE_URL` to point at something that answers
+ * `/api/v1/site/<locale>`, otherwise the gateway title cannot render — see
+ * `scripts/e2e-site-settings-fixture.mjs`.
+ */
+const settingsPort = await resolveSafePort({
+  override: process.env[SETTINGS_PORT_ENV],
+})
+process.env[SETTINGS_PORT_ENV] = String(settingsPort)
 
 const baseURL = `http://${LOOPBACK_HOST}:${port}`
 
@@ -39,6 +51,7 @@ export default defineConfig({
     env: {
       ...process.env,
       TM_E2E_PORT: String(port),
+      TM_E2E_SETTINGS_PORT: String(settingsPort),
     },
   },
 })

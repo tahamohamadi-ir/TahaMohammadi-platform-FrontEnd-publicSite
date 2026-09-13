@@ -6,7 +6,7 @@ import { expect, test } from '@playwright/test'
  * The `/` language gateway renders one procedural Three.js arch/threshold
  * portal (geometry + GSAP, no raster-on-a-plane, no baked text) while HTML
  * language links and brand stay immediately usable. The approved
- * `portal-centered-*` raster remains the static fallback until the scene
+ * `portal-world-*` raster remains the static fallback until the scene
  * succeeds; everything stays usable with JS disabled, reduced motion, or
  * unavailable WebGL.
  */
