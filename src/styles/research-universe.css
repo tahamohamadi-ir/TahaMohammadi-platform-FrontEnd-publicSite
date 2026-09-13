@@ -298,7 +298,9 @@ html[data-theme='light'] .ru-leaders line {
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--color-ink-tertiary, inherit);
+  /* WCAG 2.2 AA: --color-ink-tertiary measured 3.49:1 on this surface at 12px,
+     below the 4.5:1 the a11y crawl enforces. */
+  color: var(--color-ink-secondary, currentColor);
 }
 
 .ru-node__body {
@@ -337,7 +339,10 @@ html[data-theme='light'] .ru-leaders line {
   padding-inline: var(--space-3, 0.75rem);
   font: inherit;
   font-size: var(--font-size-xs, 0.8125rem);
-  color: var(--color-ink-secondary, inherit);
+  /* WCAG 2.2 AA: --color-ink-secondary (#616e74 on the light chip surface) measured
+     4.23:1, below the 4.5:1 the a11y crawl enforces. The primary ink token meets it
+     in both themes, and matches what the emphasised/selected states already use. */
+  color: var(--color-ink, currentColor);
   background: color-mix(in srgb, var(--color-ink) 5%, transparent);
   border: 1px solid transparent;
   border-radius: var(--radius-pill, 999px);

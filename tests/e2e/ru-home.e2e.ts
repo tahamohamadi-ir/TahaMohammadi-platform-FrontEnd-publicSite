@@ -174,9 +174,16 @@ test.describe('RU-2 Home universe', () => {
     await expect.poll(() => draws(page)).toBeGreaterThan(0)
 
     // Switching theme re-tints the SAME scene: no reload, no second canvas.
+    // The site's control is a cycle rather than a two-state switch, so click until
+    // the requested theme is actually reached.
     const toggle = page.locator('[data-theme-toggle]').first()
     await expect(toggle).toHaveCount(1)
-    await toggle.click()
+    for (let attempt = 0; attempt < 4; attempt += 1) {
+      if ((await page.locator('html').getAttribute('data-theme')) === 'dark')
+        break
+      await toggle.click()
+      await page.waitForTimeout(200)
+    }
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')
     await expect(page.locator(region)).toHaveAttribute(
       'data-universe-enhancement',
@@ -356,17 +363,15 @@ test.describe('RU-2 Home universe', () => {
   }) => {
     // Abort the lazily-imported graphics chunks: the semantic presentation must
     // survive without reload, without a canvas, and without claiming success.
-    await page.route(
-      /home-scene|enhancement|three|labels|leaders|layout/,
-      (route) => route.abort(),
-    )
+    // Abort ONLY the scene chunks: the enhancement module must load and take its
+    // documented fallback path, which is what keeps the semantic HTML working when
+    // WebGL cannot start. Aborting the enhancement too would test nothing.
+    await page.route(/(home-scene|about-scene)\./, (route) => route.abort())
     await page.goto(HOME)
-    const enhancement = await page
-      .locator(region)
-      .getAttribute('data-universe-enhancement')
-    // Aborting the graphics chunks means the enhancement module itself may never
-    // run, in which case no state is claimed at all — never 'enhanced'.
-    expect(['fallback', 'idle', null]).toContain(enhancement)
+    await expect(page.locator(region)).toHaveAttribute(
+      'data-universe-enhancement',
+      'fallback',
+    )
     await expect(page.locator(canvas)).toBeHidden()
     await expect(page.locator('[data-universe-node]')).toHaveCount(4)
     await expect(page.locator('[data-universe-edge] button')).toHaveCount(3)

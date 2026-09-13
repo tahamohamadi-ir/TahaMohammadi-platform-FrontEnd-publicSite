@@ -63,6 +63,16 @@ export interface AboutControlsHandle {
   dispose(): void
 }
 
+/** Elements that own their pointer interaction and must never start a scene drag. */
+const INTERACTIVE_SELECTOR =
+  'button, a[href], summary, input, select, textarea, label, [role="button"], [role="link"], [data-universe-action]'
+
+function isInteractiveTarget(target: EventTarget | null): boolean {
+  if (typeof Element === 'undefined' || !(target instanceof Element))
+    return false
+  return target.closest(INTERACTIVE_SELECTOR) != null
+}
+
 /** Radians of rotation per CSS pixel of drag. */
 const ROTATE_PER_PX = 0.006
 /** Wheel sensitivity; one notch is a ~12% distance change. */
@@ -92,6 +102,12 @@ export function createAboutControls(
 
   function onPointerDown(event: PointerEvent) {
     if (event.button !== 0 && event.pointerType === 'mouse') return
+    // Native controls inside the stage own their own clicks. Capturing the pointer
+    // here retargets every later pointer event to the stage, so the browser
+    // dispatches `click` to the STAGE rather than to the button and every in-stage
+    // control (zoom, focus, reset, clear) is dead to mouse input while still
+    // working from the keyboard. Only a bare surface may start a drag.
+    if (isInteractiveTarget(event.target)) return
     const point = localPoint(event)
     dragStart = point
     lastPoint = point

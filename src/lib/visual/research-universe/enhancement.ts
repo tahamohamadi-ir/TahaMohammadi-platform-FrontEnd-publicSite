@@ -457,8 +457,12 @@ export async function enhanceUniverseRegion(
       const details = element.matches('details')
         ? (element as HTMLDetailsElement)
         : element.querySelector<HTMLDetailsElement>('details')
+      // Selection opens the panel; the CLOSED state belongs to the native
+      // disclosure. Forcing it closed here fought the keyboard contract CA-03/CA-05
+      // assert ("native node selection toggles without scripts"), because every
+      // sync while nothing was selected re-closed the panel the user had just
+      // opened with Enter.
       if (details && isSelected) details.open = true
-      else if (details && selectedNodeId == null) details.open = false
       const summary =
         element.querySelector('summary') ?? element.querySelector('button')
       if (summary)

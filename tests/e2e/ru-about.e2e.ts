@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test'
+import type { Page } from '@playwright/test'
 
 /**
  * RU-2 — About browser coverage for the fully interactive Research Universe.
@@ -6,10 +7,15 @@ import { expect, test } from '@playwright/test'
  * Same fixture contract as `ru-home.e2e.ts`: the published graph and resolver are
  * served by the E2E API fixture, so these assertions run against a READY graph.
  *
- * Orientation, zoom and selection are all observed through the DOM the product
- * already publishes — projected label coordinates, `data-universe-*` state, and
- * the factual panels — so no debug hook is added to production code and no
- * assertion depends on a screenshot guess.
+ * Orientation, zoom and selection are observed through the DOM the product already
+ * publishes — projected label coordinates, `data-universe-*` state, and the factual
+ * panels — so no debug hook is added to production code and no assertion depends on
+ * a screenshot guess.
+ *
+ * The stage sits below the fold on this page, so every test scrolls it into view
+ * before using viewport coordinates. Without that, `page.mouse` coordinates fall
+ * outside the viewport and no pointer event is delivered at all — which silently
+ * makes an interaction test pass or fail for the wrong reason.
  */
 
 const ABOUT = '/en/about/'
@@ -18,7 +24,27 @@ const region = '[data-universe-region][data-universe-mode="about"]'
 const canvas = `${region} canvas[data-universe-canvas]`
 const stage = `${region} [data-universe-scene]`
 
-function labelPositions(page: import('@playwright/test').Page) {
+/** Navigate, wait for the real scene, and put the interactive area on screen. */
+async function openAbout(page: Page): Promise<void> {
+  await page.goto(ABOUT)
+  await expect(page.locator(region)).toHaveAttribute(
+    'data-universe-enhancement',
+    'enhanced',
+  )
+  await page.locator(stage).scrollIntoViewIfNeeded()
+  await page.waitForTimeout(450)
+}
+
+/** Centre of the interactive stage, in viewport coordinates. */
+async function stageCentre(page: Page): Promise<{ x: number; y: number }> {
+  const box = await page.locator(stage).boundingBox()
+  return {
+    x: (box?.x ?? 0) + (box?.width ?? 0) / 2,
+    y: (box?.y ?? 0) + (box?.height ?? 0) / 2,
+  }
+}
+
+function labelPositions(page: Page) {
   return page.evaluate(() =>
     Array.from(document.querySelectorAll('.ru-label'))
       .filter((element) => !(element as HTMLElement).hidden)
@@ -30,7 +56,7 @@ function labelPositions(page: import('@playwright/test').Page) {
 }
 
 /** Mean pairwise spread of the visible labels: grows with zoom-in, shrinks out. */
-async function labelSpread(page: import('@playwright/test').Page) {
+async function labelSpread(page: Page) {
   return page.evaluate(() => {
     const points = Array.from(document.querySelectorAll('.ru-label'))
       .filter((element) => !(element as HTMLElement).hidden)
@@ -58,16 +84,9 @@ async function labelSpread(page: import('@playwright/test').Page) {
   })
 }
 
-async function wheel(
-  page: import('@playwright/test').Page,
-  deltaY: number,
-  times = 1,
-) {
-  const box = await page.locator(stage).boundingBox()
-  await page.mouse.move(
-    (box?.x ?? 0) + (box?.width ?? 0) / 2,
-    (box?.y ?? 0) + (box?.height ?? 0) / 2,
-  )
+async function wheel(page: Page, deltaY: number, times = 1) {
+  const centre = await stageCentre(page)
+  await page.mouse.move(centre.x, centre.y)
   for (let index = 0; index < times; index += 1) {
     await page.mouse.wheel(0, deltaY)
     await page.waitForTimeout(60)
@@ -75,49 +94,84 @@ async function wheel(
   await page.waitForTimeout(250)
 }
 
+async function drag(page: Page, dx: number, dy: number) {
+  const centre = await stageCentre(page)
+  await page.mouse.move(centre.x, centre.y)
+  await page.mouse.down()
+  const steps = 10
+  for (let step = 1; step <= steps; step += 1) {
+    await page.mouse.move(
+      centre.x + (dx * step) / steps,
+      centre.y + (dy * step) / steps,
+    )
+    await page.waitForTimeout(8)
+  }
+  await page.mouse.up()
+  await page.waitForTimeout(400)
+}
+
 test.describe('RU-2 About universe', () => {
   test.beforeEach(async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 })
+    // Objective draw counter: patching the WebGL prototypes is the only way to
+    // measure "the scene went quiet" without adding a hook to product code.
+    await page.addInitScript(() => {
+      const probe = { value: 0 }
+      ;(window as unknown as { __ruDraws?: { value: number } }).__ruDraws =
+        probe
+      const bump = () => {
+        probe.value += 1
+      }
+      for (const name of [
+        'WebGLRenderingContext',
+        'WebGL2RenderingContext',
+      ] as const) {
+        const ctor = (
+          window as unknown as Record<string, { prototype?: unknown }>
+        )[name]
+        const proto = ctor?.prototype as
+          | {
+              drawArrays?: (...args: unknown[]) => unknown
+              drawElements?: (...args: unknown[]) => unknown
+            }
+          | undefined
+        if (!proto?.drawArrays || !proto.drawElements) continue
+        const originalArrays = proto.drawArrays
+        const originalElements = proto.drawElements
+        proto.drawArrays = function (this: unknown, ...args: unknown[]) {
+          bump()
+          return originalArrays.apply(this, args)
+        }
+        proto.drawElements = function (this: unknown, ...args: unknown[]) {
+          bump()
+          return originalElements.apply(this, args)
+        }
+      }
+    })
   })
 
   test('1+2. the scene loads with exactly one active canvas', async ({
     page,
   }) => {
-    await page.goto(ABOUT)
+    await openAbout(page)
     await expect(page.locator(region)).toHaveAttribute(
       'data-graph-status',
       'ready',
     )
     expect(await page.locator('canvas').count()).toBe(1)
-    await expect(page.locator(region)).toHaveAttribute(
-      'data-universe-enhancement',
-      'enhanced',
-    )
     await expect(page.locator(canvas)).toBeVisible()
     const box = await page.locator(canvas).boundingBox()
-    // The brief's 70–85vh interactive area.
+    // The brief's 70-85vh interactive area.
     expect(box?.height ?? 0).toBeGreaterThan(400)
     expect(await labelPositions(page)).toHaveLength(4)
   })
 
   test('3. pointer drag changes the scene orientation', async ({ page }) => {
-    await page.goto(ABOUT)
-    await expect(page.locator(region)).toHaveAttribute(
-      'data-universe-enhancement',
-      'enhanced',
-    )
+    await openAbout(page)
     const before = await labelPositions(page)
-    const box = await page.locator(stage).boundingBox()
-    const centerX = (box?.x ?? 0) + (box?.width ?? 0) / 2
-    const centerY = (box?.y ?? 0) + (box?.height ?? 0) / 2
-
-    await page.mouse.move(centerX, centerY)
-    await page.mouse.down()
-    await page.mouse.move(centerX + 160, centerY + 40, { steps: 12 })
-    await page.mouse.up()
-    await page.waitForTimeout(300)
-
+    await drag(page, 180, 45)
     const after = await labelPositions(page)
+
     expect(after.join('|')).not.toBe(before.join('|'))
     // The constellation itself is NOT scaled, rotated or transformed in the DOM:
     // the change came from the camera.
@@ -127,38 +181,31 @@ test.describe('RU-2 About universe', () => {
       canvas,
     )
     expect(['none', 'matrix(1, 0, 0, 1, 0, 0)']).toContain(transform)
+    // And the canvas is still the only one.
+    expect(await page.locator('canvas').count()).toBe(1)
   })
 
   test('3b. a drag does not double as a selection', async ({ page }) => {
-    await page.goto(ABOUT)
-    await expect(page.locator(region)).toHaveAttribute(
-      'data-universe-enhancement',
-      'enhanced',
-    )
+    await openAbout(page)
     await expect(page.locator(region)).toHaveAttribute(
       'data-universe-selection',
       'false',
     )
-    const box = await page.locator(stage).boundingBox()
-    const centerX = (box?.x ?? 0) + (box?.width ?? 0) / 2
-    const centerY = (box?.y ?? 0) + (box?.height ?? 0) / 2
-    await page.mouse.move(centerX, centerY)
-    await page.mouse.down()
-    await page.mouse.move(centerX + 140, centerY, { steps: 10 })
-    await page.mouse.up()
-    await page.waitForTimeout(250)
+    await drag(page, 150, 0)
     await expect(page.locator(region)).toHaveAttribute(
       'data-universe-selection',
       'false',
     )
+    // A drag moved the camera, so the pose must differ from the canonical one.
+    const moved = await labelPositions(page)
+    await page.locator(`${region} [data-universe-action="reset"]`).click()
+    await page.waitForTimeout(700)
+    expect((await labelPositions(page)).join('|')).not.toBe(moved.join('|'))
   })
 
   test('4. zoom is constrained to its bounds', async ({ page }) => {
-    await page.goto(ABOUT)
-    await expect(page.locator(region)).toHaveAttribute(
-      'data-universe-enhancement',
-      'enhanced',
-    )
+    await openAbout(page)
+    const scrollBefore = await page.evaluate(() => window.scrollY)
     // Zoom in far past the clamp, then again: the spread must stop changing.
     await wheel(page, -240, 10)
     const saturated = await labelSpread(page)
@@ -166,7 +213,10 @@ test.describe('RU-2 About universe', () => {
     const stillSaturated = await labelSpread(page)
     expect(Math.abs(stillSaturated - saturated)).toBeLessThan(6)
 
-    // And the same in the other direction.
+    // The wheel belongs to the universe: the page must not scroll with it.
+    expect(await page.evaluate(() => window.scrollY)).toBe(scrollBefore)
+
+    // And the same bound in the other direction.
     await wheel(page, 240, 20)
     const far = await labelSpread(page)
     await wheel(page, 240, 6)
@@ -176,25 +226,15 @@ test.describe('RU-2 About universe', () => {
   })
 
   test('5. reset restores the canonical view', async ({ page }) => {
-    await page.goto(ABOUT)
-    await expect(page.locator(region)).toHaveAttribute(
-      'data-universe-enhancement',
-      'enhanced',
-    )
+    await openAbout(page)
     const canonical = await labelPositions(page)
-    const box = await page.locator(stage).boundingBox()
-    const centerX = (box?.x ?? 0) + (box?.width ?? 0) / 2
-    const centerY = (box?.y ?? 0) + (box?.height ?? 0) / 2
-    await page.mouse.move(centerX, centerY)
-    await page.mouse.down()
-    await page.mouse.move(centerX + 180, centerY + 60, { steps: 10 })
-    await page.mouse.up()
+    await drag(page, 180, 60)
     await wheel(page, -240, 5)
     const moved = await labelPositions(page)
     expect(moved.join('|')).not.toBe(canonical.join('|'))
 
     await page.locator(`${region} [data-universe-action="reset"]`).click()
-    await page.waitForTimeout(700)
+    await page.waitForTimeout(800)
     const restored = await labelPositions(page)
     // Compared per label id: the chip identity is stable, so this proves each node
     // returned to its canonical position rather than comparing sorted strings.
@@ -221,48 +261,72 @@ test.describe('RU-2 About universe', () => {
   test('6+7. node selection drives the semantic panels with published facts', async ({
     page,
   }) => {
-    await page.goto(ABOUT)
-    await expect(page.locator(region)).toHaveAttribute(
-      'data-universe-enhancement',
-      'enhanced',
+    await openAbout(page)
+    // A leaf topic is selected: the centre is incident to every node, so selecting
+    // it would legitimately dim nothing and prove less. Published `research-topic`
+    // nodes classify as level-1 `domain`, which is what the DOM publishes.
+    const topic = page.locator(
+      '[data-universe-node][data-universe-kind="domain"]',
     )
-    // Selecting through the native control, i.e. the keyboard-equivalent path.
-    const firstNode = page.locator('[data-universe-node]').first()
-    const label = await firstNode.getAttribute('data-universe-label')
-    await firstNode.locator('summary').click()
+    expect(await topic.count()).toBe(3)
+    const node = topic.last()
+    const label = await node.getAttribute('data-universe-label')
+    expect(label).not.toBeNull()
+
+    await node.locator('summary').click()
     await expect(page.locator(region)).toHaveAttribute(
       'data-universe-selection',
       'true',
     )
-    await expect(firstNode).toHaveAttribute('data-selected', 'true')
+    await expect(node).toHaveAttribute('data-selected', 'true')
     const panel = page.locator('[data-universe-node-panel]')
     await expect(panel).toHaveAttribute('data-has-selection', 'true')
     await expect(
       panel.locator('[data-universe-node-detail][data-active="true"]'),
     ).toContainText(label ?? '')
-    // Other nodes dim, and their detail blocks stay hidden.
-    const dimmed = await page
-      .locator('[data-universe-node][data-dimmed="true"]')
-      .count()
-    expect(dimmed).toBeGreaterThan(0)
+
+    // Its two sibling topics dim; the centre stays lit because it is incident.
+    const dimmed = page.locator('[data-universe-node][data-dimmed="true"]')
+    await expect(dimmed).toHaveCount(2)
+    await expect(
+      page.locator(
+        '[data-universe-node][data-universe-kind="person"][data-dimmed="true"]',
+      ),
+    ).toHaveCount(0)
   })
 
   test('8. the central nucleus resolves to the published identity record', async ({
     page,
   }) => {
-    await page.goto(ABOUT)
-    await expect(page.locator(region)).toHaveAttribute(
-      'data-universe-enhancement',
-      'enhanced',
+    await openAbout(page)
+    // Click the nucleus where it actually projects: the projector publishes the
+    // node's own coordinates on its label chip.
+    const target = await page.evaluate(
+      (selectors) => {
+        const label = document.querySelector(
+          `${selectors.region} .ru-label[data-projected-label="identity"]`,
+        ) as HTMLElement | null
+        const element = document.querySelector(selectors.stage)
+        if (!label || !element) return null
+        const box = element.getBoundingClientRect()
+        return {
+          x: box.left + Number.parseFloat(label.style.left),
+          y: box.top + Number.parseFloat(label.style.top),
+        }
+      },
+      { region, stage },
     )
-    // The nucleus sits at the centre of the view; clicking it must select the
-    // identity node, not a generic node.
-    const box = await page.locator(stage).boundingBox()
-    await page.mouse.click(
-      (box?.x ?? 0) + (box?.width ?? 0) / 2,
-      (box?.y ?? 0) + (box?.height ?? 0) / 2,
-    )
-    await page.waitForTimeout(250)
+    expect(target).not.toBeNull()
+
+    // Prove the click landed on the canvas, not on some overlay.
+    const probed = await page.evaluate((point) => {
+      const hit = document.elementFromPoint(point.x, point.y)
+      return hit ? `${hit.tagName.toLowerCase()}.${hit.className}` : null
+    }, target!)
+    expect(probed).toContain('canvas')
+
+    await page.mouse.click(target!.x, target!.y)
+    await page.waitForTimeout(350)
     await expect(page.locator(region)).toHaveAttribute(
       'data-universe-selection',
       'true',
@@ -273,20 +337,21 @@ test.describe('RU-2 About universe', () => {
     await expect(active).toContainText('Taha Mohammadi')
     // Its published related record is the profile, so the About route is offered.
     await expect(active.locator('a[href="/en/about/"]')).toHaveCount(1)
-    // The same node is selected in the semantic list, so both models agree.
+    // Exactly one identity is selectable: no duplicate generic node at the centre.
     await expect(
       page.locator('[data-universe-node][data-selected="true"]'),
+    ).toHaveCount(1)
+    await expect(
+      page.locator(
+        '[data-universe-node][data-universe-kind="person"][data-selected="true"]',
+      ),
     ).toHaveCount(1)
   })
 
   test('9+10+11. relationship selection reports real endpoints only', async ({
     page,
   }) => {
-    await page.goto(ABOUT)
-    await expect(page.locator(region)).toHaveAttribute(
-      'data-universe-enhancement',
-      'enhanced',
-    )
+    await openAbout(page)
     const edge = page.locator('[data-universe-edge]').first()
     const source = await edge.getAttribute('data-source')
     const target = await edge.getAttribute('data-target')
@@ -307,58 +372,46 @@ test.describe('RU-2 About universe', () => {
     const text = (await detail.innerText()).trim()
     expect(text.length).toBeGreaterThan(0)
 
-    // Both endpoints are published node labels, and the relation type is shown.
-    const labels = await page.evaluate(() =>
+    // Both endpoints are published node ids in the rendered graph.
+    const nodeIds = await page.evaluate(() =>
       Array.from(document.querySelectorAll('[data-universe-node]')).map(
-        (element) => element.getAttribute('data-universe-label'),
+        (element) => element.getAttribute('data-universe-node'),
       ),
     )
-    expect(source).not.toBeNull()
-    expect(target).not.toBeNull()
-    expect(labels.length).toBe(4)
+    expect(nodeIds).toHaveLength(4)
+    expect(nodeIds).toContain(source)
+    expect(nodeIds).toContain(target)
 
     // The published payload carries no explanation for these relationships, so the
     // panel must not invent one.
-    const explanations = await page.evaluate(
-      () =>
-        Array.from(
-          document.querySelectorAll(
-            '[data-universe-edge-detail] .ru-panel__summary',
-          ),
-        ).length,
-    )
-    expect(explanations).toBe(0)
+    expect(
+      await page
+        .locator('[data-universe-edge-detail] .ru-panel__summary')
+        .count(),
+    ).toBe(0)
     await expect(detail).toContainText('research focus')
   })
 
   test('12. the theme can switch while the scene is live', async ({ page }) => {
-    await page.goto(ABOUT)
+    await page.emulateMedia({ colorScheme: 'dark' })
+    await openAbout(page)
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')
+    const before = await labelPositions(page)
+    await page.emulateMedia({ colorScheme: 'light' })
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'light')
     await expect(page.locator(region)).toHaveAttribute(
       'data-universe-enhancement',
       'enhanced',
     )
-    const toggle = page.locator('[data-theme-toggle]').first()
-    if ((await toggle.count()) > 0) {
-      const before = await labelPositions(page)
-      await toggle.click()
-      await expect(page.locator(region)).toHaveAttribute(
-        'data-universe-enhancement',
-        'enhanced',
-      )
-      // Same pose, one canvas, no reload.
-      expect(await page.locator('canvas').count()).toBe(1)
-      expect((await labelPositions(page)).join('|')).toBe(before.join('|'))
-    }
+    // Same pose, one canvas, no reload.
+    expect(await page.locator('canvas').count()).toBe(1)
+    expect((await labelPositions(page)).join('|')).toBe(before.join('|'))
   })
 
   test('13. context loss degrades safely and keeps the semantics', async ({
     page,
   }) => {
-    await page.goto(ABOUT)
-    await expect(page.locator(region)).toHaveAttribute(
-      'data-universe-enhancement',
-      'enhanced',
-    )
+    await openAbout(page)
     await page.evaluate((selector) => {
       const element = document.querySelector(selector) as HTMLCanvasElement
       element.dispatchEvent(new Event('webglcontextlost', { cancelable: true }))
@@ -384,12 +437,7 @@ test.describe('RU-2 About universe', () => {
   test('14. keyboard semantics work without touching the canvas', async ({
     page,
   }) => {
-    await page.goto(ABOUT)
-    await expect(page.locator(region)).toHaveAttribute(
-      'data-universe-enhancement',
-      'enhanced',
-    )
-    // Focus the native disclosure and open it with the keyboard only.
+    await openAbout(page)
     const summary = page.locator('[data-universe-node] summary').first()
     await summary.focus()
     await expect(summary).toBeFocused()
@@ -409,13 +457,14 @@ test.describe('RU-2 About universe', () => {
     await expect(summary).toBeFocused()
 
     // The canvas itself is never a tab stop.
-    const tabbableCanvas = await page.evaluate(
-      () =>
-        Array.from(document.querySelectorAll('canvas')).filter(
-          (element) => (element as HTMLElement).tabIndex >= 0,
-        ).length,
-    )
-    expect(tabbableCanvas).toBe(0)
+    expect(
+      await page.evaluate(
+        () =>
+          Array.from(document.querySelectorAll('canvas')).filter(
+            (element) => (element as HTMLElement).tabIndex >= 0,
+          ).length,
+      ),
+    ).toBe(0)
   })
 
   test('15. mobile keeps the interactive universe usable', async ({ page }) => {
@@ -425,12 +474,22 @@ test.describe('RU-2 About universe', () => {
       'data-universe-enhancement',
       'enhanced',
     )
+    await page.locator(stage).scrollIntoViewIfNeeded()
+    await page.waitForTimeout(450)
     const metrics = await page.evaluate((selector) => {
       const element = document.querySelector(selector) as HTMLCanvasElement
       return { width: element.width, clientWidth: element.clientWidth }
     }, canvas)
     // Mobile DPR ceiling of 1.0.
     expect(metrics.width).toBeLessThanOrEqual(metrics.clientWidth)
+    expect(metrics.clientWidth).toBeLessThan(768)
+    // The universe is still interactive by real pointer input at this width.
+    await drag(page, 90, 30)
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= window.innerWidth,
+      ),
+    ).toBe(true)
     // Controls stay reachable and the facts stay readable.
     await expect(
       page.locator(`${region} [data-universe-action="reset"]`),
@@ -440,13 +499,6 @@ test.describe('RU-2 About universe', () => {
       'data-universe-selection',
       'true',
     )
-    await expect
-      .poll(() =>
-        page.evaluate(
-          () => document.documentElement.scrollWidth <= window.innerWidth,
-        ),
-      )
-      .toBe(true)
   })
 
   test('16. prefers-reduced-motion stays usable', async ({ page }) => {
@@ -468,5 +520,26 @@ test.describe('RU-2 About universe', () => {
       'data-universe-enhancement',
       'enhanced',
     )
+  })
+
+  test('17. no render loop survives the interaction', async ({ page }) => {
+    await openAbout(page)
+    await drag(page, 160, 40)
+    await wheel(page, -240, 4)
+    await page.locator(`${region} [data-universe-action="reset"]`).click()
+    // Let any finite transition settle, then require the scene to go quiet.
+    await page.waitForTimeout(1200)
+    await page.evaluate(() => {
+      const probe = (window as unknown as { __ruDraws?: { value: number } })
+        .__ruDraws
+      if (probe) probe.value = 0
+    })
+    await page.waitForTimeout(1200)
+    const idleDraws = await page.evaluate(
+      () =>
+        (window as unknown as { __ruDraws?: { value: number } }).__ruDraws
+          ?.value ?? -1,
+    )
+    expect(idleDraws).toBe(0)
   })
 })
