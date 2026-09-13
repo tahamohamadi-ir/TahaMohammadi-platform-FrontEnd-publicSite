@@ -1,39 +1,27 @@
-import { createServer } from 'node:net'
-import type { AddressInfo } from 'node:net'
 import { defineConfig } from '@playwright/test'
+import {
+  LOOPBACK_HOST,
+  resolveSafePort,
+} from './src/test-harness/playwright-port'
 
 const PORT_ENV = 'TM_E2E_PORT'
 
 /**
- * Resolve one ephemeral free port per run so the harness never depends on a
+ * Resolve one Chromium-safe free port per run so the harness never depends on a
  * fixed, possibly busy port and never attaches to another worktree's server.
+ *
+ * The selection lives in `src/test-harness/playwright-port.ts` because the
+ * operating system's own ephemeral allocation can return a port Chromium
+ * refuses (`net::ERR_UNSAFE_PORT`) — see that module for the measured evidence.
  *
  * Playwright re-imports this config in every worker process, so the runner
  * publishes the resolved port through the process environment; workers
  * inherit it and evaluate to the same baseURL and webServer port.
  */
-async function resolveRunPort(): Promise<number> {
-  const published = process.env[PORT_ENV]
-  if (published && /^\d+$/.test(published)) {
-    return Number(published)
-  }
+const port = await resolveSafePort({ override: process.env[PORT_ENV] })
+process.env[PORT_ENV] = String(port)
 
-  const port = await new Promise<number>((resolve, reject) => {
-    const probe = createServer()
-    probe.unref()
-    probe.once('error', reject)
-    probe.listen(0, '127.0.0.1', () => {
-      const { port: freePort } = probe.address() as AddressInfo
-      probe.close((error) => (error ? reject(error) : resolve(freePort)))
-    })
-  })
-
-  process.env[PORT_ENV] = String(port)
-  return port
-}
-
-const port = await resolveRunPort()
-const baseURL = `http://127.0.0.1:${port}`
+const baseURL = `http://${LOOPBACK_HOST}:${port}`
 
 export default defineConfig({
   testDir: './tests/e2e',
