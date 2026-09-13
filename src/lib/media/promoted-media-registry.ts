@@ -27,7 +27,7 @@ export interface PromotedAssetRecord {
   approval: {
     ledgerId: string
     decision: string
-    decisionDate: '2026-08-29' | '2026-08-30'
+    decisionDate: '2026-08-29' | '2026-08-30' | '2026-09-12'
   }
   semantics: AltPolicy
   placement: {
@@ -108,6 +108,58 @@ export const PROMOTED_ASSET_REGISTRY: Record<
       fetchPriority: 'high',
     },
     assetFile: 'art/portal-centered-light.png',
+  },
+  'portal-world-dark': {
+    id: 'portal-world-dark',
+    authorityPath: 'art/portal-world-dark.png',
+    sourceSha256: AUTHORITY_CHECKSUMS['portal-world-dark'],
+    intrinsic: { width: 1920, height: 1080 },
+    approval: {
+      ledgerId: ledger('portal-world-dark'),
+      decision: 'owner-directed-pw12-fallback-parity',
+      decisionDate: '2026-09-12',
+    },
+    semantics: decorative,
+    placement: {
+      slot: 'gateway.atmosphere',
+      theme: 'dark',
+      locales: ['fa', 'en'],
+    },
+    transform: {
+      ...getTransformRecipe('gateway.atmosphere'),
+      formats: ['avif', 'webp'],
+      fit: 'cover',
+      focalByLocale: {},
+      loading: 'eager',
+      fetchPriority: 'high',
+    },
+    assetFile: 'art/portal-world-dark.png',
+  },
+  'portal-world-light': {
+    id: 'portal-world-light',
+    authorityPath: 'art/portal-world-light.png',
+    sourceSha256: AUTHORITY_CHECKSUMS['portal-world-light'],
+    intrinsic: { width: 1920, height: 1080 },
+    approval: {
+      ledgerId: ledger('portal-world-light'),
+      decision: 'owner-directed-pw12-fallback-parity',
+      decisionDate: '2026-09-12',
+    },
+    semantics: decorative,
+    placement: {
+      slot: 'gateway.atmosphere',
+      theme: 'light',
+      locales: ['fa', 'en'],
+    },
+    transform: {
+      ...getTransformRecipe('gateway.atmosphere'),
+      formats: ['avif', 'webp'],
+      fit: 'cover',
+      focalByLocale: {},
+      loading: 'eager',
+      fetchPriority: 'high',
+    },
+    assetFile: 'art/portal-world-light.png',
   },
   'portal-orbit-dark': {
     id: 'portal-orbit-dark',

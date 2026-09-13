@@ -1,75 +1,104 @@
-/* Language gateway — WP-40 reconstruction.
-   Concept: language-gateway (brand first, portal graphic below, orbital glow).
-   Tokens only; no page-specific palette or spacing values.
-   CA-07 — procedural portal canvas overlays the reserved portal slot
-   (aspect-ratio keeps its size before load); brand, heading, and language
-   links never wait for the scene. */
+/* Language gateway — PW-01.1 full-viewport environment.
+   The Three.js portal world owns the viewport; brand, heading, language
+   links and the theme control float over the same world as real HTML.
+   Layers: 0 page background + raster fallback · 1 canvas · 2 atmosphere
+   overlays · 3 brand/identity · 4 language controls · 5 theme control.
+   No rectangular canvas boundary, no masked hero slot. */
 
 .gw {
   position: relative;
   isolation: isolate;
   min-height: 100svh;
-  display: grid;
-  grid-template-rows: auto auto auto;
-  padding: var(--space-5) var(--space-6) var(--space-8);
   text-align: center;
-  gap: 0;
-  align-content: center;
-  background: var(--color-canvas);
+  /* Must match the WebGL world background (theme spec) so the world, the
+     raster fallback, and first paint share one continuous environment. */
+  background: #071225;
 }
 
+html[data-theme='light'] .gw {
+  background: #f5f0e3;
+}
+
+@media (prefers-color-scheme: light) {
+  html:not([data-theme]) .gw {
+    background: #f5f0e3;
+  }
+}
+
+/* LAYER 2 — global atmosphere overlays: a full-viewport world tint and a
+   soft lower anchor so the language controls sit inside the environment. */
 .gw__scrim {
   position: fixed;
   inset: 0;
-  z-index: 0;
+  z-index: 1;
   pointer-events: none;
   background: radial-gradient(
     circle at 50% 42%,
-    color-mix(in srgb, var(--color-brand) 10%, transparent) 0%,
-    transparent 58%
+    color-mix(in srgb, var(--color-brand) 8%, transparent) 0%,
+    transparent 60%
   );
 }
 
-.gw__toolbar {
-  position: absolute;
-  z-index: 2;
-  display: flex;
-  justify-content: flex-end;
-  max-inline-size: 72rem;
-  margin-inline: auto;
-  inset-block-start: 1.5rem;
-  inset-inline-end: 2rem;
-  inline-size: auto;
+.gw::after {
+  content: '';
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 1;
+  pointer-events: none;
+  block-size: min(46svh, 30rem);
+  background: linear-gradient(to top, rgba(3, 7, 14, 0.42), transparent);
 }
 
+html[data-theme='light'] .gw::after {
+  background: linear-gradient(to top, rgba(245, 240, 227, 0.55), transparent);
+}
+
+/* LAYER 5 — the theme control floats above the world (no navbar band). */
+.gw__toolbar {
+  position: fixed;
+  z-index: 3;
+  inset-block-start: max(1.25rem, env(safe-area-inset-top, 0px));
+  inset-inline-end: 1.75rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* LAYER 3 — brand and identity above the portal. */
 .gw__hero {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: var(--space-3);
-  padding-block: var(--space-3) 0;
-  max-inline-size: 72rem;
-  margin-inline: auto;
+  gap: var(--space-2);
   inline-size: 100%;
+  max-inline-size: 72rem;
+  margin: 0 auto;
+  /* Keeps the brand mark clear of the diagram's vertical axis node on
+     tablet/portrait aspects (confirmed collision). */
+  padding-block: clamp(2.25rem, 6svh, 4rem) 0;
+  padding-inline: var(--space-4);
 }
 
 .gw__brand {
+  position: relative;
+  z-index: 2;
   display: inline-grid;
   place-items: center;
 }
 
 .gw__mark {
-  inline-size: 3.5rem;
+  inline-size: 3rem;
   block-size: auto;
 }
 
 .gw__title {
+  position: relative;
+  z-index: 2;
   margin: 0;
   font-family: var(--font-display);
-  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-size: clamp(1.9rem, 4.6vw, 3.1rem);
   font-weight: 600;
   line-height: 1.05;
   letter-spacing: -0.02em;
@@ -84,6 +113,8 @@
 }
 
 .gw__roles {
+  position: relative;
+  z-index: 2;
   margin: 0;
   font-family: var(--font-display);
   font-size: clamp(0.75rem, 1.6vw, 0.95rem);
@@ -93,41 +124,54 @@
   letter-spacing: 0.06em;
 }
 
+/* LAYER 0 + 1 — full-viewport world stage: raster fallback below, canvas
+   above. The stage never defines document height and never clips the world
+   into a card; it is the page. */
 .gw__portal {
-  position: relative;
-  overflow: clip;
-  inline-size: min(100%, 58rem);
-  margin-block-start: 0;
-  /* The portal and language controls must share a first viewport even on a
-     short laptop display.  The width stays art-directed; the scene height
-     yields before controls leave the entry composition. */
-  block-size: min(35rem, 48svh, calc(100vw / 1.18));
-  mask-image:
-    linear-gradient(to right, transparent, #000 10%, #000 90%, transparent),
-    linear-gradient(to bottom, #000 0%, #000 88%, transparent 100%);
-  mask-composite: intersect;
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  pointer-events: none;
+  background: inherit;
 }
 
 .gw__portal .theme-picture,
-.gw__portal .theme-picture__mount,
+.gw__portal .theme-picture__mount {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+}
+
 .gw__portal .theme-picture__picture,
+.gw__portal .theme-picture__mount picture,
 .gw__portal noscript .theme-picture__picture,
 .gw__portal .gw__portal-img {
   inline-size: 100%;
   block-size: 100%;
 }
 
-.gw__portal-img {
-  object-fit: contain;
-  object-position: center;
-  filter: drop-shadow(
-    0 0 2rem color-mix(in srgb, var(--color-brand) 28%, transparent)
-  );
+/* Higher specificity than the component-scoped `height: auto`, and
+   absolutely positioned against the stage, so the approved fallback
+   artwork always covers the full viewport. */
+.gw__portal .theme-picture .theme-picture__mount .gw__portal-img,
+.gw__portal .theme-picture noscript .gw__portal-img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+  object-position: center 42%;
 }
 
-/* CA-07 — procedural canvas. Absolute over the reserved slot (no layout
-   shift), never intercepting pointer input; only canvas visibility changes
-   between idle/ready/fallback states. */
+.gw__portal-img {
+  object-fit: cover;
+  object-position: center 42%;
+}
+
 .gw__portal-canvas {
   position: absolute;
   inset: 0;
@@ -146,15 +190,19 @@
   display: none;
 }
 
+/* LAYER 4 — language controls embedded over the lower world. */
 .gw__footer {
-  position: relative;
-  z-index: 1;
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: var(--space-3);
-  margin-block-start: -2rem;
-  padding-block: var(--space-2) var(--space-4);
+  padding-block: var(--space-3)
+    calc(var(--space-5) + env(safe-area-inset-bottom, 0px));
+  padding-inline: var(--space-5);
 }
 
 .gw__prompt {
@@ -164,6 +212,8 @@
   font-weight: 400;
   line-height: 1.4;
   color: var(--color-ink);
+  text-shadow: 0 0 1.5rem
+    color-mix(in srgb, var(--color-canvas) 55%, transparent);
 }
 
 .gw__nav {
@@ -215,53 +265,38 @@
   outline-offset: 3px;
 }
 
-/* 200% zoom / short viewports: keep language affordance above the fold. */
+/* Short viewports / zoom: keep language affordance and composition inside
+   the first viewport; the world still covers everything behind. */
 @media (max-width: 720px), (max-height: 760px) {
-  .gw {
-    gap: var(--space-3);
-    padding-block: var(--space-4) var(--space-6);
-  }
-
   .gw__hero {
-    gap: var(--space-2);
-    padding-block: var(--space-2);
+    gap: var(--space-1);
+    padding-block-start: clamp(1.75rem, 5svh, 3rem);
   }
 
   .gw__mark {
-    inline-size: 2.75rem;
+    inline-size: 2.65rem;
   }
 
   .gw__title {
-    font-size: clamp(1.85rem, 7vw, 2.75rem);
-  }
-
-  .gw__portal {
-    inline-size: min(100%, 46rem);
-    block-size: min(28rem, 44svh, calc(100vw / 1.18));
-    margin-block-start: 0;
+    font-size: clamp(1.6rem, 6vw, 2.4rem);
   }
 
   .gw__footer {
-    gap: var(--space-3);
-    padding-block: var(--space-2) var(--space-3);
+    gap: var(--space-2);
+    padding-block: var(--space-2)
+      calc(var(--space-4) + env(safe-area-inset-bottom, 0px));
   }
 }
 
 @media (max-width: 480px) {
-  .gw {
-    padding-inline: 0;
-    padding-block: 4.5rem 2rem;
-  }
-  .gw__portal {
-    block-size: min(25rem, 42svh, calc(100vw / 1.18));
-  }
-  .gw__footer {
-    margin-block-start: 0;
-    padding-inline: 1.5rem;
-  }
   .gw__toolbar {
-    inset-inline-end: 1.25rem;
+    inset-inline-end: 1.15rem;
   }
+
+  .gw__portal-img {
+    object-position: center 38%;
+  }
+
   .gw__nav {
     flex-direction: column;
     align-items: stretch;

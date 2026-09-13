@@ -32,8 +32,8 @@ describe('page-family empty chrome', () => {
   it('maps hero media from promoted authority assets', () => {
     expect(getPageFamilyHeroMedia('creative')).toEqual({
       kind: 'theme',
-      lightAssetId: 'portal-centered-light',
-      darkAssetId: 'portal-centered-dark',
+      lightAssetId: 'portal-world-light',
+      darkAssetId: 'portal-world-dark',
       mediaSlot: 'gateway.atmosphere',
     })
     expect(getPageFamilyHeroMedia('projects')).toEqual({

@@ -85,6 +85,8 @@ describe('WP-30 promoted media registry', () => {
   it('uses decorative alt="" for atmosphere, rails, graph backplates, and brand favicon', () => {
     for (const id of [
       'portal-centered-light',
+      'portal-world-dark',
+      'portal-world-light',
       'portal-orbit-dark',
       'blog-coral-stairs',
       'learning-sage-library',
@@ -137,6 +139,15 @@ describe('WP-30 promoted media registry', () => {
       expect(PROMOTED_ASSET_REGISTRY[id].intrinsic).toEqual({
         width: 1672,
         height: 941,
+      })
+    }
+    for (const id of [
+      'portal-world-dark',
+      'portal-world-light',
+    ] as const) {
+      expect(PROMOTED_ASSET_REGISTRY[id].intrinsic).toEqual({
+        width: 1920,
+        height: 1080,
       })
     }
     for (const id of [
@@ -210,7 +221,8 @@ describe('WP-30 promoted media registry', () => {
     expect(HOME_RAIL_ASSET_BY_PATH.writing).toBe('blog-coral-stairs')
     expect(HOME_RAIL_ASSET_BY_PATH.teaching).toBe('learning-sage-library')
     expect(HOME_RAIL_ASSET_BY_PATH.creative).toBe('gallery-ivory-forms')
-    expect(GATEWAY_ATMOSPHERE_ASSETS.light).toBe('portal-centered-light')
+    expect(GATEWAY_ATMOSPHERE_ASSETS.light).toBe('portal-world-light')
+    expect(GATEWAY_ATMOSPHERE_ASSETS.dark).toBe('portal-world-dark')
     expect(HOME_HERO_ATMOSPHERE_ASSETS.dark).toBe('portal-orbit-dark')
     expect(HOME_GRAPH_BACKPLATE_ASSETS.light).toBe('home-graph-backplate-light')
     expect(HOME_GRAPH_BACKPLATE_ASSETS.dark).toBe('home-graph-backplate-dark')
@@ -307,6 +319,8 @@ console.log('PRERENDER_SUCCESS:' + media.id);
             {
               'portal-centered-dark.png': { width: 1672, height: 941 },
               'portal-centered-light.png': { width: 1672, height: 941 },
+              'portal-world-dark.png': { width: 1920, height: 1080 },
+              'portal-world-light.png': { width: 1920, height: 1080 },
               'portal-orbit-dark.png': { width: 1672, height: 941 },
               'portal-orbit-light.png': { width: 1672, height: 941 },
               'project-dashboard-systems.png': { width: 1536, height: 1024 },

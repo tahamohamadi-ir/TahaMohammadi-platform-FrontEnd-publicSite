@@ -1,0 +1,97 @@
+import { expect, test, vi } from 'vitest'
+import {
+  PORTAL_ASSETS,
+  PORTAL_COMPOSITION,
+  createPortalScene,
+  portalFrame,
+  portalThemeFromPalette,
+  portalThresholdAnchor,
+  portalWidthFraction,
+} from './portal-scene'
+import type { ScenePalette } from './scene-contract'
+
+const lightPalette: ScenePalette = {
+  canvas: '#f7f8f5',
+  ink: '#182328',
+  brand: '#087c73',
+  signature: '#a77b28',
+  surface: '#ffffff',
+  research: '#6047b8',
+  context: '#137a62',
+}
+
+const darkPalette: ScenePalette = {
+  ...lightPalette,
+  canvas: '#071225',
+  ink: '#f7f3ea',
+  surface: '#0b1630',
+}
+
+test('theme follows the resolved canvas luminance', () => {
+  expect(portalThemeFromPalette(lightPalette)).toBe('light')
+  expect(portalThemeFromPalette(darkPalette)).toBe('dark')
+})
+
+test('composition framing keeps the portal dominant on desktop and crops on mobile', () => {
+  const desktop = portalFrame(16 / 9)
+  // Desktop: portal body occupies ~50% of the frame width (50–62% target),
+  // with the gable apex still inside the top edge.
+  expect(desktop.widthFraction).toBeGreaterThan(0.49)
+  expect(desktop.widthFraction).toBeLessThan(0.62)
+  // Threshold line anchored around two thirds down the viewport.
+  const vFov = (PORTAL_COMPOSITION.verticalFovDeg * Math.PI) / 180
+  const visibleHeightAtPortal = 2 * desktop.distance * Math.tan(vFov / 2)
+  const thresholdFraction = 0.5 + desktop.centerY / visibleHeightAtPortal
+  expect(thresholdFraction).toBeGreaterThan(0.69)
+  expect(thresholdFraction).toBeLessThan(0.76)
+
+  const mobile = portalFrame(390 / 844)
+  // Mobile: portal reaches the frame width while the body stays between
+  // 34% and 40% of the frame height (controls live over the lower world).
+  expect(mobile.widthFraction).toBeGreaterThan(0.9)
+  const mobilePortion =
+    PORTAL_COMPOSITION.top / (2 * mobile.distance * Math.tan(vFov / 2))
+  expect(mobilePortion).toBeGreaterThan(0.3)
+  expect(mobilePortion).toBeLessThanOrEqual(0.41)
+  expect(mobile.distance).toBeGreaterThan(desktop.distance)
+
+  // Ultrawide frames cap the portal height so the brand keeps headroom.
+  const ultrawide = portalFrame(2.4)
+  const ultrawidePortion =
+    PORTAL_COMPOSITION.top / (2 * ultrawide.distance * Math.tan(vFov / 2))
+  expect(ultrawidePortion).toBeLessThanOrEqual(0.705)
+})
+
+test('width fraction grows toward narrow viewports and anchors stay low', () => {
+  expect(portalWidthFraction(2)).toBe(0.52)
+  expect(portalWidthFraction(0.75)).toBeGreaterThan(0.68)
+  expect(portalWidthFraction(0.4)).toBeLessThanOrEqual(0.95)
+  expect(portalWidthFraction(1)).toBeGreaterThan(portalWidthFraction(1.4))
+  expect(portalThresholdAnchor(1.6)).toBeCloseTo(0.72, 2)
+  expect(portalThresholdAnchor(0.46)).toBeGreaterThan(0.73)
+})
+
+test('runtime assets are the frozen PW-1 export files', () => {
+  expect(PORTAL_ASSETS.glb).toBe('/portal/tahamohammadi-portal-v1.4.glb')
+  expect(PORTAL_ASSETS.lightMap).toBe(
+    '/portal/portal_stone_basecolor_light.jpg',
+  )
+})
+
+test('unavailable WebGL reports the error and rejects instead of rendering', async () => {
+  const onError = vi.fn()
+  const canvas = {
+    getContext: () => null,
+    addEventListener() {},
+    removeEventListener() {},
+  } as unknown as HTMLCanvasElement
+  await expect(
+    createPortalScene({
+      canvas,
+      palette: darkPalette,
+      motion: 'reduced',
+      onError,
+    }),
+  ).rejects.toThrow('webgl-unavailable')
+  expect(onError).toHaveBeenCalledWith('webgl-unavailable')
+})

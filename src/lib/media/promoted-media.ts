@@ -6,6 +6,8 @@ import { fileURLToPath } from 'node:url'
 
 import portalCenteredDark from '../../assets/media/art/portal-centered-dark.png'
 import portalCenteredLight from '../../assets/media/art/portal-centered-light.png'
+import portalWorldDark from '../../assets/media/art/portal-world-dark.png'
+import portalWorldLight from '../../assets/media/art/portal-world-light.png'
 import portalOrbitDark from '../../assets/media/art/portal-orbit-dark.png'
 import portalOrbitLight from '../../assets/media/art/portal-orbit-light.png'
 import projectDashboardSystems from '../../assets/media/art/project-dashboard-systems.png'
@@ -67,6 +69,8 @@ const mediaRoot = resolveMediaRoot()
 const SOURCE_IMPORTS: Record<string, ImageMetadata> = {
   'portal-centered-dark': portalCenteredDark,
   'portal-centered-light': portalCenteredLight,
+  'portal-world-dark': portalWorldDark,
+  'portal-world-light': portalWorldLight,
   'portal-orbit-dark': portalOrbitDark,
   'portal-orbit-light': portalOrbitLight,
   'project-dashboard-systems': projectDashboardSystems,

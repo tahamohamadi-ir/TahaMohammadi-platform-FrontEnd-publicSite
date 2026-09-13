@@ -24,8 +24,8 @@ const runtimeMediaRoot = path.join(repositoryRoot, 'src', 'assets', 'media')
 describe('PUBLIC-260 asset promotion group A (decorative atmosphere)', () => {
   it('registers gateway and hero atmosphere assets with decorative alt and atmosphere transforms', () => {
     expect(GATEWAY_ATMOSPHERE_ASSETS).toEqual({
-      light: 'portal-centered-light',
-      dark: 'portal-centered-dark',
+      light: 'portal-world-light',
+      dark: 'portal-world-dark',
     })
     expect(HOME_HERO_ATMOSPHERE_ASSETS).toEqual({
       light: 'portal-orbit-light',

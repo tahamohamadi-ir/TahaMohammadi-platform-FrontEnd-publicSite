@@ -72,8 +72,9 @@ test.describe('CA-07 procedural gateway portal', () => {
   }) => {
     // Abort the lazily-loaded portal chunks: brand, heading, both language
     // links, and the raster fallback must survive with no success status.
-    await page.route(/gateway-scene|gateway-motion|three/, (route) =>
-      route.abort(),
+    await page.route(
+      /portal-scene|gateway-scene|gateway-motion|three/,
+      (route) => route.abort(),
     )
     await page.goto('/')
 
@@ -148,7 +149,9 @@ test.describe('CA-07 procedural gateway portal', () => {
     await page.addInitScript(() => localStorage.setItem('tm-theme', 'dark'))
     await page.goto('/')
     const portal = page.locator('[data-gateway-portal]')
-    await expect(portal).toHaveAttribute('data-gateway-state', 'ready')
+    await expect(portal).toHaveAttribute('data-gateway-state', 'ready', {
+      timeout: 15000,
+    })
     await expect(
       portal.locator('canvas[data-gateway-canvas]:not([hidden])'),
     ).toHaveCount(1)

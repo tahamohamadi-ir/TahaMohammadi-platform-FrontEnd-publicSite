@@ -11,6 +11,10 @@ export const AUTHORITY_CHECKSUMS = {
     'e10ff56456b6d9f7b3596311a378197f3600bee92d0993169216ff4caf3edd50',
   'portal-orbit-light':
     '3e9316a95370a3401da8b3cd7c0007e404fe3bd985aeb70a082e13b7ff1fbf2b',
+  'portal-world-dark':
+    '32a57a81a6649c7a41b1b6b54b58eeacaffd1449da5cdfaa8be95876c143e953',
+  'portal-world-light':
+    '6c293e6320c4d528c14802575c989090341c8ff4f526eb8e2f9c775a41c48690',
   'brand-primary':
     '232276518f4b97351574fdfffc7b230fdd402bb7356c096a3694701959cd5cc8',
   'brand-favicon':
@@ -47,6 +51,8 @@ export type DeferredAssetId = (typeof DEFERRED_ASSET_IDS)[number]
 export const RUNTIME_ASSET_IDS = [
   'portal-centered-dark',
   'portal-centered-light',
+  'portal-world-dark',
+  'portal-world-light',
   'portal-orbit-dark',
   'portal-orbit-light',
   'brand-primary',

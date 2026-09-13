@@ -50,19 +50,46 @@ export function createGatewayMotion(
 
   let currentPreference = motionPreference
   let isDisposed = false
+  // The portal stage is a full-viewport, pointer-transparent layer,
+  // so parallax listens at the window level and measures against the stage.
   const interactionTarget = stage ?? canvas
+  const rectSource = stage ?? canvas
+  const pointerListener: HTMLElement | Window =
+    typeof window !== 'undefined' ? window : canvas
 
   const ctx = gsap.context(() => {}, interactionTarget)
   const mm = gsap.matchMedia()
   let reduceMotion = prefersReduced() || currentPreference !== 'full'
   let finishEntrance: (() => void) | null = null
+  // Wall-clock deadline for the bounded arrival. On very slow renderers
+  // (software GL) GSAP advances with clamped frame deltas, so the 4s tween
+  // can stretch across many frames. A local timeout forces the settled state
+  // at ~4.2s without touching the global GSAP ticker.
+  const ARRIVAL_DEADLINE_MS = 4200
+  let entranceDeadline: number | null = null
+  let entranceTimeline: gsap.core.Timeline | null = null
   const pose = { x: 0, y: 0 }
   const orbit = { phase: 0 }
   function updatePose() {
     scene.setPose(pose.x, pose.y)
     scene.render()
   }
+  function clearEntranceDeadline() {
+    if (entranceDeadline !== null) {
+      window.clearTimeout(entranceDeadline)
+      entranceDeadline = null
+    }
+  }
+  function completeEntrance() {
+    clearEntranceDeadline()
+    entranceTimeline = null
+    const finish = finishEntrance
+    finishEntrance = null
+    finish?.()
+  }
   function stopEntrance() {
+    clearEntranceDeadline()
+    entranceTimeline = null
     for (const tween of ctx.getTweens()) tween.kill()
     finishEntrance?.()
     finishEntrance = null
@@ -99,7 +126,7 @@ export function createGatewayMotion(
       !window.matchMedia('(pointer: fine)').matches
     )
       return
-    const rect = interactionTarget.getBoundingClientRect()
+    const rect = rectSource.getBoundingClientRect()
     if (!rect.width || !rect.height) return
     ctx.add(() =>
       gsap.to(pose, {
@@ -140,6 +167,10 @@ export function createGatewayMotion(
   }
   interactionTarget.addEventListener('pointermove', onPointerMove)
   interactionTarget.addEventListener('pointerleave', onPointerLeave)
+  if (pointerListener !== interactionTarget) {
+    pointerListener.addEventListener('pointermove', onPointerMove as never)
+    pointerListener.addEventListener('pointerleave', onPointerLeave)
+  }
 
   function settleInstantly() {
     scene.setOrbitPhase(1)
@@ -166,10 +197,10 @@ export function createGatewayMotion(
           if (fallbackElement) gsap.set(fallbackElement, { opacity: 0 })
           const timeline = gsap.timeline({
             onComplete: () => {
-              finishEntrance = null
-              resolve()
+              completeEntrance()
             },
           })
+          entranceTimeline = timeline
           // The page settles in 750ms; satellites coast into place for four
           // seconds. No perpetual ticker, and reduced motion settles now.
           timeline.to(
@@ -179,12 +210,24 @@ export function createGatewayMotion(
               duration: 4,
               ease: 'power2.out',
               onUpdate: () => {
+                // setOrbitPhase renders on demand internally.
                 scene.setOrbitPhase(orbit.phase)
-                scene.render()
               },
             },
             0,
           )
+          // Scoped wall-clock bound: if the tween has not finished (slow or
+          // software renderers with clamped GSAP frame deltas), snap the
+          // arrival to its settled final value and stop it.
+          clearEntranceDeadline()
+          entranceDeadline = window.setTimeout(() => {
+            entranceDeadline = null
+            entranceTimeline?.kill()
+            entranceTimeline = null
+            orbit.phase = 1
+            scene.setOrbitPhase(1)
+            completeEntrance()
+          }, ARRIVAL_DEADLINE_MS)
         })
       })
     },
@@ -201,11 +244,17 @@ export function createGatewayMotion(
     dispose() {
       if (isDisposed) return
       isDisposed = true
+      clearEntranceDeadline()
+      entranceTimeline = null
       finishEntrance?.()
       finishEntrance = null
       document.removeEventListener('visibilitychange', onVisibility)
       interactionTarget.removeEventListener('pointermove', onPointerMove)
       interactionTarget.removeEventListener('pointerleave', onPointerLeave)
+      if (pointerListener !== interactionTarget) {
+        pointerListener.removeEventListener('pointermove', onPointerMove as never)
+        pointerListener.removeEventListener('pointerleave', onPointerLeave)
+      }
       mm.revert()
       ctx.revert()
       canvas.style.transform = ''

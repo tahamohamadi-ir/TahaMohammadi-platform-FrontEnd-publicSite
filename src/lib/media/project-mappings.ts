@@ -13,10 +13,14 @@ export const HOME_RAIL_ASSET_BY_PATH = {
   creative: 'gallery-ivory-forms',
 } as const satisfies Record<string, RuntimeAssetId>
 
-/** Gateway atmosphere uses centered portal variants (theme-specific). */
+/**
+ * Gateway atmosphere uses the approved v1.3.1 world renders (fallback parity
+ * with the full-viewport Three.js scene). `portal-centered-*` remain
+ * registered for other consumers/tests.
+ */
 export const GATEWAY_ATMOSPHERE_ASSETS = {
-  light: 'portal-centered-light',
-  dark: 'portal-centered-dark',
+  light: 'portal-world-light',
+  dark: 'portal-world-dark',
 } as const satisfies Record<'light' | 'dark', RuntimeAssetId>
 
 /** Home hero atmosphere uses orbit portal variants (theme-specific). */
