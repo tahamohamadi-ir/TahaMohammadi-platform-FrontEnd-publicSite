@@ -1,4 +1,5 @@
 import { expect, test, type Locator } from '@playwright/test'
+import { GATEWAY_ATMOSPHERE_ASSETS } from '../../src/lib/media/project-mappings'
 
 const ATMOSPHERE_WIDTHS = [320, 390, 768, 1024, 1280, 1440, 1672]
 const PREVIEW_WIDTHS = [320, 480, 640, 800, 1024]
@@ -63,7 +64,10 @@ test.describe('WP-40 theme media selection', () => {
       await expect(mount).toBeVisible()
 
       for (const [slot, variants] of [
-        ['gateway portal', ['portal-centered-light', 'portal-centered-dark']],
+        [
+          'gateway portal',
+          [GATEWAY_ATMOSPHERE_ASSETS.light, GATEWAY_ATMOSPHERE_ASSETS.dark],
+        ],
       ] as const) {
         for (const variant of variants) {
           const downloads = requested.filter((url) => url.includes(variant))
