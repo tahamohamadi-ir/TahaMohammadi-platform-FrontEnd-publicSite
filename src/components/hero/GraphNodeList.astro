@@ -7,15 +7,24 @@
  */
 import type { HeroGraphNode } from '../../lib/hero-graph-content'
 import type { Locale } from '../../lib/navigation'
+import { classifyNodeType } from '../../lib/research-universe/hierarchy'
 
 interface Props {
   locale: Locale
   nodes: HeroGraphNode[]
   selectedId?: string | null
   listLabel: string
+  /** Attribute prefix for the Research Universe wiring (RU-05), if enhanced. */
+  universe?: boolean
 }
 
-const { locale, nodes, selectedId = null, listLabel } = Astro.props
+const {
+  locale,
+  nodes,
+  selectedId = null,
+  listLabel,
+  universe = false,
+} = Astro.props
 
 const relatedLinkLabel =
   locale === 'fa'
@@ -35,6 +44,14 @@ const relatedLinkLabel =
           data-z={String(node.layout.z)}
           data-color-role={node.colorRole}
           data-weight={String(node.weight)}
+          data-universe-node={universe ? node.id : undefined}
+          data-universe-label={universe ? node.label : undefined}
+          data-universe-kind={
+            universe ? classifyNodeType(node.type).kind : undefined
+          }
+          data-universe-level={
+            universe ? String(classifyNodeType(node.type).level) : undefined
+          }
         >
           <details
             class="hg-node__details"

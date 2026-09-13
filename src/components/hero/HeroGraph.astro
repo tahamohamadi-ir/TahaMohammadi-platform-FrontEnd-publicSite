@@ -5,10 +5,23 @@
  * reserved detail area. CA-06 wires the locked scene contract progressively:
  * the canvas stays hidden until the enhancement succeeds; labels remain
  * HTML in every state.
+ *
+ * RU-05 — The same region now hosts the Home presentation of the shared
+ * Research Universe (guided, scroll-driven). The CA-03 semantic contract above
+ * is untouched: the graph facts, the native node list, the relationship index
+ * and the honest states are all still rendered as static HTML. The universe
+ * adds presentation kinds/levels, a guided subset, and the edges-as-controls
+ * relationship model; it never adds or renames a research fact.
  */
 import type { HeroGraphModel } from '../../lib/hero-graph-content'
 import { getHomeResearchContent } from '../../lib/home-content'
 import type { Locale } from '../../lib/navigation'
+import { adaptResearchUniverse } from '../../lib/research-universe/adapter'
+import { selectHomeUniverse } from '../../lib/research-universe/home-preset'
+import {
+  UNIVERSE_MODEL_VERSION,
+  toUniverseRendererPayload,
+} from '../../lib/research-universe/model'
 import {
   SCENE_CONTRACT_VERSION,
   toScenePayload,
@@ -16,6 +29,7 @@ import {
 import ContentState from '../state/ContentState.astro'
 import GraphNodeList from './GraphNodeList.astro'
 import '../../styles/hero-graph.css'
+import '../../styles/research-universe.css'
 
 interface Props {
   locale: Locale
@@ -33,6 +47,11 @@ const copy = {
   },
   edgesHeading: { en: 'Relationships', fa: 'رابطه‌ها' },
   detailHeading: { en: 'Selected node', fa: 'گرهٔ انتخاب‌شده' },
+  edgeHeading: { en: 'Selected relationship', fa: 'رابطهٔ انتخاب‌شده' },
+  edgePrompt: {
+    en: 'Select a relationship to read its type and endpoints.',
+    fa: 'یک رابطه را انتخاب کنید تا نوع و دو سر آن نمایش داده شود.',
+  },
   detailPrompt: {
     en: 'Select a node to read its summary and related records.',
     fa: 'یک گره را انتخاب کنید تا خلاصه و رکوردهای مرتبط آن نمایش داده شود.',
@@ -77,6 +96,29 @@ const scenePayload =
 const scenePayloadJson = scenePayload
   ? JSON.stringify(scenePayload).replace(/</g, '\\u003c')
   : null
+
+// RU-05 — Home presentation of the shared universe: the published facts adapted
+// to presentation kinds/levels, then reduced to the guided subset (the identity
+// anchor plus the main research domains, and only the relationships among them).
+// The anchor resolves from the published identity node, so its label and its
+// About link are published data rather than authored copy.
+const universeModel = adaptResearchUniverse(graph)
+const homeUniverse = selectHomeUniverse(universeModel)
+const universePayloadJson =
+  homeUniverse != null
+    ? // The renderer payload is the same projected shape the server rendered, so
+      // the scene can never draw a node from a different value than its label.
+      JSON.stringify(toUniverseRendererPayload(homeUniverse)).replace(
+        /</g,
+        '\\u003c',
+      )
+    : null
+const universeNodes = homeUniverse?.nodes ?? []
+const universeEdges = homeUniverse?.edges ?? []
+const nodeLabelById = new Map(
+  universeNodes.map((node) => [node.id, node.label]),
+)
+
 const labelById =
   graph.status === 'ready'
     ? new Map(graph.nodes.map((node) => [node.id, node.label]))
@@ -85,15 +127,22 @@ const relatedLinkLabel =
   locale === 'fa'
     ? (family: string, id: string) => `مشاهدهٔ رکورد ${family} (${id})`
     : (family: string, id: string) => `Open ${family} record ${id}`
+const relationHeading = (relationType: string) =>
+  relationType.replace(/-/g, ' ')
 ---
 
 <section
-  class="hg"
+  class="hg ru"
   data-graph-region
   data-graph-status={graph.status}
   data-graph-locale={locale}
   data-scene-contract={SCENE_CONTRACT_VERSION}
   data-hero-enhancement="idle"
+  data-universe-region
+  data-universe-mode="home"
+  data-universe-status={graph.status}
+  data-universe-contract={UNIVERSE_MODEL_VERSION}
+  data-universe-locale={locale}
   aria-labelledby="home-graph-heading"
 >
   <h2 id="home-graph-heading" class="hg__heading">{research.title}</h2>
@@ -101,51 +150,63 @@ const relatedLinkLabel =
   {
     graph.status === 'ready' ? (
       <>
-        <div class="hg-scene" data-graph-scene>
-          <svg
-            class="hg-orbit"
-            viewBox="0 0 320 320"
-            aria-hidden="true"
-            focusable="false"
+        <div class="ru-track" data-universe-track>
+          <div
+            class="hg-scene ru-stage ru-scene"
+            data-graph-scene
+            data-universe-scene
           >
-            <circle
-              cx="160"
-              cy="160"
-              r="118"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1"
-              stroke-dasharray="4 6"
-              opacity="0.28"
+            <svg
+              class="hg-orbit"
+              viewBox="0 0 320 320"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <circle
+                cx="160"
+                cy="160"
+                r="118"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1"
+                stroke-dasharray="4 6"
+                opacity="0.28"
+              />
+              <circle
+                cx="160"
+                cy="160"
+                r="78"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1"
+                stroke-dasharray="4 6"
+                opacity="0.38"
+              />
+              <circle
+                cx="160"
+                cy="160"
+                r="38"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1"
+                stroke-dasharray="4 6"
+                opacity="0.48"
+              />
+            </svg>
+            <canvas
+              class="hg-canvas ru-canvas"
+              data-graph-canvas
+              data-universe-canvas
+              aria-hidden="true"
+              hidden
             />
-            <circle
-              cx="160"
-              cy="160"
-              r="78"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1"
-              stroke-dasharray="4 6"
-              opacity="0.38"
+            <div
+              class="hg-labels ru-labels"
+              data-graph-labels
+              data-universe-labels
+              aria-hidden="true"
             />
-            <circle
-              cx="160"
-              cy="160"
-              r="38"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1"
-              stroke-dasharray="4 6"
-              opacity="0.48"
-            />
-          </svg>
-          <canvas
-            class="hg-canvas"
-            data-graph-canvas
-            aria-hidden="true"
-            hidden
-          />
-          <div class="hg-labels" data-graph-labels aria-hidden="true" />
+          </div>
         </div>
         {scenePayloadJson != null ? (
           <script
@@ -154,37 +215,59 @@ const relatedLinkLabel =
             set:html={scenePayloadJson}
           />
         ) : null}
+        {universePayloadJson != null ? (
+          <script
+            type="application/json"
+            data-universe-payload
+            set:html={universePayloadJson}
+          />
+        ) : null}
 
         <GraphNodeList
           locale={locale}
           nodes={graph.nodes}
           selectedId={selectedId}
           listLabel={text(copy.nodesListLabel)}
+          universe
         />
 
         {graph.edges.length > 0 ? (
-          <div class="hg-edges">
+          <div class="hg-edges ru-edges">
             <h3 class="hg-edges__heading">{text(copy.edgesHeading)}</h3>
-            <ol class="hg-edges__list" data-graph-edges>
+            <ol class="hg-edges__list ru-edges__list" data-graph-edges>
               {graph.edges.map((edge) => (
                 <li
-                  class="hg-edges__item"
+                  class="hg-edges__item ru-edge"
                   data-graph-edge={edge.id}
                   data-source={edge.source}
                   data-target={edge.target}
                   data-directed={String(edge.directed)}
                   data-relation={edge.relationType}
+                  data-universe-edge={edge.id}
+                  data-universe-label={`${labelById.get(edge.source) ?? edge.source} → ${labelById.get(edge.target) ?? edge.target}`}
                 >
-                  <span>{labelById.get(edge.source) ?? edge.source}</span>
-                  <span aria-hidden="true"> → </span>
-                  <span>{labelById.get(edge.target) ?? edge.target}</span>
+                  <button
+                    class="ru-edge__button"
+                    type="button"
+                    aria-pressed="false"
+                    data-universe-edge-control
+                  >
+                    <span>{labelById.get(edge.source) ?? edge.source}</span>
+                    <span aria-hidden="true"> → </span>
+                    <span>{labelById.get(edge.target) ?? edge.target}</span>
+                  </button>
                 </li>
               ))}
             </ol>
           </div>
         ) : null}
 
-        <div class="hg-detail" data-graph-detail aria-live="polite">
+        <div
+          class="hg-detail ru-panel"
+          data-graph-detail
+          data-universe-node-panel
+          aria-live="polite"
+        >
           <h3 class="hg-detail__heading">{text(copy.detailHeading)}</h3>
           <div data-detail-selection hidden={selectedNode == null}>
             {selectedNode != null ? (
@@ -208,13 +291,80 @@ const relatedLinkLabel =
             ) : null}
           </div>
           <p
-            class="hg-detail__prompt"
+            class="hg-detail__prompt ru-panel__prompt"
             data-detail-prompt
+            data-universe-node-prompt
             hidden={selectedNode != null}
           >
             {text(copy.detailPrompt)}
           </p>
+
+          {/* RU-05 — One factual detail block per guided node. Blocks are
+              appended after the seeded selection block so the pre-existing
+              markup contract is preserved exactly; only the selected one is
+              visible, and nothing here is invented: every line is published
+              data already present in the graph payload. */}
+          {universeNodes.map((node) => (
+            <div
+              class="ru-panel__detail"
+              data-universe-node-detail={node.id}
+              hidden={node.id !== selectedId}
+            >
+              <p class="ru-panel__label">{node.label}</p>
+              <p class="ru-panel__meta">
+                {node.kind}
+                {node.classification !== 'type-map'
+                  ? ` · ${node.classification}`
+                  : ''}
+              </p>
+              {node.summary != null ? (
+                <p class="ru-panel__summary">{node.summary}</p>
+              ) : null}
+              {node.related.length > 0 ? (
+                <ul class="ru-panel__links">
+                  {node.related.map((link) => (
+                    <li>
+                      <a class="ru-panel__link" href={link.href}>
+                        {relatedLinkLabel(link.family, link.id)}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+            </div>
+          ))}
         </div>
+
+        {universeEdges.length > 0 ? (
+          <div class="ru-panel" data-universe-edge-panel aria-live="polite">
+            <h3 class="ru-panel__heading">{text(copy.edgeHeading)}</h3>
+            <p class="ru-panel__prompt" data-universe-edge-prompt>
+              {text(copy.edgePrompt)}
+            </p>
+            {universeEdges.map((edge) => (
+              <div
+                class="ru-panel__detail"
+                data-universe-edge-detail={edge.id}
+                hidden
+              >
+                <p class="ru-panel__label">
+                  {nodeLabelById.get(edge.source) ?? edge.source}
+                  <span aria-hidden="true"> → </span>
+                  {nodeLabelById.get(edge.target) ?? edge.target}
+                </p>
+                <p class="ru-panel__meta">
+                  {relationHeading(edge.relationType)}
+                  {edge.directed
+                    ? ` · ${locale === 'fa' ? 'جهت‌دار' : 'directed'}`
+                    : ''}
+                </p>
+                {edge.explanation != null ? (
+                  <p class="ru-panel__summary">{edge.explanation}</p>
+                ) : null}
+              </div>
+            ))}
+          </div>
+        ) : null}
       </>
     ) : graph.status === 'empty' ? (
       <ContentState
@@ -242,11 +392,11 @@ const relatedLinkLabel =
 </section>
 
 <script>
-  // CA-06 — Progressive Home hero enhancement. Semantic HTML renders first;
-  // the Three.js constellation loads lazily only for ready hero regions on
-  // eligible routes. Import failures, unavailable WebGL, and context loss
-  // keep the semantic fallback untouched (see hero-enhancement).
-  import { enhanceHeroRegion } from '../../lib/visual/hero-enhancement'
+  // RU-05 — Progressive Home hero enhancement. Semantic HTML renders first; the
+  // Research Universe loads lazily only for a ready region on an eligible route.
+  // Import failures, unavailable WebGL and context loss keep the semantic
+  // fallback untouched (see research-universe/enhancement).
+  import { enhanceUniverseRegion } from '../../lib/visual/research-universe/enhancement'
 
   function enhanceReadyHeroes() {
     const regions = document.querySelectorAll<HTMLElement>(
@@ -256,9 +406,7 @@ const relatedLinkLabel =
     const first = regions[0]
     if (!first) return
     const run = () => {
-      void enhanceHeroRegion(first, { doc: document, win: window }).catch(
-        () => {},
-      )
+      void enhanceUniverseRegion(first, { mode: 'home' }).catch(() => {})
     }
     const idleWindow = window as unknown as {
       requestIdleCallback?: (

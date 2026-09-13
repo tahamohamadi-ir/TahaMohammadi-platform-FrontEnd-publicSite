@@ -9,6 +9,7 @@ import PageFamilySkillsGridShell from '../page-family/PageFamilySkillsGridShell.
 import PageFamilySelectedOutputsShell from '../page-family/PageFamilySelectedOutputsShell.astro'
 import PageFamilyDownloadListShell from '../page-family/PageFamilyDownloadListShell.astro'
 import PageFamilyCollaborateBandShell from '../page-family/PageFamilyCollaborateBandShell.astro'
+import ResearchUniverse from './ResearchUniverse.astro'
 import ContentState from '../state/ContentState.astro'
 import {
   getAboutUnavailableCopy,
@@ -16,14 +17,25 @@ import {
   type AboutPageModel,
 } from '../../lib/about-profile'
 import { getAboutSubNavLabels } from '../../lib/page-family-empty-chrome'
+import {
+  loadHeroGraph,
+  type HeroGraphModel,
+} from '../../lib/hero-graph-content'
 import { type Locale } from '../../lib/navigation'
 
 interface Props {
   locale: Locale
   model: AboutPageModel
+  /**
+   * Published graph. Optional so a page may supply an already-loaded model;
+   * when omitted this block loads it itself, because the universe is part of the
+   * About narrative rather than an optional decoration.
+   */
+  graph?: HeroGraphModel
 }
 
 const { locale, model } = Astro.props
+const graph: HeroGraphModel = Astro.props.graph ?? (await loadHeroGraph(locale))
 const emptyCopy = getAboutUnavailableCopy(locale)
 const subNavLabels = getAboutSubNavLabels(locale)
 const tabRegion = locale === 'en' ? 'About profile sections' : 'بخش‌های پروفایل'
@@ -88,6 +100,8 @@ const sectionLabels =
       />
 
       <div slot="records" class="about-page__sections">
+        <ResearchUniverse locale={locale} graph={graph} />
+
         {model.profile.body ? (
           <section
             id="about-intro"

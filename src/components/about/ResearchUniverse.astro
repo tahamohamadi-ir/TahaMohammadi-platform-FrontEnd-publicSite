@@ -1,0 +1,373 @@
+---
+/**
+ * RU-06 — About: the full interactive Research Universe.
+ *
+ * Semantic-first, exactly like the Home hero: every fact is HTML (a native
+ * disclosure per node, a native button per relationship, and two factual panels),
+ * and the canvas is a `aria-hidden` enhancement layered on top. Without
+ * JavaScript the whole universe is still readable and every published record is
+ * still reachable.
+ *
+ * The experience enhances the About narrative; it does not replace it. The
+ * biography sections stay exactly where they were, below this block.
+ */
+import type { HeroGraphModel } from '../../lib/hero-graph-content'
+import type { Locale } from '../../lib/navigation'
+import { adaptResearchUniverse } from '../../lib/research-universe/adapter'
+import { selectAboutUniverse } from '../../lib/research-universe/about-preset'
+import {
+  UNIVERSE_MODEL_VERSION,
+  toUniverseRendererPayload,
+} from '../../lib/research-universe/model'
+import ContentState from '../state/ContentState.astro'
+import '../../styles/research-universe.css'
+
+interface Props {
+  locale: Locale
+  graph: HeroGraphModel
+  selectedId?: string | null
+}
+
+const { locale, graph, selectedId = null } = Astro.props
+
+const copy = {
+  heading: { en: 'Research Universe', fa: 'جهانِ پژوهش' },
+  lead: {
+    en: 'Every published research domain, project and output behind the profile below — one shared map. Drag to rotate, scroll or pinch to zoom, and select a node or a relationship to read the published facts behind it.',
+    fa: 'همهٔ دامنه‌ها، پروژه‌ها و خروجی‌های پژوهشی منتشرشده در یک نقشهٔ مشترک. برای چرخش بکشید، برای بزرگ‌نمایی اسکرول یا دو‌انگشتی بزنید، و یک گره یا یک رابطه را انتخاب کنید تا داده‌های منتشرشدهٔ آن را ببینید.',
+  },
+  nodesHeading: { en: 'Domains and records', fa: 'دامنه‌ها و رکوردها' },
+  nodesLabel: { en: 'Research universe nodes', fa: 'گره‌های جهانِ پژوهش' },
+  edgesHeading: { en: 'Relationships', fa: 'رابطه‌ها' },
+  nodePanelHeading: { en: 'Selected node', fa: 'گرهٔ انتخاب‌شده' },
+  nodePrompt: {
+    en: 'Select a node to read its summary and related records.',
+    fa: 'یک گره را انتخاب کنید تا خلاصه و رکوردهای مرتبطش نمایش داده شود.',
+  },
+  edgePanelHeading: { en: 'Selected relationship', fa: 'رابطهٔ انتخاب‌شده' },
+  edgePrompt: {
+    en: 'Select a relationship to read its type and endpoints.',
+    fa: 'یک رابطه را انتخاب کنید تا نوع و دو سر آن نمایش داده شود.',
+  },
+  zoomIn: { en: 'Zoom in', fa: 'بزرگ‌نمایی' },
+  zoomOut: { en: 'Zoom out', fa: 'کوچک‌نمایی' },
+  focus: { en: 'Focus selection', fa: 'تمرکز روی انتخاب' },
+  reset: { en: 'Reset view', fa: 'بازنشانی نما' },
+  clear: { en: 'Clear selection', fa: 'پاک‌کردن انتخاب' },
+  emptyTitle: {
+    en: 'No graph nodes yet',
+    fa: 'هنوز گرهی در گراف منتشر نشده است',
+  },
+  emptyMessage: {
+    en: 'Published graph nodes will appear here when they are available.',
+    fa: 'گره‌های منتشرشدهٔ گراف پس از آماده‌شدن نمایش داده می‌شوند.',
+  },
+  errorTitle: {
+    en: 'Graph data could not be shown',
+    fa: 'دادهٔ گراف قابل‌نمایش نیست',
+  },
+  errorMessage: {
+    en: 'The published graph failed validation. No invented data is shown.',
+    fa: 'گراف منتشرشده اعتبارسنجی نشد؛ هیچ دادهٔ ساختگی نمایش داده نمی‌شود.',
+  },
+  unavailableTitle: {
+    en: 'Research graph unavailable',
+    fa: 'گراف پژوهشی در دسترس نیست',
+  },
+  unavailableMessage: {
+    en: 'The published research graph is not available yet.',
+    fa: 'گراف پژوهشی منتشرشده هنوز در دسترس نیست.',
+  },
+} as const
+
+const text = (entry: { en: string; fa: string }) => entry[locale]
+
+const universe = selectAboutUniverse(adaptResearchUniverse(graph))
+const nodes = universe?.nodes ?? []
+const edges = universe?.edges ?? []
+const labelById = new Map(nodes.map((node) => [node.id, node.label]))
+
+const levelLabel = (level: number) => {
+  if (level === 0) return locale === 'fa' ? 'هویت' : 'identity'
+  if (level === 1) return locale === 'fa' ? 'دامنهٔ اصلی' : 'main domain'
+  if (level === 2) return locale === 'fa' ? 'زیردامنه' : 'subdomain'
+  return locale === 'fa' ? 'خروجی' : 'output'
+}
+
+const relationLabel = (relationType: string) => relationType.replace(/-/g, ' ')
+
+const relatedLinkLabel =
+  locale === 'fa'
+    ? (family: string, id: string) => `مشاهدهٔ رکورد ${family} (${id})`
+    : (family: string, id: string) => `Open ${family} record ${id}`
+
+const universePayloadJson =
+  universe != null
+    ? // Same projection the server rendered — positions, kinds and the anchor
+      // travel together so the scene cannot diverge from the HTML.
+      JSON.stringify(toUniverseRendererPayload(universe)).replace(
+        /</g,
+        '\\u003c',
+      )
+    : null
+---
+
+<section
+  class="ru-about ru"
+  id="about-universe"
+  data-universe-region
+  data-universe-mode="about"
+  data-universe-status={graph.status}
+  data-universe-contract={UNIVERSE_MODEL_VERSION}
+  data-graph-status={graph.status}
+  data-hero-enhancement="idle"
+  aria-labelledby="about-universe-heading"
+>
+  <h2 id="about-universe-heading" class="ru-about__heading">
+    {text(copy.heading)}
+  </h2>
+  <p class="ru-about__lead">{text(copy.lead)}</p>
+
+  {
+    universe != null ? (
+      <>
+        <div class="ru-about__stage-wrap">
+          <div
+            class="ru-about__stage ru-scene"
+            data-universe-scene
+            data-universe-interactive="true"
+          >
+            <canvas
+              class="ru-canvas"
+              data-universe-canvas
+              aria-hidden="true"
+              hidden
+            />
+            <div class="ru-labels" data-universe-labels aria-hidden="true" />
+            <div class="ru-about__controls">
+              <button
+                class="ru-btn"
+                type="button"
+                data-universe-action="zoom-in"
+              >
+                {text(copy.zoomIn)}
+              </button>
+              <button
+                class="ru-btn"
+                type="button"
+                data-universe-action="zoom-out"
+              >
+                {text(copy.zoomOut)}
+              </button>
+              <button class="ru-btn" type="button" data-universe-action="focus">
+                {text(copy.focus)}
+              </button>
+              <button class="ru-btn" type="button" data-universe-action="reset">
+                {text(copy.reset)}
+              </button>
+              <button class="ru-btn" type="button" data-universe-action="clear">
+                {text(copy.clear)}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {universePayloadJson != null ? (
+          <script
+            type="application/json"
+            data-universe-payload
+            set:html={universePayloadJson}
+          />
+        ) : null}
+
+        {/* Factual node panel: one block per published node, only the selected
+            one visible. No copy is authored here beyond labels the graph itself
+            provides. */}
+        <div class="ru-panel" data-universe-node-panel aria-live="polite">
+          <h3 class="ru-panel__heading">{text(copy.nodePanelHeading)}</h3>
+          <p class="ru-panel__prompt" data-universe-node-prompt>
+            {text(copy.nodePrompt)}
+          </p>
+          {nodes.map((node) => (
+            <div
+              class="ru-panel__detail"
+              data-universe-node-detail={node.id}
+              hidden={node.id !== selectedId}
+            >
+              <p class="ru-panel__label">{node.label}</p>
+              <p class="ru-panel__meta">
+                {levelLabel(node.level)} · {node.kind} · {node.type}
+              </p>
+              {node.summary != null ? (
+                <p class="ru-panel__summary">{node.summary}</p>
+              ) : null}
+              {node.related.length > 0 ? (
+                <ul class="ru-panel__links">
+                  {node.related.map((link) => (
+                    <li>
+                      <a class="ru-panel__link" href={link.href}>
+                        {relatedLinkLabel(link.family, link.id)}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+            </div>
+          ))}
+        </div>
+
+        <h3 class="ru-panel__heading" id="about-universe-nodes">
+          {text(copy.nodesHeading)}
+        </h3>
+        <ul
+          class="ru-nodes"
+          aria-label={text(copy.nodesLabel)}
+          aria-labelledby="about-universe-nodes"
+        >
+          {nodes.map((node) => (
+            <li
+              class="ru-node"
+              data-universe-node={node.id}
+              data-universe-label={node.label}
+              data-universe-level={String(node.level)}
+              data-universe-kind={node.kind}
+              data-selected={node.id === selectedId ? 'true' : 'false'}
+            >
+              <details
+                class="ru-node__details"
+                name="about-universe-node"
+                open={node.id === selectedId}
+              >
+                <summary class="ru-node__summary">
+                  <span class="ru-node__label">{node.label}</span>
+                  <span class="ru-node__kind">{levelLabel(node.level)}</span>
+                </summary>
+                <div class="ru-node__body">
+                  {node.summary != null ? (
+                    <p class="ru-node__summary-text">{node.summary}</p>
+                  ) : null}
+                  {node.related.length > 0 ? (
+                    <ul class="ru-panel__links">
+                      {node.related.map((link) => (
+                        <li>
+                          <a class="ru-panel__link" href={link.href}>
+                            {relatedLinkLabel(link.family, link.id)}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : null}
+                </div>
+              </details>
+            </li>
+          ))}
+        </ul>
+
+        {/* Relationship panel: edges are first-class, so they get their own
+            factual panel rather than being reduced to decoration. */}
+        <div class="ru-panel" data-universe-edge-panel aria-live="polite">
+          <h3 class="ru-panel__heading">{text(copy.edgePanelHeading)}</h3>
+          <p class="ru-panel__prompt" data-universe-edge-prompt>
+            {text(copy.edgePrompt)}
+          </p>
+          {edges.map((edge) => (
+            <div
+              class="ru-panel__detail"
+              data-universe-edge-detail={edge.id}
+              hidden
+            >
+              <p class="ru-panel__label">
+                {labelById.get(edge.source) ?? edge.source}
+                <span aria-hidden="true"> → </span>
+                {labelById.get(edge.target) ?? edge.target}
+              </p>
+              <p class="ru-panel__meta">
+                {relationLabel(edge.relationType)}
+                {edge.directed
+                  ? ` · ${locale === 'fa' ? 'جهت‌دار' : 'directed'}`
+                  : ''}
+              </p>
+              {edge.explanation != null ? (
+                <p class="ru-panel__summary">{edge.explanation}</p>
+              ) : null}
+            </div>
+          ))}
+        </div>
+
+        {edges.length > 0 ? (
+          <div class="ru-edges">
+            <h3 class="ru-panel__heading">{text(copy.edgesHeading)}</h3>
+            <ol class="ru-edges__list">
+              {edges.map((edge) => (
+                <li
+                  class="ru-edge"
+                  data-universe-edge={edge.id}
+                  data-source={edge.source}
+                  data-target={edge.target}
+                  data-universe-label={`${labelById.get(edge.source) ?? edge.source} → ${labelById.get(edge.target) ?? edge.target}`}
+                >
+                  <button
+                    class="ru-edge__button"
+                    type="button"
+                    aria-pressed="false"
+                    data-universe-edge-control
+                  >
+                    <span>{labelById.get(edge.source) ?? edge.source}</span>
+                    <span aria-hidden="true"> → </span>
+                    <span>{labelById.get(edge.target) ?? edge.target}</span>
+                  </button>
+                </li>
+              ))}
+            </ol>
+          </div>
+        ) : null}
+      </>
+    ) : graph.status === 'empty' ? (
+      <ContentState
+        variant="empty"
+        locale={locale}
+        headingLevel="h2"
+        title={text(copy.emptyTitle)}
+        message={text(copy.emptyMessage)}
+      />
+    ) : graph.status === 'error' ? (
+      <ContentState
+        variant="error"
+        locale={locale}
+        headingLevel="h2"
+        title={text(copy.errorTitle)}
+        message={text(copy.errorMessage)}
+      />
+    ) : (
+      <ContentState
+        variant="unavailable"
+        locale={locale}
+        headingLevel="h2"
+        title={text(copy.unavailableTitle)}
+        message={text(copy.unavailableMessage)}
+      />
+    )
+  }
+</section>
+
+<script>
+  // RU-05 — One canvas per route. About owns the interactive universe; the
+  // semantic markup above stays the source of truth in every failure mode.
+  import { enhanceUniverseRegion } from '../../lib/visual/research-universe/enhancement'
+
+  function enhanceAboutUniverse() {
+    const region = document.querySelector<HTMLElement>(
+      '[data-universe-region][data-universe-mode="about"][data-universe-status="ready"]',
+    )
+    if (!region) return
+    void enhanceUniverseRegion(region, { mode: 'about' }).catch(() => {})
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', enhanceAboutUniverse, {
+      once: true,
+    })
+  } else {
+    enhanceAboutUniverse()
+  }
+</script>
