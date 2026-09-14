@@ -77,13 +77,19 @@ export function themeRenderParams(
       // Warm sculptural separation: enough key light for silhouette contrast
       // without washing the ivory canvas into flat white clay.
       backgroundIntensity: 0.04,
-      ambientIntensity: 1.15,
-      keyLightIntensity: 0.55,
-      fillLightIntensity: 0.18,
+      // RU-4C: the light rig was rebalanced after measuring the render. With
+      // ambient 1.15 against a key of 0.55 the spheres had almost no directional
+      // contrast and read as flat unshaded discs on the ivory ground — the exact
+      // "washed-out" reading the direction forbids, and the opposite of "the
+      // spheres should remain clearly three-dimensional objects in light mode".
+      // Lower ambient + a stronger key restores a readable terminator without
+      // darkening the page or turning the highlight into a specular dot.
+      ambientIntensity: 0.78,
+      keyLightIntensity: 0.92,
+      fillLightIntensity: 0.24,
       // Ivory is brighter than the objects, so almost no emissive lift is needed
-      // to separate them; a large value here is exactly how "washed-out clay"
-      // happens.
-      emissiveLift: 0.08,
+      // to separate them; a large value here is how "washed-out clay" happens.
+      emissiveLift: 0.06,
       markOpacity: 0.34,
       edgeOpacity: 0.4,
       edgeEmphasisOpacity: 0.82,

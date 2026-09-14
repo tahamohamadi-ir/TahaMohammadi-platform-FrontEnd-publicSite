@@ -35,6 +35,7 @@ import { createUniverseEdges, type UniverseEdgeVisuals } from './edges'
 import { createUniverseNodes, type UniverseNodeVisuals } from './nodes'
 import { createUniverseMaterials } from './materials'
 import {
+  compositionTarget,
   computeUniverseLayout,
   fitDistance,
   type UniverseLayout,
@@ -97,6 +98,19 @@ export interface AboutSceneHandle {
 
 const FOV = 42
 const HOME_ORBIT: OrbitPose = { yaw: 0.22, pitch: 0.24, distanceScale: 1 }
+
+/**
+ * RU-4C — where the camera looks, which is NOT always the composition centre.
+ *
+ * The authored composition puts the identity off the domain centroid on purpose,
+ * so "point at the composition centre" is the wrong answer once a node is
+ * focused: the orbit can rotate to the node's bearing but the clamped pitch
+ * still leaves it off-axis, and an off-axis node at focus distance lands outside
+ * the frame. Focus animates this point onto the node instead.
+ */
+function copyPoint(point: { x: number; y: number; z: number }) {
+  return { x: point.x, y: point.y, z: point.z }
+}
 const MOBILE_FIT_PADDING = 1.34
 const DESKTOP_FIT_PADDING = 1.14
 
@@ -133,6 +147,14 @@ export function createAboutScene(options: {
     universe.nodes,
     universe.edges,
   )
+  /**
+   * RU-4C composition: the camera orbits the DOMAIN CENTROID, not the origin, so
+   * the identity node sits off the geometric centre of the frame while the three
+   * domains stay balanced — the same framing rule Home uses.
+   */
+  const frameCenter = compositionTarget(layout.nodes)
+  /** The point the camera currently looks at; eased by focus/reset. */
+  let lookAtPoint = copyPoint(frameCenter)
 
   model.add(core.groups.edges)
   model.add(core.groups.nodes)
@@ -211,11 +233,11 @@ export function createAboutScene(options: {
     const y = Math.sin(orbit.pitch) * distance
     const horizontal = Math.cos(orbit.pitch) * distance
     core.camera.position.set(
-      Math.sin(orbit.yaw) * horizontal,
-      y,
-      Math.cos(orbit.yaw) * horizontal,
+      frameCenter.x + Math.sin(orbit.yaw) * horizontal,
+      frameCenter.y + y,
+      frameCenter.z + Math.cos(orbit.yaw) * horizontal,
     )
-    core.camera.lookAt(0, 0, 0)
+    core.camera.lookAt(lookAtPoint.x, lookAtPoint.y, lookAtPoint.z)
     core.requestRender()
   }
 
@@ -261,7 +283,11 @@ export function createAboutScene(options: {
    * Short bounded transition for focus/reset. Driven by rAF only for the
    * duration of the transition, so an idle About scene schedules no frames.
    */
-  function animateTo(target: OrbitPose, durationMs: number): void {
+  function animateTo(
+    target: OrbitPose,
+    durationMs: number,
+    focusPoint: { x: number; y: number; z: number } = frameCenter,
+  ): void {
     cancelAnimation()
     const reduced =
       motion !== 'full' || typeof requestAnimationFrame !== 'function'
@@ -279,11 +305,13 @@ export function createAboutScene(options: {
           ABOUT_ORBIT_LIMITS.maxDistanceScale,
         ),
       }
+      lookAtPoint = copyPoint(focusPoint)
       applyOrbit()
       return
     }
 
     const from = { ...orbit }
+    const fromLook = copyPoint(lookAtPoint)
     const startedAt = performance.now()
     const step = () => {
       const elapsed = performance.now() - startedAt
@@ -295,6 +323,11 @@ export function createAboutScene(options: {
         distanceScale:
           from.distanceScale +
           (target.distanceScale - from.distanceScale) * eased,
+      }
+      lookAtPoint = {
+        x: fromLook.x + (focusPoint.x - fromLook.x) * eased,
+        y: fromLook.y + (focusPoint.y - fromLook.y) * eased,
+        z: fromLook.z + (focusPoint.z - fromLook.z) * eased,
       }
       applyOrbit()
       if (t < 1) animation = requestAnimationFrame(step)
@@ -319,6 +352,7 @@ export function createAboutScene(options: {
       // at 1.14 the canonical mobile view pushed the left-hand chip outside the
       // clipped stage (measured: label left = -18px at a 390px viewport).
       isMobile ? MOBILE_FIT_PADDING : DESKTOP_FIT_PADDING,
+      frameCenter,
     )
     applyOrbit()
     stats = { ...stats, pixelRatio: result.pixelRatio }
@@ -356,12 +390,16 @@ export function createAboutScene(options: {
       applyOrbit()
     },
     focusNode(nodeId) {
-      const target = nodeById(nodeId)
-      if (!target) return
-      const distance =
-        Math.hypot(target.point.x, target.point.y, target.point.z) || 1
-      const yaw = Math.atan2(target.point.x, target.point.z)
-      const pitch = clamp(Math.asin(target.point.y / distance), -0.6, 0.6)
+      const node = nodeById(nodeId)
+      if (!node) return
+      // Focus is relative to the composition centre, so the node being focused
+      // ends up in the middle of the frame rather than off to one side.
+      const dx = node.point.x - frameCenter.x
+      const dy = node.point.y - frameCenter.y
+      const dz = node.point.z - frameCenter.z
+      const distance = Math.hypot(dx, dy, dz) || 1
+      const yaw = Math.atan2(dx, dz)
+      const pitch = clamp(Math.asin(dy / distance), -0.6, 0.6)
       animateTo(
         {
           yaw,
@@ -373,12 +411,16 @@ export function createAboutScene(options: {
           ),
         },
         420,
+        // Look at the node itself, so it lands in the middle of the frame and its
+        // selection rim is fully inside the canvas.
+        node.point,
       )
     },
     resetView(animate = true) {
-      if (animate) animateTo(HOME_ORBIT, 380)
+      if (animate) animateTo(HOME_ORBIT, 380, frameCenter)
       else {
         orbit = { ...HOME_ORBIT }
+        lookAtPoint = copyPoint(frameCenter)
         cancelAnimation()
         applyOrbit()
       }

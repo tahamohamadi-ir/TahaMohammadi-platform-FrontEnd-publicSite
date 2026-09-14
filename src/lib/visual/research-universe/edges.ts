@@ -1,5 +1,5 @@
 /**
- * RU-4B — Relationships as curved 3D edges.
+ * RU-4B / RU-4C — Relationships as curved 3D edges.
  *
  * Edges are first-class: they are drawn from the SAME sampled polylines that
  * `hit-testing.ts` uses, so what the user sees is exactly what they can select —
@@ -7,19 +7,21 @@
  *
  * THE visual rule of this direction lives here: every visible curve represents a
  * REAL graph relationship, thin and restrained. There is no decorative line in
- * this module — no orbit ring, no ellipse, no concentric circle, and nothing is
- * generated unless a published edge asked for it.
+ * this module — no orbit ring, no ellipse, no concentric circle.
  *
- * The previous generation also raised an `globalEmphasis` term from the scroll
- * storyboard so the relationships could be "read as a system rather than as
- * decoration". That parameter is gone: on Home the brief allows ONE relationship
- * to become slightly more prominent at a later scroll state and explicitly says
- * "do not add spectacle", so a global brightness ramp driven by scroll is no
- * longer part of the language. Emphasis is now only ever a response to a real
- * selection.
+ * RU-4C changes:
+ * - The permanent direction TICKS are gone. Two short strokes near every target
+ *   endpoint turned the Home hero into a technical directed graph, which the
+ *   direction explicitly rules out ("No permanent arrowheads"; direction may
+ *   stay semantic/interactive). `directed` is still carried on the model and is
+ *   still reported by the semantic relationship list and the inspector.
+ * - Colour is mineralised (see `resolveEdgeColor`): restrained champagne-grey on
+ *   dark, muted aged brass on light — a warm neutral, never gold jewellery.
+ * - Curvature now comes from the layout's per-relationship bow (raised so it is
+ *   perceptible at Home scale) and the curve lands on both sphere SURFACES.
  *
  * Colour is expressed through vertex colour (one `LineSegments` for the whole
- * system) because WebGL ignores `linewidth`; that keeps relationships dimmed by
+ * system) because WebGL ignores `linewidth`; that keeps relationships quiet by
  * default and readable on selection without a second draw call per edge.
  */
 
@@ -30,14 +32,11 @@ import { roleColor, type UniverseMaterials } from './materials'
 import type { UniverseRenderTheme } from './theme'
 
 export interface EdgeEmphasis {
-  /** Selected node: its relationships stay bright, the rest recede. */
   selectedNodeId: string | null
-  /** Selected relationship: emphasised on its own, even with no node selected. */
   selectedEdgeId: string | null
   /**
    * The single relationship allowed to read slightly stronger at a later Home
-   * scroll state, or null. Deliberately one id rather than a global ramp: the
-   * brief permits a single relation to become more prominent, not the whole set.
+   * scroll state, or null. Deliberately one id rather than a global ramp.
    */
   featuredEdgeId?: string | null
 }
@@ -51,16 +50,19 @@ export interface UniverseEdgeVisuals {
 }
 
 /**
- * Default recession for unselected relationships: they are lerped toward the
- * canvas so they read as quiet structure rather than as drawn lines.
+ * Resting recession for an unselected relationship.
+ *
+ * The direction wants edges clearly subordinate to the nodes, so at rest the
+ * line is lerped most of the way toward the canvas. Only the ACTIVE relationship
+ * is strengthened: hover or selection never brightens the whole set.
  */
-const EDGE_REST_LERP = 0.44
+const EDGE_REST_LERP = 0.74
 /** Unrelated relationships recede further while a selection exists. */
-const EDGE_DIMMED_LERP = 0.86
+const EDGE_DIMMED_LERP = 0.92
 /** The featured relationship sits between rest and selection. */
-const EDGE_FEATURED_LERP = 0.24
+const EDGE_FEATURED_LERP = 0.56
 /** How far a selected relationship's colour leans toward the accent role. */
-const EDGE_SELECTED_TINT = 0.5
+const EDGE_SELECTED_TINT = 0.42
 
 export function createUniverseEdges(
   ledger: UniverseLedger,
@@ -73,7 +75,6 @@ export function createUniverseEdges(
 
   const vertices: number[] = []
   const segmentsByEdge = new Map<string, { start: number; count: number }>()
-  const directed: number[] = []
 
   for (const edge of layoutEdges) {
     const start = vertices.length / 3
@@ -87,32 +88,6 @@ export function createUniverseEdges(
       start,
       count: Math.max((samples.length - 1) * 2, 0),
     })
-
-    if (edge.directed) {
-      // Direction ticks: two short strokes near the target end, on the same
-      // curve, so a directed relationship is legible without an arrow texture.
-      const last = samples[samples.length - 1]!
-      const before = samples[Math.max(samples.length - 3, 0)]!
-      const dx = last.x - before.x
-      const dy = last.y - before.y
-      const dz = last.z - before.z
-      const length = Math.hypot(dx, dy, dz) || 1
-      const nx = dx / length
-      const ny = dy / length
-      const nz = dz / length
-      for (const t of [0.86, 0.94]) {
-        const anchor =
-          samples[
-            Math.min(samples.length - 1, Math.round(t * (samples.length - 1)))
-          ]!
-        directed.push(anchor.x, anchor.y, anchor.z)
-        directed.push(
-          anchor.x - nx * 2.4,
-          anchor.y - ny * 2.4,
-          anchor.z - nz * 2.4,
-        )
-      }
-    }
   }
 
   const geometry = ledger.track(new THREE.BufferGeometry())
@@ -130,26 +105,6 @@ export function createUniverseEdges(
   lines.name = 'universe-edges-lines'
   lines.frustumCulled = false
   group.add(lines)
-
-  if (directed.length > 0) {
-    const tickGeometry = ledger.track(
-      new THREE.BufferGeometry().setFromPoints(
-        Array.from(
-          { length: directed.length / 3 },
-          (_, index) =>
-            new THREE.Vector3(
-              directed[index * 3]!,
-              directed[index * 3 + 1]!,
-              directed[index * 3 + 2]!,
-            ),
-        ),
-      ),
-    )
-    const ticks = new THREE.LineSegments(tickGeometry, materials.markMaterial)
-    ticks.name = 'universe-edge-directions'
-    ticks.frustumCulled = false
-    group.add(ticks)
-  }
 
   const colors = geometry.getAttribute('color') as THREE.BufferAttribute
 
@@ -175,12 +130,12 @@ export function createUniverseEdges(
       } else if (hasNodeSelection && incident) {
         color = rest.clone().lerp(selected, EDGE_SELECTED_TINT * 0.6)
       } else {
-        const lerpTowardCanvas = hasNodeSelection
+        const toward = hasNodeSelection
           ? EDGE_DIMMED_LERP
           : edge.id === featured
             ? EDGE_FEATURED_LERP
             : EDGE_REST_LERP
-        color = rest.clone().lerp(canvas, lerpTowardCanvas)
+        color = rest.clone().lerp(canvas, toward)
       }
 
       for (let index = 0; index < range.count; index += 1) {
@@ -205,11 +160,8 @@ export function createUniverseEdges(
     applyTheme(next: UniverseRenderTheme) {
       material.opacity = next.edgeOpacity
       materials.edgeMaterial.opacity = next.edgeOpacity
-      materials.edgeMaterial.color.copy(roleColor(next.palette, 'signature'))
-      materials.markMaterial.color.copy(roleColor(next.palette, 'context'))
-      materials.markMaterial.opacity = next.markOpacity
       material.needsUpdate = true
-      materials.markMaterial.needsUpdate = true
+      materials.edgeMaterial.needsUpdate = true
       writeEmphasis({ selectedNodeId: null, selectedEdgeId: null })
     },
   }

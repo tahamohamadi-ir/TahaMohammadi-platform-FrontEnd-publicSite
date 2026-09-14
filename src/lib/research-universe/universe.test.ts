@@ -34,7 +34,9 @@ import {
 import {
   PLACEMENT_BASE_RADIUS,
   RU_PLACEMENT,
+  compositionTarget,
   computeUniverseLayout,
+  curveBowRatio,
   curveIsEndpointDriven,
   curveMidpointRadiusSpread,
   fitDistance,
@@ -42,6 +44,7 @@ import {
   identityDiameterEnvelope,
   nodeRadiusFor,
   sampleCubic,
+  surfaceGap,
 } from '../visual/research-universe/layout'
 import {
   distanceToPolyline,
@@ -566,14 +569,108 @@ describe('layout — asymmetric relational topology, published intent preserved'
     expect(third.nodes).toEqual(first.nodes)
   })
 
-  it('keeps published authoring intent: azimuth from the API position', () => {
+  it('applies the AUTHORED composition, and never mutates the published model', () => {
+    // RU-4C replaced the published azimuths with authored ones on purpose: the
+    // published (0, -76) for PARS-SQL put that domain straight below the identity
+    // and produced a vertical tail plus a Y-shaped star. Composition is art
+    // direction; the published records are untouched, which is what this asserts.
+    const universe = readyUniverse()
+    const before = JSON.stringify(
+      universe.nodes.map((node) => ({ x: node.x, y: node.y, z: node.z })),
+    )
+    const layout = computeUniverseLayout(universe.nodes, universe.edges)
+    const after = JSON.stringify(
+      universe.nodes.map((node) => ({ x: node.x, y: node.y, z: node.z })),
+    )
+    expect(after).toBe(before)
+
+    const topic1 = layout.nodes.find((node) => node.id === 'research-topic-1')!
+    expect(topic1.positionSource).toBe('authored-azimuth')
+    // PARS-SQL is authored to the lower RIGHT, not straight down.
+    expect(Math.sin(topic1.azimuth)).toBeLessThan(-0.5)
+    expect(Math.cos(topic1.azimuth)).toBeGreaterThan(0.3)
+  })
+
+  it('spaces the three domains unequally — never an evenly spaced radial star', () => {
     const universe = readyUniverse()
     const layout = computeUniverseLayout(universe.nodes, universe.edges)
-    const topic1 = layout.nodes.find((node) => node.id === 'research-topic-1')!
-    // Published position (0, -76) puts this topic below the anchor.
-    expect(topic1.positionSource).toBe('api-azimuth')
-    expect(Math.sin(topic1.azimuth)).toBeLessThan(-0.9)
-    expect(Math.cos(Math.abs(topic1.azimuth))).toBeCloseTo(0, 2)
+    const azimuths = layout.nodes
+      .filter((node) => node.kind === 'domain')
+      .map((node) => node.azimuth)
+      .sort((a, b) => a - b)
+    expect(azimuths).toHaveLength(3)
+    const gaps = azimuths.map((value, index) => {
+      const next = azimuths[(index + 1) % azimuths.length]!
+      const raw =
+        index === azimuths.length - 1
+          ? next + Math.PI * 2 - value
+          : next - value
+      return (raw * 180) / Math.PI
+    })
+    // No gap collapses, and the spread is well beyond the 120° of a triangle.
+    expect(Math.min(...gaps)).toBeGreaterThan(20)
+    expect(Math.max(...gaps) - Math.min(...gaps)).toBeGreaterThan(15)
+  })
+
+  it('frames the DOMAIN centroid, so the identity sits off the geometric centre', () => {
+    const universe = readyUniverse()
+    const layout = computeUniverseLayout(universe.nodes, universe.edges)
+    const target = compositionTarget(layout.nodes)
+    const domains = layout.nodes.filter((node) => node.kind === 'domain')
+    const centroid = domains.reduce(
+      (acc, node) => ({
+        x: acc.x + node.point.x / domains.length,
+        y: acc.y + node.point.y / domains.length,
+      }),
+      { x: 0, y: 0 },
+    )
+    expect(target.x).toBeCloseTo(centroid.x, 6)
+    expect(target.y).toBeCloseTo(centroid.y, 6)
+    // Well away from the anchor's own position, which is what makes the identity
+    // node off-centre while the three domains stay balanced around it.
+    expect(Math.hypot(target.x, target.y)).toBeGreaterThan(2)
+  })
+
+  it('bows every relationship enough to be perceptible at UI size', () => {
+    const universe = readyUniverse()
+    const layout = computeUniverseLayout(universe.nodes, universe.edges)
+    const ratios = layout.edges.map((edge) => curveBowRatio(edge))
+    for (const ratio of ratios) {
+      // RU-4C raised the bow from 0.12, which read as a straight line. The
+      // direction wants curvature that is clearly visible but not flamboyant.
+      expect(ratio).toBeGreaterThan(0.02)
+      expect(ratio).toBeLessThan(0.2)
+    }
+    // Curvature is unique per relationship, not one shared arc.
+    expect(new Set(ratios.map((value) => value.toFixed(4))).size).toBe(
+      ratios.length,
+    )
+  })
+
+  it('lands every curve on the sphere surfaces it connects', () => {
+    const universe = readyUniverse()
+    const layout = computeUniverseLayout(universe.nodes, universe.edges)
+    const endGap = (
+      edge: { end: { x: number; y: number; z: number } },
+      node: { point: { x: number; y: number; z: number }; radius: number },
+    ) =>
+      Math.hypot(
+        edge.end.x - node.point.x,
+        edge.end.y - node.point.y,
+        edge.end.z - node.point.z,
+      ) - node.radius
+    for (const edge of layout.edges) {
+      const source = layout.nodes.find((node) => node.id === edge.source)!
+      const target = layout.nodes.find((node) => node.id === edge.target)!
+      // Just inside the silhouette, so the line reads as attached to the object
+      // rather than floating beside it or vanishing into its centre.
+      const fromGap = surfaceGap(edge, source)
+      const toGap = endGap(edge, target)
+      expect(fromGap).toBeLessThan(0)
+      expect(fromGap).toBeGreaterThan(-source.radius * 0.2)
+      expect(toGap).toBeLessThan(0)
+      expect(toGap).toBeGreaterThan(-target.radius * 0.2)
+    }
   })
 
   it('places the anchor at the origin with a 1.4–1.6x diameter envelope', () => {

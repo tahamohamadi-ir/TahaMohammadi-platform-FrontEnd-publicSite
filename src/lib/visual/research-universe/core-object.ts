@@ -1,27 +1,24 @@
 /**
- * RU-4B — The identity anchor.
+ * RU-4C — The identity anchor.
  *
  * The anchor ("Taha Mohammadi") is ONE sphere using the SAME shared geometry as
- * every other node, presented through the `identity` material profile. That is the
- * whole object.
+ * every other node, presented through the `identity` profile — deep mineral teal
+ * (dark) / restrained teal (light), never white.
  *
- * What was removed and why — the previous generation rendered a layered nucleus:
- * a faceted `IcosahedronGeometry` inner solid, a back-face shell and two
- * `TorusGeometry` rings on different axes. That is three separate primitives and
- * two full circles, and it broke three of the brief's rules at once:
+ * RU-4C fixed a real defect here: the anchor used to borrow the white-based
+ * registry material, so the identity node rendered white/grey — the one node the
+ * direction explicitly says must not be, and the node that is supposed to be the
+ * perceptual centre of the composition.
  *
- * - "all primary graph nodes use ONE shared simple sphere geometry" — an
- *   icosahedron is a different mesh;
- * - "no concentric circles / no circular trajectories" — the two rings ARE full
- *   torus circles around the centre, the single strongest "atom / planetary"
- *   cue in the whole composition;
- * - "no custom shells / mechanical forms / futuristic machinery" — the faceted
- *   solid plus its shell is a bespoke instrument silhouette, not a designed
- *   object.
+ * What was removed two passes ago and why — the previous generation rendered a
+ * layered nucleus: a faceted `IcosahedronGeometry` inner solid, a back-face shell
+ * and two `TorusGeometry` rings on different axes. That is three primitives and
+ * two full circles, breaking three rules at once (one shared sphere geometry; no
+ * concentric circles; no custom shells or mechanical forms).
  *
- * The anchor's prominence now comes from scale alone (1.4–1.6× a main domain's
- * diameter, asserted in `presentation.test.ts`) plus its material character,
- * which is exactly what the brief asks for.
+ * The anchor's prominence comes from scale (1.4–1.6× a main domain's diameter,
+ * asserted in `presentation.test.ts`), its deeper material, and its position as
+ * the hub of every real relationship.
  */
 
 import * as THREE from 'three'
@@ -44,9 +41,9 @@ export interface UniverseCoreOptions {
  * Build the anchor sphere.
  *
  * No ledger and no theme parameter: the geometry is process-shared and the
- * material is a registry material owned by `createUniverseMaterials`, which the
+ * material is the `anchorMaterial` owned by `createUniverseMaterials`, which the
  * node layer re-tints in place on a theme change. The anchor therefore holds no
- * disposable resource of its own, and there is nothing here to dispose.
+ * disposable resource of its own.
  */
 export function createUniverseCore(
   materials: UniverseMaterials,
@@ -57,10 +54,7 @@ export function createUniverseCore(
   const radius = Math.max(options.radius, 1)
 
   // The same unit sphere every other node uses; scale supplies the size.
-  const solid = new THREE.Mesh(
-    sharedSphereGeometry(),
-    materials.nodeMaterials.fine.identity,
-  )
+  const solid = new THREE.Mesh(sharedSphereGeometry(), materials.anchorMaterial)
   solid.name = 'universe-core-solid'
   solid.scale.setScalar(radius)
   group.add(solid)

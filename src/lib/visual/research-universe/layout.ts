@@ -1,29 +1,24 @@
 /**
- * RU-02 / RU-4B — Universe layout: asymmetric, intentional 3D placement.
+ * RU-02 / RU-4B / RU-4C — Universe layout: an authored, asymmetric composition.
  *
- * The final direction is a 3D RELATIONAL TOPOLOGY, not a planetary system. The
- * previous generation placed each hierarchy level on a shared TILTED ORBITAL
- * PLANE, which is exactly what made the composition read as "four satellites
- * around a nucleus": equal angular spacing, equal radius, symmetric placement.
- * Planes are gone. What replaces them:
+ * The direction is a 3D relational topology, not a planetary system. What the
+ * layout is responsible for:
  *
- * 1. DIRECTION comes from published authoring intent. A node that carries an API
- *    `position` keeps its authored azimuth (`atan2(y, x)`), so a domain authored
- *    to the lower-left stays lower-left.
- * 2. DISTANCE, DEPTH and SCALE are presentation. They come from one explicit,
- *    frontend-owned placement table (`RU_PLACEMENT`), not from a shared radius or
- *    a shared plane. This is what breaks the ring: nodes end up with different
- *    x distance, y distance, z depth and visual scale — the four differences the
- *    brief requires.
- * 3. SPREAD is authored per node, in the range 0.78 … 1.38. It is deliberately
- *    NOT equal, and the values are not derived from a formula that could drift
- *    back toward symmetry; they are art direction, written down.
+ * 1. DIRECTION and DISTANCE come from authored presentation tables below, not
+ *    from a shared radius or a shared plane. RU-4C replaced the published
+ *    azimuths with authored ones: the published `y` for PARS-SQL is `-76`, which
+ *    put that domain straight below the identity and produced a "vertical tail"
+ *    plus a Y-shaped star. The published position is still recorded on each node
+ *    (`positionSource`) so nothing is lost, and the graph relationships are
+ *    untouched — only the composition is art-directed.
+ * 2. DEPTH is authored per node, so no two domains are coplanar.
+ * 3. The camera target is the DOMAIN CENTROID (see `compositionTarget`), which is
+ *    what puts the identity node off the geometric centre of the frame and keeps
+ *    the three domains visually balanced.
  *
  * Everything is a pure function of the universe model: same input, same
- * coordinates, both locales, every render, every reload.
- *
- * The old engine still drives the Atlas demos, so it is not deleted; this module
- * is the universe's own layout authority.
+ * coordinates, both locales, every render, every reload. No theme or viewport
+ * parameter can move a node.
  */
 
 import type {
@@ -52,26 +47,23 @@ export interface UniverseNode3D {
   weight: number
   colorRole: string
   /**
-   * Presentation role. RU-2A: the level-0 anchor has ONE visible identity — the
+   * Presentation role. The level-0 anchor has ONE visible identity — the
    * dedicated central sphere — so it is never also instanced as a generic node.
    */
   role: 'central-anchor' | 'standard'
   /**
-   * RU-4B: the resolved presentation profile.
-   *
-   * Carried on the layout record because this is the only place that still holds
-   * the published LABEL the profile is keyed on — the renderer receives a
-   * position/size projection and must not re-derive presentation state from it.
-   * One resolution per node per layout, and the scene simply reads the answer.
+   * The resolved presentation profile. Carried here because this is the only
+   * place that still holds the published LABEL the profile is keyed on; the
+   * renderer receives a position/size projection and must not re-derive
+   * presentation state from it.
    */
   profile: RuMaterialProfile
   /** Visual sphere radius in scene units: the kind's radius × the visual scale. */
   radius: number
-  /** The visual scale applied to the kind's radius authority (presentation). */
   visualScale: number
   point: UniversePoint
   azimuth: number
-  positionSource: 'api-azimuth' | 'derived'
+  positionSource: 'api-azimuth' | 'authored-azimuth' | 'derived'
 }
 
 export interface UniverseEdge3D {
@@ -80,18 +72,16 @@ export interface UniverseEdge3D {
   target: string
   relationType: string
   directed: boolean
+  /** Surface-to-surface: the curve starts and ends ON the spheres it connects. */
   start: UniversePoint
   control: UniversePoint
   end: UniversePoint
-  /**
-   * Cubic curve through the derived control points, used BOTH for rendering and
-   * for screen-space hit testing. A cubic (rather than a single-bow quadratic)
-   * is what lets depth participate in the curvature without every relationship
-   * bending in the same direction.
-   */
+  /** Cubic curve through the derived control points, for rendering AND picking. */
   samples: UniversePoint[]
   c1: UniversePoint
   c2: UniversePoint
+  /** How far the curve bows off its straight chord, in scene units. */
+  bow: number
 }
 
 export interface UniverseBounds {
@@ -111,54 +101,90 @@ export interface UniverseLayout {
 }
 
 /** How many curve segments each edge is sampled into (hit testing + drawing). */
-export const EDGE_SAMPLES = 24
+export const EDGE_SAMPLES = 26
 
 /**
- * How far a relationship bows away from its straight chord, as a fraction of the
- * chord length. Small on purpose: a curve should read as "these two are
- * connected", not as an orbit.
+ * How far a relationship bows away from its straight chord.
+ *
+ * RU-4C raised this from 0.12 because the curves were "visually almost straight"
+ * at Home scale. It stays well below a flamboyant arc: the curve still reads as a
+ * connection, not an orbit. Callers may pass a per-relationship override.
  */
-export const EDGE_BOW = 0.12
+export const EDGE_BOW = 0.11
 
 /**
- * Bounds of the fixed placement space, kept exported so the unit invariants can
- * assert the art direction rather than restate it.
+ * Bounds of the fixed placement space, exported so the unit invariants assert
+ * the art direction rather than restate it.
  */
 export const PLACEMENT_BOUNDS = {
-  /** Per-node spread range. Deliberately unequal and never a single value. */
-  minSpread: 0.78,
-  maxSpread: 1.38,
-  /** Depth the placement tables are allowed to use, in scene units. */
+  minSpread: 0.8,
+  maxSpread: 1.28,
   maxDepthOffset: 18,
-  /** Vertical separation between the domain band and the identity. */
-  minVerticalSeparation: 30,
 } as const
 
+/** Base radius the `radialSpread` values are authored against. */
+export const PLACEMENT_BASE_RADIUS = 52
+
 /**
- * Presentation placement, keyed by published node id.
+ * AUTHORED COMPOSITION — keyed by published node id.
  *
- * `radialSpread` scales the node's authored radial family; `depthOffset` is the
- * authored z. Both are presentation, so they live in the frontend and no backend
- * record grows a layout field for them.
+ * `azimuth` is in radians and REPLACES the published direction (art direction,
+ * not content). The three current domains are placed as a deliberate triangle:
  *
- * A node with no entry uses the derived defaults below, so a newly published
- * domain still renders in a sensible place instead of being dropped.
+ *   research-topic-2  +38°   upper right   (warm mineral / dashboard)
+ *   research-topic-3  +148°  upper left    (emerald / visual political)
+ *   research-topic-1  -62°   lower right   (mineral purple / PARS-SQL)
+ *
+ * Angular gaps are 110° / 150° / 100° — deliberately unequal, so the composition
+ * never reads as an evenly spaced radial star. Spreads (0.92 / 1.28 / 1.16) are
+ * unequal but close enough that no single arm extends excessively.
+ *
+ * Both locales are listed because the published graph numbers its topics
+ * independently per locale (`research-topic-1..3` vs `..4..6`); the same domain
+ * gets the same composition in both.
  */
 export const RU_PLACEMENT: Readonly<
   Record<
     string,
-    { readonly radialSpread: number; readonly depthOffset: number }
+    {
+      readonly azimuth: number
+      readonly leftish?: boolean
+      readonly radialSpread: number
+      readonly depthOffset: number
+    }
   >
 > = {
-  'research-topic-1': { radialSpread: 0.78, depthOffset: -18 },
-  'research-topic-2': { radialSpread: 1.38, depthOffset: 17 },
-  'research-topic-3': { radialSpread: 0.92, depthOffset: -13 },
-  // The fa payload numbers its topics independently, so the SAME domains need
-  // their placement in the other locale too. Direction and depth are shared by
-  // domain, so both locales compose identically.
-  'research-topic-4': { radialSpread: 0.78, depthOffset: -18 },
-  'research-topic-5': { radialSpread: 1.38, depthOffset: 17 },
-  'research-topic-6': { radialSpread: 0.92, depthOffset: -13 },
+  'research-topic-1': {
+    azimuth: (-62 * Math.PI) / 180,
+    radialSpread: 0.92,
+    depthOffset: -14,
+  },
+  'research-topic-2': {
+    azimuth: (38 * Math.PI) / 180,
+    radialSpread: 1.28,
+    depthOffset: 16,
+  },
+  'research-topic-3': {
+    azimuth: (148 * Math.PI) / 180,
+    radialSpread: 1.16,
+    depthOffset: -9,
+  },
+  // fa payload — same domains, same composition.
+  'research-topic-4': {
+    azimuth: (-62 * Math.PI) / 180,
+    radialSpread: 0.92,
+    depthOffset: -14,
+  },
+  'research-topic-5': {
+    azimuth: (38 * Math.PI) / 180,
+    radialSpread: 1.28,
+    depthOffset: 16,
+  },
+  'research-topic-6': {
+    azimuth: (148 * Math.PI) / 180,
+    radialSpread: 1.16,
+    depthOffset: -9,
+  },
 } as const
 
 /** Per-level fallback so an unmapped level still gets a deliberate placement. */
@@ -184,13 +210,10 @@ export function hashToUnit(value: string): number {
 }
 
 /**
- * RU-2A — Split the layout into the node that owns the central sphere and the
- * nodes that get a generic instance. Both partitions always come from ONE list,
- * so a node can never be rendered twice and no semantic record is dropped:
+ * Split the layout into the node that owns the central sphere and the nodes that
+ * get a generic instance. Both partitions always come from ONE list, so a node
+ * can never be rendered twice and no semantic record is dropped:
  * `anchors.length + standard.length === nodes.length`.
- *
- * This is a pure function on purpose — the "no accidental double-render" test
- * asserts it in plain node, without WebGL or a DOM.
  */
 export function partitionLayoutNodes(nodes: ReadonlyArray<UniverseNode3D>): {
   anchors: UniverseNode3D[]
@@ -227,7 +250,7 @@ export function nodeRadiusFor(
   return base * weightScale
 }
 
-function azimuthFromPublished(node: UniverseNode): number | null {
+function publishedAzimuth(node: UniverseNode): number | null {
   if (node.layoutSource !== 'api') return null
   const radius = Math.hypot(node.x, node.y)
   if (!Number.isFinite(radius) || radius < 1e-3) return null
@@ -243,18 +266,12 @@ function placementFor(node: UniverseNode): {
   return LEVEL_DEFAULT_PLACEMENT[node.level] ?? LEVEL_DEFAULT_PLACEMENT[1]
 }
 
-/**
- * A node's position on its authored AZIMUTH ray, at its authored spread and
- * depth. There is no shared radius and no shared plane: distance comes from the
- * node's own placement entry, which is what makes the composition asymmetric by
- * construction rather than by a post-hoc offset.
- */
+/** Position on the node's authored azimuth ray. No shared radius, no shared plane. */
 export function pointForNode(
   node: UniverseNode,
   azimuth: number,
 ): UniversePoint {
   const { radialSpread, depthOffset } = placementFor(node)
-  // Level-0 lives at the origin; it is the reference the others are read from.
   if (node.level === 0) return { x: 0, y: 0, z: 0 }
   return {
     x: Math.cos(azimuth) * PLACEMENT_BASE_RADIUS * radialSpread,
@@ -264,65 +281,144 @@ export function pointForNode(
 }
 
 /**
- * Base orbital-free radius. One number for the whole primary band: it is the
- * authoring unit the `radialSpread` values are written against, so the spread
- * table stays readable as art direction.
+ * Where the camera should look.
+ *
+ * The domain centroid, so the identity node is NOT the geometric centre of the
+ * frame (the brief asks for exactly that) while the three domains stay balanced
+ * around it. Returns the origin when there is nothing to balance.
  */
-export const PLACEMENT_BASE_RADIUS = 52
+export function compositionTarget(
+  nodes: ReadonlyArray<Pick<UniverseNode3D, 'role' | 'point'>>,
+): UniversePoint {
+  const standard = nodes.filter((node) => node.role !== 'central-anchor')
+  const pool = standard.length > 0 ? standard : [...nodes]
+  if (pool.length === 0) return { x: 0, y: 0, z: 0 }
+  const sum = pool.reduce(
+    (acc, node) => ({
+      x: acc.x + node.point.x,
+      y: acc.y + node.point.y,
+      z: acc.z + node.point.z,
+    }),
+    { x: 0, y: 0, z: 0 },
+  )
+  return {
+    x: sum.x / pool.length,
+    // Depth is NOT used as a look-at term: the camera stays level with the
+    // composition so the authored triangle is not skewed by a vertical shift.
+    y: sum.y / pool.length,
+    z: 0,
+  }
+}
+
+/** Unit vector from `from` to `to`, or null when they coincide. */
+function direction(
+  from: UniversePoint,
+  to: UniversePoint,
+): UniversePoint | null {
+  const dx = to.x - from.x
+  const dy = to.y - from.y
+  const dz = to.z - from.z
+  const length = Math.hypot(dx, dy, dz)
+  if (!(length > 1e-6)) return null
+  return { x: dx / length, y: dy / length, z: dz / length }
+}
+
+function moveAlong(
+  point: UniversePoint,
+  dir: UniversePoint,
+  distance: number,
+): UniversePoint {
+  return {
+    x: point.x + dir.x * distance,
+    y: point.y + dir.y * distance,
+    z: point.z + dir.z * distance,
+  }
+}
 
 /**
- * Builds one relationship as a rotated cubic.
+ * Build one relationship as a cubic that touches BOTH sphere surfaces.
  *
- * The curve is the chord rotated about its own midpoint in the XY plane, and
- * lifted in Z by the pair's own depth separation. Rotating about the chord's
- * midpoint keeps both endpoints exact, so a relationship always visually
- * touches the two nodes it connects — the property the brief demands ("the curve
- * should visually connect A → B"), which a generic bow does not guarantee once
- * nodes sit at different depths.
+ * Endpoints are pulled onto the surfaces (a small inset keeps the curve visually
+ * attached rather than tangent-floating), so the curve connects the two objects
+ * the user sees rather than disappearing into their centres.
  *
- * Curvature is derived from this SPECIFIC pair: no two relationships share a
- * curvature centre, which is what keeps a set of them from combining into one
- * closed orbit (`resemblesClosedOrbit()` asserts it).
+ * Curvature is derived from this SPECIFIC pair — a per-edge bow amount plus the
+ * pair's own depth separation — so no two relationships share a curvature centre
+ * and a set of them cannot combine into one closed orbit.
  */
-function buildEdgeCurve(
-  start: UniversePoint,
-  end: UniversePoint,
-): { c1: UniversePoint; c2: UniversePoint; samples: UniversePoint[] } {
+export function buildEdgeCurve(
+  sourcePoint: UniversePoint,
+  sourceRadius: number,
+  targetPoint: UniversePoint,
+  targetRadius: number,
+  bow: number = EDGE_BOW,
+): {
+  c1: UniversePoint
+  c2: UniversePoint
+  samples: UniversePoint[]
+  start: UniversePoint
+  end: UniversePoint
+} {
+  const dir = direction(sourcePoint, targetPoint)
+  // Inset: the curve lands just inside the silhouette so it reads as attached.
+  const inset = 0.94
+  const start = dir
+    ? moveAlong(sourcePoint, dir, sourceRadius * inset)
+    : sourcePoint
+  const end = dir
+    ? moveAlong(
+        targetPoint,
+        { x: -dir.x, y: -dir.y, z: -dir.z },
+        targetRadius * inset,
+      )
+    : targetPoint
+
   const dx = end.x - start.x
+  const dy = end.y - start.y
   const dz = end.z - start.z
-  const planarLength = Math.hypot(dx, end.y - start.y) || 1
-  // The rotation angle itself carries the sign, so the depth lift can use the
-  // same signed planar direction without a second branch.
-  const angle = (EDGE_BOW * dx) / planarLength
-  const cos = Math.cos(angle)
-  const sin = Math.sin(angle)
-  const mid = {
-    x: (start.x + end.x) / 2,
-    y: (start.y + end.y) / 2,
-    z: (start.z + end.z) / 2,
-  }
-  const depthBend = EDGE_BOW * dz * 0.6
+  const chord = Math.hypot(dx, dy, dz) || 1
+  const planar = Math.hypot(dx, dy) || 1
 
-  const place = (t: number, lift: number): UniversePoint => {
-    const px = (start.x + end.x) / 2 + (dx / 2) * t
-    const py = (start.y + end.y) / 2 + ((end.y - start.y) / 2) * t
-    // Rotate about the midpoint in XY: endpoints move to themselves because the
-    // offset vector is zero there and (cos, sin) is a rotation.
-    const ox = px - mid.x
-    const oy = py - mid.y
-    return {
-      x: mid.x + ox * cos - oy * sin,
-      y: mid.y + ox * sin + oy * cos,
-      z: mid.z + (dz / 2) * t + depthBend * lift,
-    }
-  }
+  // In-plane normal of THIS chord: the direction the arc bulges.
+  //
+  // CURVATURE — the correction RU-4C makes. The previous implementation rotated
+  // the chord about its own midpoint, which is mathematically tidy and leaves the
+  // curve's MIDPOINT exactly on the chord: an antisymmetric S that reads as a
+  // straight line at UI size (measured bow ratio 0.009, which is what "the curves
+  // visually read almost straight" meant). Offsetting both control points to ONE
+  // side produces a single C-arc whose midpoint deviates by ~0.75 x the bow, while
+  // both endpoints stay exact.
+  const nx = -dy / planar
+  const ny = dx / planar
+  const bowLength = bow * chord
+  // Depth separation bends the curve out of the chord's plane too, so the
+  // curvature is genuinely 3D rather than a flat arc.
+  const zLift = bow * dz * 0.6
 
-  // Cubic control points at t = ±1/3: the curve passes close to the straight
-  // chord (so it reads as a connection, not as an arc) while the depth term
-  // gives it genuine 3D lift.
-  const c1 = place(-1 / 3, 0.66)
-  const c2 = place(1 / 3, 0.66)
-  return { c1, c2, samples: sampleCubic(start, c1, c2, end, EDGE_SAMPLES) }
+  const at = (t: number, offset: number): UniversePoint => ({
+    x: start.x + dx * t + nx * offset,
+    y: start.y + dy * t + ny * offset,
+    z: start.z + dz * t + zLift,
+  })
+
+  const c1 = at(1 / 3, bowLength)
+  const c2 = at(2 / 3, bowLength)
+  return {
+    start,
+    end,
+    c1,
+    c2,
+    samples: sampleCubic(start, c1, c2, end, EDGE_SAMPLES),
+  }
+}
+
+/**
+ * Per-relationship curvature. Deterministic from the edge id, and bounded to a
+ * range that stays perceptible without becoming an arc.
+ */
+export function bowForEdge(edgeId: string): number {
+  const unit = hashToUnit(`ru-edge-bow:${edgeId}`)
+  return EDGE_BOW * (0.82 + unit * 0.36)
 }
 
 export function computeUniverseLayout(
@@ -337,8 +433,10 @@ export function computeUniverseLayout(
     nodes.find((node) => node.kind === 'person' && node.level === 0)?.id ?? null
 
   nodes.forEach((node, index) => {
-    const published = azimuthFromPublished(node)
+    const authored = RU_PLACEMENT[node.id]
+    const published = publishedAzimuth(node)
     const azimuth =
+      authored?.azimuth ??
       published ??
       hashToUnit(`universe:${node.id}`) * Math.PI * 2 + index * GOLDEN_ANGLE
 
@@ -356,7 +454,13 @@ export function computeUniverseLayout(
       visualScale,
       point: isAnchor ? { x: 0, y: 0, z: 0 } : pointForNode(node, azimuth),
       azimuth,
-      positionSource: published == null ? 'derived' : 'api-azimuth',
+      positionSource: isAnchor
+        ? 'derived'
+        : authored
+          ? 'authored-azimuth'
+          : published == null
+            ? 'derived'
+            : 'api-azimuth',
     })
   })
 
@@ -367,19 +471,26 @@ export function computeUniverseLayout(
     const source = byId.get(edge.source)
     const target = byId.get(edge.target)
     if (!source || !target) continue
-    const { c1, c2, samples } = buildEdgeCurve(source.point, target.point)
+    const curve = buildEdgeCurve(
+      source.point,
+      source.radius,
+      target.point,
+      target.radius,
+      bowForEdge(edge.id),
+    )
     laidEdges.push({
       id: edge.id,
       source: edge.source,
       target: edge.target,
       relationType: edge.relationType,
       directed: edge.directed,
-      start: source.point,
-      control: c1,
-      end: target.point,
-      c1,
-      c2,
-      samples,
+      start: curve.start,
+      control: curve.c1,
+      end: curve.end,
+      c1: curve.c1,
+      c2: curve.c2,
+      samples: curve.samples,
+      bow: bowForEdge(edge.id),
     })
   }
 
@@ -417,9 +528,9 @@ export function sampleCubic(
 }
 
 /**
- * Bounds of the actual composition — node positions inflated by their own radii,
- * and every sampled relationship point. There are no decorative planes to frame
- * the scene any more, so an absent level can no longer inflate the box either.
+ * Bounds of the actual composition — node positions inflated by their own radii.
+ * There are no decorative planes to frame the scene, so an absent level can no
+ * longer inflate the box either.
  */
 function computeBounds(nodes: ReadonlyArray<UniverseNode3D>): UniverseBounds {
   let minX = 0
@@ -448,20 +559,33 @@ function computeBounds(nodes: ReadonlyArray<UniverseNode3D>): UniverseBounds {
 
 /**
  * Camera distance that fits the layout for an aspect ratio and field of view.
- * Shared by both presentations so neither needs FOV zoom tricks as motion.
+ *
+ * RU-4C frames the OFFSET composition: the camera looks at the domain centroid,
+ * so the frustum must cover the box measured from that point rather than from the
+ * origin — otherwise the composition drifts off-frame.
  */
 export function fitDistance(
   bounds: UniverseBounds,
   aspect: number,
   fovDegrees: number,
   padding = 1.14,
+  target: UniversePoint = { x: 0, y: 0, z: 0 },
 ): number {
   const safeAspect = Number.isFinite(aspect) && aspect > 0.05 ? aspect : 1
   const halfFov = (fovDegrees * Math.PI) / 360
-  const width = Math.max(bounds.maxX - bounds.minX, 24)
-  const height = Math.max(bounds.maxY - bounds.minY, 24)
-  const distanceForHeight = height / 2 / Math.tan(halfFov)
-  const distanceForWidth = width / 2 / Math.tan(halfFov) / safeAspect
+  const width =
+    Math.max(
+      Math.abs(bounds.maxX - target.x),
+      Math.abs(bounds.minX - target.x),
+    ) * 2
+  const height =
+    Math.max(
+      Math.abs(bounds.maxY - target.y),
+      Math.abs(bounds.minY - target.y),
+    ) * 2
+  const distanceForHeight = Math.max(height, 24) / 2 / Math.tan(halfFov)
+  const distanceForWidth =
+    Math.max(width, 24) / 2 / Math.tan(halfFov) / safeAspect
   const depth = Math.max(bounds.maxZ - bounds.minZ, 0)
   return (Math.max(distanceForHeight, distanceForWidth) + depth * 0.5) * padding
 }
@@ -469,23 +593,15 @@ export function fitDistance(
 /**
  * WORST-CASE identity envelope, computed from the presentation tables.
  *
- * The brief requires the identity anchor to be "only approximately 1.4–1.6× the
- * diameter of main domain nodes" and forbids a giant nucleus. Rather than assert
- * one measured sample (which says nothing about the nodes that are not present
- * today), this evaluates the extremes of the whole scale system: the smallest and
- * largest domain the tables can produce against the anchor's fixed scale.
- *
- * Lives here rather than in `presentation-profiles.ts` because it needs both the
- * radius authority (`nodeRadiusFor`) and the profile scales — and this module
- * already depends on that one, not the other way round.
+ * The brief requires the identity anchor to present at approximately 1.4–1.6× a
+ * main domain's diameter. This evaluates the extremes of the whole scale system
+ * rather than one sampled pair. Lives here because it needs both the radius
+ * authority and the profile scales.
  */
 export function identityDiameterEnvelope(): { min: number; max: number } {
   const identityRadius = nodeRadiusFor('person', 1) * RU_PROFILE_SCALE.identity
   const domainBase = nodeRadiusFor('domain', 1)
 
-  // Every profile a MAIN DOMAIN can legitimately resolve to. `identity` is
-  // excluded: a domain never maps to it (`profileForKind`), and including it
-  // would compare the anchor against itself.
   const domainProfileScales = Object.entries(RU_PROFILE_SCALE)
     .filter(([profile]) => profile !== 'identity')
     .map(([, scale]) => scale)
@@ -505,15 +621,10 @@ export function identityDiameterEnvelope(): { min: number; max: number } {
 /**
  * Is a relationship curve ENDPOINT-DRIVEN?
  *
- * True when the sampled polyline actually starts at the source node's position and
- * ends at the target's, within `epsilon`. This is the property that separates a
- * real relationship from a decorative arc: an orbit drawn around the composition
- * does not pass through the node positions it supposedly connects.
- *
- * Deliberately an exact, local check rather than a geometric "is this an ellipse"
- * detector: the brief warns against a brittle math-based orbit test, and endpoint
- * agreement is both trivially reliable and the actual product requirement
- * ("the curve should visually connect A → B").
+ * True when the sampled polyline starts at the curve's own start point and ends
+ * at its end point, within `epsilon`. This is the property that separates a real
+ * relationship from a decorative arc: an orbit drawn around the composition does
+ * not pass through the two objects it supposedly connects.
  */
 export function curveIsEndpointDriven(
   edge: Pick<UniverseEdge3D, 'samples' | 'start' | 'end'>,
@@ -529,14 +640,33 @@ export function curveIsEndpointDriven(
 }
 
 /**
+ * How far a curve's midpoint sits from the straight chord between its endpoints,
+ * as a fraction of that chord's length. This is the measurable form of "modest
+ * but clearly visible curvature": 0 is perfectly straight, ~0.05+ is visibly bent.
+ */
+export function curveBowRatio(edge: Pick<UniverseEdge3D, 'samples'>): number {
+  const samples = edge.samples
+  if (samples.length < 3) return 0
+  const first = samples[0]!
+  const last = samples[samples.length - 1]!
+  const mid = samples[Math.floor(samples.length / 2)]!
+  const chord = distance(first, last)
+  if (!(chord > 1e-6)) return 0
+  const chordMid = {
+    x: (first.x + last.x) / 2,
+    y: (first.y + last.y) / 2,
+    z: (first.z + last.z) / 2,
+  }
+  return distance(mid, chordMid) / chord
+}
+
+/**
  * How much the relationship curves differ in their distance from a point.
  *
  * A set of curves that frames the composition as orbit rings sits at a nearly
  * constant radius from the centre, so the spread of their midpoints' radii
  * collapses toward zero. A relational topology has no such common radius.
- *
- * Returns `null` when there is nothing to measure (fewer than two curves), which
- * is the honest answer rather than a misleading `0`.
+ * Returns `null` when there is nothing to measure (fewer than two curves).
  */
 export function curveMidpointRadiusSpread(
   edges: ReadonlyArray<Pick<UniverseEdge3D, 'samples'>>,
@@ -548,6 +678,14 @@ export function curveMidpointRadiusSpread(
     return distance(mid, center)
   })
   return Math.max(...radii) - Math.min(...radii)
+}
+
+/** Distance from an edge's curve start to the surface of the node it leaves. */
+export function surfaceGap(
+  edge: Pick<UniverseEdge3D, 'start'>,
+  node: Pick<UniverseNode3D, 'point' | 'radius'>,
+): number {
+  return distance(edge.start, node.point) - node.radius
 }
 
 function distance(a: UniversePoint, b: UniversePoint): number {

@@ -1,6 +1,6 @@
 ---
 /**
- * RU-06 — About: the full interactive Research Universe.
+ * RU-06 / RU-4C — About: the full interactive Research Universe.
  *
  * Semantic-first, exactly like the Home hero: every fact is HTML (a native
  * disclosure per node, a native button per relationship, and two factual panels),
@@ -8,9 +8,14 @@
  * JavaScript the whole universe is still readable and every published record is
  * still reachable.
  *
- * The experience enhances the About narrative; it does not replace it. The
- * biography sections stay exactly where they were, below this block.
+ * RU-4C layout: the graph and its contextual inspector now form ONE workspace —
+ * the inspector sits beside the graph on desktop and directly below it on narrow
+ * screens. Selection is an interaction with the graph, so the detail it produces
+ * belongs next to the interaction instead of several scroll lengths below it.
+ * The semantic node/relationship lists remain further down the page as the
+ * accessible and indexable representation of the same published facts.
  */
+import { Focus, Minus, Plus, RotateCcw, X } from 'lucide-astro'
 import type { HeroGraphModel } from '../../lib/hero-graph-content'
 import type { Locale } from '../../lib/navigation'
 import { adaptResearchUniverse } from '../../lib/research-universe/adapter'
@@ -39,6 +44,7 @@ const copy = {
   nodesHeading: { en: 'Domains and records', fa: 'دامنه‌ها و رکوردها' },
   nodesLabel: { en: 'Research universe nodes', fa: 'گره‌های جهانِ پژوهش' },
   edgesHeading: { en: 'Relationships', fa: 'رابطه‌ها' },
+  inspectorHeading: { en: 'Selection', fa: 'انتخاب' },
   nodePanelHeading: { en: 'Selected node', fa: 'گرهٔ انتخاب‌شده' },
   nodePrompt: {
     en: 'Select a node to read its summary and related records.',
@@ -131,45 +137,146 @@ const universePayloadJson =
   {
     universe != null ? (
       <>
-        <div class="ru-about__stage-wrap">
-          <div
-            class="ru-about__stage ru-scene"
-            data-universe-scene
-            data-universe-interactive="true"
-          >
-            <canvas
-              class="ru-canvas"
-              data-universe-canvas
-              aria-hidden="true"
-              hidden
-            />
-            <div class="ru-labels" data-universe-labels aria-hidden="true" />
-            <div class="ru-about__controls">
-              <button
-                class="ru-btn"
-                type="button"
-                data-universe-action="zoom-in"
+        <div class="ru-about__workspace">
+          <div class="ru-about__stage-wrap">
+            <div
+              class="ru-about__stage ru-scene"
+              data-universe-scene
+              data-universe-interactive="true"
+            >
+              <canvas
+                class="ru-canvas"
+                data-universe-canvas
+                aria-hidden="true"
+                hidden
+              />
+              <div class="ru-labels" data-universe-labels aria-hidden="true" />
+
+              {/* Compact floating control cluster. The five actions are unchanged;
+                  only their primary presentation is. Every one stays a real
+                  button with an accessible name and visible focus, so the
+                  keyboard contract is untouched. */}
+              <div
+                class="ru-controls"
+                role="group"
+                aria-label={text(copy.inspectorHeading)}
               >
-                {text(copy.zoomIn)}
-              </button>
-              <button
-                class="ru-btn"
-                type="button"
-                data-universe-action="zoom-out"
-              >
-                {text(copy.zoomOut)}
-              </button>
-              <button class="ru-btn" type="button" data-universe-action="focus">
-                {text(copy.focus)}
-              </button>
-              <button class="ru-btn" type="button" data-universe-action="reset">
-                {text(copy.reset)}
-              </button>
-              <button class="ru-btn" type="button" data-universe-action="clear">
-                {text(copy.clear)}
-              </button>
+                <button
+                  class="ru-controls__button"
+                  type="button"
+                  data-universe-action="zoom-out"
+                  aria-label={text(copy.zoomOut)}
+                  title={text(copy.zoomOut)}
+                >
+                  <Minus size={15} />
+                </button>
+                <button
+                  class="ru-controls__button"
+                  type="button"
+                  data-universe-action="zoom-in"
+                  aria-label={text(copy.zoomIn)}
+                  title={text(copy.zoomIn)}
+                >
+                  <Plus size={15} />
+                </button>
+                <button
+                  class="ru-controls__button"
+                  type="button"
+                  data-universe-action="focus"
+                  aria-label={text(copy.focus)}
+                  title={text(copy.focus)}
+                >
+                  <Focus size={15} />
+                </button>
+                <button
+                  class="ru-controls__button"
+                  type="button"
+                  data-universe-action="reset"
+                  aria-label={text(copy.reset)}
+                  title={text(copy.reset)}
+                >
+                  <RotateCcw size={15} />
+                </button>
+                <button
+                  class="ru-controls__button ru-controls__button--clear"
+                  type="button"
+                  data-universe-action="clear"
+                  aria-label={text(copy.clear)}
+                  title={text(copy.clear)}
+                >
+                  <X size={15} />
+                </button>
+              </div>
             </div>
           </div>
+
+          {/* Contextual inspector: the detail for whatever is selected, placed
+              beside the graph. One factual block per published node and per
+              published relationship; only the selected one is visible. No copy
+              is authored here beyond labels the graph itself provides. */}
+          <aside class="ru-about__inspector" aria-live="polite">
+            <div class="ru-panel" data-universe-node-panel>
+              <h3 class="ru-panel__heading">{text(copy.nodePanelHeading)}</h3>
+              <p class="ru-panel__prompt" data-universe-node-prompt>
+                {text(copy.nodePrompt)}
+              </p>
+              {nodes.map((node) => (
+                <div
+                  class="ru-panel__detail"
+                  data-universe-node-detail={node.id}
+                  hidden={node.id !== selectedId}
+                >
+                  <p class="ru-panel__label">{node.label}</p>
+                  <p class="ru-panel__meta">
+                    {levelLabel(node.level)} · {node.kind} · {node.type}
+                  </p>
+                  {node.summary != null ? (
+                    <p class="ru-panel__summary">{node.summary}</p>
+                  ) : null}
+                  {node.related.length > 0 ? (
+                    <ul class="ru-panel__links">
+                      {node.related.map((link) => (
+                        <li>
+                          <a class="ru-panel__link" href={link.href}>
+                            {relatedLinkLabel(link.family, link.id)}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : null}
+                </div>
+              ))}
+            </div>
+
+            <div class="ru-panel" data-universe-edge-panel>
+              <h3 class="ru-panel__heading">{text(copy.edgePanelHeading)}</h3>
+              <p class="ru-panel__prompt" data-universe-edge-prompt>
+                {text(copy.edgePrompt)}
+              </p>
+              {edges.map((edge) => (
+                <div
+                  class="ru-panel__detail"
+                  data-universe-edge-detail={edge.id}
+                  hidden
+                >
+                  <p class="ru-panel__label">
+                    {labelById.get(edge.source) ?? edge.source}
+                    <span aria-hidden="true"> → </span>
+                    {labelById.get(edge.target) ?? edge.target}
+                  </p>
+                  <p class="ru-panel__meta">
+                    {relationLabel(edge.relationType)}
+                    {edge.directed
+                      ? ` · ${locale === 'fa' ? 'جهت‌دار' : 'directed'}`
+                      : ''}
+                  </p>
+                  {edge.explanation != null ? (
+                    <p class="ru-panel__summary">{edge.explanation}</p>
+                  ) : null}
+                </div>
+              ))}
+            </div>
+          </aside>
         </div>
 
         {universePayloadJson != null ? (
@@ -180,42 +287,9 @@ const universePayloadJson =
           />
         ) : null}
 
-        {/* Factual node panel: one block per published node, only the selected
-            one visible. No copy is authored here beyond labels the graph itself
-            provides. */}
-        <div class="ru-panel" data-universe-node-panel aria-live="polite">
-          <h3 class="ru-panel__heading">{text(copy.nodePanelHeading)}</h3>
-          <p class="ru-panel__prompt" data-universe-node-prompt>
-            {text(copy.nodePrompt)}
-          </p>
-          {nodes.map((node) => (
-            <div
-              class="ru-panel__detail"
-              data-universe-node-detail={node.id}
-              hidden={node.id !== selectedId}
-            >
-              <p class="ru-panel__label">{node.label}</p>
-              <p class="ru-panel__meta">
-                {levelLabel(node.level)} · {node.kind} · {node.type}
-              </p>
-              {node.summary != null ? (
-                <p class="ru-panel__summary">{node.summary}</p>
-              ) : null}
-              {node.related.length > 0 ? (
-                <ul class="ru-panel__links">
-                  {node.related.map((link) => (
-                    <li>
-                      <a class="ru-panel__link" href={link.href}>
-                        {relatedLinkLabel(link.family, link.id)}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              ) : null}
-            </div>
-          ))}
-        </div>
-
+        {/* Accessible and indexable representation of the same published facts.
+            Kept below the interactive workspace on purpose: the graph plus its
+            inspector is the primary experience, this is its semantic twin. */}
         <h3 class="ru-panel__heading" id="about-universe-nodes">
           {text(copy.nodesHeading)}
         </h3>
@@ -229,6 +303,7 @@ const universePayloadJson =
               class="ru-node"
               data-universe-node={node.id}
               data-universe-label={node.label}
+              data-universe-label-meta={levelLabel(node.level)}
               data-universe-level={String(node.level)}
               data-universe-kind={node.kind}
               data-selected={node.id === selectedId ? 'true' : 'false'}
@@ -263,37 +338,8 @@ const universePayloadJson =
           ))}
         </ul>
 
-        {/* Relationship panel: edges are first-class, so they get their own
-            factual panel rather than being reduced to decoration. */}
-        <div class="ru-panel" data-universe-edge-panel aria-live="polite">
-          <h3 class="ru-panel__heading">{text(copy.edgePanelHeading)}</h3>
-          <p class="ru-panel__prompt" data-universe-edge-prompt>
-            {text(copy.edgePrompt)}
-          </p>
-          {edges.map((edge) => (
-            <div
-              class="ru-panel__detail"
-              data-universe-edge-detail={edge.id}
-              hidden
-            >
-              <p class="ru-panel__label">
-                {labelById.get(edge.source) ?? edge.source}
-                <span aria-hidden="true"> → </span>
-                {labelById.get(edge.target) ?? edge.target}
-              </p>
-              <p class="ru-panel__meta">
-                {relationLabel(edge.relationType)}
-                {edge.directed
-                  ? ` · ${locale === 'fa' ? 'جهت‌دار' : 'directed'}`
-                  : ''}
-              </p>
-              {edge.explanation != null ? (
-                <p class="ru-panel__summary">{edge.explanation}</p>
-              ) : null}
-            </div>
-          ))}
-        </div>
-
+        {/* Relationship index: edges are first-class, so they keep their own
+            reachable list rather than being reduced to decoration. */}
         {edges.length > 0 ? (
           <div class="ru-edges">
             <h3 class="ru-panel__heading">{text(copy.edgesHeading)}</h3>

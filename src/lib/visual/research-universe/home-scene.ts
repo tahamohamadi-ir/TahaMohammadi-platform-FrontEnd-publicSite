@@ -33,6 +33,7 @@ import { createUniverseEdges, type UniverseEdgeVisuals } from './edges'
 import { createUniverseNodes, type UniverseNodeVisuals } from './nodes'
 import { createUniverseMaterials } from './materials'
 import {
+  compositionTarget,
   computeUniverseLayout,
   fitDistance,
   type UniverseLayout,
@@ -129,6 +130,12 @@ export function createHomeScene(
     universe.nodes,
     universe.edges,
   )
+  /**
+   * RU-4C composition: the camera looks at the DOMAIN CENTROID, so the identity
+   * node is not the geometric centre of the frame while the three domains stay
+   * balanced around it. Positions themselves are untouched.
+   */
+  const frameCenter = compositionTarget(layout.nodes)
 
   model.add(core.groups.edges)
   model.add(core.groups.nodes)
@@ -200,11 +207,11 @@ export function createHomeScene(
     model.rotation.y = pose.yaw
     model.rotation.x = pose.pitch
     core.camera.position.set(
-      0,
-      0,
+      frameCenter.x,
+      frameCenter.y,
       Math.max(baseDistance * pose.distanceScale - pose.push, 40),
     )
-    core.camera.lookAt(0, 0, 0)
+    core.camera.lookAt(frameCenter.x, frameCenter.y, frameCenter.z)
     edges.setEmphasis({
       selectedNodeId: selectedId,
       selectedEdgeId,
@@ -252,6 +259,7 @@ export function createHomeScene(
       width / Math.max(height, 1),
       FOV,
       result.isMobile ? MOBILE_FIT_PADDING : DESKTOP_FIT_PADDING,
+      frameCenter,
     )
     stats = { ...stats, pixelRatio: result.pixelRatio }
     applyPose(currentPose)

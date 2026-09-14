@@ -278,17 +278,67 @@ async function main() {
     written.push(file)
     return file
   }
-  const stageShot = async (page, name, selector) => {
+  const stageShot = async (page, name, selector, hideSelectors = []) => {
     const file = `${name}.png`
+    // The stage's rectangle is taller than the graph it contains, so a plain
+    // element screenshot also captures whatever page furniture overlaps that
+    // rectangle — measured: the first row of the semantic node list (a pill
+    // reading the owner's name) appeared in the Home crop and made a
+    // "graph-only" artefact ambiguous. The overlapping elements are hidden for
+    // the duration of the capture and restored immediately. No product markup
+    // or style is touched.
+    if (hideSelectors.length > 0) {
+      await page.evaluate((selectors) => {
+        for (const sel of selectors) {
+          for (const element of document.querySelectorAll(sel)) {
+            element.setAttribute(
+              'data-crop-hide-style',
+              element.getAttribute('style') ?? '',
+            )
+            element.style.visibility = 'hidden'
+          }
+        }
+      }, hideSelectors)
+      await page.waitForTimeout(120)
+    }
     await page
       .locator(selector)
       .first()
       .screenshot({
         path: resolve(OUT_DIR, file),
       })
+    if (hideSelectors.length > 0) {
+      await page.evaluate(() => {
+        for (const element of document.querySelectorAll(
+          '[data-crop-hide-style]',
+        )) {
+          element.setAttribute(
+            'style',
+            element.getAttribute('data-crop-hide-style') ?? '',
+          )
+          element.removeAttribute('data-crop-hide-style')
+        }
+      })
+    }
     written.push(file)
     return file
   }
+
+  /**
+   * Page furniture that overlaps a stage's rectangle in the two experiences: the
+   * semantic node/relationship lists and the About intro copy that follow the
+   * graph. Hidden only while a graph-only crop is taken.
+   */
+  const CROP_HIDE = [
+    '.hg-node-list',
+    '.hg-edges',
+    '.ru-nodes',
+    '.ru-edges',
+    '.ru-about__inspector',
+    '.ru-about__lead',
+    '.ru-about__heading',
+    '.hg__heading',
+  ]
 
   let browser
   try {
@@ -325,7 +375,7 @@ async function main() {
     }
     // Graph-only crop (shot 19) — the primary owner-review artefact.
     measurements.shots.cropDark = {
-      shot: await stageShot(home, '19-crop-home-dark', homeStage),
+      shot: await stageShot(home, '19-crop-home-dark', homeStage, CROP_HIDE),
     }
 
     // Sweep the document and capture the first sighting of each designed state.
@@ -385,7 +435,7 @@ async function main() {
         state: await regionState(home, HOME_REGION),
       }
       measurements.shots.cropLight = {
-        shot: await stageShot(home, '20-crop-home-light', homeStage),
+        shot: await stageShot(home, '20-crop-home-light', homeStage, CROP_HIDE),
       }
       // A representative scrolled state, not the initial one.
       await home.evaluate(
@@ -420,6 +470,9 @@ async function main() {
       state: await regionState(about, ABOUT_REGION),
       labels: await labels(about),
     }
+    measurements.shots.aboutDark.graphCrop = {
+      shot: await stageShot(about, '21-crop-about-dark', aboutStage, CROP_HIDE),
+    }
 
     // Rotations: drag the stage left/right. Box is re-read after scrolling.
     const aboutBox = await about.locator(aboutStage).first().boundingBox()
@@ -430,7 +483,7 @@ async function main() {
       await about.mouse.down()
       await about.mouse.move(cx + dx / 2, cy, { steps: 12 })
       await about.mouse.up()
-      await about.waitForTimeout(350)
+      await about.waitForTimeout(700)
     }
     await drag(260)
     measurements.shots.aboutDark.rotatedPositive = {
@@ -451,7 +504,7 @@ async function main() {
       .locator('[data-universe-node="identity"] summary')
       .first()
       .click()
-    await about.waitForTimeout(450)
+    await about.waitForTimeout(700)
     measurements.shots.aboutDark.selectedIdentity = {
       shot: await shot(about, '09-about-dark-selected-identity'),
       state: await regionState(about, ABOUT_REGION),
@@ -461,7 +514,7 @@ async function main() {
       .locator('[data-universe-node="research-topic-1"] summary')
       .first()
       .click()
-    await about.waitForTimeout(450)
+    await about.waitForTimeout(700)
     measurements.shots.aboutDark.selectedDomain = {
       shot: await shot(about, '10-about-dark-selected-domain'),
       state: await regionState(about, ABOUT_REGION),
@@ -476,7 +529,7 @@ async function main() {
         .locator(`[data-universe-edge="${firstEdgeId}"] button`)
         .first()
         .click()
-      await about.waitForTimeout(450)
+      await about.waitForTimeout(700)
       measurements.shots.aboutDark.selectedRelationship = {
         shot: await shot(about, '11-about-dark-selected-relationship'),
         state: await regionState(about, ABOUT_REGION),
@@ -486,7 +539,7 @@ async function main() {
     await about.locator('[data-universe-action="clear"]').first().click()
     await about.locator('[data-universe-action="zoom-in"]').first().click()
     await about.locator('[data-universe-action="zoom-in"]').first().click()
-    await about.waitForTimeout(450)
+    await about.waitForTimeout(700)
     measurements.shots.aboutDark.zoomed = {
       shot: await shot(about, '12-about-dark-zoomed'),
       state: await regionState(about, ABOUT_REGION),
@@ -539,7 +592,12 @@ async function main() {
     await mobile.waitForTimeout(800)
     measurements.shots.mobile = {}
     measurements.shots.mobile.homeDark = {
-      shot: await shot(mobile, '15-mobile-home-dark', { fullPage: false }),
+      shot: await stageShot(
+        mobile,
+        '15-mobile-home-dark',
+        homeStage,
+        CROP_HIDE,
+      ),
       state: await regionState(mobile, HOME_REGION),
     }
     await mobile.locator(homeStage).first().scrollIntoViewIfNeeded()
@@ -559,7 +617,12 @@ async function main() {
     if (await ensureTheme(mobile, 'light')) {
       await mobile.waitForTimeout(400)
       measurements.shots.mobile.homeLight = {
-        shot: await shot(mobile, '16-mobile-home-light'),
+        shot: await stageShot(
+          mobile,
+          '16-mobile-home-light',
+          homeStage,
+          CROP_HIDE,
+        ),
         state: await regionState(mobile, HOME_REGION),
       }
     }

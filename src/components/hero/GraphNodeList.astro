@@ -26,6 +26,22 @@ const {
   universe = false,
 } = Astro.props
 
+/**
+ * RU-4C — the label's second, short line.
+ *
+ * Both sources are real published content: the identity may use the page's
+ * published tagline, and every other node uses the PUBLISHED semantic level,
+ * already localized by this component's own vocabulary. No authored descriptor
+ * is invented here — richer per-domain descriptors would have to come from
+ * published content (see the RU-4C report).
+ */
+const levelLabel = (level: number) => {
+  if (level === 0) return locale === 'fa' ? 'هویت' : 'identity'
+  if (level === 1) return locale === 'fa' ? 'دامنهٔ اصلی' : 'main domain'
+  if (level === 2) return locale === 'fa' ? 'زیردامنه' : 'subdomain'
+  return locale === 'fa' ? 'خروجی' : 'output'
+}
+
 const relatedLinkLabel =
   locale === 'fa'
     ? (family: string, id: string) => `مشاهدهٔ رکورد ${family} (${id})`
@@ -51,6 +67,9 @@ const relatedLinkLabel =
           }
           data-universe-level={
             universe ? String(classifyNodeType(node.type).level) : undefined
+          }
+          data-universe-label-meta={
+            universe ? levelLabel(classifyNodeType(node.type).level) : undefined
           }
         >
           <details

@@ -25,6 +25,7 @@ import {
   RU_PROFILE_BY_LABEL,
   RU_PROFILE_CHARACTER,
   RU_PROFILE_SCALE,
+  mixHex,
   normalizeLabel,
   resolvePresentationProfile,
   resolveProfileRegistry,
@@ -50,6 +51,17 @@ const PALETTE: ScenePalette = {
   research: '#8b75dc',
   context: '#42a98c',
   surface: '#0b1630',
+}
+
+/** The published palette roles in the LIGHT theme, as the CSS tokens define them. */
+const LIGHT_PALETTE: ScenePalette = {
+  canvas: '#f7f8f5',
+  ink: '#182328',
+  brand: '#087c73',
+  signature: '#a77b28',
+  research: '#6047b8',
+  context: '#137a62',
+  surface: '#ffffff',
 }
 
 /**
@@ -179,26 +191,74 @@ describe('presentation — deterministic, token-driven material profiles', () =>
     }
   })
 
-  it('resolves every profile from an EXISTING design token', () => {
-    for (const profile of RU_MATERIAL_PROFILES) {
-      const role = RU_PROFILE_CHARACTER[profile].colorRole
-      expect(Object.keys(PALETTE)).toContain(role)
-    }
-    const resolved = resolveProfileRegistry(PALETTE, 0.34)
-    for (const profile of RU_MATERIAL_PROFILES) {
-      const entry = resolved[profile]
-      // The colour is the palette value verbatim — no interpolation, no literal.
-      expect(entry.color).toBe(PALETTE[RU_PROFILE_CHARACTER[profile].colorRole])
+  it('derives every profile colour from an EXISTING design token', () => {
+    // RU-4C mineralises each profile: a token colour mixed a bounded amount
+    // toward a neutral role. So the assertion is not "equals the token" (that was
+    // the RU-4B contract) but "is exactly the DECLARED derivation of a real
+    // token" — which still forbids an arbitrary literal appearing anywhere.
+    for (const mode of ['dark', 'light'] as const) {
+      const palette = mode === 'dark' ? PALETTE : LIGHT_PALETTE
+      const resolved = resolveProfileRegistry(palette, 0.3, mode)
+      for (const profile of RU_MATERIAL_PROFILES) {
+        const character = RU_PROFILE_CHARACTER[profile]
+        expect(Object.keys(palette)).toContain(character.colorRole)
+        const base = palette[character.colorRole]
+        const expected = character.mix
+          ? mixHex(
+              base,
+              palette[character.mix.toward],
+              mode === 'dark' ? character.mix.dark : character.mix.light,
+            )
+          : base
+        expect(resolved[profile].color, profile + ' (' + mode + ')').toBe(
+          expected,
+        )
+        expect(resolved[profile].color).toMatch(/^#[0-9a-f]{6}$/)
+      }
     }
   })
 
-  it('maps the language profile to the existing `research` token, not a new one', () => {
+  it('maps the language profile to the existing research token, not a new one', () => {
     // Owner decision: no cobalt token is added. `research` is the existing
-    // semantic role for research/inquiry, so the language profile uses it.
+    // semantic role for research/inquiry, and RU-4C mineralises it toward the
+    // canvas so it stops reading as generic UI purple.
     expect(RU_PROFILE_CHARACTER.language.colorRole).toBe('research')
-    expect(resolveProfileRegistry(PALETTE, 0.34).language.color).toBe(
-      PALETTE.research,
+    const resolved = resolveProfileRegistry(PALETTE, 0.3, 'dark')
+    expect(resolved.language.color).not.toBe(PALETTE.research)
+    expect(mixHex(PALETTE.research, PALETTE.canvas, 0.26)).toBe(
+      resolved.language.color,
     )
+  })
+
+  it('never renders the identity anchor white, in either theme', () => {
+    // The defect this asserts against: the anchor borrowed the white-based
+    // registry material (registry bases must stay white so instanced nodes are
+    // not tinted twice), so the one node the direction says must NOT be white —
+    // and the one that should be the perceptual centre — rendered white/grey.
+    for (const mode of ['dark', 'light'] as const) {
+      const ledger = new UniverseLedger()
+      const theme = buildUniverseTheme(
+        mode === 'dark' ? PALETTE : LIGHT_PALETTE,
+        mode,
+      )
+      const materials = createUniverseMaterials(ledger, theme)
+      const color = materials.anchorMaterial.color
+      expect(color.getHexString(), mode).not.toBe('ffffff')
+      // And it is genuinely a coloured body, not a near-white grey.
+      expect(color.r + color.g + color.b, mode).toBeLessThan(2.75)
+      ledger.dispose()
+    }
+  })
+
+  it('gives the identity the mineralised profile colour, not the instancing base', () => {
+    const ledger = new UniverseLedger()
+    const theme = buildUniverseTheme(PALETTE, 'dark')
+    const materials = createUniverseMaterials(ledger, theme)
+    const identity = resolveProfileRegistry(PALETTE, 0.3, 'dark').identity
+    expect(materials.anchorMaterial.color.getHexString()).toBe(
+      identity.color.replace('#', ''),
+    )
+    ledger.dispose()
   })
 
   it('resolves the same profile for the same label, every call', () => {

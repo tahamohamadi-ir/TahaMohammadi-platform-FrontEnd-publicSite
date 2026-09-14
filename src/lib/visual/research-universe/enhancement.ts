@@ -425,6 +425,8 @@ export async function enhanceUniverseRegion(
   let selectedNodeId: string | null = options.initialSelectedId ?? null
   let selectedEdgeId: string | null = null
   const labelById = new Map<string, string>()
+  /** One short secondary line per node, from the published semantic level. */
+  const labelMetaById = new Map<string, string>()
   const nodeElements = Array.from(
     region.querySelectorAll<HTMLElement>('[data-universe-node]'),
   )
@@ -436,6 +438,8 @@ export async function enhanceUniverseRegion(
       attr(element, 'data-universe-node') ?? attr(element, 'data-universe-edge')
     const label = attr(element, 'data-universe-label')
     if (id && label) labelById.set(id, label)
+    const meta = attr(element, 'data-universe-label-meta')
+    if (id && meta) labelMetaById.set(id, meta)
   }
 
   function incidentNodeIds(id: string | null): Set<string> | null {
@@ -689,8 +693,17 @@ export async function enhanceUniverseRegion(
       labelLayer = (
         labelsModule.createLabelLayer as (o: {
           container: HTMLElement
+          variant?: 'chip' | 'editorial'
+          metaById?: ReadonlyMap<string, string>
         }) => typeof labelLayer
-      )({ container: labelsContainer })
+      )({
+        container: labelsContainer,
+        // Home uses the editorial variant (plain type + hairline leader, no
+        // box); About keeps the chip because its labels are interaction targets
+        // sitting over a taller, busier stage.
+        variant: options.mode === 'home' ? 'editorial' : 'chip',
+        metaById: labelMetaById,
+      })
     } catch {
       labelLayer = null
     }
