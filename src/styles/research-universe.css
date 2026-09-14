@@ -46,6 +46,27 @@
   display: none;
 }
 
+/* The canvas is a PRESENTATION layer, never a layout participant.
+   With no CSS size, a canvas's used width comes from its `width` attribute, and
+   the scene writes that attribute from `stage.clientWidth` on every resize
+   (`scene-core.ts` calls `renderer.setSize(w, h, false)` and deliberately never
+   touches styles). The attribute then becomes an intrinsic min-content floor for
+   every ancestor track, so after a wide layout has been measured the chain can no
+   longer shrink: shrinking the viewport to mobile left the stage at its desktop
+   width, the page overflowed horizontally, and the next `applySize()` re-read the
+   inflated `stage.clientWidth` and grew the canvas again (measured: 927px stage
+   at a 390px viewport, then 1390px after one resize event).
+   `.ru-labels` and `.ru-leaders` are already absolutely positioned for the same
+   reason; the canvas now matches them, so the scene slot's size is decided by CSS
+   alone and `stage.clientWidth` is always the true available width. */
+.ru-about__stage > .ru-canvas {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  min-inline-size: 0;
+}
+
 /* Projected labels: decorative pointer shortcuts, never a keyboard tree. */
 .ru-labels {
   position: absolute;
@@ -202,6 +223,22 @@ html[data-theme='light'] .ru-leaders line {
     min-block-size: 70vh;
     block-size: 80vh;
     max-block-size: 85vh;
+  }
+}
+
+/* Mobile: the enclosing page template already supplies the page gutter
+   (`24px` in `.tm-template__main`), so repeating a 16px inset inside the section
+   only shrank the stage — 293px at a 390px viewport, below the 320–360px the
+   mobile contract asks for. Text keeps the template's gutter either way. */
+@media (max-width: 640px) {
+  .ru-about {
+    padding-inline: 0;
+  }
+
+  /* Long domain names ("Story-Driven Dashboard Design Framework") otherwise take
+     most of a narrow stage, leaving the graph almost no room to read. */
+  .ru-about .ru-label {
+    max-inline-size: 9rem;
   }
 }
 

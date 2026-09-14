@@ -325,6 +325,25 @@ test.describe('RU-2 Home universe', () => {
         .toBeLessThanOrEqual(1.5)
 
       await page.setViewportSize({ width: 390, height: 844 })
+      // Wait for the resize handler to land, exactly like the desktop case above.
+      // Measured without this wait the read can still see the DESKTOP backing store
+      // (638/260 = 2.4538) purely because the scene applies its clamp on the resize
+      // event. Polling does not weaken the ceiling: a genuine violation stays above
+      // 1 and times the poll out.
+      await expect
+        .poll(async () =>
+          page.evaluate((selector) => {
+            const element = document.querySelector(
+              selector,
+            ) as HTMLCanvasElement
+            return (
+              Math.round(
+                (element.width / Math.max(element.clientWidth, 1)) * 100,
+              ) / 100
+            )
+          }, canvas),
+        )
+        .toBeLessThanOrEqual(1)
       const mobile = await page.evaluate((selector) => {
         const element = document.querySelector(selector) as HTMLCanvasElement
         return {

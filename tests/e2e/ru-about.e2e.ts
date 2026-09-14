@@ -483,6 +483,24 @@ test.describe('RU-2 About universe', () => {
     // Mobile DPR ceiling of 1.0.
     expect(metrics.width).toBeLessThanOrEqual(metrics.clientWidth)
     expect(metrics.clientWidth).toBeLessThan(768)
+
+    // The stage must fit the mobile content box. It used to be 293px wide
+    // because the section repeated the template's page gutter.
+    const stageBox = await page.locator(stage).boundingBox()
+    expect(stageBox?.width ?? 0).toBeGreaterThanOrEqual(320)
+    expect(stageBox?.width ?? 0).toBeLessThanOrEqual(360)
+    // The canvas is the stage's own size, not an independently sized box.
+    expect(metrics.clientWidth).toBeLessThanOrEqual(
+      await page.locator(stage).evaluate((el) => el.clientWidth),
+    )
+
+    // No horizontal page overflow, with a tolerance for scrollbar rounding.
+    const scroll = await page.evaluate(() => ({
+      doc: document.documentElement.scrollWidth,
+      inner: window.innerWidth,
+    }))
+    expect(scroll.doc).toBeLessThanOrEqual(scroll.inner + 2)
+
     // The universe is still interactive by real pointer input at this width.
     await drag(page, 90, 30)
     expect(
@@ -499,6 +517,114 @@ test.describe('RU-2 About universe', () => {
       'data-universe-selection',
       'true',
     )
+  })
+
+  test('15b. mobile canonical view keeps every node inside the stage', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 390, height: 844 })
+    await page.goto(ABOUT)
+    await expect(page.locator(region)).toHaveAttribute(
+      'data-universe-enhancement',
+      'enhanced',
+    )
+    await page.locator(stage).scrollIntoViewIfNeeded()
+    await page.waitForTimeout(500)
+
+    const box = await page.locator(stage).boundingBox()
+    const width = box?.width ?? 0
+    const height = box?.height ?? 0
+    expect(width).toBeGreaterThan(0)
+
+    // Node positions are published on the label chips (`style.left/top` is the
+    // projected node CENTRE; the chip itself is raised above it), so this needs
+    // no debug hook in product code.
+    const nodes = await page.evaluate(() =>
+      Array.from(document.querySelectorAll('.ru-label'))
+        .filter((element) => !(element as HTMLElement).hidden)
+        .map((element) => ({
+          id: element.getAttribute('data-projected-label') ?? '',
+          x: Number.parseFloat((element as HTMLElement).style.left),
+          y: Number.parseFloat((element as HTMLElement).style.top),
+        })),
+    )
+    expect(nodes.length).toBeGreaterThanOrEqual(4)
+    // Every main node projects inside the stage, not off its edge.
+    for (const node of nodes) {
+      expect(node.x).toBeGreaterThanOrEqual(0)
+      expect(node.x).toBeLessThanOrEqual(width)
+      expect(node.y).toBeGreaterThanOrEqual(0)
+      expect(node.y).toBeLessThanOrEqual(height)
+    }
+
+    // And the constellation is centred, not pushed into a corner.
+    const centroidX =
+      nodes.reduce((sum, node) => sum + node.x, 0) / nodes.length
+    const centroidY =
+      nodes.reduce((sum, node) => sum + node.y, 0) / nodes.length
+    expect(Math.abs(centroidX - width / 2)).toBeLessThan(width * 0.16)
+    expect(Math.abs(centroidY - height / 2)).toBeLessThan(height * 0.16)
+
+    // Labels stay readable: every chip is on screen and intersects the stage.
+    const chips = await page.evaluate(() => {
+      const scene = document.querySelector('[data-universe-scene]')
+      const sceneBox = scene?.getBoundingClientRect()
+      return Array.from(document.querySelectorAll('.ru-label'))
+        .filter((element) => !(element as HTMLElement).hidden)
+        .map((element) => {
+          const rect = element.getBoundingClientRect()
+          const text = (element as HTMLElement).innerText.trim()
+          return {
+            text,
+            overflowsLeft: sceneBox != null && rect.left < sceneBox.left - 1,
+            overflowsRight: sceneBox != null && rect.right > sceneBox.right + 1,
+            clippedText: text.length === 0,
+          }
+        })
+    })
+    expect(chips.length).toBe(nodes.length)
+    for (const chip of chips) {
+      expect(chip.clippedText).toBe(false)
+      expect(chip.overflowsLeft).toBe(false)
+      expect(chip.overflowsRight).toBe(false)
+    }
+  })
+
+  test('15c. shrinking the viewport can never leave the stage wider than it', async ({
+    page,
+  }) => {
+    // Regression guard: the canvas used to be laid out from its own backing-store
+    // attributes, which the scene writes from `stage.clientWidth`. That made the
+    // old, wide size an intrinsic floor for every ancestor track, so a shrink to
+    // mobile kept the desktop stage width (927px at a 390px viewport), overflowed
+    // the page and then grew the canvas again on the next resize event.
+    await page.setViewportSize({ width: 1024, height: 800 })
+    await openAbout(page)
+    await page.setViewportSize({ width: 390, height: 844 })
+    await page.waitForTimeout(600)
+
+    const state = await page.evaluate(
+      (selectors) => {
+        const scene = document.querySelector(selectors.stage) as HTMLElement
+        const element = document.querySelector(
+          selectors.canvas,
+        ) as HTMLCanvasElement
+        return {
+          inner: window.innerWidth,
+          doc: document.documentElement.scrollWidth,
+          stage: scene.clientWidth,
+          canvasCss: element.clientWidth,
+          canvasBacking: element.width,
+        }
+      },
+      { stage, canvas },
+    )
+
+    expect(state.doc).toBeLessThanOrEqual(state.inner + 2)
+    expect(state.stage).toBeLessThanOrEqual(state.inner)
+    expect(state.canvasCss).toBeLessThanOrEqual(state.stage)
+    // The scene re-measured itself for the new width (mobile DPR ceiling = 1).
+    expect(state.canvasBacking).toBeLessThanOrEqual(state.stage)
   })
 
   test('16. prefers-reduced-motion stays usable', async ({ page }) => {

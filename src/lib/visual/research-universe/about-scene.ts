@@ -424,6 +424,11 @@ export function createAboutScene(options: {
         layout.bounds,
         width / Math.max(height, 1),
         FOV,
+        // A projected label chip is drawn ABOVE its node and can be up to 9rem
+        // wide, so a narrow stage needs more edge room than the desktop's 1.14:
+        // at 1.14 the canonical mobile view pushed the left-hand chip outside the
+        // clipped stage (measured: label left = -18px at a 390px viewport).
+        mobile ? 1.34 : 1.14,
       )
       applyOrbit()
       stats = { ...stats, pixelRatio: result.pixelRatio }
