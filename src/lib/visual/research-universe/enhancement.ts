@@ -83,6 +83,12 @@ interface UniverseSceneHandle {
   setProgress(progress: number): void
   setSelection(selectedId: string | null): void
   setSelectedEdge?(edgeId: string | null): void
+  /**
+   * Pointer-hover response (RU-4B). Optional: it exists so the +2% hover state
+   * has one implementation in the scene, and a scene without it degrades to no
+   * hover response rather than to a highlight drawn in the DOM layer.
+   */
+  setHovered?(nodeId: string | null): void
   selectAt?(
     x: number,
     y: number,

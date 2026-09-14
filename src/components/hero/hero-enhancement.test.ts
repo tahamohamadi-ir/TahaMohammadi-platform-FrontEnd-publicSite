@@ -188,10 +188,6 @@ function buildReadyRegion(status = 'ready'): {
   canvas.hidden = true
   stage.appendChild(canvas)
 
-  const orbit = new MockElement('svg')
-  orbit.setAttribute('class', 'hg-orbit')
-  stage.appendChild(orbit)
-
   const nodesList = new MockElement('ul')
   nodesList.setAttribute('data-graph-nodes', '')
   for (const id of ['node-01', 'node-02']) {

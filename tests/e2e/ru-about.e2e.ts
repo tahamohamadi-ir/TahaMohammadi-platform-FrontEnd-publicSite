@@ -129,22 +129,36 @@ test.describe('RU-2 About universe', () => {
         const ctor = (
           window as unknown as Record<string, { prototype?: unknown }>
         )[name]
+        type DrawEntry = (...args: unknown[]) => unknown
         const proto = ctor?.prototype as
-          | {
-              drawArrays?: (...args: unknown[]) => unknown
-              drawElements?: (...args: unknown[]) => unknown
-            }
+          | Partial<
+              Record<
+                | 'drawArrays'
+                | 'drawElements'
+                | 'drawArraysInstanced'
+                | 'drawElementsInstanced',
+                DrawEntry
+              >
+            >
           | undefined
-        if (!proto?.drawArrays || !proto.drawElements) continue
-        const originalArrays = proto.drawArrays
-        const originalElements = proto.drawElements
-        proto.drawArrays = function (this: unknown, ...args: unknown[]) {
-          bump()
-          return originalArrays.apply(this, args)
-        }
-        proto.drawElements = function (this: unknown, ...args: unknown[]) {
-          bump()
-          return originalElements.apply(this, args)
+        if (!proto) continue
+        // Instanced draws are a DIFFERENT entry point: three.js renders an
+        // `InstancedMesh` with `drawElementsInstanced`, so patching only the
+        // non-instanced pair makes every instanced batch invisible to this
+        // counter — and an idle-rendering assertion would then pass against
+        // nothing.
+        for (const method of [
+          'drawArrays',
+          'drawElements',
+          'drawArraysInstanced',
+          'drawElementsInstanced',
+        ] as const) {
+          const original = proto[method]
+          if (typeof original !== 'function') continue
+          proto[method] = function patched(this: unknown, ...args: unknown[]) {
+            bump()
+            return original.apply(this, args)
+          }
         }
       }
     })

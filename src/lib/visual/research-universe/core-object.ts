@@ -1,100 +1,69 @@
 /**
- * RU-02 — The central core.
+ * RU-4B — The identity anchor.
  *
- * The anchor is rendered as a layered nucleus: a faceted inner solid, a thin
- * back-face shell for volume, and two fine rings on different axes. Restraint is
- * the point — it should read as a precision instrument, not a glowing planet:
- * no bloom, no fresnel shader, no particle field, and only three added draw
- * calls over the nodes and edges.
+ * The anchor ("Taha Mohammadi") is ONE sphere using the SAME shared geometry as
+ * every other node, presented through the `identity` material profile. That is the
+ * whole object.
  *
- * When the published graph carries an identity node, this core IS that node; the
- * caller decides the selection/hit-testing identity, so nothing here invents a
- * research record.
+ * What was removed and why — the previous generation rendered a layered nucleus:
+ * a faceted `IcosahedronGeometry` inner solid, a back-face shell and two
+ * `TorusGeometry` rings on different axes. That is three separate primitives and
+ * two full circles, and it broke three of the brief's rules at once:
+ *
+ * - "all primary graph nodes use ONE shared simple sphere geometry" — an
+ *   icosahedron is a different mesh;
+ * - "no concentric circles / no circular trajectories" — the two rings ARE full
+ *   torus circles around the centre, the single strongest "atom / planetary"
+ *   cue in the whole composition;
+ * - "no custom shells / mechanical forms / futuristic machinery" — the faceted
+ *   solid plus its shell is a bespoke instrument silhouette, not a designed
+ *   object.
+ *
+ * The anchor's prominence now comes from scale alone (1.4–1.6× a main domain's
+ * diameter, asserted in `presentation.test.ts`) plus its material character,
+ * which is exactly what the brief asks for.
  */
 
 import * as THREE from 'three'
-import { UniverseLedger } from './dispose'
-import { roleColor, type UniverseMaterials } from './materials'
-import type { UniverseRenderTheme } from './theme'
+import { sharedSphereGeometry } from './spheres'
+import type { UniverseMaterials } from './materials'
 
 export interface UniverseCoreVisuals {
   group: THREE.Group
-  /** Inner solid, exposed so a caller can orient it (hero tilt reads better). */
+  /** The sphere itself, exposed so the caller can hit-test or inspect it. */
   solid: THREE.Mesh
-  applyTheme(theme: UniverseRenderTheme): void
+  /** Radius in scene units, so a caller never re-derives the scale. */
+  radius: number
 }
 
 export interface UniverseCoreOptions {
   radius: number
-  /** Ring rotation offsets, so two cores never share the same silhouette. */
-  seed?: number
 }
 
+/**
+ * Build the anchor sphere.
+ *
+ * No ledger and no theme parameter: the geometry is process-shared and the
+ * material is a registry material owned by `createUniverseMaterials`, which the
+ * node layer re-tints in place on a theme change. The anchor therefore holds no
+ * disposable resource of its own, and there is nothing here to dispose.
+ */
 export function createUniverseCore(
-  ledger: UniverseLedger,
-  theme: UniverseRenderTheme,
   materials: UniverseMaterials,
   options: UniverseCoreOptions,
 ): UniverseCoreVisuals {
   const group = new THREE.Group()
   group.name = 'universe-core'
-  const radius = Math.max(options.radius, 3)
-  const seed = options.seed ?? 0
+  const radius = Math.max(options.radius, 1)
 
-  // Faceted inner solid: an icosahedron keeps the instrument read at low cost
-  // (detail 1 = 80 triangles).
-  const solidGeometry = ledger.track(
-    new THREE.IcosahedronGeometry(radius * 0.62, 1),
+  // The same unit sphere every other node uses; scale supplies the size.
+  const solid = new THREE.Mesh(
+    sharedSphereGeometry(),
+    materials.nodeMaterials.fine.identity,
   )
-  const solidMaterial = ledger.trackMaterial(materials.coreMaterial.clone())
-  const solid = new THREE.Mesh(solidGeometry, solidMaterial)
   solid.name = 'universe-core-solid'
-  solid.rotation.set(0.36 + seed * 0.1, 0.52 - seed * 0.08, 0.18)
+  solid.scale.setScalar(radius)
   group.add(solid)
 
-  // Back-face shell: barely-there volume so the solid does not read as a decal.
-  const shellGeometry = ledger.track(
-    new THREE.IcosahedronGeometry(radius * 1.02, 1),
-  )
-  const shell = new THREE.Mesh(shellGeometry, materials.coreShellMaterial)
-  shell.name = 'universe-core-shell'
-  group.add(shell)
-
-  // Two fine rings on different axes: the orbital signature of the system.
-  for (let index = 0; index < 2; index += 1) {
-    const ringGeometry = ledger.track(
-      new THREE.TorusGeometry(
-        radius * (1.34 + index * 0.26),
-        radius * 0.012,
-        6,
-        128,
-      ),
-    )
-    const ring = new THREE.Mesh(ringGeometry, materials.coreRingMaterial)
-    ring.name = `universe-core-ring-${index}`
-    ring.rotation.set(
-      1.15 + index * 0.72 + seed * 0.2,
-      0.32 - index * 0.85,
-      index * 0.5,
-    )
-    group.add(ring)
-  }
-
-  return {
-    group,
-    solid,
-    applyTheme(next: UniverseRenderTheme) {
-      solidMaterial.color.copy(roleColor(next.palette, 'brand'))
-      solidMaterial.emissive.copy(roleColor(next.palette, 'brand'))
-      solidMaterial.emissiveIntensity = next.coreEmissive
-      solidMaterial.needsUpdate = true
-      materials.coreShellMaterial.color.copy(roleColor(next.palette, 'brand'))
-      materials.coreShellMaterial.opacity = next.mode === 'dark' ? 0.16 : 0.1
-      materials.coreShellMaterial.needsUpdate = true
-      materials.coreRingMaterial.color.copy(
-        roleColor(next.palette, 'signature'),
-      )
-      materials.coreRingMaterial.needsUpdate = true
-    },
-  }
+  return { group, solid, radius }
 }

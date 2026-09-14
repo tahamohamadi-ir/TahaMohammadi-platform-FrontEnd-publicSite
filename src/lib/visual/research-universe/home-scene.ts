@@ -1,15 +1,24 @@
 /**
- * RU-04 — Guided Home scene.
+ * RU-04 / RU-4B — Guided Home scene.
  *
- * Assembles the shared engine into the cinematic, scroll-driven presentation:
- * core + main domains + tilted orbital planes + selected published
- * relationships. It never exposes free camera control — the only input is scroll
- * progress, so Home stays GUIDED and the four authored states are the whole
- * story.
+ * Assembles the shared engine into the scroll-driven presentation: the identity
+ * sphere, the main domains, the REAL published relationships, and HTML labels. It
+ * never exposes free camera control — the only input is scroll progress, so Home
+ * stays GUIDED and the four authored states are the whole story.
  *
  * Motion is applied to the model GROUP and the CAMERA only. The model is never
  * scaled as a whole and the FOV is never used as the motion source: both are
  * explicitly rejected by the product brief because they read as 2D tricks.
+ *
+ * RU-4B removals, all of them dependencies of the retired orbital generation:
+ * - orbital planes and the orbit/mark renderer: the planes were what made the
+ *   composition read as satellites around a nucleus;
+ * - the layout rebuild on a breakpoint change. Positions are a pure function of
+ *   the published model, so a viewport resize can no longer move a node — it only
+ *   re-fits the camera and re-clamps the DPR. That is also what makes "Light uses
+ *   the SAME topology and SAME object positions as Dark" structural rather than
+ *   something to remember;
+ * - the scroll-driven global edge emphasis (see `home-motion.ts`).
  */
 
 import * as THREE from 'three'
@@ -22,7 +31,6 @@ import type { ReadyUniverse } from '../../research-universe/model'
 import { createUniverseCore } from './core-object'
 import { createUniverseEdges, type UniverseEdgeVisuals } from './edges'
 import { createUniverseNodes, type UniverseNodeVisuals } from './nodes'
-import { createUniverseOrbits } from './orbits'
 import { createUniverseMaterials } from './materials'
 import {
   computeUniverseLayout,
@@ -38,6 +46,7 @@ import {
 import { createSceneCore, type SceneCore } from './scene-core'
 import {
   poseForProgress,
+  posesEqual,
   stateForProgress,
   staticPose,
   type HomeScrollStateNumber,
@@ -60,12 +69,17 @@ export interface HomeSceneStats {
   triangles: number
   drawCalls: number
   pixelRatio: number
+  /** Distinct geometry objects the node layer draws with (must be 1). */
+  nodeGeometries: number
+  /** Distinct material instances in the presentation registry. */
+  profileMaterials: number
 }
 
 export interface HomeSceneHandle {
   setProgress(progress: number): void
   setSelection(selectedId: string | null): void
   setSelectedEdge(edgeId: string | null): void
+  setHovered(nodeId: string | null): void
   /**
    * Canvas hit test in canvas-local CSS pixels. Returns what was picked and
    * applies it as the scene selection, so the caller can sync the semantic
@@ -87,6 +101,9 @@ export interface HomeSceneHandle {
 }
 
 const FOV = 42
+/** Extra edge room on a narrow stage, matching the About branch. */
+const MOBILE_FIT_PADDING = 1.34
+const DESKTOP_FIT_PADDING = 1.14
 
 export function createHomeScene(
   options: HomeSceneOptions,
@@ -106,43 +123,36 @@ export function createHomeScene(
   core.scene.add(model)
 
   const materials = createUniverseMaterials(core.ledger, theme)
-  let mobile = false
-  let layout: UniverseLayout = computeUniverseLayout(
+
+  // Positions never depend on the viewport, so this is computed exactly once.
+  const layout: UniverseLayout = computeUniverseLayout(
     universe.nodes,
     universe.edges,
-    {
-      mobile: false,
-    },
   )
 
-  model.add(core.groups.orbits)
   model.add(core.groups.edges)
   model.add(core.groups.nodes)
   model.add(core.groups.core)
 
-  let orbits = createUniverseOrbits(
-    core.ledger,
-    theme,
-    layout.planes,
-    materials,
-  )
-  let nodes: UniverseNodeVisuals = createUniverseNodes(
+  const nodes: UniverseNodeVisuals = createUniverseNodes(
     core.ledger,
     theme,
     layout.nodes,
     materials,
   )
-  let edges: UniverseEdgeVisuals = createUniverseEdges(
+  const edges: UniverseEdgeVisuals = createUniverseEdges(
     core.ledger,
     theme,
     layout.edges,
     materials,
   )
-  const coreVisuals = createUniverseCore(core.ledger, theme, materials, {
-    radius: anchorRadius(layout, universe),
+  const anchorNode = universe.anchor.id
+    ? layout.nodes.find((node) => node.id === universe.anchor.id)
+    : undefined
+  const coreVisuals = createUniverseCore(materials, {
+    radius: anchorNode?.radius ?? 6,
   })
 
-  core.groups.orbits.add(orbits.group)
   core.groups.edges.add(edges.group)
   core.groups.nodes.add(nodes.group)
   core.groups.core.add(coreVisuals.group)
@@ -151,6 +161,7 @@ export function createHomeScene(
   let progress = 0
   let selectedId: string | null = null
   let selectedEdgeId: string | null = null
+  let hoveredId: string | null = null
   let currentPose = staticPose()
   let currentState = stateForProgress(0)
   let stats: HomeSceneStats = {
@@ -159,17 +170,8 @@ export function createHomeScene(
     triangles: 0,
     drawCalls: 0,
     pixelRatio: 1,
-  }
-
-  function anchorRadius(
-    current: UniverseLayout,
-    source: Pick<ReadyUniverse, 'anchor'>,
-  ): number {
-    const anchorId = source.anchor.id
-    const found = anchorId
-      ? current.nodes.find((node) => node.id === anchorId)
-      : null
-    return found?.radius ?? 6
+    nodeGeometries: 1,
+    profileMaterials: Object.keys(materials.profiles).length,
   }
 
   function incidentIdsFor(id: string | null): Set<string> | null {
@@ -180,6 +182,16 @@ export function createHomeScene(
       if (edge.target === id) incident.add(edge.source)
     }
     return incident
+  }
+
+  /**
+   * The one relationship the brief allows to read slightly stronger, resolved
+   * against the REAL edge list. A pose index beyond the published edge count
+   * yields null rather than an invented edge.
+   */
+  function featuredEdgeId(pose: UniversePose): string | null {
+    if (pose.featuredEdge == null) return null
+    return layout.edges[pose.featuredEdge]?.id ?? null
   }
 
   function applyPose(pose: UniversePose): void {
@@ -196,7 +208,7 @@ export function createHomeScene(
     edges.setEmphasis({
       selectedNodeId: selectedId,
       selectedEdgeId,
-      globalEmphasis: pose.edgeEmphasis,
+      featuredEdgeId: featuredEdgeId(pose),
     })
     core.requestRender()
   }
@@ -223,27 +235,10 @@ export function createHomeScene(
       triangles: info.render.triangles,
       drawCalls: info.render.calls,
       pixelRatio: core.renderer.getPixelRatio(),
+      nodeGeometries: 1,
+      profileMaterials: Object.keys(materials.profiles).length,
     }
     projectLabels()
-  }
-
-  function rebuild(nextMobile: boolean): void {
-    // Release the previous generation before building the new one.
-    orbits.group.removeFromParent()
-    nodes.group.removeFromParent()
-    edges.group.removeFromParent()
-    core.ledger.releaseGeometry()
-    layout = computeUniverseLayout(universe.nodes, universe.edges, {
-      mobile: nextMobile,
-    })
-    orbits = createUniverseOrbits(core.ledger, theme, layout.planes, materials)
-    nodes = createUniverseNodes(core.ledger, theme, layout.nodes, materials)
-    edges = createUniverseEdges(core.ledger, theme, layout.edges, materials)
-    core.groups.orbits.add(orbits.group)
-    core.groups.edges.add(edges.group)
-    core.groups.nodes.add(nodes.group)
-    mobile = nextMobile
-    applyPose(currentPose)
   }
 
   function applySize(
@@ -252,8 +247,12 @@ export function createHomeScene(
     devicePixelRatio: number,
   ): void {
     const result = core.resize(width, height, devicePixelRatio)
-    if (result.isMobile !== mobile) rebuild(result.isMobile)
-    baseDistance = fitDistance(layout.bounds, width / Math.max(height, 1), FOV)
+    baseDistance = fitDistance(
+      layout.bounds,
+      width / Math.max(height, 1),
+      FOV,
+      result.isMobile ? MOBILE_FIT_PADDING : DESKTOP_FIT_PADDING,
+    )
     stats = { ...stats, pixelRatio: result.pixelRatio }
     applyPose(currentPose)
   }
@@ -266,11 +265,12 @@ export function createHomeScene(
         selectedEdgeId != null
           ? (layout.edges.find((edge) => edge.id === selectedEdgeId) ?? null)
           : null,
+      hoveredId,
     })
     edges.setEmphasis({
       selectedNodeId: selectedId,
       selectedEdgeId,
-      globalEmphasis: currentPose.edgeEmphasis,
+      featuredEdgeId: featuredEdgeId(currentPose),
     })
   }
 
@@ -280,17 +280,12 @@ export function createHomeScene(
     setProgress(next: number) {
       progress = Number.isFinite(next) ? next : 0
       currentState = stateForProgress(progress)
-      const pose = motion === 'full' ? poseForProgress(progress) : staticPose()
-      if (
-        Math.abs(pose.yaw - currentPose.yaw) < 1e-4 &&
-        Math.abs(pose.pitch - currentPose.pitch) < 1e-4 &&
-        Math.abs(pose.distanceScale - currentPose.distanceScale) < 1e-4 &&
-        Math.abs(pose.push - currentPose.push) < 1e-4 &&
-        Math.abs(pose.edgeEmphasis - currentPose.edgeEmphasis) < 1e-4
-      ) {
-        // Nothing moved: no redraw is scheduled at all while idle.
-        return
-      }
+      const pose =
+        motion === 'full'
+          ? poseForProgress(progress, layout.edges.length)
+          : staticPose()
+      // Nothing moved: no redraw is scheduled at all while idle.
+      if (posesEqual(pose, currentPose)) return
       applyPose(pose)
     },
     setSelection(id: string | null) {
@@ -302,6 +297,12 @@ export function createHomeScene(
     setSelectedEdge(edgeId: string | null) {
       selectedEdgeId = edgeId
       if (edgeId != null) selectedId = null
+      emphasisForSelection()
+      core.requestRender()
+    },
+    setHovered(nodeId: string | null) {
+      if (hoveredId === nodeId) return
+      hoveredId = nodeId
       emphasisForSelection()
       core.requestRender()
     },
@@ -331,16 +332,14 @@ export function createHomeScene(
     setTheme(next: UniverseRenderTheme) {
       theme = next
       core.setTheme(next)
-      orbits.applyTheme(next)
       nodes.applyTheme(next)
       edges.applyTheme(next)
-      coreVisuals.applyTheme(next)
       core.requestRender()
     },
     setMotion(next: SceneMotionPreference) {
       motion = next
       if (next !== 'full') applyPose(staticPose())
-      else applyPose(poseForProgress(progress))
+      else applyPose(poseForProgress(progress, layout.edges.length))
     },
     setVisible(visible: boolean) {
       core.setVisible(visible)

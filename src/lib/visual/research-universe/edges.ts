@@ -1,14 +1,26 @@
 /**
- * RU-02 — Relationships as curved 3D edges.
+ * RU-4B — Relationships as curved 3D edges.
  *
  * Edges are first-class: they are drawn from the SAME sampled polylines that
  * `hit-testing.ts` uses, so what the user sees is exactly what they can select —
  * no separate invisible pick geometry is created.
  *
- * Emphasis is expressed through vertex colour only (one `LineSegments` for the
- * whole system), because WebGL ignores `linewidth`; that keeps relationships
- * dimmed by default and clearly readable on selection without a second draw call
- * per edge.
+ * THE visual rule of this direction lives here: every visible curve represents a
+ * REAL graph relationship, thin and restrained. There is no decorative line in
+ * this module — no orbit ring, no ellipse, no concentric circle, and nothing is
+ * generated unless a published edge asked for it.
+ *
+ * The previous generation also raised an `globalEmphasis` term from the scroll
+ * storyboard so the relationships could be "read as a system rather than as
+ * decoration". That parameter is gone: on Home the brief allows ONE relationship
+ * to become slightly more prominent at a later scroll state and explicitly says
+ * "do not add spectacle", so a global brightness ramp driven by scroll is no
+ * longer part of the language. Emphasis is now only ever a response to a real
+ * selection.
+ *
+ * Colour is expressed through vertex colour (one `LineSegments` for the whole
+ * system) because WebGL ignores `linewidth`; that keeps relationships dimmed by
+ * default and readable on selection without a second draw call per edge.
  */
 
 import * as THREE from 'three'
@@ -18,16 +30,16 @@ import { roleColor, type UniverseMaterials } from './materials'
 import type { UniverseRenderTheme } from './theme'
 
 export interface EdgeEmphasis {
-  /** Selected node: its relationships stay bright, the rest dim. */
+  /** Selected node: its relationships stay bright, the rest recede. */
   selectedNodeId: string | null
   /** Selected relationship: emphasised on its own, even with no node selected. */
   selectedEdgeId: string | null
   /**
-   * Overall relationship emphasis, 0…1, used with NO selection — the Home
-   * storyboard raises it in its "relationship" state so the edges are read as a
-   * system rather than as decoration.
+   * The single relationship allowed to read slightly stronger at a later Home
+   * scroll state, or null. Deliberately one id rather than a global ramp: the
+   * brief permits a single relation to become more prominent, not the whole set.
    */
-  globalEmphasis?: number
+  featuredEdgeId?: string | null
 }
 
 export interface UniverseEdgeVisuals {
@@ -37,6 +49,18 @@ export interface UniverseEdgeVisuals {
   setEmphasis(state: EdgeEmphasis): void
   applyTheme(theme: UniverseRenderTheme): void
 }
+
+/**
+ * Default recession for unselected relationships: they are lerped toward the
+ * canvas so they read as quiet structure rather than as drawn lines.
+ */
+const EDGE_REST_LERP = 0.44
+/** Unrelated relationships recede further while a selection exists. */
+const EDGE_DIMMED_LERP = 0.86
+/** The featured relationship sits between rest and selection. */
+const EDGE_FEATURED_LERP = 0.24
+/** How far a selected relationship's colour leans toward the accent role. */
+const EDGE_SELECTED_TINT = 0.5
 
 export function createUniverseEdges(
   ledger: UniverseLedger,
@@ -59,7 +83,10 @@ export function createUniverseEdges(
       const to = samples[index + 1]!
       vertices.push(from.x, from.y, from.z, to.x, to.y, to.z)
     }
-    segmentsByEdge.set(edge.id, { start, count: (samples.length - 1) * 2 })
+    segmentsByEdge.set(edge.id, {
+      start,
+      count: Math.max((samples.length - 1) * 2, 0),
+    })
 
     if (edge.directed) {
       // Direction ticks: two short strokes near the target end, on the same
@@ -126,13 +153,12 @@ export function createUniverseEdges(
 
   const colors = geometry.getAttribute('color') as THREE.BufferAttribute
 
-  function setEmphasis(state: EdgeEmphasis): void {
-    const base = roleColor(theme.palette, 'ink')
-    const emphasisColor = roleColor(theme.palette, 'brand')
-    const selectedColor = roleColor(theme.palette, 'signature')
+  function writeEmphasis(state: EdgeEmphasis): void {
+    const rest = roleColor(theme.palette, 'signature')
     const canvas = roleColor(theme.palette, 'canvas')
+    const selected = roleColor(theme.palette, 'brand')
     const hasNodeSelection = state.selectedNodeId != null
-    const global = Math.max(0, Math.min(1, state.globalEmphasis ?? 0))
+    const featured = state.featuredEdgeId ?? null
 
     for (const edge of layoutEdges) {
       const range = segmentsByEdge.get(edge.id)
@@ -144,16 +170,17 @@ export function createUniverseEdges(
       const isSelectedEdge = state.selectedEdgeId === edge.id
 
       let color: THREE.Color
-      if (isSelectedEdge) color = selectedColor.clone()
-      else if (hasNodeSelection && incident) color = emphasisColor.clone()
-      else {
-        // No selection: the storyboard's global emphasis lifts the whole system
-        // from "quiet structure" toward "readable relationships".
-        const dim = hasNodeSelection ? 0.88 : 0.5 - global * 0.34
-        color = base.clone().lerp(canvas, Math.max(dim, 0))
-        if (global > 0 && !hasNodeSelection) {
-          color.lerp(emphasisColor, global * 0.45)
-        }
+      if (isSelectedEdge) {
+        color = rest.clone().lerp(selected, EDGE_SELECTED_TINT)
+      } else if (hasNodeSelection && incident) {
+        color = rest.clone().lerp(selected, EDGE_SELECTED_TINT * 0.6)
+      } else {
+        const lerpTowardCanvas = hasNodeSelection
+          ? EDGE_DIMMED_LERP
+          : edge.id === featured
+            ? EDGE_FEATURED_LERP
+            : EDGE_REST_LERP
+        color = rest.clone().lerp(canvas, lerpTowardCanvas)
       }
 
       for (let index = 0; index < range.count; index += 1) {
@@ -162,29 +189,28 @@ export function createUniverseEdges(
     }
     colors.needsUpdate = true
 
-    const baseOpacity =
-      theme.edgeOpacity +
-      (theme.edgeEmphasisOpacity - theme.edgeOpacity) * global
     material.opacity =
       state.selectedEdgeId != null || hasNodeSelection
         ? theme.edgeEmphasisOpacity
-        : baseOpacity
+        : theme.edgeOpacity
     material.needsUpdate = true
   }
 
-  setEmphasis({ selectedNodeId: null, selectedEdgeId: null })
+  writeEmphasis({ selectedNodeId: null, selectedEdgeId: null })
 
   return {
     group,
     segmentsByEdge,
-    setEmphasis,
+    setEmphasis: writeEmphasis,
     applyTheme(next: UniverseRenderTheme) {
       material.opacity = next.edgeOpacity
       materials.edgeMaterial.opacity = next.edgeOpacity
-      materials.edgeMaterial.color.copy(roleColor(next.palette, 'ink'))
+      materials.edgeMaterial.color.copy(roleColor(next.palette, 'signature'))
+      materials.markMaterial.color.copy(roleColor(next.palette, 'context'))
       materials.markMaterial.opacity = next.markOpacity
       material.needsUpdate = true
-      setEmphasis({ selectedNodeId: null, selectedEdgeId: null })
+      materials.markMaterial.needsUpdate = true
+      writeEmphasis({ selectedNodeId: null, selectedEdgeId: null })
     },
   }
 }

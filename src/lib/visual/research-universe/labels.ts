@@ -75,21 +75,48 @@ export function createLabelLayer(options: LabelLayerOptions): LabelLayer {
     element.setAttribute('data-selected', isSelected ? 'true' : 'false')
   }
 
+  /**
+   * Keep a chip inside its container, in the inline axis.
+   *
+   * A chip is centred on its node (`transform: translate(-50%, …)`) and can be up
+   * to 9rem wide on a narrow stage, so a node near the right edge projected its
+   * chip past the stage: measured at a 390px viewport, the dashboard-domain chip
+   * overhung by 33px while the node itself and the page were both contained. The
+   * stem keeps the chip's ownership of its node, so shifting the chip is honest;
+   * leaving it outside a clipped stage is not — the text was simply cut off.
+   *
+   * A chip WIDER than the container cannot be contained by shifting, so it is
+   * centred instead of being pushed off one edge.
+   */
+  function clampInline(
+    element: HTMLElement | undefined,
+    x: number,
+    containerWidth: number,
+  ): number {
+    if (!element || !(containerWidth > 0)) return x
+    const width = element.offsetWidth
+    if (!(width > 0)) return x
+    if (width >= containerWidth) return containerWidth / 2
+    const half = width / 2
+    return Math.min(Math.max(x, half), containerWidth - half)
+  }
+
   return {
     render(labels, labelById, projectedNodes) {
       // RU-2B: one projection drives both the chips and their leader stems.
-      leaders.render(labels, projectedNodes ?? [])
       const radiusById = new Map(
         (projectedNodes ?? []).map((node) => [node.id, node.radiusPx]),
       )
-      const seen = new Set<string>()
+
+      // Pass 1 — make sure every visible chip exists and carries the right text,
+      // so its width is knowable before its position is decided.
+      const elements = new Map<string, HTMLElement>()
       for (const label of labels) {
         if (!label.visible) {
           const hidden = nodes.get(label.id)
           if (hidden) hidden.hidden = true
           continue
         }
-        seen.add(label.id)
         const text = labelById.get(label.id) ?? label.id
         let element = nodes.get(label.id)
         if (!element) {
@@ -100,8 +127,6 @@ export function createLabelLayer(options: LabelLayerOptions): LabelLayer {
           element.textContent = text
         }
         element.hidden = false
-        element.style.left = `${label.x}px`
-        element.style.top = `${label.y}px`
         // RU-2B: the chip is raised above the node's projected SURFACE (not its
         // centre), so the leader stem has a constant, readable length whatever the
         // node's apparent size.
@@ -109,6 +134,30 @@ export function createLabelLayer(options: LabelLayerOptions): LabelLayer {
           '--ru-node-radius',
           `${radiusById.get(label.id) ?? 0}px`,
         )
+        elements.set(label.id, element)
+      }
+
+      // Pass 2 — ONE resolved position per label, used by BOTH the chip and its
+      // stem, so a clamped chip can never drift from the line that claims it.
+      const containerWidth = container.clientWidth
+      const resolved = labels.map((label) =>
+        label.visible
+          ? {
+              ...label,
+              x: clampInline(elements.get(label.id), label.x, containerWidth),
+            }
+          : label,
+      )
+      leaders.render(resolved, projectedNodes ?? [])
+
+      const seen = new Set<string>()
+      for (const label of resolved) {
+        if (!label.visible) continue
+        seen.add(label.id)
+        const element = elements.get(label.id)
+        if (!element) continue
+        element.style.left = `${label.x}px`
+        element.style.top = `${label.y}px`
       }
       for (const [id, element] of nodes) {
         if (!seen.has(id)) element.hidden = true

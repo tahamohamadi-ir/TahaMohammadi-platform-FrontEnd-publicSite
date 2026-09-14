@@ -120,12 +120,6 @@
   );
 }
 
-.hg-orbit {
-  inline-size: min(100%, 320px);
-  block-size: auto;
-  color: var(--color-brand, currentColor);
-}
-
 .hg-canvas {
   position: absolute;
   inset: 0;

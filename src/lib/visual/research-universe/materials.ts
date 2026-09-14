@@ -1,13 +1,21 @@
 /**
- * RU-02 — Shared materials and geometry.
+ * RU-4B — Shared materials and geometry.
  *
- * One geometry per node tier and one material per colour role, all registered in
- * the disposal ledger, so raising the node count does NOT raise the draw-call or
- * triangle budget linearly: outputs are instanced, and the instanced meshes are
- * shared between the guided Home scene and the interactive About scene.
+ * One geometry (the shared unit sphere, see `spheres.ts`) and one material per
+ * PRESENTATION PROFILE and node tier, all registered in the disposal ledger, so
+ * raising the node count does not raise the draw-call or triangle budget: nodes
+ * are instanced, and every instanced mesh reuses a registry material rather than
+ * allocating one per node or per render.
  *
- * Palette resolution reads the `ScenePalette` roles the existing CA-03 contract
- * already defines; this module never introduces a second colour system.
+ * The registry is the fix for the previous generation's material flaw. That
+ * version assigned each node a `colorRole` and built a `MeshStandardMaterial`
+ * per role with `metalness` up to 0.52 and a live `emissive` — which is precisely
+ * the combination that renders as a planet, a glass ball or neon. Here a material
+ * is a profile's resolved character (`presentation-profiles.ts`): high roughness,
+ * zero metalness, and only a fractional emissive floor.
+ *
+ * `roleColor` still exists for the relationship and selection materials, which are
+ * line/marker surfaces rather than tactile solids.
  */
 
 import * as THREE from 'three'
@@ -15,6 +23,12 @@ import type { ScenePalette } from '../scene-contract'
 import type { UniverseNode } from '../../research-universe/model'
 import type { UniverseRenderTheme } from './theme'
 import { UniverseLedger } from './dispose'
+import {
+  RU_MATERIAL_PROFILES,
+  resolveProfileRegistry,
+  type RuMaterialProfile,
+  type RuResolvedProfile,
+} from './presentation-profiles'
 
 /** Colour role → palette key, with a neutral fallback for unknown roles. */
 export function roleColor(palette: ScenePalette, role: string): THREE.Color {
@@ -28,113 +42,94 @@ export function roleColor(palette: ScenePalette, role: string): THREE.Color {
 }
 
 /**
- * Geometry tiers kept deliberately small: the whole visible system must stay far
- * below the declared 50k-triangle / 60-draw-call ceilings.
- * - domain sphere: 20×14 segments ≈ 520 tris
- * - output sphere: 12×9 segments ≈ 190 tris
+ * Node tiers. `domain` is the primary band (main domains); `fine` carries the
+ * small markers of the progressive-disclosure pass. Both share the SAME sphere
+ * geometry — the tier decides scale range and brightness, never a mesh.
  */
-export const NODE_TIER_SEGMENTS = {
-  domain: [20, 14] as const,
-  fine: [12, 9] as const,
+export type UniverseTier = 'domain' | 'fine'
+
+export const NODE_TIERS: readonly UniverseTier[] = ['domain', 'fine'] as const
+
+/**
+ * Emissive budget per theme, as the multiplier `resolveProfileMaterial` expects.
+ *
+ * Dark needs a small lift so a matte object separates from a deep navy canvas;
+ * light needs almost none because the canvas is already brighter than the object.
+ * These are the only numbers that differ between themes for node materials —
+ * which is what "same topology, translate materials only" means in practice.
+ */
+export function profileEmissiveLift(mode: 'light' | 'dark'): number {
+  return mode === 'dark' ? 0.34 : 0.08
 }
 
 export interface UniverseMaterials {
-  nodeMaterials: Record<'domain' | 'fine', THREE.MeshStandardMaterial>
-  coreMaterial: THREE.MeshStandardMaterial
-  coreShellMaterial: THREE.MeshBasicMaterial
-  coreRingMaterial: THREE.MeshStandardMaterial
-  orbitMaterial: THREE.LineBasicMaterial
+  /**
+   * `[tier][profile]` → material. Registry-allocated once per theme; a node never
+   * allocates a material, and a theme switch re-tints these in place.
+   */
+  nodeMaterials: Record<
+    UniverseTier,
+    Record<RuMaterialProfile, THREE.MeshStandardMaterial>
+  >
+  /** Resolved profile data behind those materials, for tinting and diagnostics. */
+  profiles: Readonly<Record<RuMaterialProfile, RuResolvedProfile>>
+  selectionMaterial: THREE.MeshBasicMaterial
   markMaterial: THREE.LineBasicMaterial
   edgeMaterial: THREE.LineBasicMaterial
-  selectionMaterial: THREE.MeshBasicMaterial
 }
 
-/** Role palette for node instances: kind decides the role when none is given. */
-export function roleForNode(
-  node: Pick<UniverseNode, 'kind' | 'colorRole'>,
-): string {
-  if (node.colorRole && node.colorRole !== 'neutral') return node.colorRole
-  switch (node.kind) {
-    case 'domain':
-      return 'research'
-    case 'subdomain':
-      return 'context'
-    case 'project':
-      return 'signature'
-    case 'publication':
-      return 'signature'
-    case 'tool':
-      return 'brand'
-    default:
-      return 'brand'
-  }
-}
+/**
+ * Neutral base colour for registry materials.
+ *
+ * Every node's colour arrives per instance (`setColorAt`), and three.js MULTIPLIES
+ * the instance colour by the material colour instead of replacing it. A registry
+ * material therefore has to be white or each node would be tinted twice and come
+ * out darker than its profile — the exact defect the previous generation shipped
+ * (`nodeMaterials.domain.color` set to the research role AND the same role written
+ * per instance).
+ */
+const REGISTRY_BASE = 0xffffff
 
 export function createUniverseMaterials(
   ledger: UniverseLedger,
   theme: UniverseRenderTheme,
 ): UniverseMaterials {
   const { palette } = theme
-
-  const nodeMaterials = {
-    domain: ledger.trackMaterial(
-      new THREE.MeshStandardMaterial({
-        color: roleColor(palette, 'research'),
-        roughness: 0.28,
-        metalness: 0.36,
-        emissive: roleColor(palette, 'research'),
-        emissiveIntensity: theme.nodeEmissive,
-      }),
-    ),
-    fine: ledger.trackMaterial(
-      new THREE.MeshStandardMaterial({
-        color: roleColor(palette, 'signature'),
-        roughness: 0.4,
-        metalness: 0.24,
-        emissive: roleColor(palette, 'signature'),
-        emissiveIntensity: theme.nodeEmissive * 0.6,
-      }),
-    ),
-  }
-
-  const coreMaterial = ledger.trackMaterial(
-    new THREE.MeshStandardMaterial({
-      color: roleColor(palette, 'brand'),
-      roughness: 0.22,
-      metalness: 0.52,
-      emissive: roleColor(palette, 'brand'),
-      emissiveIntensity: theme.coreEmissive,
-    }),
+  const profiles = resolveProfileRegistry(
+    palette,
+    profileEmissiveLift(theme.mode),
   )
 
-  const coreShellMaterial = ledger.trackMaterial(
-    new THREE.MeshBasicMaterial({
-      color: roleColor(palette, 'brand'),
-      transparent: true,
-      opacity: theme.mode === 'dark' ? 0.16 : 0.1,
-      side: THREE.BackSide,
-      depthWrite: false,
-    }),
-  )
-
-  const coreRingMaterial = ledger.trackMaterial(
-    new THREE.MeshStandardMaterial({
-      color: roleColor(palette, 'signature'),
-      roughness: 0.34,
-      metalness: 0.62,
-      transparent: true,
-      opacity: 0.9,
-    }),
-  )
-
-  const orbitMaterial = ledger.trackMaterial(
-    new THREE.LineBasicMaterial({
-      color: roleColor(palette, 'context'),
-      transparent: true,
-      opacity: theme.orbitOpacity,
-      depthWrite: false,
-    }),
-  )
+  const nodeMaterials = Object.fromEntries(
+    NODE_TIERS.map((tier) => [
+      tier,
+      Object.fromEntries(
+        RU_MATERIAL_PROFILES.map((profile) => {
+          const resolved = profiles[profile]
+          return [
+            profile,
+            ledger.trackMaterial(
+              new THREE.MeshStandardMaterial({
+                color: REGISTRY_BASE,
+                roughness: resolved.roughness,
+                metalness: resolved.metalness,
+                // A matte ceramic has no broad specular lobe; a small non-metal
+                // highlight keeps the sphere from reading as flat felt.
+                emissive: new THREE.Color(resolved.color).multiplyScalar(
+                  resolved.emissive,
+                ),
+                emissiveIntensity: 1,
+                envMapIntensity: 0,
+              }),
+            ),
+          ]
+        }),
+      ) as Record<RuMaterialProfile, THREE.MeshStandardMaterial>,
+    ]),
+  ) as Record<
+    UniverseTier,
+    Record<RuMaterialProfile, THREE.MeshStandardMaterial>
+  >
 
   const markMaterial = ledger.trackMaterial(
     new THREE.LineBasicMaterial({
@@ -145,9 +140,16 @@ export function createUniverseMaterials(
     }),
   )
 
+  /**
+   * Relationship curves: thin, restrained, warm neutral, low visual weight.
+   *
+   * `signature` is the theme's warm/champagne role, which is what the brief asks
+   * for ("satin champagne / warm neutral"). `ink` is the fallback so a palette
+   * without a warm role still yields a readable line.
+   */
   const edgeMaterial = ledger.trackMaterial(
     new THREE.LineBasicMaterial({
-      color: roleColor(palette, 'ink'),
+      color: roleColor(palette, 'signature'),
       transparent: true,
       opacity: theme.edgeOpacity,
       depthWrite: false,
@@ -158,7 +160,7 @@ export function createUniverseMaterials(
     new THREE.MeshBasicMaterial({
       color: roleColor(palette, 'signature'),
       transparent: true,
-      opacity: 0.92,
+      opacity: 0.9,
       side: THREE.DoubleSide,
       depthWrite: false,
     }),
@@ -166,20 +168,16 @@ export function createUniverseMaterials(
 
   return {
     nodeMaterials,
-    coreMaterial,
-    coreShellMaterial,
-    coreRingMaterial,
-    orbitMaterial,
+    profiles,
+    selectionMaterial,
     markMaterial,
     edgeMaterial,
-    selectionMaterial,
   }
 }
 
 /** The node tier a node belongs to; domains are visually heavier than outputs. */
-export function tierForKind(kind: UniverseNode['kind']): 'domain' | 'fine' {
-  // RU-2A: the person anchor is rendered by the dedicated central nucleus and is
-  // never instanced, so it deliberately has no tier of its own here. `domain` is
-  // reserved for main domains; everything else is the quieter tier.
+export function tierForKind(kind: UniverseNode['kind']): UniverseTier {
+  // The person anchor is rendered by the dedicated central sphere and is never
+  // instanced, so it deliberately has no tier of its own here.
   return kind === 'domain' ? 'domain' : 'fine'
 }

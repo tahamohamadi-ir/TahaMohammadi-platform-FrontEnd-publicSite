@@ -26,16 +26,31 @@ async function installDrawCounter(page: import('@playwright/test').Page) {
   await page.addInitScript(() => {
     const state = { draws: 0 }
     window.__ru = state
-    type DrawProto = {
-      drawArrays: (...args: unknown[]) => unknown
-      drawElements: (...args: unknown[]) => unknown
-    }
+    type DrawEntry = (...args: unknown[]) => unknown
+    type DrawProto = Partial<
+      Record<
+        | 'drawArrays'
+        | 'drawElements'
+        | 'drawArraysInstanced'
+        | 'drawElementsInstanced',
+        DrawEntry
+      >
+    >
     for (const name of ['WebGLRenderingContext', 'WebGL2RenderingContext']) {
       const ctor = (window as unknown as Record<string, unknown>)[name] as
         { prototype?: DrawProto } | undefined
       const proto = ctor?.prototype
       if (!proto) continue
-      for (const method of ['drawArrays', 'drawElements'] as const) {
+      // Instanced draws are a DIFFERENT entry point: three.js renders an
+      // `InstancedMesh` with `drawElementsInstanced`, so patching only the
+      // non-instanced pair makes every instanced batch invisible to this
+      // counter — and the idle assertion would then pass against nothing.
+      for (const method of [
+        'drawArrays',
+        'drawElements',
+        'drawArraysInstanced',
+        'drawElementsInstanced',
+      ] as const) {
         const original = proto[method]
         if (typeof original !== 'function') continue
         proto[method] = function patched(this: unknown, ...args: unknown[]) {
@@ -193,6 +208,83 @@ test.describe('RU-2 Home universe', () => {
     await resetDraws(page)
     await page.setViewportSize({ width: 1160, height: 860 })
     await expect.poll(() => draws(page)).toBeGreaterThan(0)
+  })
+
+  test('5b. dark and light render the SAME topology, and no authored asset is fetched', async ({
+    page,
+  }) => {
+    // Every request the page makes, so an authored GLB cannot sneak back in as a
+    // happy-path-only fetch that no local run ever observes.
+    const authoredRequests: string[] = []
+    page.on('request', (request) => {
+      const url = request.url()
+      if (
+        /\.glb(\?|$)/i.test(url) ||
+        url.includes('research-universe/models')
+      ) {
+        authoredRequests.push(url)
+      }
+    })
+
+    await page.emulateMedia({ colorScheme: 'dark' })
+    await page.goto(HOME)
+    await expect(page.locator(region)).toHaveAttribute(
+      'data-universe-enhancement',
+      'enhanced',
+    )
+    // ONE fixed viewport for the whole comparison: the camera fit depends on the
+    // aspect ratio, so comparing across two viewports would prove nothing.
+    await page.setViewportSize({ width: 1180, height: 880 })
+    await expect.poll(() => draws(page)).toBeGreaterThan(0)
+    const darkPositions = await labelPositions(page)
+
+    // The published graph is the truth: four primary nodes and the three real
+    // relationships. A fabricated edge would raise the count here.
+    expect(darkPositions).toHaveLength(4)
+    const edgeCount = await page
+      .locator(`${region} [data-universe-edge]`)
+      .count()
+    expect(edgeCount).toBe(3)
+    const endpoints = await page.evaluate(() =>
+      Array.from(document.querySelectorAll('[data-universe-edge]')).map(
+        (element) => ({
+          source: element.getAttribute('data-source'),
+          target: element.getAttribute('data-target'),
+        }),
+      ),
+    )
+    for (const edge of endpoints) {
+      // Every published relationship is identity → research-topic: no invented
+      // domain-to-domain edge, exactly as the brief requires.
+      expect(edge.source).toBe('identity')
+      expect(edge.target).toMatch(/^research-topic-/)
+    }
+
+    // Move to light and re-measure at the same viewport.
+    const toggle = page.locator('[data-theme-toggle]').first()
+    for (let attempt = 0; attempt < 4; attempt += 1) {
+      if ((await page.locator('html').getAttribute('data-theme')) === 'light')
+        break
+      await toggle.click()
+      await page.waitForTimeout(200)
+    }
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'light')
+    await resetDraws(page)
+    await page.setViewportSize({ width: 1181, height: 880 })
+    await page.setViewportSize({ width: 1180, height: 880 })
+    await expect.poll(() => draws(page)).toBeGreaterThan(0)
+    const lightPositions = await labelPositions(page)
+
+    // Same nodes, same canvas, same positions: Light translates materials only.
+    expect(lightPositions.map((entry) => entry.split('@')[0])).toEqual(
+      darkPositions.map((entry) => entry.split('@')[0]),
+    )
+    expect(lightPositions).toEqual(darkPositions)
+    expect(await page.locator('canvas').count()).toBe(1)
+
+    // The final direction is procedural: no Blender-authored object is ever
+    // requested, in either theme.
+    expect(authoredRequests).toEqual([])
   })
 
   test('6+7+8. scroll changes the pose deterministically, without scaling the scene', async ({
@@ -447,10 +539,52 @@ test.describe('RU-2 Home universe', () => {
     expect(leaders.length).toBeGreaterThan(0)
     const visibleLeaders = leaders.filter((line) => line.visible === 'true')
     expect(visibleLeaders.length).toBeGreaterThan(0)
-    // A stem is vertical and anchored on its node's x coordinate.
+
+    // The chips' RESOLVED positions and widths, plus the container they must stay
+    // inside. A chip is centred on its resolved x, so containment is
+    // `x ± width/2` within the container.
+    const chips = await page.evaluate(() => {
+      const container = document.querySelector('[data-universe-labels]')
+      return {
+        containerWidth: container?.clientWidth ?? 0,
+        byId: Object.fromEntries(
+          Array.from(document.querySelectorAll('.ru-label')).map((element) => {
+            const chip = element as HTMLElement
+            return [
+              chip.getAttribute('data-projected-label'),
+              {
+                x: Number.parseFloat(chip.style.left),
+                width: chip.getBoundingClientRect().width,
+                hidden: chip.hidden,
+              },
+            ]
+          }),
+        ),
+      }
+    })
+    expect(chips.containerWidth).toBeGreaterThan(0)
+
     for (const line of visibleLeaders) {
-      expect(line.x1).toBe(line.x2)
-      expect(Number(line.x1)).toBeGreaterThan(0)
+      const chip = chips.byId[line.id ?? '']
+      expect(chip, `no chip for stem ${line.id}`).toBeDefined()
+      // ONE source per projected position: the stem END is the chip's own
+      // resolved x, so a clamped chip can never drift from the line claiming it.
+      expect(Math.abs(Number(line.x2) - chip.x)).toBeLessThanOrEqual(0.6)
+      // …and the stem still STARTS on a real projected node coordinate.
+      expect(Number.isFinite(Number(line.x1))).toBe(true)
+      expect(Number(line.x1)).toBeGreaterThanOrEqual(0)
+      // A chip is contained by its stage: this is the guarantee the clamp buys,
+      // and it held for a 92px half-width chip that previously overhung the stage
+      // by 77px on this very viewport.
+      expect(chip.x - chip.width / 2).toBeGreaterThanOrEqual(-1)
+      expect(chip.x + chip.width / 2).toBeLessThanOrEqual(
+        chips.containerWidth + 1,
+      )
+      // A chip that needed no clamping keeps the original vertical-stem contract,
+      // anchored exactly on its node's x.
+      if (Math.abs(chip.x - Number(line.x1)) < 0.6) {
+        expect(line.x1).toBe(line.x2)
+      }
     }
     // Every stem belongs to a projected label, so no line exists without a chip.
     const labelIds = await page.evaluate(() =>

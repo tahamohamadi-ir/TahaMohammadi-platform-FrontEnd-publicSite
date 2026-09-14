@@ -1,12 +1,12 @@
 /**
- * RU-04 — Home motion: four designed scroll states.
+ * RU-04 / RU-4B — Home motion: four designed scroll states.
  *
  * Home is GUIDED: the visitor does not drive the camera. Scroll position maps to
  * a designed pose through four authored keyframes —
  *
  *   STATE 1  front / introduction
  *   STATE 2  gentle rotation toward one domain cluster
- *   STATE 3  rotation the other way, with relationships emphasised
+ *   STATE 3  rotation the other way, with one relationship brought forward
  *   STATE 4  slight camera push into a resolved full-system view
  *
  * — and the pose between keys is interpolated, so the transition is continuous
@@ -15,6 +15,14 @@
  * The pose only ever moves the CAMERA and the model GROUP. There is no
  * whole-model scale and no FOV zoom: those read as cheap 2D tricks and are
  * explicitly rejected by the product brief.
+ *
+ * RU-4B removed the old `edgeEmphasis` field. That was a continuous 0…1 ramp
+ * applied to EVERY relationship, driven by scroll, so the whole line set grew
+ * brighter in the middle of the story. The brief now permits exactly one thing:
+ * "one relationship may become slightly more prominent at a later scroll state",
+ * and forbids animating all relationship weights. So the pose carries a discrete
+ * `featuredEdge` index (null for states that feature nothing) instead of a global
+ * weight, and no relationship is continuously animated.
  *
  * Why a plain rAF scroll reader instead of GSAP ScrollTrigger: nothing here
  * needs pinning or a scrubbed timeline — the pose is a pure function of scroll
@@ -33,8 +41,13 @@ export interface UniversePose {
   distanceScale: number
   /** Additional camera push toward the model, in world units. */
   push: number
-  /** Relationship emphasis, 0 (calm) … 1 (fully emphasised). */
-  edgeEmphasis: number
+  /**
+   * Index into the REAL published edge list of the one relationship that reads
+   * slightly stronger at this pose, or null for none. Never a weight, never a
+   * global ramp, and never an index outside the published edge count — the
+   * caller clamps it against `layout.edges.length`.
+   */
+  featuredEdge: number | null
 }
 
 export interface HomePoseKey extends UniversePose {
@@ -44,9 +57,37 @@ export interface HomePoseKey extends UniversePose {
 export const HOME_SCROLL_STATE_COUNT = 4
 
 /**
+ * Progress band in which a relationship may be featured at all.
+ *
+ * State 3 is the "read the relationships" beat, so the feature exists only there.
+ * Deliberately narrow and off by default everywhere else: the brief allows one
+ * relationship to become slightly more prominent, not a persistent emphasis.
+ */
+export const FEATURED_EDGE_BAND = { from: 0.5, to: 0.82 } as const
+
+/** Which real edge index is featured inside the band, by progress thirds. */
+export function featuredEdgeForProgress(
+  progress: number,
+  edgeCount: number,
+): number | null {
+  if (!Number.isFinite(edgeCount) || edgeCount <= 0) return null
+  const p = clamp01(progress)
+  if (p < FEATURED_EDGE_BAND.from || p > FEATURED_EDGE_BAND.to) return null
+  // Rotate through the real relationships as the story progresses, so the
+  // feature never depends on a particular payload ordering being meaningful.
+  const span = FEATURED_EDGE_BAND.to - FEATURED_EDGE_BAND.from
+  const t = (p - FEATURED_EDGE_BAND.from) / span
+  const index = Math.min(Math.floor(t * edgeCount), edgeCount - 1)
+  return index
+}
+
+/**
  * Authored keyframes. Read as a storyboard: front → turn toward the domains →
- * turn the other way and read the relationships → settle back into the resolved
+ * turn the other way and read a relationship → settle back into the resolved
  * system. Values are deliberately restrained: this is an instrument, not a ride.
+ *
+ * `featuredEdge` is 0 here ONLY as the in-band default; the live value comes from
+ * `featuredEdgeForProgress` so it can never exceed the published edge count.
  */
 export const HOME_POSE_KEYS: ReadonlyArray<HomePoseKey> = [
   {
@@ -55,7 +96,7 @@ export const HOME_POSE_KEYS: ReadonlyArray<HomePoseKey> = [
     pitch: 0.05,
     distanceScale: 1,
     push: 0,
-    edgeEmphasis: 0.12,
+    featuredEdge: null,
   },
   {
     state: 2,
@@ -63,7 +104,7 @@ export const HOME_POSE_KEYS: ReadonlyArray<HomePoseKey> = [
     pitch: 0.17,
     distanceScale: 0.87,
     push: 10,
-    edgeEmphasis: 0.34,
+    featuredEdge: null,
   },
   {
     state: 3,
@@ -71,7 +112,7 @@ export const HOME_POSE_KEYS: ReadonlyArray<HomePoseKey> = [
     pitch: -0.12,
     distanceScale: 0.93,
     push: 4,
-    edgeEmphasis: 1,
+    featuredEdge: 0,
   },
   {
     state: 4,
@@ -79,7 +120,7 @@ export const HOME_POSE_KEYS: ReadonlyArray<HomePoseKey> = [
     pitch: 0.1,
     distanceScale: 0.79,
     push: 24,
-    edgeEmphasis: 0.45,
+    featuredEdge: null,
   },
 ]
 
@@ -107,8 +148,13 @@ export function stateForProgress(progress: number): HomeScrollStateNumber {
 /**
  * Pose for a scroll progress in [0,1]. Piecewise-smooth interpolation between
  * the authored keys; clamped and finite for any input, including NaN.
+ *
+ * `edgeCount` is the REAL published relationship count. It only bounds the
+ * featured index; it never creates one. A graph with no edges yields null, and
+ * the scene renders nothing extra — the previous implementation's global ramp
+ * would have lit up an empty set.
  */
-export function poseForProgress(progress: number): UniversePose {
+export function poseForProgress(progress: number, edgeCount = 0): UniversePose {
   const p = clamp01(progress)
   const scaled = p * (HOME_POSE_KEYS.length - 1)
   const index = Math.min(Math.floor(scaled), HOME_POSE_KEYS.length - 2)
@@ -121,7 +167,9 @@ export function poseForProgress(progress: number): UniversePose {
     pitch: lerp(from.pitch, to.pitch, local),
     distanceScale: lerp(from.distanceScale, to.distanceScale, local),
     push: lerp(from.push, to.push, local),
-    edgeEmphasis: lerp(from.edgeEmphasis, to.edgeEmphasis, local),
+    // Discrete on purpose: a relationship is either featured or it is not, so
+    // there is no continuously animated weight anywhere in the scene.
+    featuredEdge: featuredEdgeForProgress(p, edgeCount),
   }
 }
 
@@ -136,7 +184,7 @@ export function posesEqual(
     Math.abs(a.pitch - b.pitch) < epsilon &&
     Math.abs(a.distanceScale - b.distanceScale) < epsilon &&
     Math.abs(a.push - b.push) < epsilon &&
-    Math.abs(a.edgeEmphasis - b.edgeEmphasis) < epsilon
+    a.featuredEdge === b.featuredEdge
   )
 }
 
@@ -243,6 +291,6 @@ export function staticPose(): UniversePose {
     pitch: first.pitch,
     distanceScale: first.distanceScale,
     push: first.push,
-    edgeEmphasis: first.edgeEmphasis,
+    featuredEdge: first.featuredEdge,
   }
 }

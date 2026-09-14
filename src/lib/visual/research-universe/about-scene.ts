@@ -1,11 +1,20 @@
 /**
- * RU-04 — Full interactive About scene.
+ * RU-04 / RU-4B — Full interactive About scene.
  *
- * The same engine as Home, with the FULL published graph and real camera
- * control: pointer drag orbits, wheel/pinch zooms within hard limits, a node can
- * be focused, and the view can be reset. Nothing is added to the graph to make
- * the interaction richer — interaction richness comes from the camera, not from
- * invented records.
+ * The SAME engine as Home, with real camera control: pointer drag orbits,
+ * wheel/pinch zooms within hard limits, a node can be focused, and the view can be
+ * reset. Nothing is added to the graph to make the interaction richer —
+ * interaction richness comes from the camera, not from invented records.
+ *
+ * "Do not create a second visual implementation for About" is structural here:
+ * this module shares `spheres.ts` (one geometry), `materials.ts` (one presentation
+ * registry), `presentation-profiles.ts` (one material language) and `edges.ts`
+ * (one relationship implementation) with Home. Only the interaction contract
+ * differs — Home is scroll-driven and guided, About is pointer-driven.
+ *
+ * RU-4B also removed the layout rebuild on a breakpoint change and the orbital
+ * plane dependency, for the same reasons as Home: positions are a pure function of
+ * the published model, so neither a resize nor a theme switch can move a node.
  *
  * Interaction contract:
  * - camera motion is bounded (pitch, distance) so the model can never be lost;
@@ -24,7 +33,6 @@ import type { ReadyUniverse } from '../../research-universe/model'
 import { createUniverseCore } from './core-object'
 import { createUniverseEdges, type UniverseEdgeVisuals } from './edges'
 import { createUniverseNodes, type UniverseNodeVisuals } from './nodes'
-import { createUniverseOrbits } from './orbits'
 import { createUniverseMaterials } from './materials'
 import {
   computeUniverseLayout,
@@ -59,6 +67,10 @@ export interface AboutSceneStats {
   triangles: number
   drawCalls: number
   pixelRatio: number
+  /** Distinct geometry objects the node layer draws with (must be 1). */
+  nodeGeometries: number
+  /** Distinct material instances in the presentation registry. */
+  profileMaterials: number
 }
 
 export interface AboutSceneHandle {
@@ -69,6 +81,7 @@ export interface AboutSceneHandle {
   resetView(animate?: boolean): void
   setSelection(selectedId: string | null): void
   setSelectedEdge(edgeId: string | null): void
+  setHovered(nodeId: string | null): void
   selectAt(
     offsetX: number,
     offsetY: number,
@@ -84,6 +97,8 @@ export interface AboutSceneHandle {
 
 const FOV = 42
 const HOME_ORBIT: OrbitPose = { yaw: 0.22, pitch: 0.24, distanceScale: 1 }
+const MOBILE_FIT_PADDING = 1.34
+const DESKTOP_FIT_PADDING = 1.14
 
 function clamp(value: number, min: number, max: number): number {
   if (!Number.isFinite(value)) return min
@@ -104,8 +119,8 @@ export function createAboutScene(options: {
 
   const created = createSceneCore({ canvas, theme, fov: FOV, onError })
   if (!created) return null
-  // Non-null alias: the builders below are nested functions, and TypeScript
-  // does not carry a closure-scope narrowing of the nullable original into them.
+  // Non-null alias: the builders below are nested functions, and TypeScript does
+  // not carry a closure-scope narrowing of the nullable original into them.
   const core: SceneCore = created
 
   const model = new THREE.Group()
@@ -113,52 +128,45 @@ export function createAboutScene(options: {
   core.scene.add(model)
 
   const materials = createUniverseMaterials(core.ledger, theme)
-  let layout: UniverseLayout = computeUniverseLayout(
+  // Positions never depend on the viewport, so they are computed exactly once.
+  const layout: UniverseLayout = computeUniverseLayout(
     universe.nodes,
     universe.edges,
-    {
-      mobile: false,
-    },
   )
-  let mobile = false
 
-  model.add(core.groups.orbits)
   model.add(core.groups.edges)
   model.add(core.groups.nodes)
   model.add(core.groups.core)
 
-  let orbits = createUniverseOrbits(
-    core.ledger,
-    theme,
-    layout.planes,
-    materials,
-  )
-  let nodes: UniverseNodeVisuals = createUniverseNodes(
+  const nodes: UniverseNodeVisuals = createUniverseNodes(
     core.ledger,
     theme,
     layout.nodes,
     materials,
   )
-  let edges: UniverseEdgeVisuals = createUniverseEdges(
+  const edges: UniverseEdgeVisuals = createUniverseEdges(
     core.ledger,
     theme,
     layout.edges,
     materials,
   )
-  const coreVisuals = createUniverseCore(core.ledger, theme, materials, {
-    radius: 8,
-    seed: 1,
+  const anchorNode = universe.anchor.id
+    ? layout.nodes.find((node) => node.id === universe.anchor.id)
+    : undefined
+  const coreVisuals = createUniverseCore(materials, {
+    radius: anchorNode?.radius ?? 6,
   })
 
-  core.groups.orbits.add(orbits.group)
   core.groups.edges.add(edges.group)
   core.groups.nodes.add(nodes.group)
   core.groups.core.add(coreVisuals.group)
 
   let baseDistance = 360
   let orbit: OrbitPose = { ...HOME_ORBIT }
+  let isMobile = false
   let selectedId: string | null = null
   let selectedEdgeId: string | null = null
+  let hoveredId: string | null = null
   let animation: number | null = null
   let stats: AboutSceneStats = {
     nodes: layout.nodes.length,
@@ -166,6 +174,8 @@ export function createAboutScene(options: {
     triangles: 0,
     drawCalls: 0,
     pixelRatio: 1,
+    nodeGeometries: 1,
+    profileMaterials: Object.keys(materials.profiles).length,
   }
 
   function nodeById(id: string) {
@@ -190,6 +200,7 @@ export function createAboutScene(options: {
         selectedEdgeId != null
           ? (layout.edges.find((edge) => edge.id === selectedEdgeId) ?? null)
           : null,
+      hoveredId,
     })
     edges.setEmphasis({ selectedNodeId: selectedId, selectedEdgeId })
   }
@@ -232,6 +243,8 @@ export function createAboutScene(options: {
       triangles: info.render.triangles,
       drawCalls: info.render.calls,
       pixelRatio: core.renderer.getPixelRatio(),
+      nodeGeometries: 1,
+      profileMaterials: Object.keys(materials.profiles).length,
     }
     projectLabels()
   }
@@ -290,23 +303,25 @@ export function createAboutScene(options: {
     animation = requestAnimationFrame(step)
   }
 
-  function rebuild(nextMobile: boolean): void {
-    orbits.group.removeFromParent()
-    nodes.group.removeFromParent()
-    edges.group.removeFromParent()
-    core.ledger.releaseGeometry()
-    layout = computeUniverseLayout(universe.nodes, universe.edges, {
-      mobile: nextMobile,
-    })
-    orbits = createUniverseOrbits(core.ledger, theme, layout.planes, materials)
-    nodes = createUniverseNodes(core.ledger, theme, layout.nodes, materials)
-    edges = createUniverseEdges(core.ledger, theme, layout.edges, materials)
-    core.groups.orbits.add(orbits.group)
-    core.groups.edges.add(edges.group)
-    core.groups.nodes.add(nodes.group)
-    mobile = nextMobile
-    emphasis()
+  function applySize(
+    width: number,
+    height: number,
+    devicePixelRatio: number,
+  ): void {
+    const result = core.resize(width, height, devicePixelRatio)
+    isMobile = result.isMobile
+    baseDistance = fitDistance(
+      layout.bounds,
+      width / Math.max(height, 1),
+      FOV,
+      // A projected label chip is drawn ABOVE its node and can be up to 9rem
+      // wide, so a narrow stage needs more edge room than the desktop's 1.14:
+      // at 1.14 the canonical mobile view pushed the left-hand chip outside the
+      // clipped stage (measured: label left = -18px at a 390px viewport).
+      isMobile ? MOBILE_FIT_PADDING : DESKTOP_FIT_PADDING,
+    )
     applyOrbit()
+    stats = { ...stats, pixelRatio: result.pixelRatio }
   }
 
   core.setOnFrame(captureStats)
@@ -380,6 +395,12 @@ export function createAboutScene(options: {
       emphasis()
       core.requestRender()
     },
+    setHovered(nodeId) {
+      if (hoveredId === nodeId) return
+      hoveredId = nodeId
+      emphasis()
+      core.requestRender()
+    },
     selectAt(offsetX, offsetY) {
       const { matrix, width, height } = core.projection()
       const picked = pickAt(
@@ -404,10 +425,8 @@ export function createAboutScene(options: {
     setTheme(next) {
       theme = next
       core.setTheme(next)
-      orbits.applyTheme(next)
       nodes.applyTheme(next)
       edges.applyTheme(next)
-      coreVisuals.applyTheme(next)
       core.requestRender()
     },
     setMotion(next) {
@@ -418,20 +437,7 @@ export function createAboutScene(options: {
       core.setVisible(visible)
     },
     resize(width, height, devicePixelRatio) {
-      const result = core.resize(width, height, devicePixelRatio)
-      if (result.isMobile !== mobile) rebuild(result.isMobile)
-      baseDistance = fitDistance(
-        layout.bounds,
-        width / Math.max(height, 1),
-        FOV,
-        // A projected label chip is drawn ABOVE its node and can be up to 9rem
-        // wide, so a narrow stage needs more edge room than the desktop's 1.14:
-        // at 1.14 the canonical mobile view pushed the left-hand chip outside the
-        // clipped stage (measured: label left = -18px at a 390px viewport).
-        mobile ? 1.34 : 1.14,
-      )
-      applyOrbit()
-      stats = { ...stats, pixelRatio: result.pixelRatio }
+      applySize(width, height, devicePixelRatio)
     },
     render() {
       core.renderNow()

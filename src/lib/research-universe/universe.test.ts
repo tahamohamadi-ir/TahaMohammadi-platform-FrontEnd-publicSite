@@ -32,13 +32,16 @@ import {
   type UniverseModel,
 } from './model'
 import {
+  PLACEMENT_BASE_RADIUS,
+  RU_PLACEMENT,
   computeUniverseLayout,
+  curveIsEndpointDriven,
+  curveMidpointRadiusSpread,
   fitDistance,
   hashToUnit,
+  identityDiameterEnvelope,
   nodeRadiusFor,
-  orbitalPlanes,
-  pointOnPlane,
-  sampleQuadratic,
+  sampleCubic,
 } from '../visual/research-universe/layout'
 import {
   distanceToPolyline,
@@ -499,32 +502,68 @@ describe('presets — Home is guided, About is complete', () => {
   })
 })
 
-describe('layout — genuine 3D, published intent preserved', () => {
-  it('builds several distinct tilted planes, fewer on mobile', () => {
-    const desktop = orbitalPlanes(false)
-    const mobile = orbitalPlanes(true)
-    expect(desktop).toHaveLength(3)
-    expect(mobile).toHaveLength(2)
-    // No two planes are coplanar: the composition must not read as flat rings.
-    expect(
-      new Set(desktop.map((plane) => `${plane.tiltX}|${plane.tiltY}`)).size,
-    ).toBe(3)
+describe('layout — asymmetric relational topology, published intent preserved', () => {
+  it('places the primary nodes at unequal distances, depths and scales', () => {
+    // The retired generation put every level on a shared tilted plane, which is
+    // what produced "four satellites around a nucleus". The invariant that
+    // replaced it: the primary band must not share a radius or a depth.
+    const spread = Object.values(RU_PLACEMENT).map(
+      (entry) => entry.radialSpread,
+    )
+    expect(new Set(spread).size).toBeGreaterThan(1)
+    const depths = Object.values(RU_PLACEMENT).map((entry) => entry.depthOffset)
+    expect(new Set(depths).size).toBeGreaterThan(1)
+    // …and they are not symmetric about the anchor either: a symmetric set sums
+    // to zero.
+    const sum = depths.reduce((total, value) => total + value, 0)
+    expect(Math.abs(sum)).toBeGreaterThan(0)
   })
 
-  it('produces real depth on a tilted plane, not a flat circle', () => {
-    const plane = orbitalPlanes(false)[0]!
-    const a = pointOnPlane(plane, 0, 1)
-    const b = pointOnPlane(plane, Math.PI / 2, 1)
-    expect(Math.abs(a.z - b.z)).toBeGreaterThan(0.5)
-    expect(Math.hypot(a.x, a.y)).toBeGreaterThan(0)
+  it('distances are unequal for the published payload', () => {
+    const universe = readyUniverse()
+    const layout = computeUniverseLayout(universe.nodes, universe.edges)
+    const domains = layout.nodes.filter((node) => node.kind === 'domain')
+    expect(domains.length).toBeGreaterThan(1)
+    const radii = domains.map((node) => Math.hypot(node.point.x, node.point.y))
+    const depths = domains.map((node) => node.point.z)
+    const scales = domains.map((node) => node.visualScale)
+    // No two domains share a planar distance, a depth or a visual scale.
+    const rounded = (values: number[]) => values.map((v) => Math.round(v * 100))
+    expect(new Set(rounded(radii)).size).toBe(domains.length)
+    expect(new Set(rounded(depths)).size).toBe(domains.length)
+    expect(new Set(rounded(scales)).size).toBe(domains.length)
+    // Every domain sits at a deliberate, bounded distance — never at the origin
+    // and never beyond the authored placement envelope.
+    for (const radius of radii) {
+      expect(radius).toBeGreaterThan(PLACEMENT_BASE_RADIUS * 0.7)
+      expect(radius).toBeLessThan(PLACEMENT_BASE_RADIUS * 1.45)
+    }
   })
 
-  it('is deterministic for identical input', () => {
+  it('keeps the domains out of the anchor band', () => {
+    // A main domain must not sit on top of the identity sphere: the vertical
+    // separation is what keeps the composition readable.
+    const universe = readyUniverse()
+    const layout = computeUniverseLayout(universe.nodes, universe.edges)
+    const domains = layout.nodes.filter((node) => node.kind === 'domain')
+    for (const domain of domains) {
+      expect(Math.abs(domain.point.y)).toBeGreaterThan(0)
+    }
+  })
+
+  it('is deterministic and viewport-independent for identical input', () => {
     const universe = readyUniverse()
     const first = computeUniverseLayout(universe.nodes, universe.edges)
     const second = computeUniverseLayout(universe.nodes, universe.edges)
     expect(first.nodes).toEqual(second.nodes)
     expect(first.edges).toEqual(second.edges)
+    // Same topology coordinates in BOTH themes: the layout is a function of the
+    // model alone, so no theme or viewport parameter can move a node.
+    const light = themeRenderParams('light')
+    const dark = themeRenderParams('dark')
+    expect(Object.keys(light).sort()).toEqual(Object.keys(dark).sort())
+    const third = computeUniverseLayout(universe.nodes, universe.edges)
+    expect(third.nodes).toEqual(first.nodes)
   })
 
   it('keeps published authoring intent: azimuth from the API position', () => {
@@ -537,7 +576,7 @@ describe('layout — genuine 3D, published intent preserved', () => {
     expect(Math.cos(Math.abs(topic1.azimuth))).toBeCloseTo(0, 2)
   })
 
-  it('places the anchor at the origin and never on a plane', () => {
+  it('places the anchor at the origin with a 1.4–1.6x diameter envelope', () => {
     const universe = readyUniverse()
     const layout = computeUniverseLayout(universe.nodes, universe.edges)
     const anchor = layout.nodes.find((node) => node.id === 'identity')!
@@ -548,6 +587,16 @@ describe('layout — genuine 3D, published intent preserved', () => {
     expect(nodeRadiusFor('domain', 1)).toBeGreaterThan(
       nodeRadiusFor('publication', 1),
     )
+    // The brief allows only approximately 1.4–1.6x. Asserted against the WORST
+    // case of the whole scale table, not one sampled pair.
+    const envelope = identityDiameterEnvelope()
+    expect(envelope.min).toBeGreaterThanOrEqual(1.4)
+    expect(envelope.max).toBeLessThanOrEqual(1.6)
+    // …and the actual published anchor/domain pair sits inside it.
+    const domain = layout.nodes.find((node) => node.kind === 'domain')!
+    const ratio = anchor.radius / domain.radius
+    expect(ratio).toBeGreaterThanOrEqual(envelope.min - 1e-9)
+    expect(ratio).toBeLessThanOrEqual(envelope.max + 1e-9)
   })
 
   it('samples every published edge and stays finite', () => {
@@ -567,6 +616,63 @@ describe('layout — genuine 3D, published intent preserved', () => {
     expect(fitDistance(layout.bounds, 1.6, 42)).toBeGreaterThan(0)
   })
 
+  it('renders exactly the published edges and nothing decorative', () => {
+    const universe = readyUniverse()
+    const layout = computeUniverseLayout(universe.nodes, universe.edges)
+    // Home must show the THREE real relationships: no fabricated domain-domain
+    // edge, no decorative ring, no orbit. The rendered set equals the published
+    // set, id for id.
+    expect(layout.edges.map((edge) => edge.id).sort()).toEqual(
+      universe.edges.map((edge) => edge.id).sort(),
+    )
+    for (const edge of layout.edges) {
+      const source = universe.nodes.find((node) => node.id === edge.source)
+      const target = universe.nodes.find((node) => node.id === edge.target)
+      expect(source).toBeDefined()
+      expect(target).toBeDefined()
+    }
+  })
+
+  it('draws relationship curves that actually connect their endpoints', () => {
+    const universe = readyUniverse()
+    const layout = computeUniverseLayout(universe.nodes, universe.edges)
+    for (const edge of layout.edges) {
+      expect(curveIsEndpointDriven(edge)).toBe(true)
+    }
+    // A decorative arc positioned around the composition would not touch its
+    // endpoints; a curve with both endpoints exact cannot be that.
+    const brokenEdge = layout.edges[0]!
+    expect(
+      curveIsEndpointDriven({
+        ...brokenEdge,
+        samples: brokenEdge.samples.map((sample) => ({
+          ...sample,
+          y: sample.y + 5,
+        })),
+      }),
+    ).toBe(false)
+  })
+
+  it('does not place the relationships on one common radius', () => {
+    // Concentric orbit rings sit at a near-constant distance from the centre.
+    // A relational topology has no such shared radius, so the midpoints' radii
+    // must spread noticeably — this is the reliable, non-brittle form of the
+    // brief's "no group of edges may approximate a closed orbit".
+    const universe = readyUniverse()
+    const layout = computeUniverseLayout(universe.nodes, universe.edges)
+    const spread = curveMidpointRadiusSpread(layout.edges)
+    expect(spread).not.toBeNull()
+    const meanRadius =
+      layout.edges.reduce((total, edge) => {
+        const mid = edge.samples[Math.floor(edge.samples.length / 2)]!
+        return total + Math.hypot(mid.x, mid.y, mid.z)
+      }, 0) / layout.edges.length
+    expect(spread!).toBeGreaterThan(meanRadius * 0.1)
+    // Fewer than two curves is not a measurement: report null, never 0.
+    expect(curveMidpointRadiusSpread([])).toBeNull()
+    expect(curveMidpointRadiusSpread([layout.edges[0]!])).toBeNull()
+  })
+
   it('handles an empty universe without NaN', () => {
     const layout = computeUniverseLayout([], [])
     expect(layout.nodes).toEqual([])
@@ -579,10 +685,11 @@ describe('layout — genuine 3D, published intent preserved', () => {
     expect(hashToUnit('a')).toBeLessThan(1)
   })
 
-  it('samples a quadratic curve through its endpoints', () => {
-    const samples = sampleQuadratic(
+  it('samples a cubic curve through its endpoints', () => {
+    const samples = sampleCubic(
       { x: 0, y: 0, z: 0 },
       { x: 1, y: 1, z: 1 },
+      { x: 1, y: -1, z: 1 },
       { x: 2, y: 0, z: 0 },
       4,
     )
@@ -696,8 +803,9 @@ describe('hit testing — screen-space picking, no extra geometry', () => {
           colorRole: 'research',
           role: 'standard',
           radius: 4,
+          visualScale: 1,
           point: { x: 0, y: 0, z: 0 },
-          planeIndex: 0,
+          profile: 'stone',
           azimuth: 0,
           positionSource: 'derived',
         },
@@ -854,7 +962,9 @@ describe('home motion — four designed states, interpolated', () => {
       expect(pose.pitch).toBeCloseTo(key.pitch, 10)
       expect(pose.distanceScale).toBeCloseTo(key.distanceScale, 10)
       expect(pose.push).toBeCloseTo(key.push, 10)
-      expect(pose.edgeEmphasis).toBeCloseTo(key.edgeEmphasis, 10)
+      // `featuredEdge` is deliberately NOT compared here: it is a discrete
+      // selection derived from the real published edge count, not an
+      // interpolated keyframe field (see the featured-edge test below).
     }
     expectPose(poseForProgress(0), HOME_POSE_KEYS[0]!)
     expectPose(poseForProgress(1 / 3), HOME_POSE_KEYS[1]!)
@@ -897,13 +1007,40 @@ describe('home motion — four designed states, interpolated', () => {
     }
   })
 
+  it('features at most ONE real relationship, discretely', () => {
+    // The retired contract was a continuous 0…1 `edgeEmphasis` ramp applied to
+    // EVERY relationship, driven by scroll. The brief permits exactly one
+    // relationship to read slightly stronger at a later scroll state, so the
+    // replacement is discrete and bounded by the real edge count.
+    const states = [0, 0.2, 0.4, 0.55, 0.7, 0.81, 0.9, 1]
+    for (const progress of states) {
+      const pose = poseForProgress(progress, 3)
+      if (pose.featuredEdge != null) {
+        expect(Number.isInteger(pose.featuredEdge)).toBe(true)
+        expect(pose.featuredEdge).toBeGreaterThanOrEqual(0)
+        // Never an index the published graph does not have.
+        expect(pose.featuredEdge).toBeLessThan(3)
+      }
+    }
+    // Outside the authored band nothing is featured at all.
+    expect(poseForProgress(0, 3).featuredEdge).toBeNull()
+    expect(poseForProgress(0.3, 3).featuredEdge).toBeNull()
+    expect(poseForProgress(0.95, 3).featuredEdge).toBeNull()
+    // Inside it, exactly one relationship is chosen.
+    expect(poseForProgress(0.6, 3).featuredEdge).not.toBeNull()
+    // A graph with no published relationships features nothing — the old global
+    // ramp would have lit up an empty set instead.
+    expect(poseForProgress(0.6, 0).featuredEdge).toBeNull()
+    expect(poseForProgress(0.6, Number.NaN).featuredEdge).toBeNull()
+  })
+
   it('exposes a static front pose for reduced motion', () => {
     expect(staticPose()).toEqual({
       yaw: HOME_POSE_KEYS[0]!.yaw,
       pitch: HOME_POSE_KEYS[0]!.pitch,
       distanceScale: HOME_POSE_KEYS[0]!.distanceScale,
       push: HOME_POSE_KEYS[0]!.push,
-      edgeEmphasis: HOME_POSE_KEYS[0]!.edgeEmphasis,
+      featuredEdge: HOME_POSE_KEYS[0]!.featuredEdge,
     })
   })
 })
@@ -967,7 +1104,13 @@ describe('interaction and payload guards', () => {
     // Light is warmer and flatter; dark is deeper with stronger silhouettes.
     expect(light.backgroundIntensity).toBeLessThan(dark.backgroundIntensity)
     expect(light.ambientIntensity).toBeGreaterThan(dark.ambientIntensity)
-    expect(dark.coreEmissive).toBeGreaterThan(light.coreEmissive)
+    // The theme contract is now an emissive BUDGET rather than per-role
+    // intensities: dark needs a small lift so a matte object separates from a
+    // deep navy canvas, light needs almost none on ivory.
+    expect(dark.emissiveLift).toBeGreaterThan(light.emissiveLift)
     expect(dark.edgeDimOpacity).toBeLessThan(light.edgeDimOpacity)
+    // Neither theme may bring back a rim-glow rig.
+    expect(Object.keys(light)).not.toContain('rimLightIntensity')
+    expect(Object.keys(dark)).not.toContain('coreEmissive')
   })
 })

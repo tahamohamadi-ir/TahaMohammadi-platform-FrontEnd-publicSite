@@ -33,7 +33,6 @@ export interface SceneCore {
   readonly camera: THREE.PerspectiveCamera
   readonly ledger: UniverseLedger
   readonly groups: {
-    orbits: THREE.Group
     edges: THREE.Group
     nodes: THREE.Group
     core: THREE.Group
@@ -122,12 +121,10 @@ export function createSceneCore(options: SceneCoreOptions): SceneCore | null {
   renderer.setClearAlpha(0)
 
   const groups = {
-    orbits: new THREE.Group(),
     edges: new THREE.Group(),
     nodes: new THREE.Group(),
     core: new THREE.Group(),
   }
-  groups.orbits.name = 'universe-orbits'
   groups.edges.name = 'universe-edges'
   groups.nodes.name = 'universe-nodes'
   groups.core.name = 'universe-core'
@@ -136,11 +133,14 @@ export function createSceneCore(options: SceneCoreOptions): SceneCore | null {
   const ambient = new THREE.AmbientLight(0xffffff, theme.ambientIntensity)
   const key = new THREE.DirectionalLight(0xffffff, theme.keyLightIntensity)
   key.position.set(38, 62, 96)
-  const rim = new THREE.DirectionalLight(0xffffff, theme.rimLightIntensity)
-  rim.position.set(-58, -34, 48)
+  // Weak opposite-side fill. Deliberately NOT a rim light: the brief rejects a
+  // dramatic rim glow (it is the jewellery/product-advertising look), so this
+  // only stops the shadowed side of a sphere from going flat black.
+  const fill = new THREE.DirectionalLight(0xffffff, theme.fillLightIntensity)
+  fill.position.set(-58, -34, 48)
   scene.add(ambient)
   scene.add(key)
-  scene.add(rim)
+  scene.add(fill)
 
   const onContextLost = (event: Event) => {
     event.preventDefault()
@@ -176,7 +176,7 @@ export function createSceneCore(options: SceneCoreOptions): SceneCore | null {
   function setLights(next: UniverseRenderTheme): void {
     ambient.intensity = next.ambientIntensity
     key.intensity = next.keyLightIntensity
-    rim.intensity = next.rimLightIntensity
+    fill.intensity = next.fillLightIntensity
   }
 
   renderer.setSize(canvas.clientWidth || 1, canvas.clientHeight || 1, false)
