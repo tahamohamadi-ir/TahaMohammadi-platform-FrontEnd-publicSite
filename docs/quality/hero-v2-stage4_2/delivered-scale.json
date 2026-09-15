@@ -1,0 +1,347 @@
+{
+  "rows": [
+    {
+      "candidate": "A",
+      "device": "desktop",
+      "theme": "dark",
+      "status": "ok",
+      "derivativeBytes": 9519,
+      "displayBox": {
+        "width": 511,
+        "height": 447
+      },
+      "curveInkPixels": 587,
+      "thinInkPixels": 3738,
+      "blobInkPixels": 29073,
+      "allInkPixels": 32811,
+      "blobSharePct": 98.2,
+      "effectiveLineWidthPx": 2,
+      "contrastRatio": 1.72,
+      "inkRgb": [55, 63, 72],
+      "backgroundRgb": [10, 18, 46]
+    },
+    {
+      "candidate": "A",
+      "device": "desktop",
+      "theme": "light",
+      "status": "ok",
+      "derivativeBytes": 9194,
+      "displayBox": {
+        "width": 511,
+        "height": 447
+      },
+      "curveInkPixels": 620,
+      "thinInkPixels": 3921,
+      "blobInkPixels": 33464,
+      "allInkPixels": 37385,
+      "blobSharePct": 98.3,
+      "effectiveLineWidthPx": 2.016,
+      "contrastRatio": 1.89,
+      "inkRgb": [187, 188, 186],
+      "backgroundRgb": [254, 254, 254]
+    },
+    {
+      "candidate": "A",
+      "device": "mobile",
+      "theme": "dark",
+      "status": "ok",
+      "derivativeBytes": 6139,
+      "displayBox": {
+        "width": 348,
+        "height": 348
+      },
+      "curveInkPixels": 534,
+      "thinInkPixels": 3181,
+      "blobInkPixels": 20326,
+      "allInkPixels": 23507,
+      "blobSharePct": 97.7,
+      "effectiveLineWidthPx": 2.027,
+      "contrastRatio": 1.69,
+      "inkRgb": [53, 61, 71],
+      "backgroundRgb": [10, 18, 46]
+    },
+    {
+      "candidate": "A",
+      "device": "mobile",
+      "theme": "light",
+      "status": "ok",
+      "derivativeBytes": 5947,
+      "displayBox": {
+        "width": 348,
+        "height": 348
+      },
+      "curveInkPixels": 551,
+      "thinInkPixels": 3364,
+      "blobInkPixels": 24129,
+      "allInkPixels": 27493,
+      "blobSharePct": 98,
+      "effectiveLineWidthPx": 2.026,
+      "contrastRatio": 1.72,
+      "inkRgb": [196, 196, 195],
+      "backgroundRgb": [254, 254, 254]
+    },
+    {
+      "candidate": "B",
+      "device": "desktop",
+      "theme": "dark",
+      "status": "ok",
+      "derivativeBytes": 9588,
+      "displayBox": {
+        "width": 511,
+        "height": 447
+      },
+      "curveInkPixels": 606,
+      "thinInkPixels": 3763,
+      "blobInkPixels": 29089,
+      "allInkPixels": 32852,
+      "blobSharePct": 98.2,
+      "effectiveLineWidthPx": 2.01,
+      "contrastRatio": 1.82,
+      "inkRgb": [59, 66, 75],
+      "backgroundRgb": [10, 18, 46]
+    },
+    {
+      "candidate": "B",
+      "device": "desktop",
+      "theme": "light",
+      "status": "ok",
+      "derivativeBytes": 9242,
+      "displayBox": {
+        "width": 511,
+        "height": 447
+      },
+      "curveInkPixels": 634,
+      "thinInkPixels": 3935,
+      "blobInkPixels": 33462,
+      "allInkPixels": 37397,
+      "blobSharePct": 98.3,
+      "effectiveLineWidthPx": 2.039,
+      "contrastRatio": 1.98,
+      "inkRgb": [183, 184, 182],
+      "backgroundRgb": [254, 254, 254]
+    },
+    {
+      "candidate": "B",
+      "device": "mobile",
+      "theme": "dark",
+      "status": "ok",
+      "derivativeBytes": 6216,
+      "displayBox": {
+        "width": 348,
+        "height": 348
+      },
+      "curveInkPixels": 561,
+      "thinInkPixels": 3204,
+      "blobInkPixels": 20309,
+      "allInkPixels": 23513,
+      "blobSharePct": 97.6,
+      "effectiveLineWidthPx": 2.033,
+      "contrastRatio": 1.75,
+      "inkRgb": [56, 64, 73],
+      "backgroundRgb": [10, 18, 46]
+    },
+    {
+      "candidate": "B",
+      "device": "mobile",
+      "theme": "light",
+      "status": "ok",
+      "derivativeBytes": 5915,
+      "displayBox": {
+        "width": 348,
+        "height": 348
+      },
+      "curveInkPixels": 566,
+      "thinInkPixels": 3380,
+      "blobInkPixels": 24136,
+      "allInkPixels": 27516,
+      "blobSharePct": 97.9,
+      "effectiveLineWidthPx": 2.043,
+      "contrastRatio": 1.78,
+      "inkRgb": [193, 193, 192],
+      "backgroundRgb": [254, 254, 254]
+    },
+    {
+      "candidate": "C",
+      "device": "desktop",
+      "theme": "dark",
+      "status": "ok",
+      "derivativeBytes": 9605,
+      "displayBox": {
+        "width": 511,
+        "height": 447
+      },
+      "curveInkPixels": 630,
+      "thinInkPixels": 3786,
+      "blobInkPixels": 29063,
+      "allInkPixels": 32849,
+      "blobSharePct": 98.1,
+      "effectiveLineWidthPx": 2.022,
+      "contrastRatio": 1.88,
+      "inkRgb": [61, 68, 77],
+      "backgroundRgb": [10, 18, 46]
+    },
+    {
+      "candidate": "C",
+      "device": "desktop",
+      "theme": "light",
+      "status": "ok",
+      "derivativeBytes": 9259,
+      "displayBox": {
+        "width": 511,
+        "height": 447
+      },
+      "curveInkPixels": 641,
+      "thinInkPixels": 3942,
+      "blobInkPixels": 33460,
+      "allInkPixels": 37402,
+      "blobSharePct": 98.3,
+      "effectiveLineWidthPx": 2.048,
+      "contrastRatio": 2.06,
+      "inkRgb": [179, 180, 178],
+      "backgroundRgb": [254, 254, 254]
+    },
+    {
+      "candidate": "C",
+      "device": "mobile",
+      "theme": "dark",
+      "status": "ok",
+      "derivativeBytes": 6185,
+      "displayBox": {
+        "width": 348,
+        "height": 348
+      },
+      "curveInkPixels": 574,
+      "thinInkPixels": 3219,
+      "blobInkPixels": 20304,
+      "allInkPixels": 23523,
+      "blobSharePct": 97.6,
+      "effectiveLineWidthPx": 2.039,
+      "contrastRatio": 1.79,
+      "inkRgb": [58, 65, 74],
+      "backgroundRgb": [10, 18, 46]
+    },
+    {
+      "candidate": "C",
+      "device": "mobile",
+      "theme": "light",
+      "status": "ok",
+      "derivativeBytes": 5939,
+      "displayBox": {
+        "width": 348,
+        "height": 348
+      },
+      "curveInkPixels": 577,
+      "thinInkPixels": 3390,
+      "blobInkPixels": 24134,
+      "allInkPixels": 27524,
+      "blobSharePct": 97.9,
+      "effectiveLineWidthPx": 2.053,
+      "contrastRatio": 1.83,
+      "inkRgb": [190, 191, 189],
+      "backgroundRgb": [254, 254, 254]
+    },
+    {
+      "candidate": "D",
+      "device": "desktop",
+      "theme": "dark",
+      "status": "ok",
+      "derivativeBytes": 9582,
+      "displayBox": {
+        "width": 511,
+        "height": 447
+      },
+      "curveInkPixels": 630,
+      "thinInkPixels": 3778,
+      "blobInkPixels": 29056,
+      "allInkPixels": 32834,
+      "blobSharePct": 98.1,
+      "effectiveLineWidthPx": 2.016,
+      "contrastRatio": 1.84,
+      "inkRgb": [59, 67, 76],
+      "backgroundRgb": [10, 18, 46]
+    },
+    {
+      "candidate": "D",
+      "device": "desktop",
+      "theme": "light",
+      "status": "ok",
+      "derivativeBytes": 9216,
+      "displayBox": {
+        "width": 511,
+        "height": 447
+      },
+      "curveInkPixels": 635,
+      "thinInkPixels": 3936,
+      "blobInkPixels": 33461,
+      "allInkPixels": 37397,
+      "blobSharePct": 98.3,
+      "effectiveLineWidthPx": 2.042,
+      "contrastRatio": 2.01,
+      "inkRgb": [182, 182, 181],
+      "backgroundRgb": [254, 254, 254]
+    },
+    {
+      "candidate": "D",
+      "device": "mobile",
+      "theme": "dark",
+      "status": "ok",
+      "derivativeBytes": 6174,
+      "displayBox": {
+        "width": 348,
+        "height": 348
+      },
+      "curveInkPixels": 572,
+      "thinInkPixels": 3218,
+      "blobInkPixels": 20305,
+      "allInkPixels": 23523,
+      "blobSharePct": 97.6,
+      "effectiveLineWidthPx": 2.043,
+      "contrastRatio": 1.76,
+      "inkRgb": [57, 64, 74],
+      "backgroundRgb": [10, 18, 46]
+    },
+    {
+      "candidate": "D",
+      "device": "mobile",
+      "theme": "light",
+      "status": "ok",
+      "derivativeBytes": 5925,
+      "displayBox": {
+        "width": 348,
+        "height": 348
+      },
+      "curveInkPixels": 572,
+      "thinInkPixels": 3385,
+      "blobInkPixels": 24131,
+      "allInkPixels": 27516,
+      "blobSharePct": 97.9,
+      "effectiveLineWidthPx": 2.05,
+      "contrastRatio": 1.79,
+      "inkRgb": [193, 193, 191],
+      "backgroundRgb": [254, 254, 254]
+    }
+  ],
+  "sheetRows": [
+    {
+      "device": "desktop",
+      "theme": "dark",
+      "row": "delivered-scales/row-desktop-dark.png"
+    },
+    {
+      "device": "desktop",
+      "theme": "light",
+      "row": "delivered-scales/row-desktop-light.png"
+    },
+    {
+      "device": "mobile",
+      "theme": "dark",
+      "row": "delivered-scales/row-mobile-dark.png"
+    },
+    {
+      "device": "mobile",
+      "theme": "light",
+      "row": "delivered-scales/row-mobile-light.png"
+    }
+  ],
+  "candidates": 4
+}

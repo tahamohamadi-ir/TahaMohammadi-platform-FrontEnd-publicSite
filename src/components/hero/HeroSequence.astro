@@ -1,0 +1,251 @@
+---
+/**
+ * Hero v2 — Home scroll sequence (Stage 4).
+ *
+ * Four authored Stage 3 states, two independently composed cameras (desktop / mobile) and two
+ * authored themes, shipped as static optimized images. No canvas, no WebGL, no video, no idle
+ * loop: the only motion is a crossfade between adjacent frames driven by scroll progress, so
+ * the 3D movement is the one that was actually authored into the renders.
+ *
+ * Device selection is a real `<source media>` query, never a CSS crop: the mobile composition
+ * is a separate camera. Theme selection reuses the existing theme mechanism and only ever
+ * mounts one theme's images, so the two theme sequences are never fetched together.
+ */
+import { getImage } from 'astro:assets'
+import type { ImageMetadata } from 'astro'
+
+import { getPromotedMedia } from '../../lib/media/promoted-media'
+import type { MediaSlot } from '../../lib/media/promoted-media-registry'
+import type { HeroSequenceAssetId } from '../../lib/media/promoted-media-registry'
+import '../../styles/hero-sequence.css'
+
+interface Props {
+  showSequence?: boolean
+}
+
+const { showSequence = true } = Astro.props
+
+const FRAMES = ['01', '02', '03', '04'] as const
+const THEMES = ['light', 'dark'] as const
+
+/**
+ * Encoder settings, chosen by a measured sweep against the real masters (alpha-weighted RMSE and
+ * max error on opaque pixels only — the numbers live in the Stage 4 report):
+ *
+ *   desktop dark 01 · q50 13KB rmse 1.00 max 43 · q58 15KB rmse 1.00 max 24 · q66 17KB rmse 0.95 max 24
+ *   mobile  dark 01 · q50  9KB rmse 1.08 max 20 · q58 10KB rmse 1.09 max 22 · q66 11KB rmse 1.02 max 13
+ *
+ * q50/q58 keep the byte count marginally lower but leave 43/255 outlier pixels and worse alpha
+ * edges on the thin relation curves, so AVIF sits at q66: the whole four-frame set is ~68KB per
+ * theme against a 900KB budget. WebP is the fallback engine and needs a higher number for the
+ * same fidelity (q74 ≈ rmse 1.4 vs AVIF's 0.95).
+ */
+const FORMATS = [
+  { format: 'avif' as const, quality: 66, type: 'image/avif' },
+  { format: 'webp' as const, quality: 74, type: 'image/webp' },
+]
+const DESKTOP_WIDTHS = [800, 1600] as const
+const MOBILE_WIDTHS = [400, 800] as const
+const DESKTOP_MEDIA = '(min-width: 768px)'
+
+type Device = 'desktop' | 'mobile'
+
+const SLOT: Record<Device, MediaSlot> = {
+  desktop: 'home.hero.sequence.desktop',
+  mobile: 'home.hero.sequence.mobile',
+}
+const WIDTHS: Record<Device, readonly number[]> = {
+  desktop: DESKTOP_WIDTHS,
+  mobile: MOBILE_WIDTHS,
+}
+
+const variantCache = new Map<string, string>()
+async function variantUrl(
+  source: ImageMetadata,
+  width: number,
+  format: 'avif' | 'webp',
+  quality: number,
+): Promise<string> {
+  const key = `${source.src}|${width}|${format}|${quality}`
+  const cached = variantCache.get(key)
+  if (cached) return cached
+  const image = await getImage({ src: source, width, format, quality })
+  variantCache.set(key, image.src)
+  return image.src
+}
+
+interface Variant {
+  type: string
+  media?: string
+  srcset: string
+  fallback: string
+}
+
+async function buildVariants(
+  assetId: HeroSequenceAssetId,
+  device: Device,
+): Promise<Variant[]> {
+  const source = getPromotedMedia(assetId, SLOT[device]).source
+  const variants: Variant[] = []
+  for (const { format, quality, type } of FORMATS) {
+    const urls: string[] = []
+    for (const width of WIDTHS[device]) {
+      urls.push(`${await variantUrl(source, width, format, quality)} ${width}w`)
+    }
+    variants.push({
+      type,
+      media: device === 'desktop' ? DESKTOP_MEDIA : undefined,
+      srcset: urls.join(', '),
+      fallback: urls[urls.length - 1] ?? '',
+    })
+  }
+  // WebP is the last variant in the loop, so it owns the <img> fallback source.
+  return variants
+}
+
+const sequences: Record<
+  (typeof THEMES)[number],
+  { frame: string; variants: Variant[]; fallback: string }[]
+> = { light: [], dark: [] }
+
+if (showSequence) {
+  for (const theme of THEMES) {
+    for (const frame of FRAMES) {
+      const variants = [
+        ...(await buildVariants(
+          `hero-v2-desktop-${theme}-${frame}`,
+          'desktop',
+        )),
+        ...(await buildVariants(`hero-v2-mobile-${theme}-${frame}`, 'mobile')),
+      ]
+      sequences[theme].push({
+        frame,
+        variants,
+        fallback: variants[variants.length - 1]?.fallback ?? '',
+      })
+    }
+  }
+}
+---
+
+{
+  showSequence && (
+    <div
+      class="hero-seq"
+      data-hero-sequence
+      data-hero-sequence-frame-count={FRAMES.length}
+      data-hero-sequence-progress="0.0000"
+      aria-hidden="true"
+    >
+      {THEMES.map((theme) => (
+        <div
+          class="hero-seq__theme"
+          data-hero-sequence-theme={theme}
+          hidden={theme !== 'light'}
+        >
+          {sequences[theme].map((entry, index) => (
+            <picture
+              class="hero-seq__frame"
+              data-hero-sequence-frame={entry.frame}
+              data-frame-index={index}
+              style={`opacity:${index === 0 ? 1 : 0}`}
+            >
+              {entry.variants.map((variant) => (
+                <source
+                  type={variant.type}
+                  media={variant.media}
+                  srcset={variant.srcset}
+                  sizes={
+                    variant.media
+                      ? '(min-width: 1024px) 620px, (min-width: 768px) 460px'
+                      : '(min-width: 480px) 360px, 100vw'
+                  }
+                />
+              ))}
+              <img
+                src={entry.fallback}
+                alt=""
+                width={1600}
+                height={1400}
+                loading={
+                  theme === 'light' && entry.frame === '01' ? 'eager' : 'lazy'
+                }
+                decoding="async"
+                fetchpriority={
+                  theme === 'light' && entry.frame === '01' ? 'high' : 'auto'
+                }
+                class="hero-seq__image"
+              />
+            </picture>
+          ))}
+        </div>
+      ))}
+    </div>
+  )
+}
+
+<script>
+  import { mountHeroSequence } from '../../lib/visual/hero-sequence'
+
+  const SEQUENCE = '[data-hero-sequence]'
+  const THEME_EVENT = 'tm-themechange'
+
+  function resolveTheme(): 'light' | 'dark' {
+    const requested = document.documentElement.dataset.theme
+    if (requested === 'light' || requested === 'dark') return requested
+    return window.matchMedia('(prefers-color-scheme: dark)').matches
+      ? 'dark'
+      : 'light'
+  }
+
+  function mount(root: HTMLElement, theme: 'light' | 'dark') {
+    const groups = root.querySelectorAll<HTMLElement>(
+      '[data-hero-sequence-theme]',
+    )
+    for (const group of groups) {
+      group.hidden = group.dataset.heroSequenceTheme !== theme
+    }
+    root.dataset.heroSequenceActiveTheme = theme
+  }
+
+  function boot() {
+    const root = document.querySelector<HTMLElement>(SEQUENCE)
+    if (!root) return
+
+    // Everything below hangs off the Home hero module that holds this sequence: it is the
+    // scroll scope the controller measures, and the flag the stylesheet keys the sticky stage
+    // and the travel height off. Nothing gains scroll height unless the scrubber runs.
+    const scope = root.closest<HTMLElement>('[data-home-module="hero"]') ?? root
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const syncScope = () => {
+      if (reduced.matches) delete scope.dataset.heroSequenceActive
+      else scope.dataset.heroSequenceActive = 'true'
+    }
+    syncScope()
+
+    mount(root, resolveTheme())
+    const controller = mountHeroSequence(scope, {
+      themeChangeEvent: THEME_EVENT,
+    })
+
+    window.addEventListener(THEME_EVENT, () => {
+      const theme = resolveTheme()
+      if (root.dataset.heroSequenceActiveTheme === theme) return
+      // Show the incoming theme only once its first frame has decoded, so a theme switch can
+      // never flash a half-loaded or wrong-theme frame.
+      const incoming = root.querySelector<HTMLElement>(
+        `[data-hero-sequence-theme="${theme}"]`,
+      )
+      const image = incoming?.querySelector('img')
+      mount(root, theme)
+      controller?.update()
+      void image?.decode?.().catch(() => {})
+    })
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot, { once: true })
+  } else {
+    boot()
+  }
+</script>

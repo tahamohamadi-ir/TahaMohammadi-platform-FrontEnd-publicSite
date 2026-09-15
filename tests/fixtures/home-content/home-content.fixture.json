@@ -1,0 +1,139 @@
+{
+  "_comment": "Deterministic Home content for the Playwright E2E build. Stage 4.1: the Home hero contract (identity + graph modules, primary profile, home landing) must render without the live CMS, otherwise every Home spec fails environmentally with 'element count 0'. Read-only, per-locale, and only these three routes are served by scripts/e2e-site-settings-fixture.mjs. Stage 4.1 also serves topics and statements, which are what the hero research lead reads.",
+  "en": {
+    "composition": {
+      "locale": "en",
+      "modules": [
+        {
+          "key": "identity",
+          "order": 1
+        },
+        {
+          "key": "graph",
+          "order": 2
+        },
+        {
+          "key": "research-fit",
+          "order": 3
+        },
+        {
+          "key": "projects",
+          "order": 4
+        },
+        {
+          "key": "publications",
+          "order": 5
+        },
+        {
+          "key": "cta",
+          "order": 6
+        }
+      ]
+    },
+    "profile": [
+      {
+        "locale": "en",
+        "slug": "about",
+        "title": "Taha Mohammadi",
+        "body": "Published biography.",
+        "published_at": "2026-09-01T00:00:00Z"
+      }
+    ],
+    "landing": {
+      "locale": "en",
+      "slug": "home",
+      "title": "Home",
+      "body": "Backend and AI engineer working on human-centered systems.",
+      "published_at": "2026-09-01T00:00:00Z"
+    },
+    "topics": {
+      "count": 1,
+      "items": [
+        {
+          "locale": "en",
+          "slug": "human-centered-ai",
+          "title": "Human-Centered AI",
+          "summary": "Published topic summary.",
+          "published_at": "2026-09-01T00:00:00Z"
+        }
+      ]
+    },
+    "statements": [
+      {
+        "locale": "en",
+        "slug": "statement",
+        "title": "Research statement",
+        "body": "Published statement body.",
+        "published_at": "2026-09-01T00:00:00Z"
+      }
+    ]
+  },
+  "fa": {
+    "composition": {
+      "locale": "fa",
+      "modules": [
+        {
+          "key": "identity",
+          "order": 1
+        },
+        {
+          "key": "graph",
+          "order": 2
+        },
+        {
+          "key": "research-fit",
+          "order": 3
+        },
+        {
+          "key": "projects",
+          "order": 4
+        },
+        {
+          "key": "publications",
+          "order": 5
+        },
+        {
+          "key": "cta",
+          "order": 6
+        }
+      ]
+    },
+    "profile": [
+      {
+        "locale": "fa",
+        "slug": "about",
+        "title": "طاها محمدی",
+        "body": "زندگی‌نامهٔ منتشرشده.",
+        "published_at": "2026-09-01T00:00:00Z"
+      }
+    ],
+    "landing": {
+      "locale": "fa",
+      "slug": "home",
+      "title": "خانه",
+      "body": "مهندس بک‌اند و هوش مصنوعی، فعال در سیستم‌های انسان‌محور.",
+      "published_at": "2026-09-01T00:00:00Z"
+    },
+    "topics": {
+      "count": 1,
+      "items": [
+        {
+          "locale": "fa",
+          "slug": "human-centered-ai",
+          "title": "هوش مصنوعی انسان‌محور",
+          "summary": "خلاصهٔ منتشرشدهٔ موضوع.",
+          "published_at": "2026-09-01T00:00:00Z"
+        }
+      ]
+    },
+    "statements": [
+      {
+        "locale": "fa",
+        "slug": "statement",
+        "title": "بیانیهٔ پژوهشی",
+        "body": "متن منتشرشدهٔ بیانیه.",
+        "published_at": "2026-09-01T00:00:00Z"
+      }
+    ]
+  }
+}

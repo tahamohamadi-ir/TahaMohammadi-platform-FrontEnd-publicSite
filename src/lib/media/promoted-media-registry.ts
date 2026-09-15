@@ -10,6 +10,8 @@ export type MediaSlot =
   | 'gateway.atmosphere'
   | 'home.hero.atmosphere'
   | 'home.graph.backplate'
+  | 'home.hero.sequence.desktop'
+  | 'home.hero.sequence.mobile'
   | 'home.project.preview'
   | 'home.rail.preview'
   | 'brand.mark'
@@ -27,7 +29,7 @@ export interface PromotedAssetRecord {
   approval: {
     ledgerId: string
     decision: string
-    decisionDate: '2026-08-29' | '2026-08-30' | '2026-09-12'
+    decisionDate: '2026-08-29' | '2026-08-30' | '2026-09-12' | '2026-09-15'
   }
   semantics: AltPolicy
   placement: {
@@ -53,10 +55,61 @@ const decorative = { kind: 'decorative' as const, alt: '' as const }
 
 const consumerContentAlt: AltPolicy = { kind: 'consumer-content' }
 
+const HERO_SEQUENCE_DEVICES = ['desktop', 'mobile'] as const
+const HERO_SEQUENCE_THEMES = ['dark', 'light'] as const
+const HERO_SEQUENCE_FRAMES = ['01', '02', '03', '04'] as const
+
+function heroSequenceRecords(): Record<
+  HeroSequenceAssetId,
+  PromotedAssetRecord
+> {
+  const records: Partial<Record<HeroSequenceAssetId, PromotedAssetRecord>> = {}
+  for (const device of HERO_SEQUENCE_DEVICES) {
+    for (const theme of HERO_SEQUENCE_THEMES) {
+      for (const frame of HERO_SEQUENCE_FRAMES) {
+        const id = `hero-v2-${device}-${theme}-${frame}` as HeroSequenceAssetId
+        const slot: MediaSlot =
+          device === 'desktop'
+            ? 'home.hero.sequence.desktop'
+            : 'home.hero.sequence.mobile'
+        const file = `hero-v2/hero-v2-${device}-${theme}-${frame}.png`
+        const first = frame === HERO_SEQUENCE_FRAMES[0]
+        records[id] = {
+          id,
+          authorityPath: file,
+          sourceSha256: AUTHORITY_CHECKSUMS[id],
+          intrinsic:
+            device === 'desktop'
+              ? { width: 1600, height: 1400 }
+              : { width: 800, height: 800 },
+          approval: {
+            ledgerId: `hero-v2-stage3-${device}-${theme}-${frame}`,
+            decision: 'hero-v2-stage3-approved-sequence',
+            decisionDate: '2026-09-15',
+          },
+          semantics: decorative,
+          placement: { slot, theme, locales: ['fa', 'en'] },
+          transform: {
+            ...getTransformRecipe(slot),
+            formats: ['avif', 'webp'],
+            fit: 'contain',
+            focalByLocale: {},
+            loading: first ? 'eager' : 'lazy',
+            fetchPriority: first ? 'high' : 'auto',
+          },
+          assetFile: file,
+        }
+      }
+    }
+  }
+  return records as Record<HeroSequenceAssetId, PromotedAssetRecord>
+}
+
 export const PROMOTED_ASSET_REGISTRY: Record<
   RuntimeAssetId,
   PromotedAssetRecord
 > = {
+  ...heroSequenceRecords(),
   'portal-centered-dark': {
     id: 'portal-centered-dark',
     authorityPath: 'art/portal-centered-dark.png',
@@ -445,6 +498,37 @@ export const PROMOTED_ASSET_REGISTRY: Record<
     assetFile: 'art/home-graph-backplate-dark.png',
   },
 }
+
+/**
+ * Hero v2 — Home scroll sequence (Stage 3 → Stage 4).
+ *
+ * The four authored states are registered per device and theme. The device pair is chosen by
+ * a `<source media>` query rather than by CSS cropping, because the mobile composition is an
+ * independent authored camera, never a crop of the desktop one; the theme pair is chosen by
+ * the existing theme mechanism at runtime, and only the active theme's markup is ever mounted,
+ * so both theme sequences are never fetched together.
+ *
+ * Frame 01 is the eager, high-priority one (it is the resting hero image and the likely LCP
+ * element); frames 02-04 are lazy so the scroll scrubber can pre-decode them before their
+ * range is reached.
+ */
+export type HeroSequenceAssetId =
+  | 'hero-v2-desktop-dark-01'
+  | 'hero-v2-desktop-dark-02'
+  | 'hero-v2-desktop-dark-03'
+  | 'hero-v2-desktop-dark-04'
+  | 'hero-v2-desktop-light-01'
+  | 'hero-v2-desktop-light-02'
+  | 'hero-v2-desktop-light-03'
+  | 'hero-v2-desktop-light-04'
+  | 'hero-v2-mobile-dark-01'
+  | 'hero-v2-mobile-dark-02'
+  | 'hero-v2-mobile-dark-03'
+  | 'hero-v2-mobile-dark-04'
+  | 'hero-v2-mobile-light-01'
+  | 'hero-v2-mobile-light-02'
+  | 'hero-v2-mobile-light-03'
+  | 'hero-v2-mobile-light-04'
 
 export function getPromotedAssetRecord(
   id: string,

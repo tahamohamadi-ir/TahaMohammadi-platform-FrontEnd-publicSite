@@ -1,33 +1,18 @@
 import { expect, test } from '@playwright/test'
 
 // V2 checks semantic content in the state actually delivered by this build.
-async function expectSemanticGraph(page: import('@playwright/test').Page) {
-  const region = page.locator(
-    '[data-hero-layout="integrated"] [data-graph-region]',
-  )
-  await expect(region).toHaveCount(1)
-  await expect(region).toBeVisible()
-  await expect(region.locator('#home-graph-heading')).toBeVisible()
-  const status = await region.getAttribute('data-graph-status')
-  expect(['ready', 'empty', 'error', 'unavailable']).toContain(status)
-  if (status === 'ready') {
-    const payload = JSON.parse(
-      await region.locator('script[data-graph-payload]').innerText(),
-    )
-    expect(payload.nodes.length).toBeGreaterThan(0)
-    await expect(region.locator('[data-graph-node]')).toHaveCount(
-      payload.nodes.length,
-    )
-    for (const label of await region.locator('.hg-node__label').all()) {
-      await expect(label).toBeVisible()
-    }
-  } else {
-    await expect(region.locator('[data-graph-node]')).toHaveCount(0)
-    await expect(region.locator('a')).toHaveCount(0)
-    await expect(region).toContainText(
-      /unavailable|not available|No graph nodes|not be shown|در دسترس نیست|منتشر نشده|قابل‌نمایش نیست/,
-    )
-  }
+/** Stage 4: the hero's semantic contract is the authored image sequence — no scene runtime. */
+async function expectHeroSequence(page: import('@playwright/test').Page) {
+  const hero = page.locator('[data-hero-layout="integrated"]')
+  await expect(hero).toHaveCount(1)
+  const sequence = hero.locator('[data-hero-sequence]')
+  await expect(sequence).toHaveCount(1)
+  await expect(sequence).toBeVisible()
+  await expect(sequence).toHaveAttribute('data-hero-sequence-frame-count', '4')
+  await expect(sequence.locator('[data-hero-sequence-frame]')).toHaveCount(8)
+  await expect(sequence.locator('[data-hero-sequence-theme]')).toHaveCount(2)
+  await expect(hero.locator('canvas')).toHaveCount(0)
+  await expect(hero.locator('[data-graph-node]')).toHaveCount(0)
   await expect(page.locator('#home-graph-region')).toHaveCount(0)
 }
 
@@ -112,7 +97,7 @@ test.describe('WP-40 home structure acceptance', () => {
   }) => {
     for (const path of ['/en/', '/fa/']) {
       await page.goto(path)
-      await expectSemanticGraph(page)
+      await expectHeroSequence(page)
     }
   })
 
@@ -126,7 +111,7 @@ test.describe('WP-40 home structure acceptance', () => {
     )
     await page.goto('/en/')
 
-    await expectSemanticGraph(page)
+    await expectHeroSequence(page)
     await expect(page.locator('.hm-hero__name')).toContainText('Taha Mohammadi')
     await expect(
       page.locator('.hm-hero[data-hero-layout="integrated"]'),
@@ -150,8 +135,10 @@ test.describe('WP-40 home structure acceptance', () => {
     await expect(noJsPage.locator('.hm-hero__name')).toContainText(
       'Taha Mohammadi',
     )
-    await expectSemanticGraph(noJsPage)
-    await expect(noJsPage.locator('[data-graph-node]')).toHaveCount(4)
+    await expectHeroSequence(noJsPage)
+    // Stage 4.1: no scene runtime on Home, with or without JavaScript.
+    await expect(noJsPage.locator('[data-graph-node]')).toHaveCount(0)
+    await expect(noJsPage.locator('canvas')).toHaveCount(0)
     await expect
       .poll(() =>
         noJsPage.evaluate(
@@ -165,7 +152,10 @@ test.describe('WP-40 home structure acceptance', () => {
   test('WP-40 home and gateway capture 200% zoom composition evidence', async ({
     browser,
   }) => {
-    test.setTimeout(120_000)
+    // Stage 4.1 note: the hero now owns a pinned scroll shell, so a full-page capture of Home
+    // is a taller, stickier page to stitch. The budget is raised rather than weakening what the
+    // evidence has to show.
+    test.setTimeout(300_000)
     const zoomContext = await browser.newContext({
       viewport: { width: 720, height: 810 },
       deviceScaleFactor: 2,
@@ -214,7 +204,8 @@ test.describe('WP-40 home structure acceptance', () => {
   test('WP-40 home captures 768 reflow evidence for both locales and themes', async ({
     page,
   }) => {
-    test.setTimeout(120_000)
+    // Stage 4.1 note: raised for the same reason as the 200% zoom capture above.
+    test.setTimeout(300_000)
     await page.setViewportSize({ width: 768, height: 1024 })
     await page.goto('/en/')
     await settleLazyMedia(page)

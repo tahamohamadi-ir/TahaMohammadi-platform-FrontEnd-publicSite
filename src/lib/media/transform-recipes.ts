@@ -9,6 +9,20 @@ export const PREVIEW_WIDTHS = [320, 480, 640, 800, 1024] as const
 /** Graph backplate responsive derivative widths (canonical source 1254×1254; no 1254px runtime width). */
 export const GRAPH_BACKPLATE_WIDTHS = [320, 480, 640, 768, 1024] as const
 
+/**
+ * Hero v2 sequence derivatives. The desktop composition is 1600×1400 and is displayed in a
+ * 520–620px scene, so 800 and 1600 cover DPR 1 and 2; the mobile composition is 800×800 in a
+ * 280–360px scene, where 800 already covers DPR 2 and 400 keeps DPR 1 light.
+ */
+export const HERO_SEQUENCE_DESKTOP_WIDTHS = [800, 1600] as const
+export const HERO_SEQUENCE_MOBILE_WIDTHS = [400, 800] as const
+
+export const HERO_SEQUENCE_DESKTOP_SIZES =
+  '(min-width: 1024px) 620px, (min-width: 768px) 460px, 100vw'
+
+export const HERO_SEQUENCE_MOBILE_SIZES =
+  '(min-width: 768px) 480px, (min-width: 480px) 360px, 100vw'
+
 export const PROMOTED_FORMATS = ['avif', 'webp'] as const
 
 export type PromotedFormat = (typeof PROMOTED_FORMATS)[number]
@@ -20,6 +34,16 @@ export type TransformRecipe =
   | {
       kind: 'graph-backplate'
       widths: typeof GRAPH_BACKPLATE_WIDTHS
+      sizes: string
+    }
+  | {
+      kind: 'hero-sequence-desktop'
+      widths: typeof HERO_SEQUENCE_DESKTOP_WIDTHS
+      sizes: string
+    }
+  | {
+      kind: 'hero-sequence-mobile'
+      widths: typeof HERO_SEQUENCE_MOBILE_WIDTHS
       sizes: string
     }
 
@@ -53,6 +77,18 @@ export function getTransformRecipe(slot: string): TransformRecipe {
         kind: 'graph-backplate',
         widths: GRAPH_BACKPLATE_WIDTHS,
         sizes: GRAPH_BACKPLATE_SIZES,
+      }
+    case 'home.hero.sequence.desktop':
+      return {
+        kind: 'hero-sequence-desktop',
+        widths: HERO_SEQUENCE_DESKTOP_WIDTHS,
+        sizes: HERO_SEQUENCE_DESKTOP_SIZES,
+      }
+    case 'home.hero.sequence.mobile':
+      return {
+        kind: 'hero-sequence-mobile',
+        widths: HERO_SEQUENCE_MOBILE_WIDTHS,
+        sizes: HERO_SEQUENCE_MOBILE_SIZES,
       }
     default:
       throw new Error(`Unknown media slot for transform recipe: ${slot}`)

@@ -1,0 +1,315 @@
+{
+  "derivedFrom": "window capture run log",
+  "label": "window",
+  "geometry-desktop-dark": {
+    "travel": 540,
+    "mode": "sticky",
+    "fade": "window",
+    "pinned": "540",
+    "shellTop": 101,
+    "shellHeight": 1069,
+    "stagePosition": "sticky",
+    "docScrollable": 961
+  },
+  "desktop-dark-p000": {
+    "progress": 0.0,
+    "opacities": "1.00|0.00|0.00|0.00",
+    "viewportTop": 69
+  },
+  "desktop-dark-p017": {
+    "progress": 0.167,
+    "opacities": "0.50|0.50|0.00|0.00",
+    "viewportTop": 69
+  },
+  "desktop-dark-p033": {
+    "progress": 0.333,
+    "opacities": "0.00|1.00|0.00|0.00",
+    "viewportTop": 69
+  },
+  "desktop-dark-p050": {
+    "progress": 0.5,
+    "opacities": "0.00|0.50|0.50|0.00",
+    "viewportTop": 69
+  },
+  "desktop-dark-p067": {
+    "progress": 0.667,
+    "opacities": "0.00|0.00|1.00|0.00",
+    "viewportTop": 69
+  },
+  "desktop-dark-p083": {
+    "progress": 0.833,
+    "opacities": "0.00|0.00|0.50|0.50",
+    "viewportTop": 69
+  },
+  "desktop-dark-p100": {
+    "progress": 1.0,
+    "opacities": "0.00|0.00|0.00|1.00",
+    "viewportTop": 0
+  },
+  "phase-desktop-dark-before": {
+    "scrollY": 100,
+    "viewportTop": 69,
+    "viewportVisible": true,
+    "file": "window-desktop-dark-phase-before.jpg"
+  },
+  "phase-desktop-dark-during": {
+    "scrollY": 371,
+    "viewportTop": 69,
+    "viewportVisible": true,
+    "file": "window-desktop-dark-phase-during.jpg"
+  },
+  "phase-desktop-dark-after": {
+    "scrollY": 642,
+    "viewportTop": -1,
+    "viewportVisible": true,
+    "file": "window-desktop-dark-phase-after.jpg"
+  },
+  "geometry-desktop-light": {
+    "travel": 540,
+    "mode": "sticky",
+    "fade": "window",
+    "pinned": "540",
+    "shellTop": 101,
+    "shellHeight": 1069,
+    "stagePosition": "sticky",
+    "docScrollable": 961
+  },
+  "desktop-light-p000": {
+    "progress": 0.0,
+    "opacities": "1.00|0.00|0.00|0.00",
+    "viewportTop": 69
+  },
+  "desktop-light-p017": {
+    "progress": 0.167,
+    "opacities": "0.50|0.50|0.00|0.00",
+    "viewportTop": 69
+  },
+  "desktop-light-p033": {
+    "progress": 0.333,
+    "opacities": "0.00|1.00|0.00|0.00",
+    "viewportTop": 69
+  },
+  "desktop-light-p050": {
+    "progress": 0.5,
+    "opacities": "0.00|0.50|0.50|0.00",
+    "viewportTop": 69
+  },
+  "desktop-light-p067": {
+    "progress": 0.667,
+    "opacities": "0.00|0.00|1.00|0.00",
+    "viewportTop": 69
+  },
+  "desktop-light-p083": {
+    "progress": 0.833,
+    "opacities": "0.00|0.00|0.50|0.50",
+    "viewportTop": 69
+  },
+  "desktop-light-p100": {
+    "progress": 1.0,
+    "opacities": "0.00|0.00|0.00|1.00",
+    "viewportTop": 0
+  },
+  "phase-desktop-light-before": {
+    "scrollY": 100,
+    "viewportTop": 69,
+    "viewportVisible": true,
+    "file": "window-desktop-light-phase-before.jpg"
+  },
+  "phase-desktop-light-during": {
+    "scrollY": 371,
+    "viewportTop": 69,
+    "viewportVisible": true,
+    "file": "window-desktop-light-phase-during.jpg"
+  },
+  "phase-desktop-light-after": {
+    "scrollY": 642,
+    "viewportTop": -1,
+    "viewportVisible": true,
+    "file": "window-desktop-light-phase-after.jpg"
+  },
+  "metrics-desktop": {
+    "heroRequests": 8,
+    "heroDecodedKB": 106,
+    "byDeviceTheme": {
+      "desktop-light": 4,
+      "desktop-dark": 4
+    },
+    "canvasCount": 0,
+    "runningAnimations": 0,
+    "qa": {
+      "lcp": 96,
+      "cls": 0.06775891900291496,
+      "longTasks": 0,
+      "longTaskMs": 0,
+      "shifts": [
+        {
+          "value": 0.0678,
+          "t": 92
+        }
+      ]
+    }
+  },
+  "geometry-mobile-dark": {
+    "travel": 513,
+    "mode": "sticky",
+    "fade": "window",
+    "pinned": "513",
+    "shellTop": 101,
+    "shellHeight": 1328,
+    "stagePosition": "sticky",
+    "docScrollable": 1231
+  },
+  "mobile-dark-p000": {
+    "progress": 0.0,
+    "opacities": "1.00|0.00|0.00|0.00",
+    "viewportTop": 69
+  },
+  "mobile-dark-p017": {
+    "progress": 0.168,
+    "opacities": "0.48|0.52|0.00|0.00",
+    "viewportTop": 69
+  },
+  "mobile-dark-p033": {
+    "progress": 0.334,
+    "opacities": "0.00|1.00|0.00|0.00",
+    "viewportTop": 69
+  },
+  "mobile-dark-p050": {
+    "progress": 0.501,
+    "opacities": "0.00|0.48|0.52|0.00",
+    "viewportTop": 69
+  },
+  "mobile-dark-p067": {
+    "progress": 0.667,
+    "opacities": "0.00|0.00|1.00|0.00",
+    "viewportTop": 69
+  },
+  "mobile-dark-p083": {
+    "progress": 0.835,
+    "opacities": "0.00|0.00|0.48|0.52",
+    "viewportTop": 69
+  },
+  "mobile-dark-p100": {
+    "progress": 1.0,
+    "opacities": "0.00|0.00|0.00|1.00",
+    "viewportTop": 0
+  },
+  "phase-mobile-dark-before": {
+    "scrollY": 100,
+    "viewportTop": 69,
+    "viewportVisible": true,
+    "file": "window-mobile-dark-phase-before.jpg"
+  },
+  "phase-mobile-dark-during": {
+    "scrollY": 358,
+    "viewportTop": 69,
+    "viewportVisible": true,
+    "file": "window-mobile-dark-phase-during.jpg"
+  },
+  "phase-mobile-dark-after": {
+    "scrollY": 615,
+    "viewportTop": -1,
+    "viewportVisible": true,
+    "file": "window-mobile-dark-phase-after.jpg"
+  },
+  "geometry-mobile-light": {
+    "travel": 513,
+    "mode": "sticky",
+    "fade": "window",
+    "pinned": "513",
+    "shellTop": 101,
+    "shellHeight": 1328,
+    "stagePosition": "sticky",
+    "docScrollable": 1231
+  },
+  "mobile-light-p000": {
+    "progress": 0.0,
+    "opacities": "1.00|0.00|0.00|0.00",
+    "viewportTop": 69
+  },
+  "mobile-light-p017": {
+    "progress": 0.168,
+    "opacities": "0.48|0.52|0.00|0.00",
+    "viewportTop": 69
+  },
+  "mobile-light-p033": {
+    "progress": 0.334,
+    "opacities": "0.00|1.00|0.00|0.00",
+    "viewportTop": 69
+  },
+  "mobile-light-p050": {
+    "progress": 0.501,
+    "opacities": "0.00|0.48|0.52|0.00",
+    "viewportTop": 69
+  },
+  "mobile-light-p067": {
+    "progress": 0.667,
+    "opacities": "0.00|0.00|1.00|0.00",
+    "viewportTop": 69
+  },
+  "mobile-light-p083": {
+    "progress": 0.835,
+    "opacities": "0.00|0.00|0.48|0.52",
+    "viewportTop": 69
+  },
+  "mobile-light-p100": {
+    "progress": 1.0,
+    "opacities": "0.00|0.00|0.00|1.00",
+    "viewportTop": 0
+  },
+  "phase-mobile-light-before": {
+    "scrollY": 100,
+    "viewportTop": 69,
+    "viewportVisible": true,
+    "file": "window-mobile-light-phase-before.jpg"
+  },
+  "phase-mobile-light-during": {
+    "scrollY": 358,
+    "viewportTop": 69,
+    "viewportVisible": true,
+    "file": "window-mobile-light-phase-during.jpg"
+  },
+  "phase-mobile-light-after": {
+    "scrollY": 615,
+    "viewportTop": -1,
+    "viewportVisible": true,
+    "file": "window-mobile-light-phase-after.jpg"
+  },
+  "metrics-mobile": {
+    "heroRequests": 8,
+    "heroDecodedKB": 23,
+    "byDeviceTheme": {
+      "mobile-light": 4,
+      "mobile-dark": 4
+    },
+    "canvasCount": 0,
+    "runningAnimations": 0,
+    "qa": {
+      "lcp": 4612,
+      "cls": 0,
+      "longTasks": 0,
+      "longTaskMs": 0,
+      "shifts": []
+    }
+  },
+  "reduced-desktop": {
+    "mode": "reduced",
+    "progressBefore": 0.3333,
+    "progressAfterScroll": 0.3333,
+    "visibleFrames": 1,
+    "runningAnimations": 0,
+    "shellHeight": 529,
+    "file": "window-desktop-reduced-motion.jpg"
+  },
+  "reduced-mobile": {
+    "mode": "reduced",
+    "progressBefore": 0.3333,
+    "progressAfterScroll": 0.3333,
+    "visibleFrames": 1,
+    "runningAnimations": 0,
+    "shellHeight": 815,
+    "file": "window-mobile-reduced-motion.jpg"
+  },
+  "motion-desktop-dark": "motion\\page@c717a7101dcc4a0cbdad8175d56c1062.webm",
+  "motion-mobile-dark": "motion\\page@2e9a483729e35c07a5a1db85aad6b533.webm"
+}

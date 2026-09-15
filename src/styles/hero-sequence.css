@@ -1,0 +1,91 @@
+/**
+ * Hero v2 — Home scroll sequence (Stage 4).
+ *
+ * Two things live here: the frame stack that crossfades, and the scroll scope that gives the
+ * transition its ~1 viewport of room without ever taking the scrollbar away from the user.
+ *
+ * Progressive enhancement is explicit: the extra height and the sticky stage only exist once
+ * the controller has measured a real travel (`data-hero-sequence-active="true"`), so a no-JS
+ * or reduced-motion visitor gets the plain static hero with no dead scroll space.
+ */
+
+.hero-seq {
+  position: relative;
+  inline-size: 100%;
+  margin: 0;
+}
+
+/* The four frames are stacked in one grid cell, so the slot is reserved from first paint and
+   the images cannot shift the layout as they arrive. */
+.hero-seq__theme {
+  display: grid;
+  grid-template-areas: 'stack';
+  inline-size: 100%;
+}
+
+.hero-seq__theme[hidden] {
+  display: none;
+}
+
+.hero-seq__frame {
+  /* §12: the visual layer never intercepts pointer or selection. */
+  pointer-events: none;
+  user-select: none;
+  grid-area: stack;
+  position: relative;
+  margin: 0;
+  inline-size: 100%;
+  aspect-ratio: 1 / 1;
+  /* The authored art owns its own margins; contain keeps every silhouette visible and never
+     crops a sphere to fill the slot. */
+  overflow: hidden;
+}
+
+.hero-seq__image {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: contain;
+  will-change: opacity;
+}
+
+@media (min-width: 768px) {
+  .hero-seq__frame {
+    /* Desktop / tablet composition is the authored 1600 × 1400 frame. */
+    aspect-ratio: 1600 / 1400;
+  }
+}
+
+/* ---------------------------------------------------------------- scroll scope */
+
+/* ------------------------------------------------- scroll shell (Stage 4.1) */
+
+/* A sticky child needs a block containing block: the template's flex column would confine it to
+   its own line, which is exactly why pinning failed in Stage 4. One child, so no visual change. */
+.hm-hero-scroll-shell {
+  display: block;
+}
+
+/* Shell height = measured sticky viewport height + travel, published by the controller. */
+.hm-hero-scroll-shell[data-hero-sequence-mode='sticky'] {
+  min-block-size: var(--hero-scroll-shell-height, auto);
+}
+
+.hm-hero-scroll-shell[data-hero-sequence-mode='sticky']
+  > .hm-hero-sticky-viewport {
+  position: sticky;
+  /* Pins below the sticky site header, measured at runtime rather than assumed. */
+  inset-block-start: var(--hero-sequence-sticky-top, 0px);
+}
+
+/* Fallback and reduced motion add no travel and no pinning at all. */
+.hm-hero-scroll-shell[data-hero-sequence-mode='fallback'],
+.hm-hero-scroll-shell[data-hero-sequence-mode='reduced'] {
+  min-block-size: auto;
+}
+
+.hm-hero-scroll-shell[data-hero-sequence-mode='reduced']
+  > .hm-hero-sticky-viewport {
+  position: static;
+}

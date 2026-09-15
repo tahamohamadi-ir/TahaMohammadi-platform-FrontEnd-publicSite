@@ -121,93 +121,62 @@ afterEach(() => {
   vi.unstubAllEnvs()
 })
 
-import { readFileSync } from 'node:fs'
 import HomeHero from './HomeHero.astro'
-import {
-  adaptHeroGraph,
-  createStaticRelatedResolver,
-} from '../../lib/hero-graph-content'
-const payload = JSON.parse(
-  readFileSync(
-    new URL(
-      '../../../tests/fixtures/contracts/hero-graph.json',
-      import.meta.url,
-    ),
-    'utf8',
-  ),
-).payload
-const resolver = createStaticRelatedResolver([
-  {
-    family: 'researchtopic',
-    id: '11',
-    locale: 'en',
-    href: '/en/research/human-centered-ai/',
-  },
-  { family: 'project', id: '7', locale: 'en', href: '/en/projects/pars-sql/' },
-  {
-    family: 'publication',
-    id: '3',
-    locale: 'en',
-    href: '/en/publications/vtd-edge/',
-  },
-  {
-    family: 'article',
-    id: '21',
-    locale: 'en',
-    href: '/en/blog/visual-discourse/',
-  },
-])
-describe('CMS Home retains integrated graph behavior', () => {
+
+describe('CMS Home keeps the image hero and carries no graph runtime', () => {
   it.each(['en', 'fa'] as const)(
-    'keeps hero and graph together without portal imagery in %s',
+    'keeps hero and copy together with the image sequence in %s',
     async (locale) => {
       mockCms(locale)
       const html = await render(HomeHero, { locale })
       expect(html).toContain('data-hero-layout="integrated"')
       expect(html).toContain('hm-hero__copy')
-      expect(html).toContain('hm-hero__graph')
+      expect(html).toContain('hm-hero__sequence')
+      expect(html).toContain('data-hero-sequence')
       expect(html).not.toContain('portal-orbit')
       expect(html.match(/<h1[\s>]/g)).toHaveLength(1)
     },
   )
-  it('renders every adapted graph node and resolver-only link natively', async () => {
+
+  it('renders the four authored states and mounts no graph, canvas or scene payload', async () => {
     mockCms('en')
-    const graph = adaptHeroGraph(payload, {
-      locale: 'en',
-      resolveRelatedHref: resolver,
-    })
-    const html = await render(HomeHero, { locale: 'en', graph })
-    expect(html.match(/data-graph-node="/g)).toHaveLength(5)
-    expect(html.match(/<details[\s>]/g)).toHaveLength(5)
-    expect(html).toContain('href="/en/research/human-centered-ai/"')
-    expect(html).toContain('href="/en/projects/pars-sql/"')
-    expect(html.match(/data-graph-edge="/g)).toHaveLength(4)
-    expect(html).toContain('data-graph-canvas')
-  })
-  it('keeps the selected node detail accessible in server HTML', async () => {
-    mockCms('en')
-    const graph = adaptHeroGraph(payload, {
-      locale: 'en',
-      resolveRelatedHref: resolver,
-    })
-    const html = await render(HomeHero, {
-      locale: 'en',
-      graph,
-      selectedId: 'node-01',
-    })
-    const detail = html.match(/data-graph-detail[\s\S]*?<\/div>/)?.[0] ?? ''
-    expect(detail).toContain('Human-Centered AI')
-    expect(detail).toContain('human goals and agency')
-  })
-  it('does not render a hidden identity or graph module', async () => {
-    mockCms('en')
-    const html = await render(HomeHero, { locale: 'en', showGraph: false })
+    const html = await render(HomeHero, { locale: 'en' })
+    // Four authored states, one set per authored theme (one of them hidden server-side).
+    expect(html).toContain('data-hero-sequence-frame-count="4"')
+    expect(html.match(/data-hero-sequence-frame="/g)).toHaveLength(8)
+    expect(html.match(/data-hero-sequence-theme="/g)).toHaveLength(2)
+    expect(html).not.toContain('data-graph-node')
+    expect(html).not.toContain('data-graph-edge')
     expect(html).not.toContain('data-graph-region')
-    const graphOnly = await render(HomeHero, {
+    expect(html).not.toContain('data-graph-canvas')
+    expect(html).not.toContain('data-scene-payload')
+    expect(html).not.toContain('<canvas')
+  })
+
+  it('ships device-specific art through a real source query, never a CSS crop', async () => {
+    mockCms('en')
+    const html = await render(HomeHero, { locale: 'en' })
+    expect(html).toMatch(/media="\(min-width:\s*768px\)"/)
+    expect(html).toContain('image/avif')
+    expect(html).toContain('image/webp')
+    // Exactly one frame is the eager, high-priority one: the visible theme's first state.
+    expect(html.match(/loading="eager"/g)).toHaveLength(1)
+    expect(html.match(/fetchpriority="high"/g)).toHaveLength(1)
+  })
+
+  it('does not render a hidden identity or sequence module', async () => {
+    mockCms('en')
+    const withoutSequence = await render(HomeHero, {
+      locale: 'en',
+      showSequence: false,
+    })
+    expect(withoutSequence).not.toContain('data-hero-sequence')
+    expect(withoutSequence).toContain('hm-hero__copy')
+    const withoutIdentity = await render(HomeHero, {
       locale: 'en',
       showIdentity: false,
     })
-    expect(graphOnly).not.toContain('hm-hero__copy')
-    expect(graphOnly).toContain('data-graph-region')
+    expect(withoutIdentity).not.toContain('hm-hero__copy')
+    expect(withoutIdentity).toContain('data-hero-sequence')
   })
 })

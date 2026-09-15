@@ -10,7 +10,6 @@ import {
   homeModuleOrder,
   type HomeCompositionOut,
 } from '../../lib/home-content'
-import type { HeroGraphModel } from '../../lib/hero-graph-content'
 import { shellCopy, type Locale } from '../../lib/navigation'
 import { getManagedCopy } from '../../lib/site-settings-content'
 import '../templates/template-base.css'
@@ -18,9 +17,8 @@ import '../templates/template-base.css'
 interface Props {
   locale: Locale
   composition: HomeCompositionOut | null
-  graph: HeroGraphModel
 }
-const { locale, composition, graph } = Astro.props
+const { locale, composition } = Astro.props
 const modules = homeModuleOrder(composition)
 const visible = new Set(composition?.modules?.map((item) => item.key) ?? [])
 const copy = await getManagedCopy(locale)
@@ -61,15 +59,24 @@ const components = {
     }
     {
       modules.map((key) => {
+        // Stage 4.1 — the shell owns the scrub travel, the viewport is what pins. The template
+        // styles every section as a flex column and a sticky flex item can only move inside its
+        // own area, so the viewport is a block inside a block shell: that is the containing
+        // block it was missing in Stage 4.
         if (key === 'identity' || key === 'graph')
           return (
-            <div class="tm-template__section" data-home-module="hero">
-              <HomeHero
-                locale={locale}
-                graph={graph}
-                showIdentity={visible.has('identity')}
-                showGraph={visible.has('graph')}
-              />
+            <div
+              class="tm-template__section hm-hero-scroll-shell"
+              data-home-module="hero"
+              data-hero-scroll-shell
+            >
+              <div class="hm-hero-sticky-viewport" data-hero-sticky-viewport>
+                <HomeHero
+                  locale={locale}
+                  showIdentity={visible.has('identity')}
+                  showSequence={visible.has('graph')}
+                />
+              </div>
             </div>
           )
         const Component = components[key]

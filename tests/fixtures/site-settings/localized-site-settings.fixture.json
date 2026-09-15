@@ -6,8 +6,17 @@
     "tagline": "",
     "footerText": "",
     "revision": "e2e-settings-fixture",
-    "contentCopy": {},
-    "seo": { "title": "", "description": "" },
+    "contentCopy": {
+      "hero.focus_areas": "Focus areas",
+      "hero.cta.research": "Research",
+      "hero.cta.cv": "CV",
+      "hero.cta.contact": "Contact",
+      "home.interests.lead": "Human-centered AI, data systems and the interface between them."
+    },
+    "seo": {
+      "title": "",
+      "description": ""
+    },
     "scene": {
       "density": "standard",
       "graphPreset": "atlas-v2",
@@ -20,8 +29,17 @@
     "tagline": "",
     "footerText": "",
     "revision": "e2e-settings-fixture",
-    "contentCopy": {},
-    "seo": { "title": "", "description": "" },
+    "contentCopy": {
+      "hero.focus_areas": "حوزه‌های تمرکز",
+      "hero.cta.research": "پژوهش",
+      "hero.cta.cv": "رزومه",
+      "hero.cta.contact": "تماس",
+      "home.interests.lead": "هوش مصنوعی انسان‌محور، سیستم‌های داده و نسبت میان آن‌ها."
+    },
+    "seo": {
+      "title": "",
+      "description": ""
+    },
     "scene": {
       "density": "standard",
       "graphPreset": "atlas-v2",

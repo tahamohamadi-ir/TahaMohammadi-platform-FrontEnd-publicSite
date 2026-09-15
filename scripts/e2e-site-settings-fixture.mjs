@@ -8,13 +8,20 @@
  * is empty and `.gw__title` never renders — which is why four gateway
  * assertions could not pass locally while passing against production.
  *
- * This serves the same endpoint the real CMS serves, so the E2E build satisfies
+ * This serves the same endpoints the real CMS serves, so the E2E build satisfies
  * the real input contract instead of the tests being weakened.
  *
- * Scope: ONLY the localized settings endpoints. Everything else 404s, so the
- * blast radius is exactly `fetchLocalizedSiteSettings` — operational settings
- * (`/api/site`), media and every other API keep their current settings-less
- * behaviour.
+ * Stage 4.1 added the Home content contract on top of the settings one: the Home hero
+ * (identity + graph modules, primary profile, home landing) also needs a deterministic answer,
+ * because with no published modules Home renders "unavailable" and every Home spec fails
+ * environmentally with "element count 0". Three read-only routes are added from
+ * `tests/fixtures/home-content/home-content.fixture.json`; nothing else changes and no test is
+ * weakened.
+ *
+ * Scope: the localized settings endpoints plus `/api/home-composition/<locale>`,
+ * `/api/profiles/<locale>`, `/api/landings/<locale>/home` and the two research reads the
+ * hero research lead needs. Everything else 404s, so
+ * operational settings (`/api/site`), media and the rest keep their current behaviour.
  *
  * Env:
  *   TM_E2E_SETTINGS_PORT — required listen port (resolved by playwright.config.ts
@@ -39,6 +46,12 @@ const fixturePath = path.join(
   'tests/fixtures/site-settings/localized-site-settings.fixture.json',
 )
 
+/** Stage 4.1: Home hero content, so the Home contract can be exercised without the live CMS. */
+const homeContentPath = path.join(
+  repositoryRoot,
+  'tests/fixtures/home-content/home-content.fixture.json',
+)
+
 const port = Number(process.env.TM_E2E_SETTINGS_PORT)
 
 if (!Number.isInteger(port) || port <= 0 || port > 65535) {
@@ -49,21 +62,42 @@ if (!Number.isInteger(port) || port <= 0 || port > 65535) {
 }
 
 let fixture
+let homeContent
 try {
   fixture = JSON.parse(readFileSync(fixturePath, 'utf8'))
+  homeContent = JSON.parse(readFileSync(homeContentPath, 'utf8'))
 } catch (error) {
   console.error(
-    `e2e-site-settings-fixture: cannot read ${fixturePath}: ${error.message}`,
+    `e2e-site-settings-fixture: cannot read its fixtures: ${error.message}`,
   )
   process.exit(1)
 }
 
 const LOCALE_PATTERN = /^\/api\/v1\/site\/([a-z]{2})\/?$/
+/** Home content routes, each mapped to the fixture key that answers it. */
+const HOME_CONTENT_PATTERNS = [
+  { pattern: /^\/api\/home-composition\/([a-z]{2})\/?$/, key: 'composition' },
+  { pattern: /^\/api\/profiles\/([a-z]{2})\/?$/, key: 'profile' },
+  { pattern: /^\/api\/landings\/([a-z]{2})\/home\/?$/, key: 'landing' },
+  { pattern: /^\/api\/research\/topics\/([a-z]{2})\/?$/, key: 'topics' },
+  {
+    pattern: /^\/api\/research\/statements\/([a-z]{2})\/?$/,
+    key: 'statements',
+  },
+]
+
+function homeContentPayload(pathname) {
+  for (const { pattern, key } of HOME_CONTENT_PATTERNS) {
+    const match = pattern.exec(pathname)
+    if (match) return homeContent[match[1]]?.[key]
+  }
+  return undefined
+}
 
 const server = createServer((request, response) => {
   const { pathname } = new URL(request.url ?? '/', 'http://127.0.0.1')
   const match = LOCALE_PATTERN.exec(pathname)
-  const payload = match ? fixture[match[1]] : undefined
+  const payload = match ? fixture[match[1]] : homeContentPayload(pathname)
 
   if (!payload) {
     // Everything outside the localized settings contract stays a 404, exactly

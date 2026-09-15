@@ -312,14 +312,24 @@ describe('CA-03 GraphNodeList', () => {
 })
 
 describe('CA-03 Home integration', () => {
-  it('wires the graph into HomeHero on both locale pages', () => {
+  it('keeps the interactive graph off Home and wires the image sequence instead', () => {
     for (const locale of ['fa', 'en'] as const) {
       const source = readSource(`src/pages/${locale}/index.astro`)
-      expect(source).toContain('loadHeroGraph')
-      expect(source).toContain('graph={graph}')
+      expect(source).not.toContain('loadHeroGraph')
+      expect(source).not.toContain('graph={graph}')
+      expect(source).toContain('HomeContent')
       expect(source).not.toContain('HomeResearchGraph')
       expect(source).not.toContain('relationship-graph')
     }
+    const hero = readSource('src/components/home/HomeHero.astro')
+    expect(hero).toContain('HeroSequence')
+    expect(hero).not.toContain('HeroGraph')
+  })
+
+  // The graph experience was moved, not weakened: About is still the interactive surface.
+  it('keeps the interactive graph on About', () => {
+    const about = readSource('src/components/about/AboutPageContent.astro')
+    expect(about).toContain('loadHeroGraph')
   })
 
   it('keeps the optional template slot for compatibility', () => {

@@ -17,6 +17,14 @@ test.describe('CA-05 graph selection and interaction', () => {
     test(`native node interaction on Home (${locale}) toggles details without automatic navigation`, async ({
       page,
     }) => {
+      // Stage 4: Home's interactive graph was replaced by the authored image sequence. The
+      // interaction contract now lives on About (covered by ru-about.e2e.ts), so these Home
+      // cases retire honestly instead of asserting a region that no longer ships.
+      test.skip(
+        (await page.locator('[data-graph-region]').count()) === 0,
+        'Home ships the authored image sequence; no graph region to interact with',
+      )
+
       await page.goto(`/${locale}/`)
       const region = page.locator('[data-graph-region]')
       await expect(region).toBeVisible()
@@ -49,6 +57,14 @@ test.describe('CA-05 graph selection and interaction', () => {
     })
 
     test(`no wheel capture on graph region (${locale})`, async ({ page }) => {
+      // Stage 4: Home's interactive graph was replaced by the authored image sequence. The
+      // interaction contract now lives on About (covered by ru-about.e2e.ts), so these Home
+      // cases retire honestly instead of asserting a region that no longer ships.
+      test.skip(
+        (await page.locator('[data-graph-region]').count()) === 0,
+        'Home ships the authored image sequence; no graph region to interact with',
+      )
+
       await page.goto(`/${locale}/`)
       const region = page.locator('[data-graph-region]')
       await expect(region).toBeVisible()

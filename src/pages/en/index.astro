@@ -2,7 +2,6 @@
 import SiteLayout from '../../layouts/SiteLayout.astro'
 import HomeContent from '../../components/home/HomeContent.astro'
 import { fetchHomeComposition, fetchHomeLanding } from '../../lib/home-content'
-import { loadHeroGraph } from '../../lib/hero-graph-content'
 import { shellCopy } from '../../lib/navigation'
 import '../../styles/home.css'
 
@@ -12,9 +11,6 @@ const [composition, landing, alternateLanding] = await Promise.all([
   fetchHomeLanding(locale),
   fetchHomeLanding(locale === 'en' ? 'fa' : 'en'),
 ])
-const graph = composition?.modules?.some((item) => item.key === 'graph')
-  ? await loadHeroGraph(locale)
-  : { status: 'unavailable' as const, locale }
 ---
 
 <SiteLayout
@@ -26,5 +22,5 @@ const graph = composition?.modules?.some((item) => item.key === 'graph')
   alternateAvailable={Boolean(alternateLanding)}
   hideFooterPromo
 >
-  <HomeContent locale={locale} composition={composition} graph={graph} />
+  <HomeContent locale={locale} composition={composition} />
 </SiteLayout>

@@ -1,0 +1,78 @@
+{
+  "baseUrl": "http://localhost:4321",
+  "generatedAt": "2026-09-15T17:47:16.836Z",
+  "themes": {
+    "desktop-dark": {
+      "early": {
+        "themeAttribute": "dark",
+        "visibleSequenceTheme": "dark",
+        "visibleCurrentSrc": "",
+        "heroPresent": true,
+        "colorSchemeDark": true
+      },
+      "settled": {
+        "themeAttribute": "dark",
+        "visibleSequenceTheme": "dark"
+      },
+      "heroRequestCount": 5,
+      "wrongThemeRequests": ["hero-v2-desktop-light-01.DJjOYv2u_2m8b9e.avif"],
+      "firstPaintIsCorrectTheme": true,
+      "noWrongThemeAssetRequested": false,
+      "screenshot": "first-paint-desktop-dark.jpg"
+    },
+    "mobile-dark": {
+      "early": {
+        "themeAttribute": "dark",
+        "visibleSequenceTheme": "dark",
+        "visibleCurrentSrc": "",
+        "heroPresent": true,
+        "colorSchemeDark": true
+      },
+      "settled": {
+        "themeAttribute": "dark",
+        "visibleSequenceTheme": "dark"
+      },
+      "heroRequestCount": 5,
+      "wrongThemeRequests": ["hero-v2-mobile-light-01.DfF96-9i_2sjDaM.avif"],
+      "firstPaintIsCorrectTheme": true,
+      "noWrongThemeAssetRequested": false,
+      "screenshot": "first-paint-mobile-dark.jpg"
+    },
+    "desktop-light": {
+      "early": {
+        "themeAttribute": "light",
+        "visibleSequenceTheme": "light",
+        "visibleCurrentSrc": "hero-v2-desktop-light-01.DJjOYv2u_2m8b9e.avif",
+        "heroPresent": true,
+        "colorSchemeDark": false
+      },
+      "settled": {
+        "themeAttribute": "light",
+        "visibleSequenceTheme": "light"
+      },
+      "heroRequestCount": 4,
+      "wrongThemeRequests": [],
+      "firstPaintIsCorrectTheme": true,
+      "noWrongThemeAssetRequested": true,
+      "screenshot": "first-paint-desktop-light.jpg"
+    },
+    "mobile-light": {
+      "early": {
+        "themeAttribute": "light",
+        "visibleSequenceTheme": "light",
+        "visibleCurrentSrc": "hero-v2-mobile-light-01.DfF96-9i_2sjDaM.avif",
+        "heroPresent": true,
+        "colorSchemeDark": false
+      },
+      "settled": {
+        "themeAttribute": "light",
+        "visibleSequenceTheme": "light"
+      },
+      "heroRequestCount": 4,
+      "wrongThemeRequests": [],
+      "firstPaintIsCorrectTheme": true,
+      "noWrongThemeAssetRequested": true,
+      "screenshot": "first-paint-mobile-light.jpg"
+    }
+  }
+}

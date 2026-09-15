@@ -329,6 +329,22 @@ console.log('PRERENDER_SUCCESS:' + media.id);
               'home-graph-backplate-dark.png': { width: 1254, height: 1254 },
               'taha-mark-primary.png': { width: 256, height: 233 },
               'taha-mark-favicon.png': { width: 64, height: 64 },
+              'hero-v2-desktop-dark-01.png': { width: 1600, height: 1400 },
+              'hero-v2-desktop-dark-02.png': { width: 1600, height: 1400 },
+              'hero-v2-desktop-dark-03.png': { width: 1600, height: 1400 },
+              'hero-v2-desktop-dark-04.png': { width: 1600, height: 1400 },
+              'hero-v2-desktop-light-01.png': { width: 1600, height: 1400 },
+              'hero-v2-desktop-light-02.png': { width: 1600, height: 1400 },
+              'hero-v2-desktop-light-03.png': { width: 1600, height: 1400 },
+              'hero-v2-desktop-light-04.png': { width: 1600, height: 1400 },
+              'hero-v2-mobile-dark-01.png': { width: 800, height: 800 },
+              'hero-v2-mobile-dark-02.png': { width: 800, height: 800 },
+              'hero-v2-mobile-dark-03.png': { width: 800, height: 800 },
+              'hero-v2-mobile-dark-04.png': { width: 800, height: 800 },
+              'hero-v2-mobile-light-01.png': { width: 800, height: 800 },
+              'hero-v2-mobile-light-02.png': { width: 800, height: 800 },
+              'hero-v2-mobile-light-03.png': { width: 800, height: 800 },
+              'hero-v2-mobile-light-04.png': { width: 800, height: 800 },
             }
           const base = path.basename(args.path)
           const dim = dimensions[base] || { width: 100, height: 100 }

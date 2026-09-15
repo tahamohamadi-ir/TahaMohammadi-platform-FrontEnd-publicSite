@@ -19,6 +19,22 @@ import homeGraphBackplateLight from '../../assets/media/art/home-graph-backplate
 import homeGraphBackplateDark from '../../assets/media/art/home-graph-backplate-dark.png'
 import brandPrimary from '../../assets/media/brand/taha-mark-primary.png'
 import brandFavicon from '../../assets/media/brand/taha-mark-favicon.png'
+import heroDesktopDark01 from '../../assets/media/hero-v2/hero-v2-desktop-dark-01.png'
+import heroDesktopDark02 from '../../assets/media/hero-v2/hero-v2-desktop-dark-02.png'
+import heroDesktopDark03 from '../../assets/media/hero-v2/hero-v2-desktop-dark-03.png'
+import heroDesktopDark04 from '../../assets/media/hero-v2/hero-v2-desktop-dark-04.png'
+import heroDesktopLight01 from '../../assets/media/hero-v2/hero-v2-desktop-light-01.png'
+import heroDesktopLight02 from '../../assets/media/hero-v2/hero-v2-desktop-light-02.png'
+import heroDesktopLight03 from '../../assets/media/hero-v2/hero-v2-desktop-light-03.png'
+import heroDesktopLight04 from '../../assets/media/hero-v2/hero-v2-desktop-light-04.png'
+import heroMobileDark01 from '../../assets/media/hero-v2/hero-v2-mobile-dark-01.png'
+import heroMobileDark02 from '../../assets/media/hero-v2/hero-v2-mobile-dark-02.png'
+import heroMobileDark03 from '../../assets/media/hero-v2/hero-v2-mobile-dark-03.png'
+import heroMobileDark04 from '../../assets/media/hero-v2/hero-v2-mobile-dark-04.png'
+import heroMobileLight01 from '../../assets/media/hero-v2/hero-v2-mobile-light-01.png'
+import heroMobileLight02 from '../../assets/media/hero-v2/hero-v2-mobile-light-02.png'
+import heroMobileLight03 from '../../assets/media/hero-v2/hero-v2-mobile-light-03.png'
+import heroMobileLight04 from '../../assets/media/hero-v2/hero-v2-mobile-light-04.png'
 
 import { isDeferredAssetId } from './authority-checksums'
 import type {
@@ -82,6 +98,22 @@ const SOURCE_IMPORTS: Record<string, ImageMetadata> = {
   'home-graph-backplate-dark': homeGraphBackplateDark,
   'brand-primary': brandPrimary,
   'brand-favicon': brandFavicon,
+  'hero-v2-desktop-dark-01': heroDesktopDark01,
+  'hero-v2-desktop-dark-02': heroDesktopDark02,
+  'hero-v2-desktop-dark-03': heroDesktopDark03,
+  'hero-v2-desktop-dark-04': heroDesktopDark04,
+  'hero-v2-desktop-light-01': heroDesktopLight01,
+  'hero-v2-desktop-light-02': heroDesktopLight02,
+  'hero-v2-desktop-light-03': heroDesktopLight03,
+  'hero-v2-desktop-light-04': heroDesktopLight04,
+  'hero-v2-mobile-dark-01': heroMobileDark01,
+  'hero-v2-mobile-dark-02': heroMobileDark02,
+  'hero-v2-mobile-dark-03': heroMobileDark03,
+  'hero-v2-mobile-dark-04': heroMobileDark04,
+  'hero-v2-mobile-light-01': heroMobileLight01,
+  'hero-v2-mobile-light-02': heroMobileLight02,
+  'hero-v2-mobile-light-03': heroMobileLight03,
+  'hero-v2-mobile-light-04': heroMobileLight04,
 }
 
 function assertSourceHash(record: PromotedAssetRecord, source: ImageMetadata) {

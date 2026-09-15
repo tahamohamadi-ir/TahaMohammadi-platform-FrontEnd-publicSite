@@ -1,16 +1,15 @@
 ---
 /**
- * CA-03 — Integrated identity/graph hero. The semantic graph (HeroGraph)
- * lives inside this hero; Home pages no longer render a separate
- * relationship-graph section. No portal imagery on Home: the gateway alone
- * owns the portal (ADR-0008). Research-statement text is preserved as a
- * readable paragraph in the copy column.
+ * CA-03 / Stage 4 — Integrated identity hero. The visual column is the authored Hero v2
+ * scroll sequence (four rendered states, both themes, separate desktop and mobile
+ * compositions); the interactive knowledge graph lives on About only. No portal imagery on
+ * Home: the gateway alone owns the portal (ADR-0008). Research-statement text is preserved as
+ * a readable paragraph in the copy column.
  */
 import Button from '../ui/Button.astro'
 import Chip from '../ui/Chip.astro'
-import HeroGraph from '../hero/HeroGraph.astro'
+import HeroSequence from '../hero/HeroSequence.astro'
 import { ArrowRight, FileText, Mail } from 'lucide-astro'
-import type { HeroGraphModel } from '../../lib/hero-graph-content'
 import {
   loadHomeHeroContent,
   getHomeResearchContent,
@@ -20,22 +19,12 @@ import { localePath, type Locale } from '../../lib/navigation'
 
 interface Props {
   locale: Locale
-  graph?: HeroGraphModel
   selectedId?: string | null
   showIdentity?: boolean
-  showGraph?: boolean
+  showSequence?: boolean
 }
 
-const {
-  locale,
-  selectedId = null,
-  showIdentity = true,
-  showGraph = true,
-} = Astro.props
-const graph: HeroGraphModel = Astro.props.graph ?? {
-  status: 'unavailable',
-  locale,
-}
+const { locale, showIdentity = true, showSequence = true } = Astro.props
 const content = await loadHomeHeroContent(locale)
 const research = await getHomeResearchContent(locale)
 const copy = await getManagedCopy(locale)
@@ -49,7 +38,7 @@ const ctaLabels = {
 <section
   class="hm-hero hm-hero--integrated"
   data-hero-layout="integrated"
-  data-graph-status={graph.status}
+  data-hero-visual="sequence"
 >
   {
     showIdentity && (
@@ -120,9 +109,9 @@ const ctaLabels = {
   }
 
   {
-    showGraph && (
-      <div class="hm-hero__graph">
-        <HeroGraph locale={locale} graph={graph} selectedId={selectedId} />
+    showSequence && (
+      <div class="hm-hero__sequence">
+        <HeroSequence showSequence={showSequence} />
       </div>
     )
   }

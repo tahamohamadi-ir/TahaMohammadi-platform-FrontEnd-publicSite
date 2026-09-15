@@ -1,10 +1,10 @@
 import { expect, test } from '@playwright/test'
 
 /**
- * CA-03 — Semantic integrated Home hero. The graph lives inside the hero;
- * Home has no separate graph section and no portal imagery. Tests are
- * state-aware: structure holds for every graph state, while node-selection
- * assertions run only when the build served a ready graph.
+ * CA-03 → Stage 4 — Semantic integrated Home hero. The visual column is the authored Hero v2
+ * scroll sequence (image states, no scene runtime); the interactive graph moved to About, and
+ * Home still has no separate graph section and no portal imagery. Node-selection assertions are
+ * state-aware and self-skip when no scene is present on Home.
  */
 
 const targets = [
@@ -15,7 +15,7 @@ const targets = [
 test.describe('CA-03 semantic integrated Home hero', () => {
   for (const target of targets) {
     for (const width of [390, 1440]) {
-      test(`one H1 with the graph inside the hero at ${target.locale}@${width}`, async ({
+      test(`one H1 with the authored sequence inside the hero at ${target.locale}@${width}`, async ({
         page,
       }) => {
         await page.setViewportSize({ width, height: 900 })
@@ -30,7 +30,8 @@ test.describe('CA-03 semantic integrated Home hero', () => {
 
         const hero = page.locator('[data-hero-layout="integrated"]')
         await expect(hero).toHaveCount(1)
-        await expect(hero.locator('[data-graph-region]')).toHaveCount(1)
+        await expect(hero.locator('[data-hero-sequence]')).toHaveCount(1)
+        await expect(hero.locator('canvas')).toHaveCount(0)
 
         // No separate Home graph placement and no portal on Home.
         await expect(page.locator('#home-graph-region')).toHaveCount(0)
@@ -64,6 +65,13 @@ test.describe('CA-03 semantic integrated Home hero', () => {
     page,
   }) => {
     await page.goto('/en/')
+    // Stage 4.1: Home has no graph region at all, so this case retires explicitly rather than
+    // waiting on a locator that can never appear. The interaction contract lives on About
+    // (tests/e2e/ru-about.e2e.ts).
+    test.skip(
+      (await page.locator('[data-graph-region]').count()) === 0,
+      'Home ships the authored image sequence; no graph region to select from',
+    )
     const region = page.locator('[data-graph-region]')
     const status = await region.getAttribute('data-graph-status')
     test.skip(
@@ -101,19 +109,14 @@ test.describe('CA-03 semantic integrated Home hero', () => {
     await expect(
       noJsPage.locator('[data-hero-layout="integrated"]'),
     ).toHaveCount(1)
-    await expect(noJsPage.locator('[data-graph-region]')).toHaveCount(1)
-    await expect(noJsPage.locator('#home-graph-region')).toHaveCount(0)
-
-    const status = await noJsPage
-      .locator('[data-graph-region]')
-      .getAttribute('data-graph-status')
-    if (status === 'ready') {
-      await expect(noJsPage.locator('[data-graph-node]').first()).toBeVisible()
-    } else {
-      await expect(noJsPage.locator('[data-graph-region]')).toContainText(
-        /unavailable|No graph nodes|not be shown/,
-      )
-    }
-    await context.close()
+    // Stage 4.1: the hero's visual is the authored image sequence, and Home ships no scene
+    // runtime at all (the interactive graph lives on About).
+    const noJsSequence = noJsPage.locator('[data-hero-sequence]')
+    await expect(noJsSequence).toHaveCount(1)
+    await expect(
+      noJsSequence.locator('[data-hero-sequence-frame]'),
+    ).toHaveCount(8)
+    await expect(noJsPage.locator('canvas')).toHaveCount(0)
+    await expect(noJsPage.locator('[data-graph-region]')).toHaveCount(0)
   })
 })

@@ -1,24 +1,21 @@
 import { expect, test } from '@playwright/test'
 
 /**
- * CA-06 — Integrate progressive Home hero.
- *
- * Wires the CA-04 scene and CA-05 controller into the semantic Home hero,
- * loads only on eligible routes, and proves fallbacks without changing
- * graph facts. Tests are state-aware: structure holds for every graph
- * state, while scene assertions run only when the build served a ready
- * graph; fallback assertions run otherwise.
+ * CA-06 → Stage 4 — The integrated Home hero now carries the authored Hero v2 image sequence
+ * (four rendered states, one set per authored theme, separate desktop and mobile compositions).
+ * The interactive scene — canvas, payload, labels, node list — is About-only, so this spec pins
+ * that Home ships no scene runtime at all and that scroll progress stays the only motion driver.
  */
 
 const targets = [
-  { path: '/en/', locale: 'en', dir: 'ltr' },
-  { path: '/fa/', locale: 'fa', dir: 'rtl' },
+  { path: '/en/', locale: 'en' },
+  { path: '/fa/', locale: 'fa' },
 ] as const
 
-test.describe('CA-06 integrated Home scene', () => {
+test.describe('Home hero ships the authored image sequence, not a scene runtime', () => {
   for (const target of targets) {
     for (const width of [390, 1440]) {
-      test(`one hero graph canvas slot at ${target.locale}@${width} with no portal or duplicate`, async ({
+      test(`one hero, four authored states, no canvas at ${target.locale}@${width}`, async ({
         page,
       }) => {
         await page.setViewportSize({ width, height: 900 })
@@ -26,211 +23,144 @@ test.describe('CA-06 integrated Home scene', () => {
 
         const hero = page.locator('[data-hero-layout="integrated"]')
         await expect(hero).toHaveCount(1)
-        await expect(hero.locator('[data-graph-region]')).toHaveCount(1)
 
-        // No second Home graph and no gateway portal decoration on Home.
+        const sequence = hero.locator('[data-hero-sequence]')
+        await expect(sequence).toHaveCount(1)
+        await expect(sequence).toHaveAttribute(
+          'data-hero-sequence-frame-count',
+          '4',
+        )
+        // Four authored states, one set per authored theme; the inactive set is hidden, not cloned.
+        await expect(
+          sequence.locator('[data-hero-sequence-frame]'),
+        ).toHaveCount(8)
+        await expect(
+          sequence.locator('[data-hero-sequence-theme]'),
+        ).toHaveCount(2)
+
+        // No scene runtime of any kind on Home.
+        await expect(hero.locator('canvas')).toHaveCount(0)
+        await expect(hero.locator('[data-graph-region]')).toHaveCount(0)
+        await expect(hero.locator('[data-graph-node]')).toHaveCount(0)
+        await expect(hero.locator('script[data-graph-payload]')).toHaveCount(0)
         await expect(page.locator('#home-graph-region')).toHaveCount(0)
-        await expect(hero.locator('[data-theme-picture]')).toHaveCount(0)
-        await expect(page.locator('.gw__portal')).toHaveCount(0)
 
-        // At most one canvas per route, even after enhancement settles.
-        const canvasCount = await page
-          .locator('[data-graph-region] canvas[data-graph-canvas]')
-          .count()
-        expect(canvasCount).toBeLessThanOrEqual(1)
-
-        const status = await hero
-          .locator('[data-graph-region]')
-          .getAttribute('data-graph-status')
-
-        if (status === 'ready') {
-          // Reserved scene slot before/after load: no layout shift.
-          const scene = hero.locator('[data-graph-scene]')
-          await expect(scene).toHaveCount(1)
-          const box = await scene.boundingBox()
-          expect(box?.height ?? 0).toBeGreaterThan(200)
-          // Embedded renderer facts travel with the page, unchanged.
-          await expect(hero.locator('script[data-graph-payload]')).toHaveCount(
-            1,
-          )
-          await expect(hero.locator('[data-graph-labels]')).toHaveCount(1)
-        } else {
-          // Honest fallback states render without a scene slot.
-          await expect(hero.locator('[data-graph-region]')).toContainText(
-            /unavailable|No graph nodes|not be shown|در دسترس نیست|منتشر نشده|قابل‌نمایش نیست/,
-          )
-        }
-
-        await expect
-          .poll(() =>
-            page.evaluate(
-              () => document.documentElement.scrollWidth <= window.innerWidth,
-            ),
-          )
-          .toBe(true)
+        // The visual is a real box, and the copy is DOM text that never waits for it.
+        const box = await sequence.boundingBox()
+        expect(box?.height ?? 0).toBeGreaterThan(120)
+        await expect(page.locator('.hm-hero__copy')).toBeVisible()
+        await expect(
+          sequence.locator('[data-hero-sequence-theme="light"]'),
+        ).toBeVisible()
       })
     }
   }
 
-  test('no text waits for the scene: copy, list, and detail stay visible', async ({
-    page,
-  }) => {
+  test('only the active theme decodes frames', async ({ page }) => {
     await page.goto('/en/')
-    const hero = page.locator('[data-hero-layout="integrated"]')
-    await expect(hero).toBeVisible()
-
-    const copyOpacity = await hero
-      .locator('.hm-hero__copy')
-      .evaluate((el) => getComputedStyle(el).opacity)
-    expect(Number(copyOpacity)).toBeGreaterThanOrEqual(1)
-
-    const regionOpacity = await hero
-      .locator('[data-graph-region]')
-      .evaluate((el) => getComputedStyle(el).opacity)
-    expect(Number(regionOpacity)).toBeGreaterThanOrEqual(1)
-
-    const status = await hero
-      .locator('[data-graph-region]')
-      .getAttribute('data-graph-status')
-    if (status === 'ready') {
-      const detailOpacity = await hero
-        .locator('[data-graph-detail]')
-        .evaluate((el) => getComputedStyle(el).opacity)
-      expect(Number(detailOpacity)).toBeGreaterThanOrEqual(1)
-    }
-
-    // Canvas may be hidden (fallback) or revealed (enhanced), but copy is
-    // never at opacity zero waiting for JS.
-    await expect(page.locator('.hm-hero__name')).toContainText('Taha Mohammadi')
-  })
-
-  test('failed dynamic import preserves semantic content with no success status', async ({
-    page,
-  }) => {
-    // Abort the lazily-loaded scene/controller/motion chunks: the semantic
-    // fallback must survive without reload or invented content.
-    await page.route(
-      /graph-scene|graph-controller|graph-motion|three/,
-      (route) => route.abort(),
+    const decoded = await page.evaluate(
+      () =>
+        [
+          ...document.querySelectorAll<HTMLImageElement>(
+            '[data-hero-sequence] img',
+          ),
+        ].filter((img) => img.complete && img.naturalWidth > 0).length,
     )
-    await page.goto('/en/')
-    const region = page.locator('[data-graph-region]')
-    await expect(region).toBeVisible()
-
-    const status = await region.getAttribute('data-graph-status')
-    if (status === 'ready') {
-      await expect(region.locator('[data-graph-nodes]')).toBeVisible()
-      await expect(region.locator('[data-graph-detail]')).toContainText(
-        /Select a node/,
-      )
-      const enhancement = await region.getAttribute('data-hero-enhancement')
-      expect(['fallback', 'idle', 'enhanced']).toContain(enhancement ?? 'idle')
-      // No success claimed for failed graphics: never enhanced without scene.
-      const canvasCount = await region
-        .locator('canvas[data-graph-canvas]:not([hidden])')
-        .count()
-      expect(canvasCount).toBeLessThanOrEqual(1)
-    } else {
-      await expect(region).toContainText(
-        /unavailable|No graph nodes|not be shown/,
-      )
-    }
-    await page.unrouteAll({ behavior: 'wait' })
+    // Four authored states, at most: the hidden theme must not have downloaded its set.
+    expect(decoded).toBeGreaterThan(0)
+    expect(decoded).toBeLessThanOrEqual(4)
   })
 
-  test('resize and theme changes keep one canvas with selection intact', async ({
+  test('scroll progress drives the authored states, two frames at most', async ({
     page,
   }) => {
     await page.goto('/en/')
-    const region = page.locator('[data-graph-region]')
-    const status = await region.getAttribute('data-graph-status')
-    if (status !== 'ready') {
-      test.skip(true, `graph is ${status}; resize/theme needs ready data`)
-      return
-    }
+    const sequence = page.locator('[data-hero-sequence]')
+    await expect(sequence).toHaveCount(1)
 
-    const firstSummary = region.locator('details summary').first()
-    await firstSummary.scrollIntoViewIfNeeded()
-    await firstSummary.click()
-
-    // Resize across mobile/desktop breakpoints.
-    await page.setViewportSize({ width: 390, height: 844 })
-    await page.waitForTimeout(200)
-    await page.setViewportSize({ width: 1280, height: 900 })
-    await page.waitForTimeout(200)
-
-    expect(
-      await region.locator('canvas[data-graph-canvas]').count(),
-    ).toBeLessThanOrEqual(1)
-    await expect(page.locator('#home-graph-region')).toHaveCount(0)
-
-    // Theme toggle preserves content without duplicating the scene.
-    const toggle = page.locator('[data-theme-toggle]').first()
-    if ((await toggle.count()) > 0) {
-      await toggle.click()
-      await page.waitForTimeout(200)
-      await expect(region).toBeVisible()
-      expect(
-        await region.locator('canvas[data-graph-canvas]').count(),
-      ).toBeLessThanOrEqual(1)
-    }
-
-    await expect
-      .poll(() =>
-        page.evaluate(
-          () => document.documentElement.scrollWidth <= window.innerWidth,
-        ),
+    const readProgress = async () =>
+      Number(
+        (await sequence.getAttribute('data-hero-sequence-progress')) ?? '0',
       )
-      .toBe(true)
-  })
+    expect(await readProgress()).toBeLessThanOrEqual(0.05)
 
-  test('hero stays readable with JavaScript disabled', async ({ browser }) => {
-    const context = await browser.newContext({ javaScriptEnabled: false })
-    const noJsPage = await context.newPage()
-    await noJsPage.goto('/en/')
-
-    await expect(noJsPage.locator('.hm-hero__name')).toContainText(
-      'Taha Mohammadi',
+    const travel = await page.evaluate(
+      () =>
+        Number(
+          document.querySelector('[data-hero-sequence]')?.dataset
+            .heroSequenceTravel,
+        ) || 0,
     )
-    await expect(
-      noJsPage.locator('[data-hero-layout="integrated"]'),
-    ).toHaveCount(1)
-    await expect(noJsPage.locator('[data-graph-region]')).toHaveCount(1)
+    expect(travel).toBeGreaterThan(200)
+    expect(travel).toBeGreaterThan(200)
 
-    const status = await noJsPage
-      .locator('[data-graph-region]')
-      .getAttribute('data-graph-status')
-    if (status === 'ready') {
-      await expect(noJsPage.locator('[data-graph-node]').first()).toBeVisible()
-      // Enhancement never ran: canvas stays hidden, list stays native.
-      await expect(
-        noJsPage.locator('canvas[data-graph-canvas]:not([hidden])'),
-      ).toHaveCount(0)
-    } else {
-      await expect(noJsPage.locator('[data-graph-region]')).toContainText(
-        /unavailable|No graph nodes|not be shown/,
+    const samples: number[] = []
+    for (const fraction of [0.25, 0.5, 0.75, 1]) {
+      await page.evaluate(
+        (offset) =>
+          window.scrollTo({
+            top: offset,
+            behavior: 'instant' as ScrollBehavior,
+          }),
+        Math.round(100 + fraction * travel),
       )
+      await page.waitForTimeout(250)
+      const progress = await readProgress()
+      samples.push(progress)
+
+      const visibleStates = await page.evaluate(() =>
+        [
+          ...document.querySelectorAll(
+            '[data-hero-sequence-theme]:not([hidden]) [data-hero-sequence-frame]',
+          ),
+        ]
+          .map((el, index) => ({
+            index,
+            opacity: Number(getComputedStyle(el).opacity),
+          }))
+          .filter((entry) => entry.opacity > 0.01)
+          .map((entry) => entry.index),
+      )
+      expect(visibleStates.length).toBeLessThanOrEqual(2)
+      expect(visibleStates.length).toBeGreaterThan(0)
+      // Only ADJACENT authored states may show: a strided mapping (0 and 2) is the bug this
+      // guards, because it reads as two unrelated frames rather than motion.
+      if (visibleStates.length === 2) {
+        expect(visibleStates[1] - visibleStates[0]).toBe(1)
+      }
     }
-    await context.close()
+
+    // The scrub advances through the authored states and reaches the last one.
+    expect(samples[0]).toBeGreaterThan(0)
+    expect([...samples].sort((a, b) => a - b)).toEqual(samples)
+    expect(samples[samples.length - 1]).toBeGreaterThan(0.9)
   })
 
-  test('reduced motion keeps the hero usable without reload', async ({
+  test('reduced motion shows one static state and never scrubs', async ({
     page,
   }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' })
-    await page.goto('/fa/')
+    await page.goto('/en/')
 
-    const hero = page.locator('[data-hero-layout="integrated"]')
-    await expect(hero).toBeVisible()
-    const research = page.locator('.hm-hero__research')
-    await expect(research).toHaveCount(1)
-    const researchText = (await research.innerText()).trim()
-    expect(researchText.length).toBeGreaterThan(0)
-    expect(researchText).not.toMatch(/<[^>]*>|^#{1,6}\s|\*\*|\[[^\]]*\]\(/)
+    const sequence = page.locator('[data-hero-sequence]')
+    await expect(sequence).toHaveCount(1)
 
-    const prefersReduced = await page.evaluate(
-      () => window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+    const before = await sequence.getAttribute('data-hero-sequence-progress')
+    await page.evaluate(() =>
+      window.scrollTo({ top: 2400, behavior: 'instant' as ScrollBehavior }),
     )
-    expect(prefersReduced).toBe(true)
+    await page.waitForTimeout(400)
+    const after = await sequence.getAttribute('data-hero-sequence-progress')
+    expect(after).toBe(before)
+
+    const visibleFrames = await page.evaluate(
+      () =>
+        [
+          ...document.querySelectorAll(
+            '[data-hero-sequence-theme]:not([hidden]) [data-hero-sequence-frame]',
+          ),
+        ].filter((el) => Number(getComputedStyle(el).opacity) > 0.01).length,
+    )
+    expect(visibleFrames).toBe(1)
   })
 })
