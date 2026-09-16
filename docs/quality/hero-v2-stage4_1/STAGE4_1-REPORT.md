@@ -1,5 +1,11 @@
 # Hero v2 — Stage 4.1 report (UX integration hardening, real pinning, midpoint motion QA)
 
+> **UPDATE 2026-09-16 — lifecycle superseded (content preserved).** The stage-scope status lines
+> below ("no commit, no push, no deploy") describe the state at the time of writing and no longer
+> describe the release: Hero v2 was committed, pushed, staged, owner-signed-off and promoted to
+> production as `taha-web-prod:prod-457b7fe7`. Authoritative final record:
+> `D:/Project/tahamohammadi-platform/Docs/10-tracking/HERO-V2-PRODUCTION-FINAL-CLOSEOUT-2026-09-16.md`.
+
 Status: **implemented and measured locally. No commit, no push, no deploy. No Blender/render-master
 and no asset change of any kind.**
 

@@ -1,5 +1,11 @@
 # Hero v2 — FINAL CLOSEOUT (Stage 4.3)
 
+> **UPDATE 2026-09-16 — lifecycle superseded (content preserved).** The stage-scope status lines
+> below ("no commit, no push, no deploy") describe the state at the time of writing and no longer
+> describe the release: Hero v2 was committed, pushed, staged, owner-signed-off and promoted to
+> production as `taha-web-prod:prod-457b7fe7`. Authoritative final record:
+> `D:/Project/tahamohammadi-platform/Docs/10-tracking/HERO-V2-PRODUCTION-FINAL-CLOSEOUT-2026-09-16.md`.
+
 **Status: ACCEPTED.** Stage 4.2 is the final Home hero look. No art direction was reopened, no Blender
 was run, no `.blend` source was modified, no render or sweep was produced in this task.
 
@@ -77,7 +83,7 @@ first-paint theme check; only the motion recapture against a _normally built_ Ho
 
 ## Staging
 
-**commit = NO · push = NO · deploy = NO.** Nothing is staged (`git diff --cached` is empty) and the last
+**commit = NO · push = NO · deploy = NO.** _(stage-scope status of 2026-09-15 — **superseded 2026-09-16**: the commit was pushed, the release staged, owner-signed-off and promoted; see the final record or the banner above)_ Nothing is staged (`git diff --cached` is empty) and the last
 commit is still the owner's `dcd5d2d`. Two repositories are involved:
 
 - `Front-End/public-site` — the Hero v2 implementation, tests and QA evidence (list in the final answer).
