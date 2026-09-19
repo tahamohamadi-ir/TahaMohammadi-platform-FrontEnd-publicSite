@@ -58,6 +58,62 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/atlas/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The draft Knowledge Atlas projection behind a Bearer capability
+         * @description ``GET /api/atlas/preview?locale=<en|fa>`` with ``Authorization: Bearer …``.
+         *
+         *     The credential travels only in the ``Authorization`` header — never in a
+         *     path segment or the query string, and a probe never learns that a draft
+         *     exists: bad credentials answer 401 (absent/unparseable) or 403
+         *     (expired/wrong purpose/wrong locale/unknown version), never 404. The signing
+         *     secret stays backend-only (settings); the payload is the exact-locale,
+         *     fail-closed draft projection of the token's version.
+         */
+        get: operations["apps_api_api_get_atlas_preview"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/atlas/{locale}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The active Knowledge Atlas payload for a locale (spec §10.2)
+         * @description Fail-closed serving of the ACTIVE version's projection only.
+         *
+         *     404 ``atlas_not_found`` for an unsupported locale or no active version; 500
+         *     ``atlas_inval`` with no partial body when the active version fails its own
+         *     contract check. Draft rows are unreachable by construction — the serving
+         *     path reads nothing but the ``status="active"`` row. Conditional GET
+         *     (plan Task 16): a matching ``If-None-Match`` answers 304 with no body and a
+         *     public ``max-age=60`` cache header, while an active version that fails its
+         *     contract check never earns a 304 — the short-circuit fires only after the
+         *     freshly computed validator proves the current payload is still servable.
+         */
+        get: operations["apps_api_api_get_atlas"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/books/{locale}": {
         parameters: {
             query?: never;
@@ -2614,6 +2670,108 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ArticleDetailOut"];
+                };
+            };
+        };
+    };
+    apps_api_api_get_atlas_preview: {
+        parameters: {
+            query?: {
+                locale?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelopeOut"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelopeOut"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelopeOut"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelopeOut"];
+                };
+            };
+        };
+    };
+    apps_api_api_get_atlas: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                locale: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelopeOut"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelopeOut"];
                 };
             };
         };
