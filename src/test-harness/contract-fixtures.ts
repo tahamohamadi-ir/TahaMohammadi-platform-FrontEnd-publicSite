@@ -21,13 +21,14 @@ export const OPENAPI_HASH_PIN_PATH = path.join(
   'contracts/openapi.public.sha256',
 )
 
-/** Accepted hash recorded at PS-05 (CRLF-encoded bytes), re-pinned 2026-09-08. */
+/** Accepted hash recorded at PS-05 (CRLF-encoded bytes), re-pinned for
+ * Task 19 (Knowledge Atlas Plan A): the two Atlas public routes joined the snapshot. */
 export const ACCEPTED_PUBLIC_OPENAPI_SHA256 =
-  '469bd51ed7e1e0d3bed7c64affaf9d488c8ee124da69496e8f5b8acc36eda914'
+  'bead273e13a6296030e3255b4a527e956cac8c09ccfff6b2c056df61bbf42139'
 
 /** Canonical LF hash of the accepted public OpenAPI artifact (BACKEND-140). */
 export const CANONICAL_PUBLIC_OPENAPI_LF_SHA256 =
-  '2f95dd7e9e3cd9e7b2dc564eccb37e1d59a223dc96dc90a696fccec6ef926992'
+  '250c9a89d71381a9b29e39fc1a458a965ec3df4c2efd1535a0b8b7aa901536d2'
 
 export const CONSUMER_RESPONSES_DIR = path.join(
   repositoryRoot,

@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest'
 const testDir = path.dirname(fileURLToPath(import.meta.url))
 const repositoryRoot = path.resolve(testDir, '..', '..')
 const acceptedPublicSchemaSha256 =
-  '469bd51ed7e1e0d3bed7c64affaf9d488c8ee124da69496e8f5b8acc36eda914'
+  'bead273e13a6296030e3255b4a527e956cac8c09ccfff6b2c056df61bbf42139'
 const generatedPath = path.join(
   repositoryRoot,
   'src',
@@ -40,9 +40,10 @@ describe('PU-SYNC-public product contract (I08)', () => {
     expect(pin.sha256).toBe(acceptedPublicSchemaSha256)
     expect(readFileSync(shaPinPath, 'utf8').trim()).toBe(pin.sha256)
     // Acceptance 2026-09-06, re-pinned 2026-09-08 twice (featured/brand,
-    // then journey projection): 49 paths, version 0.4.0.
+    // then journey projection + the two Task-19 Atlas routes
+    // (GET /api/atlas/{locale}, GET /api/atlas/preview): 51 paths, version 0.4.0.
     expect(pin.openapiVersion).toBe('0.4.0')
-    expect(pin.pathCount).toBe(49)
+    expect(pin.pathCount).toBe(51)
   })
 
   it('exposes the final public operations in generated types', () => {
