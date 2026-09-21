@@ -11,6 +11,12 @@ import {
 } from './preview'
 import { project2d } from './projection-2d'
 import { projectionSvgHtml } from './projection-svg'
+import { filterOptions } from './filters'
+import {
+  nodeInspectorModel,
+  relationInspectorModel,
+  type AtlasInspectorModel,
+} from './inspector'
 import type { AtlasPayload } from './model'
 import {
   serializeAtlasPayload,
@@ -108,6 +114,101 @@ export function buildProjectionHtml(payload: AtlasPayload): string {
   return `<div class="atlas__projection" data-atlas-2d>${projectionSvgHtml(projection, 'mobile-overview')}</div>`
 }
 
+function buildInspectorHtml(
+  locale: 'en' | 'fa',
+  payload: AtlasPayload,
+): string {
+  const prompt =
+    locale === 'en'
+      ? 'Select a node or relation to inspect it.'
+      : 'برای بررسی، یک گره یا رابطه را انتخاب کنید.'
+  const blocks: string[] = []
+  for (const node of payload.nodes) {
+    const model = nodeInspectorModel(payload, node.key, locale)
+    blocks.push(inspectorBlockHtml(`node:${node.key}`, model))
+  }
+  for (const relation of payload.relations) {
+    const model = relationInspectorModel(payload, relation.key, locale)
+    blocks.push(inspectorBlockHtml(`relation:${relation.key}`, model))
+  }
+  return `<div class="atlas-inspector" data-atlas-inspector><p class="atlas-inspector__announcer" data-atlas-announcer role="status" aria-live="polite">${escapeHtml(prompt)}</p><p class="atlas-inspector__prompt" data-atlas-inspector-prompt>${escapeHtml(prompt)}</p>${blocks.join('')}</div>`
+}
+
+function inspectorBlockHtml(
+  blockKey: string,
+  model: AtlasInspectorModel,
+): string {
+  const sections = model.sections
+    .map((section) => {
+      const items = section.items
+        .map((item) => {
+          const inner = item.href
+            ? `<a class="atlas-inspector__link" href="${escapeHtml(item.href)}">${escapeHtml(item.label)}</a>`
+            : `<span class="atlas-inspector__label">${escapeHtml(item.label)}</span>`
+          const relation = item.relationLabel
+            ? ` <span class="atlas-inspector__relation"> — ${escapeHtml(item.relationLabel)}</span>`
+            : ''
+          return `<li class="atlas-inspector__item">${inner}${relation}</li>`
+        })
+        .join('')
+      return `<section class="atlas-inspector__section" data-atlas-section="${escapeHtml(section.id)}"><h3 class="atlas-inspector__heading">${escapeHtml(section.heading)}</h3><ul class="atlas-inspector__items">${items}</ul></section>`
+    })
+    .join('')
+  return `<article class="atlas-inspector__block" data-atlas-inspector-block="${escapeHtml(blockKey)}" hidden>${sections}</article>`
+}
+
+function buildControlsHtml(locale: 'en' | 'fa', payload: AtlasPayload): string {
+  const copy =
+    locale === 'en'
+      ? {
+          searchLabel: 'Search the Atlas',
+          searchPlaceholder: 'Search nodes and relations…',
+          filtersLabel: 'Filter by type',
+          all: 'All',
+          viewLabel: 'View controls',
+          zoomIn: 'Zoom in',
+          zoomOut: 'Zoom out',
+          focus: 'Focus',
+          reset: 'Reset',
+          clear: 'Clear',
+          overview: 'Back to overview',
+        }
+      : {
+          searchLabel: 'جست‌وجو در اطلس',
+          searchPlaceholder: 'جست‌وجوی گره‌ها و رابطه‌ها…',
+          filtersLabel: 'پالایش بر اساس نوع',
+          all: 'همه',
+          viewLabel: 'کنترل‌های نما',
+          zoomIn: 'بزرگ‌نمایی',
+          zoomOut: 'کوچک‌نمایی',
+          focus: 'تمرکز',
+          reset: 'بازنشانی',
+          clear: 'پاک کردن',
+          overview: 'بازگشت به نمای کلی',
+        }
+  const chips = filterOptions(payload)
+    .map(
+      (option) =>
+        `<button class="atlas-controls__chip" data-atlas-filter="${escapeHtml(option.key)}" type="button" aria-pressed="false">${escapeHtml(option.label)} (${option.count})</button>`,
+    )
+    .join('')
+  const buttons: Array<[string, string]> = [
+    ['data-atlas-zoom-in', copy.zoomIn],
+    ['data-atlas-zoom-out', copy.zoomOut],
+    ['data-atlas-focus', copy.focus],
+    ['data-atlas-reset', copy.reset],
+    ['data-atlas-clear', copy.clear],
+    ['data-atlas-overview', copy.overview],
+  ]
+  const view = buttons
+    .map(
+      ([attr, label]) =>
+        `<button class="atlas-controls__button" ${attr} type="button">${escapeHtml(label)}</button>`,
+    )
+    .join('')
+  return `<div class="atlas-controls" data-atlas-controls><div class="atlas-controls__search"><label class="atlas-controls__label" for="atlas-search">${escapeHtml(copy.searchLabel)}</label><input id="atlas-search" class="atlas-controls__input" data-atlas-search type="search" name="q" autocomplete="off" placeholder="${escapeHtml(copy.searchPlaceholder)}"/></div><fieldset class="atlas-controls__filters"><legend class="atlas-controls__label">${escapeHtml(copy.filtersLabel)}</legend><button class="atlas-controls__chip" data-atlas-filter="all" type="button" aria-pressed="true">${escapeHtml(copy.all)}</button>${chips}</fieldset><div class="atlas-controls__view" role="group" aria-label="${escapeHtml(copy.viewLabel)}">${view}</div></div>`
+}
+
 /** Body HTML under the Atlas header — semantic index or honest state. */
 export function buildSharedAtlasBodyHtml(
   locale: 'en' | 'fa',
@@ -116,9 +217,11 @@ export function buildSharedAtlasBodyHtml(
   if (snapshot.status === 'ready') {
     const index = buildIndexHtml(locale, snapshot.html)
     const projection = buildProjectionHtml(snapshot.payload)
+    const controls = buildControlsHtml(locale, snapshot.payload)
+    const inspector = buildInspectorHtml(locale, snapshot.payload)
     const payload = serializeAtlasPayload(snapshot.payload)
     const revision = escapeHtml(snapshot.payload.version.revision)
-    return `${index}${projection}<script id="atlas-payload" type="application/json" data-atlas-revision="${revision}">${payload}</script>`
+    return `${controls}${index}${projection}${inspector}<script id="atlas-payload" type="application/json" data-atlas-revision="${revision}">${payload}</script>`
   }
   if (snapshot.status === 'unavailable') {
     return buildStateHtml(locale, 'empty')

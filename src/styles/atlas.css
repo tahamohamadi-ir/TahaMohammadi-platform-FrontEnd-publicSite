@@ -1,4 +1,4 @@
-/** Atlas presentation (Plan C Task 6: minimal shell; Task 21 owns parity/RTL/a11y).
+/** Atlas presentation (Plan C Tasks 6/14: shell + controls; Task 21 owns parity/RTL/a11y).
  * Logical properties only — EN and FA share topology, never mirrored geometry. */
 .atlas {
   margin-inline: auto;
@@ -38,4 +38,22 @@
 .atlas-index__relation,
 .atlas-index__member {
   line-height: 1.7;
+}
+
+/* Every interactive Atlas control meets the 44px minimum target contract. */
+.atlas-controls__input,
+.atlas-controls__chip,
+.atlas-controls__button {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+.atlas-controls__chip,
+.atlas-controls__button {
+  padding-inline: 0.75rem;
+}
+
+.atlas-controls :focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
 }
