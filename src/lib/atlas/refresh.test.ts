@@ -16,7 +16,6 @@ function basePayload(overrides: Partial<AtlasPayload> = {}): AtlasPayload {
   return {
     contractVersion: ATLAS_CONTRACT_VERSION,
     locale: 'en',
-    version,
     nodeTypes: [
       {
         key: 'research-area',
@@ -87,6 +86,7 @@ function basePayload(overrides: Partial<AtlasPayload> = {}): AtlasPayload {
       },
     ],
     ...overrides,
+    version,
   }
 }
 

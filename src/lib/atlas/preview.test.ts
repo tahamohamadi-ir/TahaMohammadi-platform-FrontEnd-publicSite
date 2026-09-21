@@ -65,9 +65,30 @@ describe('atlas draft preview (Plan C Task 8)', () => {
         hash: '#token=cap.abc',
         pathname: '/en/atlas/preview/',
         search: '',
-      } as Location,
+      } as unknown as Location,
     )
     expect(capability).toBe('cap.abc')
+    expect(replaceState).toHaveBeenCalledWith(null, '', '/en/atlas/preview/')
+  })
+
+  it('captures the fragment before stripping for live locations', () => {
+    // A live `window.location` loses its hash once `replaceState` runs; the
+    // capability must already be captured by then.
+    let hash = '#token=cap.live'
+    const replaceState = vi.fn(() => {
+      hash = ''
+    })
+    const capability = consumePreviewFragment(
+      { replaceState } as unknown as History,
+      {
+        get hash() {
+          return hash
+        },
+        pathname: '/en/atlas/preview/',
+        search: '',
+      } as unknown as Location,
+    )
+    expect(capability).toBe('cap.live')
     expect(replaceState).toHaveBeenCalledWith(null, '', '/en/atlas/preview/')
   })
 

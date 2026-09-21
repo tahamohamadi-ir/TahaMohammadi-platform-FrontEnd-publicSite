@@ -48,10 +48,14 @@ export function consumePreviewFragment(
   history: Pick<History, 'replaceState'>,
   location: Pick<Location, 'hash' | 'pathname' | 'search'>,
 ): string | null {
+  // Capture the fragment BEFORE stripping: with a live `window.location` the
+  // hash is already gone by the time `replaceState` returns, so reading it
+  // afterwards would always resolve `null` in production.
+  const hash = location.hash
   const cleanUrl = `${location.pathname}${location.search}`
   history.replaceState(null, '', cleanUrl)
 
-  const match = TOKEN_HASH_RE.exec(location.hash)
+  const match = TOKEN_HASH_RE.exec(hash)
   if (!match) return null
   const capability = match[1]?.trim() ?? ''
   if (!capability) return null
