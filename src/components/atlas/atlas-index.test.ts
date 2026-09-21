@@ -116,4 +116,22 @@ describe('AtlasPageContent (Plan C Task 6)', () => {
     expect(html).not.toContain('data-atlas-node=')
     expect(html).toMatch(/validation/i)
   })
+
+  it('renders locale-correct visible copy without silent EN fallback on FA', async () => {
+    const payload = readPayload('benchmark.json')
+    const en = await render(AtlasPageContent, {
+      locale: 'en',
+      snapshot: readySnapshot(payload),
+    })
+    const fa = await render(AtlasPageContent, {
+      locale: 'fa',
+      snapshot: readySnapshot(payload),
+    })
+    expect(en).toContain('Knowledge Atlas')
+    expect(en).toContain('Domains &amp; works')
+    expect(fa).toContain('اطلس دانش')
+    expect(fa).toContain('حوزه‌ها و آثار')
+    expect(fa).not.toContain('Knowledge Atlas')
+    expect(fa).not.toContain('Domains &amp; works')
+  })
 })
