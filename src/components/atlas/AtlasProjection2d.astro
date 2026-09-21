@@ -35,15 +35,13 @@ function escapeSvgText(value: string): string {
     .replace(/'/g, '&#39;')
 }
 
-function accessibleSvgLabel(value: string): string {
-  return value.replace(/[<>]/g, ' ')
-}
 ---
 
 <svg
   class="atlas-projection"
   viewBox={projection.viewBox}
-  role="group"
+  aria-hidden="true"
+  focusable="false"
   data-atlas-projection={mode}
   data-atlas-view={viewMode}
   data-atlas-viewport-width={viewport.width}
@@ -68,13 +66,6 @@ function accessibleSvgLabel(value: string): string {
           data-atlas-node={node.key}
           data-atlas-tier={node.tier}
           transform={`translate(${node.cx} ${node.cy})`}
-          role="button"
-          tabindex="0"
-          aria-label={accessibleSvgLabel(
-            nodes.get(node.key)?.accessibleLabel ??
-              nodes.get(node.key)?.label ??
-              node.key,
-          )}
         >
           <circle
             class="atlas-projection__hit-target"

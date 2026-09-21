@@ -27,6 +27,7 @@ import {
   type SelectionModel,
 } from '../../atlas/selection'
 import { project2d, type Projection2dViewMode } from '../../atlas/projection-2d'
+import { subscribeReducedMotion } from './motion-preference'
 import {
   applyFocus,
   parseFocus,
@@ -78,6 +79,7 @@ interface Disposable {
 interface AtlasSceneHandle extends Partial<Disposable> {
   setSelection?(focus: AtlasFocus | null): void
   setPayload?(payload: AtlasPayload): void
+  setMotion?(motion: SceneMotionPreference): void
 }
 
 interface SceneModule {
@@ -222,6 +224,7 @@ function ensureSceneCanvas(
   const canvas = doc.createElement('canvas')
   canvas.setAttribute('data-atlas-canvas', '')
   canvas.setAttribute('aria-hidden', 'true')
+  canvas.setAttribute('tabindex', '-1')
   canvas.className = 'atlas__canvas'
   const stage =
     region.querySelector<HTMLElement>('[data-atlas-stage]') ?? region
@@ -353,6 +356,9 @@ function renderProjection2d(
 
   edgeLayer.replaceChildren()
   nodeLayer.replaceChildren()
+  svg.setAttribute('aria-hidden', 'true')
+  svg.setAttribute('focusable', 'false')
+  svg.removeAttribute('tabindex')
   const labels = new Map(payload.nodes.map((node) => [node.key, node.label]))
   const namespace = 'http://www.w3.org/2000/svg'
   for (const edge of projection.edges) {
@@ -368,9 +374,6 @@ function renderProjection2d(
     group.setAttribute('data-atlas-node', node.key)
     group.setAttribute('data-atlas-tier', node.tier)
     group.setAttribute('transform', `translate(${node.cx} ${node.cy})`)
-    group.setAttribute('role', 'button')
-    group.setAttribute('tabindex', '0')
-    group.setAttribute('aria-label', labels.get(node.key) ?? node.key)
 
     const hitTarget = doc.createElementNS(namespace, 'circle')
     hitTarget.setAttribute('class', 'atlas-projection__hit-target')
@@ -465,25 +468,12 @@ function createProjection2dHandle(
       if (key) commitSelection({ kind: 'relation', key })
     }
   }
-  const onKeyDown = (event: KeyboardEvent) => {
-    if (event.key !== 'Enter' && event.key !== ' ') return
-    const target = event.target
-    if (!(target instanceof Element)) return
-    const node = target.closest<HTMLElement>(
-      '.atlas-projection__node[data-atlas-node]',
-    )
-    if (!node) return
-    event.preventDefault()
-    const key = attribute(node, 'data-atlas-node')
-    if (key) commitSelection({ kind: 'node', key })
-  }
   const onPopState = () => {
     const focus = parseFocus(win.location.search)
     applySelection(selection, focus ? selection.resolve(focus).selected : null)
   }
   const unsubscribe = selection.subscribe(syncView)
   region.addEventListener('click', onClick)
-  region.addEventListener('keydown', onKeyDown)
   win.addEventListener('popstate', onPopState)
   writePresentation(region, 'list', reason, '2d', selection.stateAttr())
   syncView()
@@ -496,7 +486,6 @@ function createProjection2dHandle(
       disposed = true
       unsubscribe()
       region.removeEventListener('click', onClick)
-      region.removeEventListener('keydown', onKeyDown)
       win.removeEventListener('popstate', onPopState)
       if (documentRegions.get(doc) === region) documentRegions.delete(doc)
       regionFlights.delete(region)
@@ -833,6 +822,16 @@ async function runEnhancement(
       return handle
     }
   }
+
+  cleanups.push(
+    subscribeReducedMotion(win, (motion) => {
+      try {
+        scene?.setMotion?.(motion)
+      } catch {
+        // Motion preference must never break the semantic index.
+      }
+    }),
+  )
 
   const onPageHide = () => disposeAll()
   win.addEventListener('pagehide', onPageHide)

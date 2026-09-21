@@ -92,8 +92,17 @@ class FakeWindow {
   constructor(public wide = true) {}
 
   matchMedia(query: string): MediaQueryList {
-    expect(query).toBe('(min-width: 1024px)')
-    return { matches: this.wide } as MediaQueryList
+    const matches =
+      query === '(min-width: 1024px)'
+        ? this.wide
+        : query === '(prefers-reduced-motion: reduce)'
+          ? false
+          : false
+    return {
+      matches,
+      addEventListener: () => {},
+      removeEventListener: () => {},
+    } as MediaQueryList
   }
 
   addEventListener(type: string, listener: () => void): void {

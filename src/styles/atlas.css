@@ -33,6 +33,13 @@
   min-inline-size: 44px;
 }
 
+.atlas-control:focus-visible,
+.atlas-inspector__section a:focus-visible,
+.atlas-index__link:focus-visible {
+  outline: 2px solid var(--color-focus, #16b8a6);
+  outline-offset: 2px;
+}
+
 .atlas-controls__filters,
 .atlas-controls__view {
   display: flex;
