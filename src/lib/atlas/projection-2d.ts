@@ -2,9 +2,11 @@
 
 import { assertComplete, resolveLayout } from './layout'
 import type { AtlasNodeOut, AtlasPayload } from './model'
+import { neighborhoodOf } from './neighborhood'
 
 export type Projection2dMode =
   'mobile-overview' | 'webgl-fallback' | 'about-preview'
+export type Projection2dViewMode = 'overview' | 'neighborhood'
 
 export interface Projection2dViewport {
   width: number
@@ -117,6 +119,28 @@ export function selectOverviewNodes(
   return selected.sort(compareOverviewPriority)
 }
 
+/**
+ * Return the focused node and only its direct hierarchy and relation
+ * neighbours. The payload and its topology are read-only; no node or relation
+ * is synthesized, removed, or rewritten.
+ */
+export function selectNeighborhoodNodes(
+  payload: AtlasPayload,
+  focusKey: string,
+): AtlasNodeOut[] {
+  if (!payload.nodes.some((node) => node.key === focusKey)) return []
+
+  const neighborhood = neighborhoodOf(payload, focusKey)
+  const keys = new Set<string>([
+    focusKey,
+    ...neighborhood.parents,
+    ...neighborhood.children,
+    ...neighborhood.incoming.map((link) => link.nodeKey),
+    ...neighborhood.outgoing.map((link) => link.nodeKey),
+  ])
+  return payload.nodes.filter((node) => keys.has(node.key))
+}
+
 function assertViewport(viewport: Projection2dViewport): void {
   if (
     !Number.isFinite(viewport.width) ||
@@ -133,8 +157,6 @@ function assertViewport(viewport: Projection2dViewport): void {
 /**
  * Uniformly fit selected stored coordinates into the viewport. Bounds include
  * each circle's layout radius, so projected circles remain inside the viewBox.
- * `focusKey` is accepted for the stable API but Task 20 owns neighbourhood
- * switching; this overview projection intentionally does not alter selection.
  */
 export function project2d(
   payload: AtlasPayload,
@@ -142,12 +164,16 @@ export function project2d(
     mode: Projection2dMode
     viewport: Projection2dViewport
     focusKey?: string | null
+    viewMode?: Projection2dViewMode
   },
 ): Projection2dResult {
   assertViewport(options.viewport)
   const { width, height } = options.viewport
   const viewBox = `0 0 ${width} ${height}`
-  const selected = selectOverviewNodes(payload, { mode: options.mode })
+  const selected =
+    options.viewMode === 'neighborhood' && options.focusKey
+      ? selectNeighborhoodNodes(payload, options.focusKey)
+      : selectOverviewNodes(payload, { mode: options.mode })
   if (selected.length === 0) {
     return {
       viewBox,

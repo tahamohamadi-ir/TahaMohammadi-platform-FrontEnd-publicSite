@@ -26,6 +26,7 @@ import {
   createSelectionModel,
   type SelectionModel,
 } from '../../atlas/selection'
+import { project2d, type Projection2dViewMode } from '../../atlas/projection-2d'
 import {
   applyFocus,
   parseFocus,
@@ -323,6 +324,186 @@ function syncSelectionDom(
   }
 }
 
+function renderProjection2d(
+  region: HTMLElement,
+  payload: AtlasPayload,
+  focusKey: string | null,
+  viewMode: Projection2dViewMode,
+  doc: Document,
+): void {
+  const svg = region.querySelector<SVGSVGElement>('[data-atlas-projection]')
+  if (!svg || typeof doc.createElementNS !== 'function') return
+  const width = Number(attribute(svg, 'data-atlas-viewport-width')) || 390
+  const height = Number(attribute(svg, 'data-atlas-viewport-height')) || 520
+  const mode =
+    attribute(svg, 'data-atlas-projection') === 'about-preview'
+      ? 'about-preview'
+      : attribute(svg, 'data-atlas-projection') === 'webgl-fallback'
+        ? 'webgl-fallback'
+        : 'mobile-overview'
+  const projection = project2d(payload, {
+    mode,
+    viewport: { width, height },
+    focusKey,
+    viewMode,
+  })
+  const edgeLayer = svg.querySelector<SVGGElement>('.atlas-projection__edges')
+  const nodeLayer = svg.querySelector<SVGGElement>('.atlas-projection__nodes')
+  if (!edgeLayer || !nodeLayer) return
+
+  edgeLayer.replaceChildren()
+  nodeLayer.replaceChildren()
+  const labels = new Map(payload.nodes.map((node) => [node.key, node.label]))
+  const namespace = 'http://www.w3.org/2000/svg'
+  for (const edge of projection.edges) {
+    const path = doc.createElementNS(namespace, 'path')
+    path.setAttribute('class', 'atlas-projection__edge')
+    path.setAttribute('data-atlas-edge', edge.key)
+    path.setAttribute('d', edge.path)
+    edgeLayer.append(path)
+  }
+  for (const node of projection.nodes) {
+    const group = doc.createElementNS(namespace, 'g')
+    group.setAttribute('class', 'atlas-projection__node')
+    group.setAttribute('data-atlas-node', node.key)
+    group.setAttribute('data-atlas-tier', node.tier)
+    group.setAttribute('transform', `translate(${node.cx} ${node.cy})`)
+    group.setAttribute('role', 'button')
+    group.setAttribute('tabindex', '0')
+    group.setAttribute('aria-label', labels.get(node.key) ?? node.key)
+
+    const hitTarget = doc.createElementNS(namespace, 'circle')
+    hitTarget.setAttribute('class', 'atlas-projection__hit-target')
+    hitTarget.setAttribute('cx', '0')
+    hitTarget.setAttribute('cy', '0')
+    hitTarget.setAttribute('r', String(Math.max(22, node.r)))
+    group.append(hitTarget)
+
+    const circle = doc.createElementNS(namespace, 'circle')
+    circle.setAttribute('cx', '0')
+    circle.setAttribute('cy', '0')
+    circle.setAttribute('r', String(node.r))
+    group.append(circle)
+
+    const text = doc.createElementNS(namespace, 'text')
+    text.setAttribute('x', String(node.labelOffset.dx))
+    text.setAttribute('y', String(node.labelOffset.dy))
+    text.textContent = labels.get(node.key) ?? node.key
+    group.append(text)
+    nodeLayer.append(group)
+  }
+  svg.setAttribute('data-atlas-view', viewMode)
+}
+
+function createProjection2dHandle(
+  region: HTMLElement,
+  payload: AtlasPayload,
+  selection: SelectionModel,
+  reason: 'viewport-2d' | 'webgl-unavailable',
+  doc: Document,
+  win: Window,
+): AtlasEnhancementHandle {
+  let viewMode: Projection2dViewMode = 'overview'
+  let disposed = false
+
+  const syncView = () => {
+    const focus = focusFromSelection(selection)
+    if (focus?.kind !== 'node' && viewMode === 'neighborhood') {
+      viewMode = 'overview'
+    }
+    syncSelectionDom(region, selection, null)
+    renderProjection2d(
+      region,
+      payload,
+      focus?.kind === 'node' ? focus.key : null,
+      viewMode,
+      doc,
+    )
+    const neighborhoodControl = region.querySelector<HTMLButtonElement>(
+      '[data-atlas-control="view-neighborhood"]',
+    )
+    const overviewControl = region.querySelector<HTMLButtonElement>(
+      '[data-atlas-control="back-to-overview"]',
+    )
+    neighborhoodControl?.toggleAttribute(
+      'hidden',
+      focus?.kind !== 'node' || viewMode === 'neighborhood',
+    )
+    overviewControl?.toggleAttribute('hidden', viewMode !== 'neighborhood')
+    region.setAttribute('data-atlas-view', viewMode)
+  }
+
+  const commitSelection = (focus: AtlasFocus | null) => {
+    applySelection(selection, focus)
+    applyFocus(win.history, win.location.href, focusFromSelection(selection))
+  }
+
+  const onClick = (event: Event) => {
+    const target = event.target
+    if (!(target instanceof Element) || target.closest('a')) return
+    const control = target.closest<HTMLElement>('[data-atlas-control]')
+    const action = control ? attribute(control, 'data-atlas-control') : null
+    if (action === 'view-neighborhood') {
+      if (selection.state.mode !== 'node') return
+      viewMode = 'neighborhood'
+      syncView()
+      return
+    }
+    if (action === 'back-to-overview' || action === 'clear') {
+      viewMode = 'overview'
+      commitSelection(null)
+      return
+    }
+
+    const node = target.closest<HTMLElement>('[data-atlas-node]')
+    const relation = target.closest<HTMLElement>('[data-atlas-relation]')
+    if (node) {
+      const key = attribute(node, 'data-atlas-node')
+      if (key) commitSelection({ kind: 'node', key })
+    } else if (relation) {
+      const key = attribute(relation, 'data-atlas-relation')
+      if (key) commitSelection({ kind: 'relation', key })
+    }
+  }
+  const onKeyDown = (event: KeyboardEvent) => {
+    if (event.key !== 'Enter' && event.key !== ' ') return
+    const target = event.target
+    if (!(target instanceof Element)) return
+    const node = target.closest<HTMLElement>(
+      '.atlas-projection__node[data-atlas-node]',
+    )
+    if (!node) return
+    event.preventDefault()
+    const key = attribute(node, 'data-atlas-node')
+    if (key) commitSelection({ kind: 'node', key })
+  }
+  const onPopState = () => {
+    const focus = parseFocus(win.location.search)
+    applySelection(selection, focus ? selection.resolve(focus).selected : null)
+  }
+  const unsubscribe = selection.subscribe(syncView)
+  region.addEventListener('click', onClick)
+  region.addEventListener('keydown', onKeyDown)
+  win.addEventListener('popstate', onPopState)
+  writePresentation(region, 'list', reason, '2d', selection.stateAttr())
+  syncView()
+
+  return {
+    state: 'list',
+    reason,
+    dispose: () => {
+      if (disposed) return
+      disposed = true
+      unsubscribe()
+      region.removeEventListener('click', onClick)
+      region.removeEventListener('keydown', onKeyDown)
+      win.removeEventListener('popstate', onPopState)
+      if (documentRegions.get(doc) === region) documentRegions.delete(doc)
+      regionFlights.delete(region)
+    },
+  }
+}
+
 async function runEnhancement(
   region: HTMLElement,
   options: AtlasEnhancementOptions,
@@ -344,8 +525,11 @@ async function runEnhancement(
   }
   documentRegions.set(doc, region)
 
-  if (!hasWebGl(win)) return listHandle(region, 'webgl-unavailable')
-  if (!hasDesktopViewport(win)) return listHandle(region, 'viewport-2d')
+  const projectionReason = !hasWebGl(win)
+    ? 'webgl-unavailable'
+    : !hasDesktopViewport(win)
+      ? 'viewport-2d'
+      : null
 
   let payload = readPayload(region)
   if (!payload) {
@@ -374,6 +558,16 @@ async function runEnhancement(
   if (initialFocus) {
     const resolved = selection.resolve(initialFocus)
     applySelection(selection, resolved.selected)
+  }
+  if (projectionReason) {
+    return createProjection2dHandle(
+      region,
+      payload,
+      selection,
+      projectionReason,
+      doc,
+      win,
+    )
   }
 
   let scene: AtlasSceneHandle | null = null

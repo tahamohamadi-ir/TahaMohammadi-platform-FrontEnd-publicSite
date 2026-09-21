@@ -9,6 +9,7 @@ import type { AtlasSnapshot } from '../../lib/atlas/snapshot'
 import type { Locale } from '../../lib/navigation'
 import AtlasControls from './AtlasControls.astro'
 import AtlasInspector from './AtlasInspector.astro'
+import AtlasProjection2d from './AtlasProjection2d.astro'
 
 interface Props {
   locale: Locale
@@ -63,6 +64,13 @@ const bodyHtml = buildSharedAtlasBodyHtml(locale, snapshot)
   {
     snapshot.status === 'ready' ? (
       <div class="atlas__stage" data-atlas-stage>
+        <div class="atlas__projection" data-atlas-projection-container>
+          <AtlasProjection2d
+            payload={snapshot.payload}
+            mode="mobile-overview"
+            viewport={{ width: 390, height: 520 }}
+          />
+        </div>
         <div class="atlas__labels" data-atlas-labels aria-hidden="true" />
         <div class="atlas__body" data-atlas-body set:html={bodyHtml} />
         <AtlasInspector payload={snapshot.payload} locale={locale} />
@@ -95,6 +103,27 @@ const bodyHtml = buildSharedAtlasBodyHtml(locale, snapshot)
     min-inline-size: 0;
   }
 
+  .atlas__projection {
+    display: none;
+    min-inline-size: 0;
+  }
+
+  :global(.atlas[data-atlas-presentation='2d']) .atlas__projection {
+    display: block;
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  :global(.atlas[data-atlas-presentation='2d']) .atlas__body {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  :global(.atlas[data-atlas-presentation='2d'] .atlas-inspector) {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
   :global(.atlas__canvas),
   .atlas__labels {
     block-size: 100%;
@@ -116,5 +145,26 @@ const bodyHtml = buildSharedAtlasBodyHtml(locale, snapshot)
 
   :global(.atlas[data-atlas-presentation='3d'] .atlas-index) {
     visibility: hidden;
+  }
+
+  @media (max-width: 1023px) {
+    .atlas__stage {
+      display: flex;
+      flex-direction: column;
+      min-block-size: 0;
+    }
+
+    .atlas__projection {
+      display: block;
+      order: 1;
+    }
+
+    :global(.atlas-inspector) {
+      order: 2;
+    }
+
+    .atlas__body {
+      order: 3;
+    }
   }
 </style>

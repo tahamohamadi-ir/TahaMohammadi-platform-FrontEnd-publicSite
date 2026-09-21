@@ -107,7 +107,7 @@ describe('Atlas inspector and controls (Plan C Task 14)', () => {
           /<(?:button|input)\b[^>]*(?:data-atlas-control|data-atlas-filter|data-atlas-search)[^>]*>/g,
         ) ?? []
 
-      expect(controls.length).toBe(filterOptions(payload).length + 7)
+      expect(controls.length).toBe(filterOptions(payload).length + 8)
       for (const control of controls) {
         expect(control).toMatch(/^<(?:button|input)\b/)
         if (control.startsWith('<input')) {

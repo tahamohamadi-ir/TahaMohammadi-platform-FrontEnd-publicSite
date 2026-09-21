@@ -1,7 +1,13 @@
+import { readFileSync } from 'node:fs'
+
 import { describe, expect, it } from 'vitest'
 
 import type { AtlasNodeOut, AtlasPayload } from './model'
-import { project2d, selectOverviewNodes } from './projection-2d'
+import {
+  project2d,
+  selectNeighborhoodNodes,
+  selectOverviewNodes,
+} from './projection-2d'
 
 function payloadFixture(nodeCount = 20): AtlasPayload {
   const nodes: AtlasNodeOut[] = [
@@ -143,5 +149,90 @@ describe('2D Atlas projection', () => {
       'identity-00000001',
       'research-area-00000004',
     ])
+  })
+
+  it('selects exactly the focused node and its one-hop neighbourhood', () => {
+    const payload = payloadFixture(7)
+    const focusKey = 'research-area-00000002'
+    payload.relations.push(
+      {
+        key: `${focusKey}~parent-of~research-area-00000005`,
+        type: 'parent-of',
+        source: focusKey,
+        target: 'research-area-00000005',
+        directed: true,
+        weight: 1,
+        hierarchy: true,
+      },
+      {
+        key: `${focusKey}~related-to~research-area-00000003`,
+        type: 'related-to',
+        source: focusKey,
+        target: 'research-area-00000003',
+        directed: true,
+        weight: 1,
+        hierarchy: false,
+      },
+      {
+        key: `research-area-00000004~related-to~${focusKey}`,
+        type: 'related-to',
+        source: 'research-area-00000004',
+        target: focusKey,
+        directed: true,
+        weight: 1,
+        hierarchy: false,
+      },
+    )
+
+    expect(
+      selectNeighborhoodNodes(payload, focusKey)
+        .map((node) => node.key)
+        .sort(),
+    ).toEqual(
+      [
+        focusKey,
+        'identity-00000001',
+        'research-area-00000003',
+        'research-area-00000004',
+        'research-area-00000005',
+      ].sort(),
+    )
+  })
+
+  it('restores the previous overview set byte-identically', () => {
+    const payload = payloadFixture()
+    const options = {
+      mode: 'mobile-overview' as const,
+      viewport: { width: 390, height: 520 },
+      focusKey: 'research-area-00000002',
+    }
+    const payloadBefore = JSON.stringify(payload)
+    const before = JSON.stringify(project2d(payload, options).nodes)
+
+    const neighborhood = JSON.stringify(
+      project2d(payload, { ...options, viewMode: 'neighborhood' }).nodes,
+    )
+
+    expect(neighborhood).not.toBe(before)
+    expect(JSON.stringify(project2d(payload, options).nodes)).toBe(before)
+    expect(JSON.stringify(payload)).toBe(payloadBefore)
+  })
+
+  it('keeps the mobile projection path free of the 3D scene module', () => {
+    const projectionSource = readFileSync(
+      new URL('./projection-2d.ts', import.meta.url),
+      'utf8',
+    )
+    const componentSource = readFileSync(
+      new URL(
+        '../../components/atlas/AtlasProjection2d.astro',
+        import.meta.url,
+      ),
+      'utf8',
+    )
+
+    expect(`${projectionSource}\n${componentSource}`).not.toMatch(
+      /(?:from\s+|import\()['"].*visual\/atlas\/scene['"]/,
+    )
   })
 })

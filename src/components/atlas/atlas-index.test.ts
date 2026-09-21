@@ -53,7 +53,8 @@ describe('AtlasPageContent (Plan C Task 6)', () => {
     })
     expect(html).toContain('data-atlas-region')
     expect(html).toContain('data-atlas-status="ready"')
-    const nodeItems = html.match(/data-atlas-node="[^"]+"/g) ?? []
+    const nodeItems =
+      html.match(/<li class="atlas-index__node" data-atlas-node="[^"]+"/g) ?? []
     expect(nodeItems).toHaveLength(payload.nodes.length)
     for (const node of payload.nodes) {
       if (node.canonical?.href)
