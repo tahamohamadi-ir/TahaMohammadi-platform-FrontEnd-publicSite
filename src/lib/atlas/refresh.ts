@@ -9,7 +9,7 @@
  */
 
 import type { AtlasPayload } from './model'
-import { validateAtlasPayload } from './validate'
+import { validateAtlasPayload, type AtlasRejection } from './validate'
 
 export type AtlasRefreshOutcome =
   | 'not-modified'
@@ -32,13 +32,20 @@ export interface AtlasAdoptDetail {
   selection: { key: string | null; cleared: boolean }
 }
 
+export interface AtlasKeepDetail {
+  rejection?: AtlasRejection
+}
+
 export interface RefreshAtlasOptions {
   locale: 'en' | 'fa'
   embedded: AtlasEmbeddedVersion
   selectedKey?: string | null
   fetchFn?: typeof fetch
   onAdopt: (detail: AtlasAdoptDetail) => void
-  onKeep: (outcome: Exclude<AtlasRefreshOutcome, 'adopted'>) => void
+  onKeep: (
+    outcome: Exclude<AtlasRefreshOutcome, 'adopted'>,
+    detail?: AtlasKeepDetail,
+  ) => void
 }
 
 function compareVersion(
@@ -101,13 +108,13 @@ export async function refreshAtlas(
   try {
     raw = await response.json()
   } catch {
-    onKeep('kept-invalid')
+    onKeep('kept-invalid', { rejection: 'not-object' })
     return 'kept-invalid'
   }
 
   const validated = validateAtlasPayload(raw)
   if (!validated.ok) {
-    onKeep('kept-invalid')
+    onKeep('kept-invalid', { rejection: validated.reason })
     return 'kept-invalid'
   }
 

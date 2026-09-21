@@ -259,7 +259,12 @@ describe('refreshAtlas (Plan C Task 7)', () => {
         onKeep,
       })
       expect(outcome).toMatch(expectOutcome)
-      expect(onKeep).toHaveBeenCalledWith(outcome)
+      expect(onKeep).toHaveBeenCalledWith(
+        outcome,
+        outcome === 'kept-invalid'
+          ? { rejection: 'nodes-not-array' }
+          : undefined,
+      )
     }
   })
 
@@ -294,7 +299,36 @@ describe('refreshAtlas (Plan C Task 7)', () => {
     })
     expect(outcome).toBe('kept-invalid')
     expect(onAdopt).not.toHaveBeenCalled()
-    expect(onKeep).toHaveBeenCalledWith('kept-invalid')
+    expect(onKeep).toHaveBeenCalledWith('kept-invalid', {
+      rejection: 'unknown-contract',
+    })
+  })
+
+  it('exposes the validator rejection code for data-atlas-refresh diagnostics', async () => {
+    const onKeep = vi.fn()
+    const outcome = await refreshAtlas({
+      locale: 'en',
+      embedded: {
+        revision: '12-2026',
+        etag: '"12"',
+        publishedAt: '2026-09-20T10:31:04.221000+00:00',
+        id: 12,
+      },
+      fetchFn: vi
+        .fn()
+        .mockResolvedValue(
+          jsonResponse(
+            { contractVersion: ATLAS_CONTRACT_VERSION, nodes: 'bad' },
+            { status: 200 },
+          ),
+        ),
+      onAdopt: vi.fn(),
+      onKeep,
+    })
+    expect(outcome).toBe('kept-invalid')
+    expect(onKeep).toHaveBeenCalledWith('kept-invalid', {
+      rejection: 'nodes-not-array',
+    })
   })
 
   it('keeps an equal or older version by (publishedAt, id) and never uses a client clock', async () => {
