@@ -259,12 +259,12 @@ describe('refreshAtlas (Plan C Task 7)', () => {
         onKeep,
       })
       expect(outcome).toMatch(expectOutcome)
-      expect(onKeep).toHaveBeenCalledWith(
-        outcome,
-        outcome === 'kept-invalid'
-          ? { rejection: 'nodes-not-array' }
-          : undefined,
-      )
+      expect(onKeep.mock.calls[0]?.[0]).toBe(outcome)
+      if (outcome === 'kept-invalid') {
+        expect(onKeep.mock.calls[0]?.[1]).toEqual({
+          rejection: 'nodes-not-array',
+        })
+      }
     }
   })
 
