@@ -65,7 +65,9 @@ export interface AtlasPosition {
 export interface AtlasNodeOut {
   key: string
   type: string
-  label: string
+  // Absent when no locale resolved copy for the node (projection §10.3
+  // omission rule) — consumers fall back to the public key, never invent copy.
+  label?: string
   summary?: string
   accessibleLabel?: string
   importance: number

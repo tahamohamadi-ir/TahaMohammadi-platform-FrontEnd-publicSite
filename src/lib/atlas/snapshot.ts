@@ -57,12 +57,15 @@ export interface SnapshotOptions {
 
 export function buildAtlasIndexModel(payload: AtlasPayload): AtlasIndexModel {
   const labelByKey = new Map<string, string>()
-  for (const node of payload.nodes) labelByKey.set(node.key, node.label)
+  for (const node of payload.nodes) labelByKey.set(node.key, node.label ?? node.key)
   return {
     nodes: payload.nodes.map((node) => ({
       key: node.key,
       type: node.type,
-      label: node.label,
+      // A node the projection served without a label keeps its stable public
+      // key as the display name: the key is payload data, never invented copy,
+      // and every index entry needs an accessible name.
+      label: node.label ?? node.key,
       href: node.canonical?.href ?? null,
     })),
     relations: payload.relations.map((relation) => ({

@@ -1,0 +1,41 @@
+/** Atlas presentation (Plan C Task 6: minimal shell; Task 21 owns parity/RTL/a11y).
+ * Logical properties only — EN and FA share topology, never mirrored geometry. */
+.atlas {
+  margin-inline: auto;
+  max-inline-size: 72rem;
+  padding-inline: 1.25rem;
+}
+
+.atlas__header {
+  padding-block: 2rem 1rem;
+}
+
+.atlas__eyebrow {
+  font-size: 0.8125rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.atlas__title {
+  font-size: 2rem;
+  line-height: 1.2;
+  margin-block: 0.5rem;
+}
+
+.atlas__lead {
+  font-size: 1.0625rem;
+  line-height: 1.7;
+  max-inline-size: 44rem;
+}
+
+.atlas-index__nodes,
+.atlas-index__relations,
+.atlas-index__members {
+  padding-inline-start: 1.25rem;
+}
+
+.atlas-index__node,
+.atlas-index__relation,
+.atlas-index__member {
+  line-height: 1.7;
+}

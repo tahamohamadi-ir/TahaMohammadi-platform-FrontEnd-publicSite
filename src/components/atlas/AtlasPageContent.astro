@@ -1,0 +1,94 @@
+---
+/**
+ * Atlas page composition (Plan C Task 6): heading, lead, semantic index,
+ * stage placeholder, inspector placeholder, embedded validated snapshot.
+ * Server-rendered default presentation is `list`; capability detection
+ * (Task 15) upgrades it in the browser.
+ */
+import ContentState from '../state/ContentState.astro'
+import AtlasIndex from './AtlasIndex.astro'
+import {
+  serializeAtlasPayload,
+  type AtlasSnapshot,
+} from '../../lib/atlas/snapshot'
+import type { Locale } from '../../lib/navigation'
+
+interface Props {
+  locale: Locale
+  snapshot: AtlasSnapshot
+}
+
+const { locale, snapshot } = Astro.props
+const copy =
+  locale === 'en'
+    ? {
+        eyebrow: 'Knowledge graph',
+        title: 'Knowledge Atlas',
+        lead: 'Every domain, project and publication — one navigable map.',
+        unavailableTitle: 'Atlas unavailable',
+        unavailableMessage: 'The Atlas has no published version right now.',
+        invalidTitle: 'Atlas data failed validation',
+        invalidMessage:
+          'The published Atlas data failed validation, so nothing is shown.',
+      }
+    : {
+        eyebrow: 'نقشه دانش',
+        title: 'اطلس دانش',
+        lead: 'همه حوزه‌ها، پروژه‌ها و انتشارها — یک نقشه قابل پیمایش.',
+        unavailableTitle: 'اطلس در دسترس نیست',
+        unavailableMessage: 'در حال حاضر نسخه منتشرشده‌ای از اطلس وجود ندارد.',
+        invalidTitle: 'داده اطلس اعتبارسنجی نشد',
+        invalidMessage:
+          'داده منتشرشده اطلس اعتبارسنجی نشد، پس چیزی نمایش داده نمی‌شود.',
+      }
+
+const status = snapshot.status
+const revision =
+  status === 'ready' ? snapshot.payload.version.revision : undefined
+const etag = status === 'ready' ? snapshot.etag : undefined
+---
+
+<section
+  class="atlas"
+  data-atlas-region
+  data-atlas-status={status}
+  data-atlas-presentation="list"
+  data-atlas-revision={revision}
+  data-atlas-etag={etag}
+>
+  <header class="atlas__header">
+    <p class="atlas__eyebrow">{copy.eyebrow}</p>
+    <h1 class="atlas__title">{copy.title}</h1>
+    <p class="atlas__lead">{copy.lead}</p>
+  </header>
+
+  {
+    status === 'ready' ? (
+      <>
+        <AtlasIndex locale={locale} html={snapshot.html} />
+        <script
+          id="atlas-payload"
+          type="application/json"
+          data-atlas-revision={snapshot.payload.version.revision}
+          set:html={serializeAtlasPayload(snapshot.payload)}
+        />
+      </>
+    ) : status === 'unavailable' ? (
+      <ContentState
+        variant="empty"
+        locale={locale}
+        headingLevel="h2"
+        title={copy.unavailableTitle}
+        message={copy.unavailableMessage}
+      />
+    ) : (
+      <ContentState
+        variant="error"
+        locale={locale}
+        headingLevel="h2"
+        title={copy.invalidTitle}
+        message={copy.invalidMessage}
+      />
+    )
+  }
+</section>
