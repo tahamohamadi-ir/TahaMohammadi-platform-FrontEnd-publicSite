@@ -94,6 +94,18 @@ describe('AtlasPageContent (Plan C Task 6)', () => {
     expect(html).toContain('\\u003c/script>')
   })
 
+  it('renders the 2D SVG presentation with no interactive attributes', async () => {
+    const payload = readPayload('benchmark.json')
+    const html = await render(AtlasPageContent, {
+      locale: 'en',
+      snapshot: readySnapshot(payload),
+    })
+    expect(html).toContain('data-atlas-projection="mobile-overview"')
+    expect(html).toContain('aria-hidden="true"')
+    expect(html).not.toMatch(/<svg[^>]*tabindex/)
+    expect(html).not.toMatch(/<circle[^>]*tabindex/)
+  })
+
   it('renders the honest unavailable state with no payload script', async () => {
     for (const locale of ['en', 'fa'] as const) {
       const html = await render(AtlasPageContent, {

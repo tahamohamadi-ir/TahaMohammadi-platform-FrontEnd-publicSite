@@ -1,17 +1,20 @@
-/** Shared Atlas body presentation (Plan C Tasks 6/8).
+/** Shared Atlas body presentation (Plan C Tasks 6/8/13).
  *
- * One HTML builder for the semantic index / honest states so the public Atlas
- * route and the draft-preview shell render through the same markup path.
- * Authorization and fetch stay outside this module.
+ * One HTML builder for the semantic index / 2D projection / honest states so
+ * the public Atlas route and the draft-preview shell render through the same
+ * markup path. Authorization and fetch stay outside this module.
  */
 
 import {
   snapshotFromPreviewResult,
   type PreviewSnapshotResult,
 } from './preview'
+import { project2d } from './projection-2d'
+import { projectionSvgHtml } from './projection-svg'
 import {
   serializeAtlasPayload,
   type AtlasIndexModel,
+  type AtlasPayload,
   type AtlasSnapshot,
 } from './snapshot'
 
@@ -95,6 +98,16 @@ function buildStateHtml(
   return `<div class="content-state content-state--${variant}" data-content-state="${variant}"><h2>${escapeHtml(title)}</h2><p>${escapeHtml(message)}</p></div>`
 }
 
+/** 2D SVG markup for a ready payload through the shared renderer. */
+export function buildProjectionHtml(payload: AtlasPayload): string {
+  const projection = project2d(payload, {
+    mode: 'mobile-overview',
+    viewport: { width: 390, height: 520 },
+    focusKey: null,
+  })
+  return `<div class="atlas__projection" data-atlas-2d>${projectionSvgHtml(projection, 'mobile-overview')}</div>`
+}
+
 /** Body HTML under the Atlas header — semantic index or honest state. */
 export function buildSharedAtlasBodyHtml(
   locale: 'en' | 'fa',
@@ -102,9 +115,10 @@ export function buildSharedAtlasBodyHtml(
 ): string {
   if (snapshot.status === 'ready') {
     const index = buildIndexHtml(locale, snapshot.html)
+    const projection = buildProjectionHtml(snapshot.payload)
     const payload = serializeAtlasPayload(snapshot.payload)
     const revision = escapeHtml(snapshot.payload.version.revision)
-    return `${index}<script id="atlas-payload" type="application/json" data-atlas-revision="${revision}">${payload}</script>`
+    return `${index}${projection}<script id="atlas-payload" type="application/json" data-atlas-revision="${revision}">${payload}</script>`
   }
   if (snapshot.status === 'unavailable') {
     return buildStateHtml(locale, 'empty')
