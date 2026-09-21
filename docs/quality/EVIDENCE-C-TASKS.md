@@ -7,7 +7,7 @@ Machine: DESKTOP-K05IG1H · win32 x64 · 13th Gen Intel(R) Core(TM) i7-13620H ·
 
 Official progress at close: **24 / 24** (Task 19 skipped by Task 18 evidence).
 
-Tip at evidence write: see `git log -1` after the Task 24 commit.
+Tip at evidence write: `a129ecf` (`docs(atlas): record Plan C acceptance evidence`).
 
 ## Gate outputs
 
