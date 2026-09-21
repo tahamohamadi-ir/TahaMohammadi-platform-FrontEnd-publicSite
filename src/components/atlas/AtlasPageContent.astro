@@ -67,3 +67,12 @@ const bodyHtml = buildSharedAtlasBodyHtml(locale, snapshot)
     ) : null
   }
 </section>
+
+<script>
+  import { enhanceAtlasRegion } from '../../lib/visual/atlas/enhancement'
+
+  const region = document.querySelector<HTMLElement>('[data-atlas-region]')
+  if (region?.getAttribute('data-atlas-status') === 'ready') {
+    void enhanceAtlasRegion(region)
+  }
+</script>
