@@ -1,0 +1,50 @@
+---
+/**
+ * 2D SVG presentation (Plan C Task 13): mobile overview, WebGL fallback and
+ * about-preview. Pure presentation — no interactive attributes; the HTML
+ * controls own interaction (spec §14.1). Always aria-hidden, never tabbable.
+ */
+import { project2d, type Projection2dMode } from '../../lib/atlas/projection-2d'
+import type { AtlasPayload } from '../../lib/atlas/model'
+
+interface Props {
+  payload: AtlasPayload
+  mode: Projection2dMode
+  viewport?: { width: number; height: number }
+  focusKey?: string | null
+}
+
+const {
+  payload,
+  mode,
+  viewport = { width: 390, height: 520 },
+  focusKey = null,
+} = Astro.props
+const projection = project2d(payload, { mode, viewport, focusKey })
+---
+
+<svg
+  class="atlas-projection"
+  data-atlas-projection={mode}
+  viewBox={projection.viewBox}
+  role="img"
+  aria-hidden="true"
+  focusable="false"
+>
+  {
+    projection.edges.map((edge) => (
+      <path
+        class="atlas-projection__edge"
+        data-atlas-edge={edge.key}
+        d={edge.path}
+      />
+    ))
+  }
+  {
+    projection.nodes.map((node) => (
+      <g class="atlas-projection__node" data-atlas-projected={node.key}>
+        <circle cx={node.cx} cy={node.cy} r={node.r} />
+      </g>
+    ))
+  }
+</svg>
