@@ -87,7 +87,6 @@ function basePayload(overrides: Partial<AtlasPayload> = {}): AtlasPayload {
       },
     ],
     ...overrides,
-    version,
   }
 }
 
