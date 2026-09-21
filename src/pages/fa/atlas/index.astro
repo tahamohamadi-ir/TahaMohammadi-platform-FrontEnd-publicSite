@@ -1,0 +1,19 @@
+---
+import SiteLayout from '../../../layouts/SiteLayout.astro'
+import AtlasPageContent from '../../../components/atlas/AtlasPageContent.astro'
+import { fetchAtlasSnapshot } from '../../../lib/atlas/snapshot'
+import '../../../styles/atlas.css'
+
+const locale = 'fa' as const
+const snapshot = await fetchAtlasSnapshot(locale)
+const pageTitle = 'اطلس دانش — طاها محمدی'
+---
+
+<SiteLayout
+  title={pageTitle}
+  locale={locale}
+  pathSegment="atlas"
+  alternateAvailable={true}
+>
+  <AtlasPageContent locale={locale} snapshot={snapshot} />
+</SiteLayout>
