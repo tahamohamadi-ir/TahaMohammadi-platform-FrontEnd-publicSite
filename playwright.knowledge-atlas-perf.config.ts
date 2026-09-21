@@ -25,7 +25,7 @@ const baseURL = `http://${LOOPBACK_HOST}:${port}`
 
 export default defineConfig({
   testDir: './tests/knowledge-atlas',
-  testMatch: '**/ka-performance.spec.ts',
+  testMatch: '**/ka-performance.e2e.ts',
   fullyParallel: false,
   workers: 1,
   timeout: 60_000,

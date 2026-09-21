@@ -25,7 +25,9 @@ function parseArgs(argv) {
     } else if (arg === '--iterations' && argv[i + 1]) {
       iterations = Number.parseInt(argv[++i], 10)
     } else if (arg === '--help' || arg === '-h') {
-      console.log(`Usage: node scripts/atlas-pick-benchmark.mjs [--fixture path] [--iterations N]`)
+      console.log(
+        `Usage: node scripts/atlas-pick-benchmark.mjs [--fixture path] [--iterations N]`,
+      )
       process.exit(0)
     }
   }
@@ -65,8 +67,9 @@ async function main() {
   const { runBenchmark } = await loadRunner()
   const result = runBenchmark(options)
 
-  const broadPhase =
-    result.pass ? 'broad-phase: not required' : 'broad-phase: required'
+  const broadPhase = result.pass
+    ? 'broad-phase: not required'
+    : 'broad-phase: required'
 
   console.log(
     JSON.stringify(

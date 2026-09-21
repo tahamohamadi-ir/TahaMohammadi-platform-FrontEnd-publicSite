@@ -103,7 +103,9 @@ function sortNeighbourItems(items: AtlasInspectorItem[]): AtlasInspectorItem[] {
   })
 }
 
-function sortRelationLinks(links: readonly NeighborhoodLink[]): NeighborhoodLink[] {
+function sortRelationLinks(
+  links: readonly NeighborhoodLink[],
+): NeighborhoodLink[] {
   return [...links].sort((left, right) => {
     const byType = compareKey(left.relationType, right.relationType)
     if (byType !== 0) return byType
@@ -168,10 +170,7 @@ export function nodeInspectorModel(
     ])
   }
 
-  const hierarchyRelation = (
-    source: string,
-    target: string,
-  ) =>
+  const hierarchyRelation = (source: string, target: string) =>
     payload.relations.find(
       (relation) =>
         relation.hierarchy &&
@@ -211,10 +210,7 @@ export function nodeInspectorModel(
     hood.children.flatMap((childKey) => {
       const edge = hierarchyRelation(key, childKey)
       const typeRow = edge ? relationTypeByKey.get(edge.type) : undefined
-      const item = neighbourItem(
-        childKey,
-        typeRow?.label ?? edge?.type,
-      )
+      const item = neighbourItem(childKey, typeRow?.label ?? edge?.type)
       return item ? [item] : []
     }),
   )
@@ -244,7 +240,11 @@ export function nodeInspectorModel(
   )
   pushSection(sections, 'outgoing', copy.outgoing, outgoingItems)
 
-  const typedNeighbours = (nodeType: string, sectionId: string, heading: string) => {
+  const typedNeighbours = (
+    nodeType: string,
+    sectionId: string,
+    heading: string,
+  ) => {
     const keys = hood.byType[nodeType]
     if (!keys?.length) return
     const items = sortNeighbourItems(

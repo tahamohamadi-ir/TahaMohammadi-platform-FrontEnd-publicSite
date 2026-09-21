@@ -197,18 +197,12 @@ function payload(overrides: Partial<AtlasPayload> = {}): AtlasPayload {
 
 describe('inspector projection (Plan C Task 11)', () => {
   it('omits the publications section when the node has none', () => {
-    const model = nodeInspectorModel(
-      payload(),
-      'research-area-child001',
-    )
+    const model = nodeInspectorModel(payload(), 'research-area-child001')
     expect(model.sections.map((s) => s.id)).not.toContain('publications')
   })
 
   it('lists both parents under parents', () => {
-    const model = nodeInspectorModel(
-      payload(),
-      'research-area-child001',
-    )
+    const model = nodeInspectorModel(payload(), 'research-area-child001')
     const parents = model.sections.find((s) => s.id === 'parents')
     expect(parents?.items.map((i) => i.key).sort()).toEqual([
       'research-area-parent01',
@@ -258,10 +252,7 @@ describe('inspector projection (Plan C Task 11)', () => {
   })
 
   it('groups neighbour lists by node type via neighbourhood byType', () => {
-    const model = nodeInspectorModel(
-      payload(),
-      'research-area-child001',
-    )
+    const model = nodeInspectorModel(payload(), 'research-area-child001')
     const projects = model.sections.find((s) => s.id === 'projects')
     expect(projects?.items.every((i) => i.type === 'project')).toBe(true)
     expect(projects?.items.map((i) => i.key).sort()).toEqual([

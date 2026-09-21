@@ -75,7 +75,9 @@ describe('Atlas EN/FA parity and accessibility (Task 21)', () => {
       /<svg[^>]*class="atlas-projection"[^>]*focusable="false"/,
     )
     expect(html).not.toMatch(/class="atlas-projection__node"[^>]*tabindex=/i)
-    expect(html).not.toMatch(/class="atlas-projection__node"[^>]*role="button"/i)
+    expect(html).not.toMatch(
+      /class="atlas-projection__node"[^>]*role="button"/i,
+    )
 
     const canvasMatches = html.match(/<canvas[^>]*data-atlas-canvas[^>]*>/g)
     expect(canvasMatches ?? []).toHaveLength(0)

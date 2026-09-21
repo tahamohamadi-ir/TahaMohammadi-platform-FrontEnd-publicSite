@@ -1,7 +1,4 @@
-import type {
-  AtlasSelectionState,
-  SelectionModel,
-} from '../../atlas/selection'
+import type { AtlasSelectionState, SelectionModel } from '../../atlas/selection'
 import type { AtlasOrbitPose } from './scene'
 
 export interface GesturePoint {
@@ -14,8 +11,7 @@ export const CLICK_SLOP_PX = 6
 export const CLICK_MAX_MS = 500
 export const MIN_DISTANCE_SCALE = 0.55
 export const MAX_DISTANCE_SCALE = 2.1
-export const ATLAS_EFFECTIVE_WIDTH_PROPERTY =
-  '--atlas-effective-viewport-width'
+export const ATLAS_EFFECTIVE_WIDTH_PROPERTY = '--atlas-effective-viewport-width'
 export const ATLAS_PICK_EVENT = 'atlas:pick-request'
 
 const ROTATE_PER_PX = 0.006
@@ -82,11 +78,7 @@ export function classifyGesture(
 }
 
 export function clampedZoomScale(current: number, factor: number): number {
-  return clamp(
-    current * factor,
-    MIN_DISTANCE_SCALE,
-    MAX_DISTANCE_SCALE,
-  )
+  return clamp(current * factor, MIN_DISTANCE_SCALE, MAX_DISTANCE_SCALE)
 }
 
 export function clearSelectionAndRestoreFocus(
@@ -130,7 +122,8 @@ function isInteractiveTarget(target: EventTarget | null): boolean {
 }
 
 function focusableTarget(target: EventTarget | null): HTMLElement | null {
-  if (typeof Element === 'undefined' || !(target instanceof Element)) return null
+  if (typeof Element === 'undefined' || !(target instanceof Element))
+    return null
   const selected = target.closest<HTMLElement>(
     '[data-atlas-node], [data-atlas-relation]',
   )
@@ -161,8 +154,7 @@ export function createAtlasControls(
     region.querySelector<HTMLElement>('[data-atlas-stage]') ?? region
   const canvas =
     stage.querySelector<HTMLCanvasElement>('[data-atlas-canvas]') ?? stage
-  const inspector =
-    region.querySelector<HTMLElement>('[data-atlas-inspector]')
+  const inspector = region.querySelector<HTMLElement>('[data-atlas-inspector]')
   const doc = region.ownerDocument
   let dragStart: GesturePoint | null = null
   let lastPoint: GesturePoint | null = null
@@ -297,10 +289,7 @@ export function createAtlasControls(
   function onClick(event: MouseEvent): void {
     const opener = focusableTarget(event.target)
     if (opener) selectionOpener = opener
-    if (
-      typeof Element === 'undefined' ||
-      !(event.target instanceof Element)
-    ) {
+    if (typeof Element === 'undefined' || !(event.target instanceof Element)) {
       return
     }
     const control = event.target.closest<HTMLElement>('[data-atlas-control]')

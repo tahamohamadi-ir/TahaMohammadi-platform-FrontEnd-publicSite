@@ -13,23 +13,23 @@ node scripts/atlas-pick-benchmark.mjs --fixture tests/fixtures/atlas/benchmark.j
 npm test -- src/lib/visual/atlas/scene.test.ts
 ```
 
-Browser idle/drag/first-frame probes live in `tests/knowledge-atlas/ka-performance.spec.ts` and
+Browser idle/drag/first-frame probes live in `tests/knowledge-atlas/ka-performance.e2e.ts` and
 `tests/e2e/product-atlas.e2e.ts` (Task 23). Where a live WebGL probe is not yet runnable in CI,
 the row below is marked **DEFERRED** with the unit-layer evidence that already exists.
 
 ## §19.2 ledger
 
-| Budget                        | Ceiling  | Measured                                              | Verdict          | Evidence                                                                    |
-| ----------------------------- | -------- | ----------------------------------------------------- | ---------------- | --------------------------------------------------------------------------- |
-| First interactive Atlas frame | ≤ 900 ms | —                                                     | **DEFERRED**     | Browser timing in Task 23 `product-atlas.e2e.ts` / `ka-performance.spec.ts` |
-| Pick latency p95 (72/136)     | ≤ 8 ms   | **0.257 ms** (re-check ≈ 0.36 ms)                     | **PASS**         | `docs/quality/KNOWLEDGE-ATLAS-PICK-BENCHMARK.md` (Task 18)                  |
-| Drag frame p95                | ≤ 16 ms  | —                                                     | **DEFERRED**     | Requires instrumented live canvas; Task 23                                  |
-| Runtime payload gzip          | ≤ 60 KiB | en **784 B**, fa **849 B**, benchmark **3463 B**      | **PASS**         | `performance-budget.test.ts`                                                |
-| Embedded snapshot gzip        | ≤ 40 KiB | en/fa/benchmark all ≪ 40 KiB (benchmark ≈ **3463 B**) | **PASS**         | `serializeAtlasPayload` + gzip in unit test                                 |
-| Label chips in DOM            | ≤ 40     | always-tier keys ≤ **10** (`ALWAYS_LABEL_KEYS_CAP`)   | **PASS**         | `alwaysLabelKeys` + unit test                                               |
-| Presentation DOM nodes        | ≤ 2500   | **5309** opening tags on benchmark SSR region         | **FAIL**         | Full SSR inspector+index registry; ceiling **unchanged** (§19.6)            |
-| Idle draw calls               | **0**    | no idle `requestAnimationFrame` after scene settle    | **PASS** (unit)  | `scene.test.ts` “does not leave an animation frame running while idle”      |
-| Layout computation (backend)  | ≤ 2 s    | —                                                     | **N/A (Plan A)** | Recorded in Plan A evidence; not owned by Plan C                            |
+| Budget                        | Ceiling  | Measured                                              | Verdict          | Evidence                                                                   |
+| ----------------------------- | -------- | ----------------------------------------------------- | ---------------- | -------------------------------------------------------------------------- |
+| First interactive Atlas frame | ≤ 900 ms | —                                                     | **DEFERRED**     | Browser timing in Task 23 `product-atlas.e2e.ts` / `ka-performance.e2e.ts` |
+| Pick latency p95 (72/136)     | ≤ 8 ms   | **0.257 ms** (re-check ≈ 0.36 ms)                     | **PASS**         | `docs/quality/KNOWLEDGE-ATLAS-PICK-BENCHMARK.md` (Task 18)                 |
+| Drag frame p95                | ≤ 16 ms  | —                                                     | **DEFERRED**     | Requires instrumented live canvas; Task 23                                 |
+| Runtime payload gzip          | ≤ 60 KiB | en **784 B**, fa **849 B**, benchmark **3463 B**      | **PASS**         | `performance-budget.test.ts`                                               |
+| Embedded snapshot gzip        | ≤ 40 KiB | en/fa/benchmark all ≪ 40 KiB (benchmark ≈ **3463 B**) | **PASS**         | `serializeAtlasPayload` + gzip in unit test                                |
+| Label chips in DOM            | ≤ 40     | always-tier keys ≤ **10** (`ALWAYS_LABEL_KEYS_CAP`)   | **PASS**         | `alwaysLabelKeys` + unit test                                              |
+| Presentation DOM nodes        | ≤ 2500   | **5309** opening tags on benchmark SSR region         | **FAIL**         | Full SSR inspector+index registry; ceiling **unchanged** (§19.6)           |
+| Idle draw calls               | **0**    | no idle `requestAnimationFrame` after scene settle    | **PASS** (unit)  | `scene.test.ts` “does not leave an animation frame running while idle”     |
+| Layout computation (backend)  | ≤ 2 s    | —                                                     | **N/A (Plan A)** | Recorded in Plan A evidence; not owned by Plan C                           |
 
 ## Idle-draw instrumentation note
 

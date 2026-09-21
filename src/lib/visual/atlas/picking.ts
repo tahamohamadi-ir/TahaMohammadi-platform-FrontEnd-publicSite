@@ -1,7 +1,4 @@
-import {
-  alwaysLabelKeys,
-  labelTierFor,
-} from '../../atlas/layout'
+import { alwaysLabelKeys, labelTierFor } from '../../atlas/layout'
 import type { AtlasPayload } from '../../atlas/model'
 import { neighborhoodOf } from '../../atlas/neighborhood'
 import type { SelectionModel } from '../../atlas/selection'

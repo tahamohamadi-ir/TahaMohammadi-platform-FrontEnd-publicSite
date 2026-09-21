@@ -10,7 +10,10 @@ import * as THREE from 'three'
 
 import { resolveLayout } from '../src/lib/atlas/layout'
 import type { AtlasPayload } from '../src/lib/atlas/model'
-import { edgeSampleCountFor, projectAtlasPick } from '../src/lib/visual/atlas/picking'
+import {
+  edgeSampleCountFor,
+  projectAtlasPick,
+} from '../src/lib/visual/atlas/picking'
 import {
   bowForEdge,
   buildEdgeCurve,
@@ -52,8 +55,7 @@ export interface BenchmarkResult {
   p95Ms: number
   budgetMs: number
   pass: boolean
-  measured:
-    | 'screen-space O(n) pick (projectNodes + projectEdges + pickAt)'
+  measured: 'screen-space O(n) pick (projectNodes + projectEdges + pickAt)'
   drawCalls: null
   triangles: null
   note: string
@@ -292,11 +294,9 @@ export function runBenchmark(options: BenchmarkOptions): BenchmarkResult {
     p95Ms,
     budgetMs: PICK_BUDGET_MS,
     pass: p95Ms <= PICK_BUDGET_MS,
-    measured:
-      'screen-space O(n) pick (projectNodes + projectEdges + pickAt)',
+    measured: 'screen-space O(n) pick (projectNodes + projectEdges + pickAt)',
     drawCalls: null,
     triangles: null,
-    note:
-      'Node-only benchmark: no DOM/WebGL. View matrix matches Atlas home orbit (FOV 42, 1440×900). Draw-call/triangle stats require a live WebGL scene and are not measured here.',
+    note: 'Node-only benchmark: no DOM/WebGL. View matrix matches Atlas home orbit (FOV 42, 1440×900). Draw-call/triangle stats require a live WebGL scene and are not measured here.',
   }
 }

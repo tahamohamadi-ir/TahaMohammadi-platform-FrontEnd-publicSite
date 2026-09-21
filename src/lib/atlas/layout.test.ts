@@ -91,17 +91,17 @@ describe('layout consumption', () => {
         node.position.y,
         node.position.z,
       ])
-    expect(layout.nodes.map((node) => [node.key, node.x, node.y, node.z])).toEqual(
-      expected,
-    )
+    expect(
+      layout.nodes.map((node) => [node.key, node.x, node.y, node.z]),
+    ).toEqual(expected)
   })
 
   it('derives radius and tiers from importance deterministically', () => {
     expect(tierFor({ importance: 80 })).toBe('primary')
     expect(tierFor({ importance: 79 })).toBe('fine')
-    expect(radiusFor({ importance: 100, type: 'research-area' })).toBeGreaterThan(
-      radiusFor({ importance: 40, type: 'research-area' }),
-    )
+    expect(
+      radiusFor({ importance: 100, type: 'research-area' }),
+    ).toBeGreaterThan(radiusFor({ importance: 40, type: 'research-area' }))
   })
 
   it('flags a missing coordinate instead of inventing one', () => {
@@ -134,7 +134,8 @@ describe('layout consumption', () => {
     const top = [...nodes]
       .sort(
         (left, right) =>
-          right.importance - left.importance || left.key.localeCompare(right.key),
+          right.importance - left.importance ||
+          left.key.localeCompare(right.key),
       )
       .slice(0, 10)
     for (const node of top) {

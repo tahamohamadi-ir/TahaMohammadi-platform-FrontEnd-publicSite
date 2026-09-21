@@ -23,17 +23,17 @@ Fixed PRNG seed `0x41544c18` → **10** screen probe points; **200** timed picks
 
 ## Recorded run
 
-| Field | Value |
-| --- | --- |
-| **Date** | 2026-09-21 |
-| **Machine** | DESKTOP-K05IG1H · win32 x64 · 13th Gen Intel(R) Core(TM) i7-13620H · 39.6 GiB RAM |
-| **Command** | `node scripts/atlas-pick-benchmark.mjs --fixture tests/fixtures/atlas/benchmark.json --iterations 200` |
-| **Fixture** | `tests/fixtures/atlas/benchmark.json` (72 nodes, 136 relations) |
-| **Viewport** | 1440 × 900 |
-| **p50** | **0.069 ms** |
-| **p95** | **0.257 ms** |
-| **Budget (p95)** | 8 ms |
-| **Result** | **PASS** (p95 ≤ 8 ms) |
+| Field            | Value                                                                                                  |
+| ---------------- | ------------------------------------------------------------------------------------------------------ |
+| **Date**         | 2026-09-21                                                                                             |
+| **Machine**      | DESKTOP-K05IG1H · win32 x64 · 13th Gen Intel(R) Core(TM) i7-13620H · 39.6 GiB RAM                      |
+| **Command**      | `node scripts/atlas-pick-benchmark.mjs --fixture tests/fixtures/atlas/benchmark.json --iterations 200` |
+| **Fixture**      | `tests/fixtures/atlas/benchmark.json` (72 nodes, 136 relations)                                        |
+| **Viewport**     | 1440 × 900                                                                                             |
+| **p50**          | **0.069 ms**                                                                                           |
+| **p95**          | **0.257 ms**                                                                                           |
+| **Budget (p95)** | 8 ms                                                                                                   |
+| **Result**       | **PASS** (p95 ≤ 8 ms)                                                                                  |
 
 ## Broad-phase decision
 

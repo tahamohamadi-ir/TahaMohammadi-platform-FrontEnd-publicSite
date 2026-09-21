@@ -160,8 +160,7 @@ export function resolveLayout(payload: AtlasPayload): AtlasLayout {
   }))
 
   const byDepth = [...layoutNodes].sort(
-    (left, right) =>
-      left.z - right.z || compareKey(left.key, right.key),
+    (left, right) => left.z - right.z || compareKey(left.key, right.key),
   )
   byDepth.forEach((node, index) => {
     node.drawOrder = index

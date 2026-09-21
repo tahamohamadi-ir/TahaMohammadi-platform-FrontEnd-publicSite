@@ -410,8 +410,7 @@ export function createAtlasScene(
       yaw: Math.atan2(dx, dz),
       pitch: clamp(Math.asin(dy / distance), -0.6, 0.6),
       distanceScale: clamp(
-        (0.62 + distance / Math.max(baseDistance, 1)) *
-          inspectorCompensation,
+        (0.62 + distance / Math.max(baseDistance, 1)) * inspectorCompensation,
         ORBIT_LIMITS.minDistanceScale,
         ORBIT_LIMITS.maxDistanceScale,
       ),
