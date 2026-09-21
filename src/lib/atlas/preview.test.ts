@@ -60,7 +60,7 @@ describe('atlas draft preview (Plan C Task 8)', () => {
   it('reads the capability from the fragment and strips it before any fetch', () => {
     const replaceState = vi.fn()
     const capability = consumePreviewFragment(
-      { replaceState } as History,
+      { replaceState } as unknown as History,
       {
         hash: '#token=cap.abc',
         pathname: '/en/atlas/preview/',
@@ -75,7 +75,7 @@ describe('atlas draft preview (Plan C Task 8)', () => {
     const replaceState = vi.fn()
     expect(
       consumePreviewFragment(
-        { replaceState } as History,
+        { replaceState } as unknown as History,
         {
           hash: '#token=',
           pathname: '/fa/atlas/preview/',
@@ -91,7 +91,7 @@ describe('atlas draft preview (Plan C Task 8)', () => {
     replaceState.mockClear()
     expect(
       consumePreviewFragment(
-        { replaceState } as History,
+        { replaceState } as unknown as History,
         {
           hash: '',
           pathname: '/en/atlas/preview/',
