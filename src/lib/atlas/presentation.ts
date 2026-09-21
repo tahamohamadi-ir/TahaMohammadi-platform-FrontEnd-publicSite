@@ -11,10 +11,10 @@ import {
 } from './preview'
 import { project2d } from './projection-2d'
 import { projectionSvgHtml } from './projection-svg'
+import type { AtlasPayload } from './model'
 import {
   serializeAtlasPayload,
   type AtlasIndexModel,
-  type AtlasPayload,
   type AtlasSnapshot,
 } from './snapshot'
 
