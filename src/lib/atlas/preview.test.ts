@@ -5,6 +5,11 @@ import { describe, expect, it, vi } from 'vitest'
 
 import { ATLAS_CONTRACT_VERSION, type AtlasPayload } from './model'
 import { consumePreviewFragment, fetchPreviewSnapshot } from './preview'
+import {
+  applyPreviewPresentation,
+  buildSharedAtlasBodyHtml,
+} from './presentation'
+import { buildAtlasIndexModel } from './snapshot'
 import { LOCALES, LOCALE_INDEX_ROUTES as TsRoutes } from '../seo-route-registry'
 import { LOCALE_INDEX_ROUTES as MjsRoutes } from '../../../scripts/seo-route-registry.mjs'
 
@@ -206,5 +211,57 @@ describe('atlas draft preview (Plan C Task 8)', () => {
     expect([...MjsRoutes]).not.toContain('atlas/preview')
     expect([...MjsRoutes].sort()).toEqual([...TsRoutes].sort())
     expect([...LOCALES].sort()).toEqual(['en', 'fa'])
+  })
+
+  it('applies shared presentation markup after a successful preview fetch', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      headers: new Headers({ ETag: '"p-1"' }),
+      json: async () => payloadFixture(),
+    })
+    const result = await fetchPreviewSnapshot('en', 'cap.abc', {
+      fetch: fetchMock as unknown as typeof fetch,
+      apiBase: 'https://example.test',
+    })
+    const body = { innerHTML: '<div data-content-state="empty">stale</div>' }
+    const region = {
+      dataset: {
+        atlasPreview: 'false',
+        atlasStatus: 'unavailable',
+      } as Record<string, string | undefined>,
+      querySelector(selector: string) {
+        return selector === '[data-atlas-body]' ? body : null
+      },
+    }
+    applyPreviewPresentation(region, 'en', result)
+    expect(region.dataset.atlasPreview).toBe('true')
+    expect(region.dataset.atlasStatus).toBe('ready')
+    expect(body.innerHTML).toContain('data-atlas-node="identity-2b3c4d5e"')
+    expect(body.innerHTML).toContain('id="atlas-payload"')
+    expect(body.innerHTML).toContain('Taha Mohammadi')
+    expect(body.innerHTML).not.toContain('data-content-state="empty"')
+  })
+
+  it('builds the same ready body markup used by AtlasPageContent', () => {
+    const payload = {
+      ...payloadFixture(),
+      nodes: [
+        {
+          ...payloadFixture().nodes[0],
+          label: 'Evil </script><script>',
+        },
+      ],
+    }
+    const html = buildSharedAtlasBodyHtml('en', {
+      status: 'ready',
+      payload,
+      etag: '"x"',
+      html: buildAtlasIndexModel(payload),
+    })
+    expect(html).toContain('data-atlas-node="identity-2b3c4d5e"')
+    expect(html).toContain('id="atlas-payload"')
+    expect(html).toContain('\\u003c')
+    expect(html).not.toContain('</script><script>')
   })
 })

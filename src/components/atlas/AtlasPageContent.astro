@@ -1,18 +1,11 @@
 ---
 /**
- * Atlas page composition (Plan C Task 6 + Task 8 preview flag):
- * heading, lead, semantic index, stage/inspector placeholders, embedded
- * validated snapshot. Server-rendered default presentation is `list`.
- *
- * Preview authorization is never performed here — the shell supplies a
- * snapshot plus `preview` / `previewLabel` after fragment→fetch stages.
+ * Atlas page composition (Plan C Task 6 + Task 8 preview flag).
+ * Body markup comes from `buildSharedAtlasBodyHtml` so public and preview
+ * shells share one presentation path. Authorization is never performed here.
  */
-import ContentState from '../state/ContentState.astro'
-import AtlasIndex from './AtlasIndex.astro'
-import {
-  serializeAtlasPayload,
-  type AtlasSnapshot,
-} from '../../lib/atlas/snapshot'
+import { buildSharedAtlasBodyHtml } from '../../lib/atlas/presentation'
+import type { AtlasSnapshot } from '../../lib/atlas/snapshot'
 import type { Locale } from '../../lib/navigation'
 
 interface Props {
@@ -31,27 +24,18 @@ const copy =
         eyebrow: 'Knowledge graph',
         title: 'Knowledge Atlas',
         lead: 'Every domain, project and publication — one navigable map.',
-        unavailableTitle: 'Atlas unavailable',
-        unavailableMessage: 'The Atlas has no published version right now.',
-        invalidTitle: 'Atlas data failed validation',
-        invalidMessage:
-          'The published Atlas data failed validation, so nothing is shown.',
       }
     : {
         eyebrow: 'نقشه دانش',
         title: 'اطلس دانش',
         lead: 'همه حوزه‌ها، پروژه‌ها و انتشارها — یک نقشه قابل پیمایش.',
-        unavailableTitle: 'اطلس در دسترس نیست',
-        unavailableMessage: 'در حال حاضر نسخه منتشرشده‌ای از اطلس وجود ندارد.',
-        invalidTitle: 'داده اطلس اعتبارسنجی نشد',
-        invalidMessage:
-          'داده منتشرشده اطلس اعتبارسنجی نشد، پس چیزی نمایش داده نمی‌شود.',
       }
 
 const status = snapshot.status
 const revision =
   status === 'ready' ? snapshot.payload.version.revision : undefined
 const etag = status === 'ready' ? snapshot.etag : undefined
+const bodyHtml = buildSharedAtlasBodyHtml(locale, snapshot)
 ---
 
 <section
@@ -69,34 +53,5 @@ const etag = status === 'ready' ? snapshot.etag : undefined
     <p class="atlas__lead">{copy.lead}</p>
     {previewLabel ? <p class="atlas__preview-label">{previewLabel}</p> : null}
   </header>
-
-  {
-    status === 'ready' ? (
-      <>
-        <AtlasIndex locale={locale} html={snapshot.html} />
-        <script
-          id="atlas-payload"
-          type="application/json"
-          data-atlas-revision={snapshot.payload.version.revision}
-          set:html={serializeAtlasPayload(snapshot.payload)}
-        />
-      </>
-    ) : status === 'unavailable' ? (
-      <ContentState
-        variant="empty"
-        locale={locale}
-        headingLevel="h2"
-        title={copy.unavailableTitle}
-        message={copy.unavailableMessage}
-      />
-    ) : (
-      <ContentState
-        variant="error"
-        locale={locale}
-        headingLevel="h2"
-        title={copy.invalidTitle}
-        message={copy.invalidMessage}
-      />
-    )
-  }
+  <div data-atlas-body set:html={bodyHtml} />
 </section>
