@@ -57,7 +57,8 @@ export interface SnapshotOptions {
 
 export function buildAtlasIndexModel(payload: AtlasPayload): AtlasIndexModel {
   const labelByKey = new Map<string, string>()
-  for (const node of payload.nodes) labelByKey.set(node.key, node.label ?? node.key)
+  for (const node of payload.nodes)
+    labelByKey.set(node.key, node.label ?? node.key)
   return {
     nodes: payload.nodes.map((node) => ({
       key: node.key,
