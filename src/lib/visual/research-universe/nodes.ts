@@ -103,6 +103,8 @@ export function createUniverseNodes(
   theme: UniverseRenderTheme,
   layoutNodes: ReadonlyArray<UniverseNode3D>,
   materials: UniverseMaterials,
+  geometryByTier: Partial<Record<UniverseTier, THREE.BufferGeometry>> = {},
+  scaleEmphasis = true,
 ): UniverseNodeVisuals {
   const group = new THREE.Group()
   group.name = 'universe-nodes'
@@ -147,7 +149,12 @@ export function createUniverseNodes(
 
   for (const [key, entry] of grouped) {
     const material = materials.nodeMaterials[entry.tier][entry.profile]
-    const mesh = new THREE.InstancedMesh(geometry, material, entry.nodes.length)
+    const tierGeometry = geometryByTier[entry.tier] ?? geometry
+    const mesh = new THREE.InstancedMesh(
+      tierGeometry,
+      material,
+      entry.nodes.length,
+    )
     mesh.name = `universe-nodes-${key}`
     mesh.count = entry.nodes.length
     mesh.frustumCulled = false
@@ -227,13 +234,15 @@ export function createUniverseNodes(
         selectedId == null || incidentIds == null || incidentIds.has(visual.id)
       const isHovered = hoveredId != null && visual.id === hoveredId
 
-      const scale = isSelected
-        ? RU_NODE_RESPONSE.selectScale
-        : !isIncident
-          ? RU_NODE_RESPONSE.dimmedScale
-          : isHovered
-            ? RU_NODE_RESPONSE.hoverScale
-            : 1
+      const scale = scaleEmphasis
+        ? isSelected
+          ? RU_NODE_RESPONSE.selectScale
+          : !isIncident
+            ? RU_NODE_RESPONSE.dimmedScale
+            : isHovered
+              ? RU_NODE_RESPONSE.hoverScale
+              : 1
+        : 1
 
       const base = roleColor(theme.palette, visual.role || 'brand')
       const color = base.clone()
@@ -250,6 +259,18 @@ export function createUniverseNodes(
     }
 
     for (const anchor of anchorVisuals) {
+      const anchorColor = new THREE.Color(
+        materials.profiles[anchor.profile].color,
+      )
+      if (
+        selectedId != null &&
+        incidentIds != null &&
+        !incidentIds.has(anchor.id)
+      ) {
+        anchorColor.lerp(canvasColor, RU_DIM_LERP)
+      }
+      materials.anchorMaterial.color.copy(anchorColor)
+      materials.anchorMaterial.needsUpdate = true
       if (selectedId != null && anchor.id === selectedId) {
         rim.position.copy(anchor.position)
         rim.scale.setScalar(anchor.baseRadius * RIM_SCALE)

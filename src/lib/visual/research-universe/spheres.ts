@@ -29,14 +29,17 @@ import * as THREE from 'three'
  * which keeps a node's silhouette symmetric under rotation.
  */
 export const SPHERE_SEGMENTS = {
-  /** 32×20 ≈ 1,200 triangles — the only vertex tier this scene uses. */
+  /** 32×20 ≈ 1,200 triangles — primary/close presentation tier. */
   primary: [32, 20] as const,
+  /** 16×12 — lower-cost tier for smaller Atlas nodes. */
+  fine: [16, 12] as const,
 } as const
 
 /** Unit radius; per-instance or per-mesh scale supplies the real size. */
 export const SPHERE_RADIUS = 1
 
 let shared: THREE.SphereGeometry | null = null
+let sharedFine: THREE.SphereGeometry | null = null
 
 /**
  * The process-wide sphere geometry.
@@ -57,6 +60,16 @@ export function sharedSphereGeometry(): THREE.SphereGeometry {
   return shared
 }
 
+/** Process-wide lower-detail unit sphere for small Atlas nodes. */
+export function sharedFineSphereGeometry(): THREE.SphereGeometry {
+  if (!sharedFine) {
+    const [width, height] = SPHERE_SEGMENTS.fine
+    sharedFine = new THREE.SphereGeometry(SPHERE_RADIUS, width, height)
+    sharedFine.name = 'ru-shared-sphere-fine'
+  }
+  return sharedFine
+}
+
 /**
  * Release the shared geometry. Only a test (or a full page teardown that owns
  * the whole module instance) should call this: a live scene that is rebuilt for a
@@ -64,7 +77,9 @@ export function sharedSphereGeometry(): THREE.SphereGeometry {
  */
 export function disposeSharedSphereGeometry(): void {
   shared?.dispose()
+  sharedFine?.dispose()
   shared = null
+  sharedFine = null
 }
 
 /**

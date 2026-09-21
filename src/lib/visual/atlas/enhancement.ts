@@ -8,6 +8,15 @@
 
 import type { AtlasPayload } from '../../atlas/model'
 import {
+  scenePaletteFromCss,
+  type SceneMotionPreference,
+} from '../scene-contract'
+import {
+  buildUniverseTheme,
+  resolveThemeMode,
+  type UniverseRenderTheme,
+} from '../research-universe/theme'
+import {
   refreshAtlas,
   type AtlasAdoptDetail,
   type AtlasRefreshOutcome,
@@ -72,8 +81,11 @@ interface AtlasSceneHandle extends Partial<Disposable> {
 
 interface SceneModule {
   createAtlasScene?: (options: {
+    canvas: HTMLCanvasElement
     region: HTMLElement
     payload: AtlasPayload
+    theme: UniverseRenderTheme
+    motion: SceneMotionPreference
     selection: SelectionModel
     labels: unknown
     onError: (reason: AtlasEnhancementReason) => void
@@ -164,6 +176,56 @@ function hasDesktopViewport(win: Window): boolean {
 
 function lazyRelative(specifier: string): Promise<unknown> {
   return import(/* @vite-ignore */ specifier)
+}
+
+function sceneTheme(doc: Document): UniverseRenderTheme {
+  let palette = {
+    canvas: '#071225',
+    ink: '#f7f3ea',
+    brand: '#16b8a6',
+    signature: '#c89b3c',
+    research: '#8b75dc',
+    context: '#42a98c',
+    surface: '#0b1630',
+  }
+  try {
+    const style = doc.defaultView?.getComputedStyle(doc.documentElement)
+    if (style) {
+      palette = scenePaletteFromCss((name) =>
+        style.getPropertyValue(name).trim(),
+      )
+    }
+  } catch {
+    // Use the dark-first token fallback.
+  }
+  return buildUniverseTheme(palette, resolveThemeMode(doc.documentElement))
+}
+
+function sceneMotion(win: Window): SceneMotionPreference {
+  try {
+    return win.matchMedia('(prefers-reduced-motion: reduce)').matches
+      ? 'reduced'
+      : 'full'
+  } catch {
+    return 'full'
+  }
+}
+
+function ensureSceneCanvas(
+  region: HTMLElement,
+  doc: Document,
+): HTMLCanvasElement | null {
+  const existing = region.querySelector<HTMLCanvasElement>(
+    'canvas[data-atlas-canvas]',
+  )
+  if (existing) return existing
+  if (typeof doc.createElement !== 'function') return null
+  const canvas = doc.createElement('canvas')
+  canvas.setAttribute('data-atlas-canvas', '')
+  canvas.setAttribute('aria-hidden', 'true')
+  canvas.className = 'atlas__canvas'
+  region.append(canvas)
+  return canvas
 }
 
 function readPayload(region: HTMLElement): AtlasPayload | null {
@@ -452,7 +514,7 @@ async function runEnhancement(
   try {
     ;[sceneModule, controlsModule, pickingModule, labelsModule] =
       (await Promise.all([
-        options.loadScene?.() ?? lazyRelative('./scene'),
+        options.loadScene?.() ?? import('./scene'),
         options.loadControls?.() ?? lazyRelative('./controls'),
         options.loadPicking?.() ?? lazyRelative('./picking'),
         options.loadLabels?.() ?? import('../research-universe/labels'),
@@ -487,9 +549,16 @@ async function runEnhancement(
     if (typeof sceneModule.createAtlasScene !== 'function') {
       throw new Error('Atlas scene factory missing')
     }
+    const canvas = ensureSceneCanvas(region, doc)
+    if (!canvas && !options.loadScene) {
+      throw new Error('Atlas scene canvas unavailable')
+    }
     scene = await sceneModule.createAtlasScene({
+      canvas: canvas ?? (region as unknown as HTMLCanvasElement),
       region,
       payload,
+      theme: sceneTheme(doc),
+      motion: sceneMotion(win),
       selection,
       labels,
       onError: (reason) => {
