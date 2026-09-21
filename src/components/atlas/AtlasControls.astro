@@ -1,0 +1,97 @@
+---
+/** Native Atlas controls. State and event wiring are added by later tasks. */
+import { filterOptions } from '../../lib/atlas/filters'
+import type { AtlasLocale, AtlasPayload } from '../../lib/atlas/model'
+
+interface Props {
+  payload: AtlasPayload
+  locale?: AtlasLocale
+}
+
+const { payload, locale = payload.locale } = Astro.props
+const localizedPayload =
+  payload.locale === locale ? payload : { ...payload, locale }
+const filters = filterOptions(localizedPayload)
+const copy =
+  locale === 'en'
+    ? {
+        search: 'Search the Knowledge Atlas',
+        searchPlaceholder: 'Search nodes',
+        filters: 'Filter the atlas',
+        view: 'Atlas view controls',
+        zoomIn: 'Zoom in',
+        zoomOut: 'Zoom out',
+        focus: 'Focus',
+        reset: 'Reset',
+        clear: 'Clear',
+        overview: 'Back to overview',
+      }
+    : {
+        search: 'جست‌وجو در اطلس دانش',
+        searchPlaceholder: 'جست‌وجوی گره‌ها',
+        filters: 'فیلتر اطلس',
+        view: 'کنترل‌های نمای اطلس',
+        zoomIn: 'بزرگ‌نمایی',
+        zoomOut: 'کوچک‌نمایی',
+        focus: 'تمرکز',
+        reset: 'بازنشانی',
+        clear: 'پاک کردن',
+        overview: 'بازگشت به نمای کلی',
+      }
+
+const viewControls = [
+  { key: 'zoom-in', label: copy.zoomIn },
+  { key: 'zoom-out', label: copy.zoomOut },
+  { key: 'focus', label: copy.focus },
+  { key: 'reset', label: copy.reset },
+  { key: 'clear', label: copy.clear },
+  { key: 'back-to-overview', label: copy.overview },
+]
+---
+
+<div class="atlas-controls" data-atlas-controls>
+  <label class="atlas-controls__search">
+    <span>{copy.search}</span>
+    <input
+      class="atlas-control atlas-controls__search-input"
+      type="search"
+      name="atlas-search"
+      placeholder={copy.searchPlaceholder}
+      aria-label={copy.search}
+      autocomplete="off"
+      data-atlas-search
+    />
+  </label>
+
+  <div class="atlas-controls__filters" role="group" aria-label={copy.filters}>
+    {
+      filters.map((filter, index) => (
+        <button
+          class="atlas-control atlas-controls__filter"
+          type="button"
+          aria-label={filter.label}
+          aria-pressed={index === 0 ? 'true' : 'false'}
+          data-atlas-filter
+          data-atlas-filter-key={filter.key}
+        >
+          {filter.label}
+        </button>
+      ))
+    }
+  </div>
+
+  <div class="atlas-controls__view" role="group" aria-label={copy.view}>
+    {
+      viewControls.map((control) => (
+        <button
+          class="atlas-control atlas-controls__view-button"
+          type="button"
+          aria-label={control.label}
+          data-atlas-control={control.key}
+        >
+          {control.label}
+        </button>
+      ))
+    }
+  </div>
+</div>

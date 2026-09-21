@@ -7,6 +7,8 @@
 import { buildSharedAtlasBodyHtml } from '../../lib/atlas/presentation'
 import type { AtlasSnapshot } from '../../lib/atlas/snapshot'
 import type { Locale } from '../../lib/navigation'
+import AtlasControls from './AtlasControls.astro'
+import AtlasInspector from './AtlasInspector.astro'
 
 interface Props {
   locale: Locale
@@ -53,5 +55,15 @@ const bodyHtml = buildSharedAtlasBodyHtml(locale, snapshot)
     <p class="atlas__lead">{copy.lead}</p>
     {previewLabel ? <p class="atlas__preview-label">{previewLabel}</p> : null}
   </header>
+  {
+    snapshot.status === 'ready' ? (
+      <AtlasControls payload={snapshot.payload} locale={locale} />
+    ) : null
+  }
   <div data-atlas-body set:html={bodyHtml} />
+  {
+    snapshot.status === 'ready' ? (
+      <AtlasInspector payload={snapshot.payload} locale={locale} />
+    ) : null
+  }
 </section>

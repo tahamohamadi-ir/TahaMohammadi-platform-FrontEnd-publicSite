@@ -1,0 +1,159 @@
+---
+/**
+ * Server-rendered registry of every Atlas inspector panel.
+ * The overview starts with the prompt visible and every panel hidden.
+ */
+import {
+  nodeInspectorModel,
+  relationInspectorModel,
+  type AtlasInspectorModel,
+} from '../../lib/atlas/inspector'
+import type { AtlasLocale, AtlasPayload } from '../../lib/atlas/model'
+
+interface Props {
+  payload: AtlasPayload
+  locale?: AtlasLocale
+}
+
+const { payload, locale = payload.locale } = Astro.props
+const localizedPayload =
+  payload.locale === locale ? payload : { ...payload, locale }
+const nodeByKey = new Map(payload.nodes.map((node) => [node.key, node]))
+const relationTypeByKey = new Map(
+  payload.relationTypes.map((type) => [type.key, type]),
+)
+const prompt = nodeInspectorModel(localizedPayload, '').prompt
+const copy =
+  locale === 'en'
+    ? {
+        heading: 'Inspector',
+        node: 'Node',
+        relation: 'Relation',
+      }
+    : {
+        heading: 'بازرس',
+        node: 'گره',
+        relation: 'رابطه',
+      }
+
+const nodePanels = payload.nodes.map((node) => ({
+  key: node.key,
+  title: node.label ?? node.key,
+  model: nodeInspectorModel(localizedPayload, node.key),
+}))
+const relationPanels = payload.relations.map((relation) => {
+  const source = nodeByKey.get(relation.source)
+  const target = nodeByKey.get(relation.target)
+  const relationType = relationTypeByKey.get(relation.type)
+  return {
+    key: relation.key,
+    title: `${source?.label ?? relation.source} — ${
+      relationType?.label ?? relation.type
+    } — ${target?.label ?? relation.target}`,
+    model: relationInspectorModel(localizedPayload, relation.key),
+  }
+})
+
+function panelSections(model: AtlasInspectorModel) {
+  return model.sections
+}
+---
+
+<aside
+  class="atlas-inspector"
+  aria-labelledby="atlas-inspector-heading"
+  data-atlas-inspector
+>
+  <h2 id="atlas-inspector-heading">{copy.heading}</h2>
+  <p class="atlas-inspector__prompt" data-atlas-inspector-prompt>
+    {prompt}
+  </p>
+  <p
+    class="atlas-inspector__announcement"
+    role="status"
+    aria-live="polite"
+    aria-atomic="true"
+    data-atlas-announcement
+  >
+  </p>
+
+  {
+    nodePanels.map((panel, index) => (
+      <section
+        class="atlas-inspector__panel"
+        aria-labelledby={`atlas-inspector-node-${index}`}
+        data-atlas-inspector-node={panel.key}
+        hidden
+      >
+        <h3 id={`atlas-inspector-node-${index}`}>
+          {copy.node}: {panel.title}
+        </h3>
+        {panelSections(panel.model).map((section) => (
+          <div
+            class="atlas-inspector__section"
+            data-atlas-inspector-section={section.id}
+          >
+            <h4>{section.heading}</h4>
+            <ul>
+              {section.items.map((item) => (
+                <li data-atlas-inspector-item={item.key}>
+                  {item.href ? (
+                    <a href={item.href}>{item.label}</a>
+                  ) : (
+                    item.label
+                  )}
+                  {item.relationLabel ? (
+                    <span class="atlas-inspector__relation-label">
+                      {' — '}
+                      {item.relationLabel}
+                    </span>
+                  ) : null}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </section>
+    ))
+  }
+
+  {
+    relationPanels.map((panel, index) => (
+      <section
+        class="atlas-inspector__panel"
+        aria-labelledby={`atlas-inspector-relation-${index}`}
+        data-atlas-inspector-relation={panel.key}
+        hidden
+      >
+        <h3 id={`atlas-inspector-relation-${index}`}>
+          {copy.relation}: {panel.title}
+        </h3>
+        {panelSections(panel.model).map((section) => (
+          <div
+            class="atlas-inspector__section"
+            data-atlas-inspector-section={section.id}
+          >
+            <h4>{section.heading}</h4>
+            <ul>
+              {section.items.map((item) => (
+                <li data-atlas-inspector-item={item.key}>
+                  {item.href ? (
+                    <a href={item.href}>{item.label}</a>
+                  ) : (
+                    item.label
+                  )}
+                  {item.relationLabel ? (
+                    <span class="atlas-inspector__relation-label">
+                      {' — '}
+                      {item.relationLabel}
+                    </span>
+                  ) : null}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </section>
+    ))
+  }
+</aside>

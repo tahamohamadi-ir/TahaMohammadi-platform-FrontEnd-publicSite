@@ -28,6 +28,27 @@
   max-inline-size: 44rem;
 }
 
+.atlas-control {
+  min-block-size: 44px;
+  min-inline-size: 44px;
+}
+
+.atlas-controls__filters,
+.atlas-controls__view {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.atlas-controls__search-input {
+  display: block;
+  inline-size: 100%;
+}
+
+.atlas-inspector__panel[hidden] {
+  display: none;
+}
+
 .atlas-index__nodes,
 .atlas-index__relations,
 .atlas-index__members {
