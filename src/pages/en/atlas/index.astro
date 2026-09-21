@@ -1,6 +1,7 @@
 ---
 import SiteLayout from '../../../layouts/SiteLayout.astro'
 import AtlasPageContent from '../../../components/atlas/AtlasPageContent.astro'
+import AtlasProjection2d from '../../../components/atlas/AtlasProjection2d.astro'
 import { fetchAtlasSnapshot } from '../../../lib/atlas/snapshot'
 import '../../../styles/atlas.css'
 
@@ -16,4 +17,13 @@ const pageTitle = 'Knowledge Atlas — Taha Mohammadi'
   alternateAvailable={true}
 >
   <AtlasPageContent locale={locale} snapshot={snapshot} />
+  {
+    snapshot.status === 'ready' ? (
+      <AtlasProjection2d
+        payload={snapshot.payload}
+        mode="webgl-fallback"
+        viewport={{ width: 960, height: 640 }}
+      />
+    ) : null
+  }
 </SiteLayout>

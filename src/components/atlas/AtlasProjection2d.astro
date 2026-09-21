@@ -1,0 +1,62 @@
+---
+/** Presentation-only SVG for the deterministic Atlas 2D projection. */
+import type { AtlasPayload } from '../../lib/atlas/model'
+import {
+  project2d,
+  type Projection2dMode,
+  type Projection2dViewport,
+} from '../../lib/atlas/projection-2d'
+
+interface Props {
+  payload: AtlasPayload
+  mode: Projection2dMode
+  viewport?: Projection2dViewport
+  focusKey?: string | null
+}
+
+const {
+  payload,
+  mode,
+  viewport = { width: 960, height: 640 },
+  focusKey = null,
+} = Astro.props
+const projection = project2d(payload, { mode, viewport, focusKey })
+const labels = new Map(payload.nodes.map((node) => [node.key, node.label]))
+---
+
+<svg
+  class="atlas-projection"
+  viewBox={projection.viewBox}
+  aria-hidden="true"
+  focusable="false"
+  data-atlas-projection={mode}
+>
+  <g class="atlas-projection__edges">
+    {
+      projection.edges.map((edge) => (
+        <path
+          class="atlas-projection__edge"
+          data-atlas-edge={edge.key}
+          d={edge.path}
+        />
+      ))
+    }
+  </g>
+  <g class="atlas-projection__nodes">
+    {
+      projection.nodes.map((node) => (
+        <g
+          class="atlas-projection__node"
+          data-atlas-node={node.key}
+          data-atlas-tier={node.tier}
+          transform={`translate(${node.cx} ${node.cy})`}
+        >
+          <circle cx="0" cy="0" r={node.r} />
+          <text x={node.labelOffset.dx} y={node.labelOffset.dy}>
+            {labels.get(node.key) ?? node.key}
+          </text>
+        </g>
+      ))
+    }
+  </g>
+</svg>
