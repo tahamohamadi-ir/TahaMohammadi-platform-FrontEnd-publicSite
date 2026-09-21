@@ -60,11 +60,16 @@ const bodyHtml = buildSharedAtlasBodyHtml(locale, snapshot)
       <AtlasControls payload={snapshot.payload} locale={locale} />
     ) : null
   }
-  <div data-atlas-body set:html={bodyHtml} />
   {
     snapshot.status === 'ready' ? (
-      <AtlasInspector payload={snapshot.payload} locale={locale} />
-    ) : null
+      <div class="atlas__stage" data-atlas-stage>
+        <div class="atlas__labels" data-atlas-labels aria-hidden="true" />
+        <div class="atlas__body" data-atlas-body set:html={bodyHtml} />
+        <AtlasInspector payload={snapshot.payload} locale={locale} />
+      </div>
+    ) : (
+      <div data-atlas-body set:html={bodyHtml} />
+    )
   }
 </section>
 
@@ -76,3 +81,40 @@ const bodyHtml = buildSharedAtlasBodyHtml(locale, snapshot)
     void enhanceAtlasRegion(region)
   }
 </script>
+
+<style>
+  .atlas__stage {
+    --atlas-effective-viewport-width: 100%;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(16rem, 20rem);
+    min-block-size: 38rem;
+    position: relative;
+  }
+
+  .atlas__body {
+    min-inline-size: 0;
+  }
+
+  :global(.atlas__canvas),
+  .atlas__labels {
+    block-size: 100%;
+    inline-size: var(--atlas-effective-viewport-width);
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    pointer-events: none;
+    position: absolute;
+  }
+
+  .atlas__labels {
+    z-index: 2;
+  }
+
+  :global(.atlas-label) {
+    position: absolute;
+    transform: translate(-50%, calc(-100% - var(--ru-node-radius, 0px)));
+  }
+
+  :global(.atlas[data-atlas-presentation='3d'] .atlas-index) {
+    visibility: hidden;
+  }
+</style>

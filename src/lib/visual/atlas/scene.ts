@@ -5,20 +5,25 @@ import type { AtlasPayload } from '../../atlas/model'
 import { neighborhoodOf, type Neighborhood } from '../../atlas/neighborhood'
 import type { AtlasSelectionMode } from '../../atlas/selection'
 import type { AtlasFocus } from '../../atlas/url-state'
-import type { SceneErrorCode, SceneMotionPreference } from '../scene-contract'
+import type {
+  ProjectedLabel,
+  SceneErrorCode,
+  SceneMotionPreference,
+} from '../scene-contract'
 import { createUniverseCore } from '../research-universe/core-object'
 import {
   createUniverseEdges,
   type UniverseEdgeVisuals,
 } from '../research-universe/edges'
-import {
-  projectNodes,
-  type ProjectedNode3D,
+import type {
+  PickResult,
+  ProjectedNode3D,
 } from '../research-universe/hit-testing'
 import {
   bowForEdge,
   buildEdgeCurve,
   fitDistance,
+  sampleCubic,
   type UniverseBounds,
   type UniverseEdge3D,
   type UniverseNode3D,
@@ -41,6 +46,11 @@ import {
   sharedSphereGeometry,
 } from '../research-universe/spheres'
 import type { UniverseRenderTheme } from '../research-universe/theme'
+import {
+  edgeSampleCountFor,
+  projectAtlasPick,
+  visibleLabelKeys,
+} from './picking'
 
 export interface AtlasOrbitPose {
   yaw: number
@@ -70,8 +80,19 @@ export interface AtlasSceneOptions {
   payload: AtlasPayload
   theme: UniverseRenderTheme
   motion?: SceneMotionPreference
+  labels?: AtlasLabelLayer | null
   onFrame?: (frame: AtlasSceneFrame) => void
   onError?: (code: SceneErrorCode) => void
+}
+
+export interface AtlasLabelLayer {
+  render(
+    labels: ReadonlyArray<ProjectedLabel>,
+    labelById: ReadonlyMap<string, string>,
+    projectedNodes?: ReadonlyArray<ProjectedNode3D>,
+  ): void
+  setSelected(id: string | null): void
+  setVisible(visible: boolean): void
 }
 
 export interface AtlasSceneHandle {
@@ -81,7 +102,10 @@ export interface AtlasSceneHandle {
   setState(state: AtlasSelectionMode, key?: string | null): void
   orbit(deltaYaw?: number, deltaPitch?: number): AtlasOrbitPose
   zoomBy(factor: number): void
-  focusNode(nodeKey: string): void
+  pickAt(x: number, y: number): PickResult
+  reframeSelection(focus: AtlasFocus | null, effectiveWidth?: number): void
+  focusNode(nodeKey: string, effectiveWidth?: number): void
+  focusRelation(relationKey: string, effectiveWidth?: number): void
   resetView(animate?: boolean): void
   setTheme(theme: UniverseRenderTheme): void
   setMotion(motion: SceneMotionPreference): void
@@ -153,6 +177,7 @@ export function createAtlasScene(
   options: AtlasSceneOptions,
 ): AtlasSceneHandle | null {
   const { canvas, payload, onFrame, onError } = options
+  const labels = options.labels ?? null
   let theme = options.theme
   let motion: SceneMotionPreference = options.motion ?? 'full'
 
@@ -197,6 +222,9 @@ export function createAtlasScene(
   const layoutNodeByKey = new Map(
     layoutNodes.map((node) => [node.id, node] as const),
   )
+  const relationPriority = new Map(
+    payload.relationTypes.map((type) => [type.key, type.visualPriority]),
+  )
   const layoutEdges: UniverseEdge3D[] = []
   for (const relation of payload.relations) {
     const source = layoutNodeByKey.get(relation.source)
@@ -210,6 +238,13 @@ export function createAtlasScene(
       target.radius,
       bow,
     )
+    const samples = sampleCubic(
+      curve.start,
+      curve.c1,
+      curve.c2,
+      curve.end,
+      edgeSampleCountFor(relationPriority.get(relation.type) ?? 50),
+    )
     layoutEdges.push({
       id: relation.key,
       source: relation.source,
@@ -219,7 +254,7 @@ export function createAtlasScene(
       start: curve.start,
       control: curve.c1,
       end: curve.end,
-      samples: curve.samples,
+      samples,
       c1: curve.c1,
       c2: curve.c2,
       bow,
@@ -277,6 +312,9 @@ export function createAtlasScene(
   let hoveredNodeKey: string | null = null
   let emphasizedNodeKeys: string[] = []
   let dimmedNodeKeys: string[] = []
+  const labelById = new Map(
+    payload.nodes.map((node) => [node.key, node.label ?? node.key]),
+  )
   let animation: number | null = null
   let disposed = false
 
@@ -355,6 +393,68 @@ export function createAtlasScene(
     animation = requestAnimationFrame(step)
   }
 
+  function poseForPoint(
+    point: { x: number; y: number; z: number },
+    effectiveWidth?: number,
+  ): AtlasOrbitPose {
+    const dx = point.x - frameCenter.x
+    const dy = point.y - frameCenter.y
+    const dz = point.z - frameCenter.z
+    const distance = Math.hypot(dx, dy, dz) || 1
+    const projectionWidth = core.projection().width
+    const width = Math.max(effectiveWidth ?? projectionWidth, 1)
+    const inspectorCompensation = Math.sqrt(
+      Math.max(projectionWidth, 1) / width,
+    )
+    return {
+      yaw: Math.atan2(dx, dz),
+      pitch: clamp(Math.asin(dy / distance), -0.6, 0.6),
+      distanceScale: clamp(
+        (0.62 + distance / Math.max(baseDistance, 1)) *
+          inspectorCompensation,
+        ORBIT_LIMITS.minDistanceScale,
+        ORBIT_LIMITS.maxDistanceScale,
+      ),
+    }
+  }
+
+  function framePoint(
+    point: { x: number; y: number; z: number },
+    effectiveWidth: number | undefined,
+    full: boolean,
+  ): void {
+    const target = poseForPoint(point, effectiveWidth)
+    if (!full) {
+      target.distanceScale = clamp(
+        target.distanceScale,
+        orbit.distanceScale * 0.85,
+        orbit.distanceScale * 1.15,
+      )
+    }
+    animateTo(target, full ? 420 : 260, point)
+  }
+
+  function focusForState(): AtlasFocus | null {
+    if (state === 'node' && selectedNodeKey) {
+      return { kind: 'node', key: selectedNodeKey }
+    }
+    if (state === 'relation' && selectedRelationKey) {
+      return { kind: 'relation', key: selectedRelationKey }
+    }
+    return null
+  }
+
+  function pointForFocus(
+    focus: AtlasFocus | null,
+  ): { x: number; y: number; z: number } | null {
+    if (!focus) return null
+    if (focus.kind === 'node') {
+      return layoutNodeByKey.get(focus.key)?.point ?? null
+    }
+    const edge = layoutEdges.find((candidate) => candidate.id === focus.key)
+    return edge?.samples[Math.floor(edge.samples.length / 2)] ?? null
+  }
+
   function applyEmphasis(): void {
     const activeNode = state === 'node' ? selectedNodeKey : null
     const activeRelation = state === 'relation' ? selectedRelationKey : null
@@ -388,6 +488,7 @@ export function createAtlasScene(
             .map((node) => node.key)
             .filter((key) => !incident.has(key))
             .sort()
+    labels?.setSelected(activeNode)
     core.requestRender()
   }
 
@@ -408,16 +509,29 @@ export function createAtlasScene(
   }
 
   core.setOnFrame(() => {
-    if (!onFrame) return
     const projection = core.projection()
-    onFrame({
-      projectedNodes: projectNodes(
-        layoutNodes,
-        projection.matrix,
-        projection.width,
-        projection.height,
-      ),
-    })
+    const projected = projectAtlasPick(
+      { x: -1, y: -1 },
+      layoutNodes,
+      layoutEdges,
+      projection.matrix,
+      projection.width,
+      projection.height,
+    )
+    const visible = new Set(
+      visibleLabelKeys(payload, focusForState(), hoveredNodeKey),
+    )
+    labels?.render(
+      projected.projectedNodes.map((node) => ({
+        id: node.id,
+        x: node.x,
+        y: node.y,
+        visible: node.visible && visible.has(node.id),
+      })),
+      labelById,
+      projected.projectedNodes,
+    )
+    onFrame?.({ projectedNodes: projected.projectedNodes })
   })
   applyEmphasis()
   resize(canvas.clientWidth || 1, canvas.clientHeight || 1, 1)
@@ -442,6 +556,8 @@ export function createAtlasScene(
         state = 'overview'
       }
       applyEmphasis()
+      const point = pointForFocus(focusForState())
+      if (point) framePoint(point, undefined, false)
     },
     setSelectedRelation(relationKey) {
       selectedRelationKey = relationKey
@@ -496,26 +612,28 @@ export function createAtlasScene(
       }
       applyOrbit()
     },
-    focusNode(nodeKey) {
-      const node = layoutNodeByKey.get(nodeKey)
-      if (!node) return
-      const dx = node.point.x - frameCenter.x
-      const dy = node.point.y - frameCenter.y
-      const dz = node.point.z - frameCenter.z
-      const distance = Math.hypot(dx, dy, dz) || 1
-      animateTo(
-        {
-          yaw: Math.atan2(dx, dz),
-          pitch: clamp(Math.asin(dy / distance), -0.6, 0.6),
-          distanceScale: clamp(
-            0.62 + distance / Math.max(baseDistance, 1),
-            ORBIT_LIMITS.minDistanceScale,
-            ORBIT_LIMITS.maxDistanceScale,
-          ),
-        },
-        420,
-        node.point,
-      )
+    pickAt(x, y) {
+      const projection = core.projection()
+      return projectAtlasPick(
+        { x, y },
+        layoutNodes,
+        layoutEdges,
+        projection.matrix,
+        projection.width,
+        projection.height,
+      ).result
+    },
+    reframeSelection(focus, effectiveWidth) {
+      const point = pointForFocus(focus)
+      if (point) framePoint(point, effectiveWidth, false)
+    },
+    focusNode(nodeKey, effectiveWidth) {
+      const point = layoutNodeByKey.get(nodeKey)?.point
+      if (point) framePoint(point, effectiveWidth, true)
+    },
+    focusRelation(relationKey, effectiveWidth) {
+      const point = pointForFocus({ kind: 'relation', key: relationKey })
+      if (point) framePoint(point, effectiveWidth, true)
     },
     resetView(animate = true) {
       if (animate) animateTo(HOME_ORBIT, 380, frameCenter)
@@ -539,6 +657,7 @@ export function createAtlasScene(
     },
     setVisible(visible) {
       core.setVisible(visible)
+      labels?.setVisible(visible)
     },
     resize,
     render() {

@@ -97,6 +97,7 @@ interface ControlsModule {
     region: HTMLElement
     scene: AtlasSceneHandle
     selection: SelectionModel
+    onClear: () => void
   }) => Disposable | void
 }
 
@@ -105,6 +106,7 @@ interface PickingModule {
     region: HTMLElement
     scene: AtlasSceneHandle
     selection: SelectionModel
+    onSelect: (focus: AtlasFocus | null, opener: HTMLElement | null) => void
   }) => Disposable | void
 }
 
@@ -174,10 +176,6 @@ function hasDesktopViewport(win: Window): boolean {
   }
 }
 
-function lazyRelative(specifier: string): Promise<unknown> {
-  return import(/* @vite-ignore */ specifier)
-}
-
 function sceneTheme(doc: Document): UniverseRenderTheme {
   let palette = {
     canvas: '#071225',
@@ -224,7 +222,9 @@ function ensureSceneCanvas(
   canvas.setAttribute('data-atlas-canvas', '')
   canvas.setAttribute('aria-hidden', 'true')
   canvas.className = 'atlas__canvas'
-  region.append(canvas)
+  const stage =
+    region.querySelector<HTMLElement>('[data-atlas-stage]') ?? region
+  stage.append(canvas)
   return canvas
 }
 
@@ -448,6 +448,11 @@ async function runEnhancement(
   cleanups.push(() => region.removeEventListener('click', onClick))
   cleanups.push(() => win.removeEventListener('popstate', onPopState))
 
+  const commitSelection = (focus: AtlasFocus | null) => {
+    applySelection(selection, focus)
+    applyFocus(win.history, win.location.href, focusFromSelection(selection))
+  }
+
   // Start Task-7 refresh before constructing the scene, but deliberately do
   // not await it: conditional network I/O must never delay first paint.
   const runRefresh = options.refreshAtlas ?? refreshAtlas
@@ -515,8 +520,8 @@ async function runEnhancement(
     ;[sceneModule, controlsModule, pickingModule, labelsModule] =
       (await Promise.all([
         options.loadScene?.() ?? import('./scene'),
-        options.loadControls?.() ?? lazyRelative('./controls'),
-        options.loadPicking?.() ?? lazyRelative('./picking'),
+        options.loadControls?.() ?? import('./controls'),
+        options.loadPicking?.() ?? import('./picking'),
         options.loadLabels?.() ?? import('../research-universe/labels'),
       ])) as [SceneModule, ControlsModule, PickingModule, LabelsModule]
   } catch {
@@ -592,7 +597,17 @@ async function runEnhancement(
   if (typeof controlsModule.createAtlasControls === 'function') {
     try {
       controls =
-        controlsModule.createAtlasControls({ region, scene, selection }) ?? null
+        controlsModule.createAtlasControls({
+          region,
+          scene,
+          selection,
+          onClear: () =>
+            applyFocus(
+              win.history,
+              win.location.href,
+              focusFromSelection(selection),
+            ),
+        }) ?? null
     } catch {
       disposeAll()
       const handle: AtlasEnhancementHandle = {
@@ -607,7 +622,12 @@ async function runEnhancement(
   if (typeof pickingModule.createAtlasPicking === 'function') {
     try {
       picking =
-        pickingModule.createAtlasPicking({ region, scene, selection }) ?? null
+        pickingModule.createAtlasPicking({
+          region,
+          scene,
+          selection,
+          onSelect: (focus) => commitSelection(focus),
+        }) ?? null
     } catch {
       disposeAll()
       const handle: AtlasEnhancementHandle = {
