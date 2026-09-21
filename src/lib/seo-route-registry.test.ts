@@ -16,4 +16,11 @@ describe('atlas route registration (Plan C Task 5)', () => {
   it('covers both locales', () => {
     expect([...LOCALES].sort()).toEqual(['en', 'fa'])
   })
+
+  it('never lists the draft-preview shell as an indexable route', () => {
+    expect([...TsRoutes]).not.toContain('atlas/preview')
+    expect([...MjsRoutes]).not.toContain('atlas/preview')
+    expect([...TsRoutes].some((r) => r.includes('preview'))).toBe(false)
+    expect([...MjsRoutes].some((r) => r.includes('preview'))).toBe(false)
+  })
 })

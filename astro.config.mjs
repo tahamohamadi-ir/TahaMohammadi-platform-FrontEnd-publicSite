@@ -48,7 +48,8 @@ export default defineConfig({
         return (
           !pathname.startsWith('/pagefind/') &&
           !pathname.startsWith('/_design/') &&
-          !pathname.includes('/creative/empty-shell')
+          !pathname.includes('/creative/empty-shell') &&
+          !pathname.includes('/atlas/preview')
         )
       },
     }),

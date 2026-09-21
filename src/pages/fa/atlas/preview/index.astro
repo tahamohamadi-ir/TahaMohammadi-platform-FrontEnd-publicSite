@@ -1,0 +1,30 @@
+---
+import SiteLayout from '../../../../layouts/SiteLayout.astro'
+import AtlasPageContent from '../../../../components/atlas/AtlasPageContent.astro'
+import '../../../../styles/atlas.css'
+
+/**
+ * Draft-preview shell (Plan C Task 8).
+ * Server HTML is the honest non-preview framing (no capability at build time).
+ * Client module: fragment strip → Bearer fetch → shared presentation update.
+ * Never registered in LOCALE_INDEX_ROUTES / sitemap / pagefind.
+ */
+const locale = 'fa' as const
+const pageTitle = 'پیش‌نمایش اطلس دانش — طاها محمدی'
+---
+
+<SiteLayout
+  title={pageTitle}
+  locale={locale}
+  pathSegment="atlas/preview"
+  alternateAvailable={true}
+  robots="noindex, nofollow"
+  searchIndexable={false}
+>
+  <AtlasPageContent
+    locale={locale}
+    snapshot={{ status: 'unavailable' }}
+    preview={false}
+  />
+  <script src="../../../../scripts/atlas-preview-shell.ts"></script>
+</SiteLayout>

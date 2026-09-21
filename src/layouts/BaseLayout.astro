@@ -15,6 +15,8 @@ interface Props {
   alternates?: AlternateLink[]
   description?: string
   socialImage?: string
+  /** Optional robots directive (e.g. preview shells: `noindex, nofollow`). */
+  robots?: string
 }
 
 const {
@@ -26,6 +28,7 @@ const {
   alternates,
   description,
   socialImage,
+  robots,
 } = Astro.props
 ---
 
@@ -35,6 +38,7 @@ const {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="generator" content={Astro.generator} />
+    {robots && <meta name="robots" content={robots} />}
     <title>{title}</title>
     {description && <meta name="description" content={description} />}
     <meta property="og:title" content={title} />

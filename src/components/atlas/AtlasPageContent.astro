@@ -1,9 +1,11 @@
 ---
 /**
- * Atlas page composition (Plan C Task 6): heading, lead, semantic index,
- * stage placeholder, inspector placeholder, embedded validated snapshot.
- * Server-rendered default presentation is `list`; capability detection
- * (Task 15) upgrades it in the browser.
+ * Atlas page composition (Plan C Task 6 + Task 8 preview flag):
+ * heading, lead, semantic index, stage/inspector placeholders, embedded
+ * validated snapshot. Server-rendered default presentation is `list`.
+ *
+ * Preview authorization is never performed here — the shell supplies a
+ * snapshot plus `preview` / `previewLabel` after fragment→fetch stages.
  */
 import ContentState from '../state/ContentState.astro'
 import AtlasIndex from './AtlasIndex.astro'
@@ -16,9 +18,13 @@ import type { Locale } from '../../lib/navigation'
 interface Props {
   locale: Locale
   snapshot: AtlasSnapshot
+  /** True only when a validated draft preview payload is being shown. */
+  preview?: boolean
+  /** Optional owner-facing label; never names a draft or capability. */
+  previewLabel?: string
 }
 
-const { locale, snapshot } = Astro.props
+const { locale, snapshot, preview = false, previewLabel } = Astro.props
 const copy =
   locale === 'en'
     ? {
@@ -55,11 +61,13 @@ const etag = status === 'ready' ? snapshot.etag : undefined
   data-atlas-presentation="list"
   data-atlas-revision={revision}
   data-atlas-etag={etag}
+  data-atlas-preview={preview ? 'true' : 'false'}
 >
   <header class="atlas__header">
     <p class="atlas__eyebrow">{copy.eyebrow}</p>
     <h1 class="atlas__title">{copy.title}</h1>
     <p class="atlas__lead">{copy.lead}</p>
+    {previewLabel ? <p class="atlas__preview-label">{previewLabel}</p> : null}
   </header>
 
   {
