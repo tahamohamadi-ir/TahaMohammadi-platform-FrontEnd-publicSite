@@ -16,6 +16,7 @@ export type AtlasRejection =
   | 'relations-not-array'
   | 'duplicate-key'
   | 'unknown-type'
+  | 'unknown-overview-priority'
   | 'dangling-relation'
   | 'missing-coordinate'
   | 'non-finite-coordinate'
@@ -73,6 +74,20 @@ export function validateAtlasPayload(raw: unknown): AtlasValidationResult {
       !knownTypes.has(node.type)
     ) {
       return { ok: false, reason: 'unknown-type' }
+    }
+  }
+
+  // Compact-overview grammar: exactly one field, three values (spec §10.3).
+  for (const node of nodes) {
+    if (!isRecord(node)) continue
+    const priority = (node as { mobileOverviewPriority?: unknown })
+      .mobileOverviewPriority
+    if (
+      priority !== 'auto' &&
+      priority !== 'featured' &&
+      priority !== 'hidden'
+    ) {
+      return { ok: false, reason: 'unknown-overview-priority' }
     }
   }
 
