@@ -122,14 +122,12 @@ export function buildSearchIndex(payload: AtlasPayload): AtlasSearchIndex {
           : a.rank[0] - b.rank[0],
       )
       const limit = options.limit ?? scored.length
-      return scored
-        .slice(0, limit)
-        .map(({ entry }) => ({
-          kind: entry.kind,
-          key: entry.key,
-          label: entry.label,
-          type: entry.type,
-        }))
+      return scored.slice(0, limit).map(({ entry }) => ({
+        kind: entry.kind,
+        key: entry.key,
+        label: entry.label,
+        type: entry.type,
+      }))
     },
   }
 }
