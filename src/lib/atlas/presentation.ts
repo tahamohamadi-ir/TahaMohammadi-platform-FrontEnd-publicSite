@@ -134,7 +134,7 @@ export function buildProjectionHtml(
     height: 520,
   })
   return {
-    html: `<div class="atlas__projection" data-atlas-2d data-atlas-view="${view}">${projectionSvgHtml(projection, 'mobile-overview')}</div>`,
+    html: `<div class="atlas__projection" data-atlas-2d data-atlas-view="${view}"><div class="atlas__stage" data-atlas-scene><canvas class="atlas__canvas" data-atlas-canvas aria-hidden="true" hidden></canvas></div>${projectionSvgHtml(projection, 'mobile-overview')}</div>`,
     view,
   }
 }
