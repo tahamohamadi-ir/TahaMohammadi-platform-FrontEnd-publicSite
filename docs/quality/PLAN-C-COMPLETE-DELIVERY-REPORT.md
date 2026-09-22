@@ -3,9 +3,11 @@
 **Date:** 2026-09-21  
 **Branch:** `feat/knowledge-atlas-public`  
 **Worktree:** `D:/Project/.atlas-worktrees/public-site-plan-c`  
-**Progress:** **24 / 24** (Task 19 skipped with evidence)
+**Progress:** **24 / 24** (Task 19 evidence-based skip accepted)  
+**Status:** **OFFICIALLY CLOSED**  
+**Official close tip:** `f007296`
 
-This report closes Plan C for the public Atlas frontend: from Task 9 URL/selection freeze through Task 24 acceptance gates.
+This report, together with `docs/quality/EVIDENCE-C-TASKS.md`, is an **official Plan D parent reference**. It closes Plan C for the public Atlas frontend (Task 9 URL/selection freeze through Task 24 acceptance gates). Plan D must consume this closed evidence as baseline and must **not** re-validate or redesign Plan C unless a real regression is found.
 
 ---
 
@@ -117,7 +119,36 @@ git diff --stat origin/main...HEAD -- src/components/home src/components/hero sr
 
 ## 7. Handoff to Plan D
 
-Plan D may switch About to the Atlas about-preview mode and retire the About Research Universe scene **after** citing `docs/quality/EVIDENCE-C-TASKS.md`. Remaining frontend debt to schedule deliberately: inspector DOM budget, optional live-API green once an active Atlas version is published, expanded first-frame/drag telemetry.
+### Official parent references
+
+1. `docs/quality/EVIDENCE-C-TASKS.md`
+2. `docs/quality/PLAN-C-COMPLETE-DELIVERY-REPORT.md` (this file)
+
+### Entry baseline (do not re-prove Plan C)
+
+| Gate | Value |
+| ---- | ----- |
+| Lint / format | green |
+| Unit | 717 pass / 4 skip |
+| Design / SEO | PASS |
+| Build | 46 pages |
+| Atlas e2e | 16 / 16 |
+| Live API | honest skip (unpublished active version) |
+| Hero / Home vs `origin/main` | empty diff |
+| Close tip | `f007296` |
+
+### §19.6 carry-forward (explicit; not waived)
+
+```text
+DOM presentation on fixture 72/136 = 5309
+Target ceiling = 2500
+Status = DEBT / NOT WAIVED
+Remediation = virtualize or defer inspector SSR
+```
+
+### Plan D rule
+
+Plan D may switch About to the Atlas about-preview mode and retire the About Research Universe scene **after** citing the two parent references above. It must schedule the §19.6 inspector DOM remediation deliberately (virtualize or defer inspector SSR). Optional later: live-API green once an active Atlas version is published; expanded first-frame/drag telemetry. **Do not** reopen Plan C for redesign or full re-validation absent a real regression against this baseline.
 
 ---
 

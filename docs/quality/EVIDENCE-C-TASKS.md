@@ -5,9 +5,13 @@ Recorded 2026-09-21 on `feat/knowledge-atlas-public` in worktree
 
 Machine: DESKTOP-K05IG1H · win32 x64 · 13th Gen Intel(R) Core(TM) i7-13620H · 39.6 GiB RAM.
 
-Official progress at close: **24 / 24** (Task 19 skipped by Task 18 evidence).
+**Plan C status: OFFICIALLY CLOSED.** Progress **24 / 24** (Task 19 evidence-based skip accepted).
 
-Tip at evidence write: `a129ecf` (`docs(atlas): record Plan C acceptance evidence`).
+Official close tip: `f007296` (`docs(atlas): pin Plan C evidence tip SHA`).
+
+This file and `docs/quality/PLAN-C-COMPLETE-DELIVERY-REPORT.md` are the **sole official parent references** for Plan D. Plan D must treat this closed evidence as its parent baseline and must **not** re-validate or redesign Plan C unless a real regression is found.
+
+DOM debt lock amendment after close tip: `0c70b58` (`docs(atlas): lock DOM presentation debt as not waived`) — ceiling and status only; does not reopen Plan C.
 
 ## Gate outputs
 
@@ -67,10 +71,22 @@ Source of truth: `docs/quality/KNOWLEDGE-ATLAS-PERFORMANCE.md` and
 
 Hero v2 and Home paths listed above are byte-identical to `origin/main` for this branch range (empty `git diff --stat`).
 
-## Notes for Plan D
+## Plan D parent baseline (entry lock)
 
-- Public Atlas routes `/en/atlas/` and `/fa/atlas/` ship with hybrid freshness, URL focus, search/filters, inspector, 2D+3D presentations, preview shell (`noindex`), and measured pick budget under 8 ms.
-- Known debt (official register, not waived):
+Plan D starts from this closed Plan C surface. Do **not** re-run Plan C acceptance as a redesign gate; cite this evidence and the delivery report, then proceed. Re-open Plan C only on proven regression against this baseline.
+
+| Gate | Baseline at Plan C close |
+| ---- | ------------------------ |
+| Lint / format | green |
+| Unit | **717** passed / **4** skipped |
+| Design / SEO | PASS |
+| Build | **46** pages |
+| Atlas e2e (hermetic) | **16 / 16** |
+| Live Atlas API | honest skip (no published active version) |
+| Hero / Home vs `origin/main` | empty diff |
+| Close tip | `f007296` |
+
+### §19.6 carry-forward (required; not waived)
 
 ```text
 DOM presentation on fixture 72/136 = 5309
@@ -79,4 +95,7 @@ Status = DEBT / NOT WAIVED
 Remediation = virtualize or defer inspector SSR
 ```
 
-- About extraction and RU retirement remain Plan D.
+### Plan D scope note
+
+- Public Atlas routes `/en/atlas/` and `/fa/atlas/` ship with hybrid freshness, URL focus, search/filters, inspector, 2D+3D presentations, preview shell (`noindex`), and measured pick budget under 8 ms.
+- About extraction and RU retirement remain Plan D work, using this parent baseline.
