@@ -98,6 +98,7 @@ describe('Atlas inspector + controls (Plan C Task 14)', () => {
       snapshot: readySnapshot(payload),
     })
     for (const name of [
+      'View neighbourhood',
       'Zoom in',
       'Zoom out',
       'Focus',

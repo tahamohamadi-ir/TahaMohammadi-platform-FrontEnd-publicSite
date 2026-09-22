@@ -23,6 +23,7 @@ const copy =
         filtersLabel: 'Filter by type',
         all: 'All',
         viewLabel: 'View controls',
+        neighbourhood: 'View neighbourhood',
         zoomIn: 'Zoom in',
         zoomOut: 'Zoom out',
         focus: 'Focus',
@@ -36,6 +37,7 @@ const copy =
         filtersLabel: 'پالایش بر اساس نوع',
         all: 'همه',
         viewLabel: 'کنترل‌های نما',
+        neighbourhood: 'نمایش همسایگی',
         zoomIn: 'بزرگ‌نمایی',
         zoomOut: 'کوچک‌نمایی',
         focus: 'تمرکز',
@@ -86,6 +88,13 @@ const copy =
   </fieldset>
 
   <div class="atlas-controls__view" role="group" aria-label={copy.viewLabel}>
+    <button
+      class="atlas-controls__button"
+      data-atlas-neighbourhood
+      type="button"
+    >
+      {copy.neighbourhood}
+    </button>
     <button class="atlas-controls__button" data-atlas-zoom-in type="button">
       {copy.zoomIn}
     </button>

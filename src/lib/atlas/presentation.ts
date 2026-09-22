@@ -9,8 +9,12 @@ import {
   snapshotFromPreviewResult,
   type PreviewSnapshotResult,
 } from './preview'
-import { project2d } from './projection-2d'
+import { selectOverviewNodes } from './projection-2d'
 import { projectionSvgHtml } from './projection-svg'
+import {
+  neighbourhoodKeys,
+  projectNodesForKeys,
+} from './projection-neighbourhood'
 import { filterOptions } from './filters'
 import {
   nodeInspectorModel,
@@ -104,14 +108,35 @@ function buildStateHtml(
   return `<div class="content-state content-state--${variant}" data-content-state="${variant}"><h2>${escapeHtml(title)}</h2><p>${escapeHtml(message)}</p></div>`
 }
 
-/** 2D SVG markup for a ready payload through the shared renderer. */
-export function buildProjectionHtml(payload: AtlasPayload): string {
-  const projection = project2d(payload, {
-    mode: 'mobile-overview',
-    viewport: { width: 390, height: 520 },
-    focusKey: null,
+/** 2D SVG markup for a ready payload through the shared renderer.
+ *
+ * `focusKey` selects the neighbourhood view (neighbourhood union when the
+ * focus resolves to a node; overview + focus when it does not). The return
+ * carries the resolved view so callers can label the state honestly. */
+export function buildProjectionHtml(payload: AtlasPayload): {
+  html: string
+  view: 'overview' | 'neighbourhood'
+}
+export function buildProjectionHtml(
+  payload: AtlasPayload,
+  focusKey?: string | null,
+): { html: string; view: 'overview' | 'neighbourhood' } {
+  const focus =
+    typeof focusKey === 'string' && focusKey.length > 0 ? focusKey : null
+  const neighbourhood = focus ? neighbourhoodKeys(payload, focus) : null
+  const view: 'overview' | 'neighbourhood' = neighbourhood
+    ? 'neighbourhood'
+    : 'overview'
+  const selected =
+    neighbourhood ?? selectOverviewNodes(payload, { mode: 'mobile-overview' })
+  const projection = projectNodesForKeys(payload, selected, focus, {
+    width: 390,
+    height: 520,
   })
-  return `<div class="atlas__projection" data-atlas-2d>${projectionSvgHtml(projection, 'mobile-overview')}</div>`
+  return {
+    html: `<div class="atlas__projection" data-atlas-2d data-atlas-view="${view}">${projectionSvgHtml(projection, 'mobile-overview')}</div>`,
+    view,
+  }
 }
 
 function buildInspectorHtml(
@@ -166,6 +191,7 @@ function buildControlsHtml(locale: 'en' | 'fa', payload: AtlasPayload): string {
           filtersLabel: 'Filter by type',
           all: 'All',
           viewLabel: 'View controls',
+          neighbourhood: 'View neighbourhood',
           zoomIn: 'Zoom in',
           zoomOut: 'Zoom out',
           focus: 'Focus',
@@ -179,6 +205,7 @@ function buildControlsHtml(locale: 'en' | 'fa', payload: AtlasPayload): string {
           filtersLabel: 'پالایش بر اساس نوع',
           all: 'همه',
           viewLabel: 'کنترل‌های نما',
+          neighbourhood: 'نمایش همسایگی',
           zoomIn: 'بزرگ‌نمایی',
           zoomOut: 'کوچک‌نمایی',
           focus: 'تمرکز',
@@ -193,6 +220,7 @@ function buildControlsHtml(locale: 'en' | 'fa', payload: AtlasPayload): string {
     )
     .join('')
   const buttons: Array<[string, string]> = [
+    ['data-atlas-neighbourhood', copy.neighbourhood],
     ['data-atlas-zoom-in', copy.zoomIn],
     ['data-atlas-zoom-out', copy.zoomOut],
     ['data-atlas-focus', copy.focus],
@@ -216,7 +244,7 @@ export function buildSharedAtlasBodyHtml(
 ): string {
   if (snapshot.status === 'ready') {
     const index = buildIndexHtml(locale, snapshot.html)
-    const projection = buildProjectionHtml(snapshot.payload)
+    const projection = buildProjectionHtml(snapshot.payload).html
     const controls = buildControlsHtml(locale, snapshot.payload)
     const inspector = buildInspectorHtml(locale, snapshot.payload)
     const payload = serializeAtlasPayload(snapshot.payload)

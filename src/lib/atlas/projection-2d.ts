@@ -10,7 +10,7 @@ import type { AtlasNodeOut, AtlasPayload } from './model'
 import { radiusFor, resolveLayout } from './layout'
 
 export type Projection2dMode =
-  'mobile-overview' | 'webgl-fallback' | 'about-preview'
+  'mobile-overview' | 'webgl-fallback' | 'about-preview' | 'neighbourhood'
 
 export interface Viewport2d {
   width: number
@@ -103,6 +103,7 @@ export function selectOverviewNodes(
 ): AtlasNodeOut[] {
   const mode = options.mode ?? 'mobile-overview'
   if (mode === 'webgl-fallback') return [...payload.nodes]
+  if (mode === 'neighbourhood') return [...payload.nodes]
   const cap = mode === 'about-preview' ? ABOUT_MAX : MOBILE_MAX
   const picked = band(payload.nodes, cap, anchorKey(payload))
   if (
@@ -124,14 +125,17 @@ export function project2d(
     mode: Projection2dMode
     viewport: Viewport2d
     focusKey: string | null
+    /** Explicit node set: skips overview selection, keeps the affine rules. */
+    explicitNodes?: AtlasNodeOut[]
   },
 ): Projection2d {
   const { mode, viewport, focusKey } = options
   const { width, height } = viewport
   let selected =
-    mode === 'webgl-fallback'
+    options.explicitNodes ??
+    (mode === 'webgl-fallback' || mode === 'neighbourhood'
       ? [...payload.nodes]
-      : selectOverviewNodes(payload, { mode })
+      : selectOverviewNodes(payload, { mode }))
   if (selected.length === 0) {
     return {
       viewBox: `0 0 ${width} ${height}`,
