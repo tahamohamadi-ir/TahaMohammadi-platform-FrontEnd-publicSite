@@ -9,7 +9,7 @@ import PageFamilySkillsGridShell from '../page-family/PageFamilySkillsGridShell.
 import PageFamilySelectedOutputsShell from '../page-family/PageFamilySelectedOutputsShell.astro'
 import PageFamilyDownloadListShell from '../page-family/PageFamilyDownloadListShell.astro'
 import PageFamilyCollaborateBandShell from '../page-family/PageFamilyCollaborateBandShell.astro'
-import ResearchUniverse from './ResearchUniverse.astro'
+import AboutAtlasPreview from './AboutAtlasPreview.astro'
 import ContentState from '../state/ContentState.astro'
 import {
   getAboutUnavailableCopy,
@@ -17,25 +17,20 @@ import {
   type AboutPageModel,
 } from '../../lib/about-profile'
 import { getAboutSubNavLabels } from '../../lib/page-family-empty-chrome'
-import {
-  loadHeroGraph,
-  type HeroGraphModel,
-} from '../../lib/hero-graph-content'
+import type { AtlasSnapshot } from '../../lib/atlas/snapshot'
 import { type Locale } from '../../lib/navigation'
 
 interface Props {
   locale: Locale
   model: AboutPageModel
   /**
-   * Published graph. Optional so a page may supply an already-loaded model;
-   * when omitted this block loads it itself, because the universe is part of the
-   * About narrative rather than an optional decoration.
+   * Optional Atlas snapshot for tests / callers that already loaded one.
+   * When omitted, AboutAtlasPreview fetches via the Plan C snapshot path.
    */
-  graph?: HeroGraphModel
+  atlasSnapshot?: AtlasSnapshot
 }
 
-const { locale, model } = Astro.props
-const graph: HeroGraphModel = Astro.props.graph ?? (await loadHeroGraph(locale))
+const { locale, model, atlasSnapshot } = Astro.props
 const emptyCopy = getAboutUnavailableCopy(locale)
 const subNavLabels = getAboutSubNavLabels(locale)
 const tabRegion = locale === 'en' ? 'About profile sections' : 'بخش‌های پروفایل'
@@ -66,6 +61,8 @@ const sectionLabels =
           labels={subNavLabels}
           regionLabel={tabRegion}
         />
+
+        <AboutAtlasPreview locale={locale} snapshot={atlasSnapshot} />
 
         <PageFamilyHowIWorkShell locale={locale} />
         <PageFamilyJourneyFlowShell locale={locale} />
@@ -100,7 +97,7 @@ const sectionLabels =
       />
 
       <div slot="records" class="about-page__sections">
-        <ResearchUniverse locale={locale} graph={graph} />
+        <AboutAtlasPreview locale={locale} snapshot={atlasSnapshot} />
 
         {model.profile.body ? (
           <section
