@@ -71,16 +71,14 @@ describe('Knowledge Atlas performance budgets (Task 22)', () => {
     }
   })
 
-  it('measures presentation DOM nodes without raising the §19.2 ceiling', async () => {
+  it('keeps presentation DOM nodes at or under the §19.2 ceiling', async () => {
     const payload = readFixture('benchmark.json')
     const html = await renderAtlasPage(payload)
     const region = extractAtlasRegionHtml(html)
     const nodes = countOpeningHtmlTags(region)
-    expect(nodes).toBeGreaterThan(0)
-    // Ceiling stays 2500 (§19.6). Full SSR inspector+index on the 72/136
-    // fixture currently exceeds it; recorded in KNOWLEDGE-ATLAS-PERFORMANCE.md.
     expect(KNOWLEDGE_ATLAS_PERFORMANCE_BUDGET.presentationDomNodes).toBe(2500)
-    expect(nodes).toBeGreaterThan(
+    expect(nodes).toBeGreaterThan(0)
+    expect(nodes).toBeLessThanOrEqual(
       KNOWLEDGE_ATLAS_PERFORMANCE_BUDGET.presentationDomNodes,
     )
   })

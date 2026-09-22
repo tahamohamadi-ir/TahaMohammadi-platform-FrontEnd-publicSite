@@ -18,7 +18,7 @@ test.describe('CA-05 graph selection and interaction', () => {
       page,
     }) => {
       // Stage 4: Home's interactive graph was replaced by the authored image sequence. The
-      // interaction contract now lives on About (covered by ru-about.e2e.ts), so these Home
+      // interaction contract now lives on About Atlas preview (about-atlas.e2e.ts), so these Home
       // cases retire honestly instead of asserting a region that no longer ships.
       test.skip(
         (await page.locator('[data-graph-region]').count()) === 0,
@@ -58,7 +58,7 @@ test.describe('CA-05 graph selection and interaction', () => {
 
     test(`no wheel capture on graph region (${locale})`, async ({ page }) => {
       // Stage 4: Home's interactive graph was replaced by the authored image sequence. The
-      // interaction contract now lives on About (covered by ru-about.e2e.ts), so these Home
+      // interaction contract now lives on About Atlas preview (about-atlas.e2e.ts), so these Home
       // cases retire honestly instead of asserting a region that no longer ships.
       test.skip(
         (await page.locator('[data-graph-region]').count()) === 0,

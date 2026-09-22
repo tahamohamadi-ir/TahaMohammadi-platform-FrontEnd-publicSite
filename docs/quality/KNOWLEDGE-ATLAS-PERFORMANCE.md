@@ -27,7 +27,7 @@ the row below is marked **DEFERRED** with the unit-layer evidence that already e
 | Runtime payload gzip          | ≤ 60 KiB | en **784 B**, fa **849 B**, benchmark **3463 B**      | **PASS**         | `performance-budget.test.ts`                                               |
 | Embedded snapshot gzip        | ≤ 40 KiB | en/fa/benchmark all ≪ 40 KiB (benchmark ≈ **3463 B**) | **PASS**         | `serializeAtlasPayload` + gzip in unit test                                |
 | Label chips in DOM            | ≤ 40     | always-tier keys ≤ **10** (`ALWAYS_LABEL_KEYS_CAP`)   | **PASS**         | `alwaysLabelKeys` + unit test                                              |
-| Presentation DOM nodes        | ≤ 2500   | **5309** opening tags on benchmark SSR region         | **FAIL**         | Full SSR inspector+index registry; ceiling **unchanged** (§19.6)           |
+| Presentation DOM nodes        | ≤ 2500   | **862** opening tags on benchmark SSR region          | **PASS**         | Deferred inspector SSR (Plan D Phase 2); ceiling **unchanged** (§19.6)     |
 | Idle draw calls               | **0**    | no idle `requestAnimationFrame` after scene settle    | **PASS** (unit)  | `scene.test.ts` “does not leave an animation frame running while idle”     |
 | Layout computation (backend)  | ≤ 2 s    | —                                                     | **N/A (Plan A)** | Recorded in Plan A evidence; not owned by Plan C                           |
 
@@ -38,17 +38,18 @@ rAF while idle. Full four-entry-point instrumentation (`drawArrays`, `drawElemen
 `drawArraysInstanced`, `drawElementsInstanced`) over 1500 ms of no interaction is asserted
 in the browser suite (Task 23).
 
-## DOM budget honesty (official debt register)
+## DOM budget honesty (Plan D Phase 2 — CLEARED)
 
 ```text
-DOM presentation on fixture 72/136 = 5309
+DOM presentation on fixture 72/136 = 862
 Target ceiling = 2500
-Status = DEBT / NOT WAIVED
-Remediation = virtualize or defer inspector SSR
+Status = CLEARED
+Remediation applied = defer inspector SSR (single client mount on selection)
 ```
 
-Cause: Task 14 SSR-renders every node/relation inspector block plus the semantic index
-and 2D projection. Ceiling stays **2500** (§19.6). Do not raise it to pass.
+Prior Plan C debt register (5309 / NOT WAIVED) is closed by deferring per-entity
+inspector panels out of SSR. Semantic index remains SSR for no-JS. Ceiling stays
+**2500** (§19.6). Do not raise it.
 
 ## Broad-phase
 

@@ -1,13 +1,9 @@
 ---
 /**
- * Server-rendered registry of every Atlas inspector panel.
- * The overview starts with the prompt visible and every panel hidden.
+ * Deferred Atlas inspector shell (Plan D Phase 2).
+ * Panels are mounted client-side on selection so SSR stays under §19.2 DOM.
  */
-import {
-  nodeInspectorModel,
-  relationInspectorModel,
-  type AtlasInspectorModel,
-} from '../../lib/atlas/inspector'
+import { nodeInspectorModel } from '../../lib/atlas/inspector'
 import type { AtlasLocale, AtlasPayload } from '../../lib/atlas/model'
 
 interface Props {
@@ -18,45 +14,15 @@ interface Props {
 const { payload, locale = payload.locale } = Astro.props
 const localizedPayload =
   payload.locale === locale ? payload : { ...payload, locale }
-const nodeByKey = new Map(payload.nodes.map((node) => [node.key, node]))
-const relationTypeByKey = new Map(
-  payload.relationTypes.map((type) => [type.key, type]),
-)
 const prompt = nodeInspectorModel(localizedPayload, '').prompt
 const copy =
   locale === 'en'
     ? {
         heading: 'Inspector',
-        node: 'Node',
-        relation: 'Relation',
       }
     : {
         heading: 'بازرس',
-        node: 'گره',
-        relation: 'رابطه',
       }
-
-const nodePanels = payload.nodes.map((node) => ({
-  key: node.key,
-  title: node.label ?? node.key,
-  model: nodeInspectorModel(localizedPayload, node.key),
-}))
-const relationPanels = payload.relations.map((relation) => {
-  const source = nodeByKey.get(relation.source)
-  const target = nodeByKey.get(relation.target)
-  const relationType = relationTypeByKey.get(relation.type)
-  return {
-    key: relation.key,
-    title: `${source?.label ?? relation.source} — ${
-      relationType?.label ?? relation.type
-    } — ${target?.label ?? relation.target}`,
-    model: relationInspectorModel(localizedPayload, relation.key),
-  }
-})
-
-function panelSections(model: AtlasInspectorModel) {
-  return model.sections
-}
 ---
 
 <aside
@@ -76,84 +42,47 @@ function panelSections(model: AtlasInspectorModel) {
     data-atlas-announcement
   >
   </p>
-
-  {
-    nodePanels.map((panel, index) => (
-      <section
-        class="atlas-inspector__panel"
-        aria-labelledby={`atlas-inspector-node-${index}`}
-        data-atlas-inspector-node={panel.key}
-        hidden
-      >
-        <h3 id={`atlas-inspector-node-${index}`}>
-          {copy.node}: {panel.title}
-        </h3>
-        {panelSections(panel.model).map((section) => (
-          <div
-            class="atlas-inspector__section"
-            data-atlas-inspector-section={section.id}
-          >
-            <h4>{section.heading}</h4>
-            <ul>
-              {section.items.map((item) => (
-                <li data-atlas-inspector-item={item.key}>
-                  {item.href ? (
-                    <a href={item.href}>{item.label}</a>
-                  ) : (
-                    item.label
-                  )}
-                  {item.relationLabel ? (
-                    <span class="atlas-inspector__relation-label">
-                      {' — '}
-                      {item.relationLabel}
-                    </span>
-                  ) : null}
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
-      </section>
-    ))
-  }
-
-  {
-    relationPanels.map((panel, index) => (
-      <section
-        class="atlas-inspector__panel"
-        aria-labelledby={`atlas-inspector-relation-${index}`}
-        data-atlas-inspector-relation={panel.key}
-        hidden
-      >
-        <h3 id={`atlas-inspector-relation-${index}`}>
-          {copy.relation}: {panel.title}
-        </h3>
-        {panelSections(panel.model).map((section) => (
-          <div
-            class="atlas-inspector__section"
-            data-atlas-inspector-section={section.id}
-          >
-            <h4>{section.heading}</h4>
-            <ul>
-              {section.items.map((item) => (
-                <li data-atlas-inspector-item={item.key}>
-                  {item.href ? (
-                    <a href={item.href}>{item.label}</a>
-                  ) : (
-                    item.label
-                  )}
-                  {item.relationLabel ? (
-                    <span class="atlas-inspector__relation-label">
-                      {' — '}
-                      {item.relationLabel}
-                    </span>
-                  ) : null}
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
-      </section>
-    ))
-  }
+  <div data-atlas-inspector-mount></div>
 </aside>
+
+<style>
+  .atlas-inspector {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1rem;
+    overflow: auto;
+  }
+
+  .atlas-inspector__prompt {
+    margin: 0;
+  }
+
+  .atlas-inspector__announcement {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .atlas-inspector :global(.atlas-inspector__panel) {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .atlas-inspector :global(.atlas-inspector__section h4) {
+    margin: 0 0 0.35rem;
+    font-size: 0.875rem;
+  }
+
+  .atlas-inspector :global(.atlas-inspector__section ul) {
+    margin: 0;
+    padding-inline-start: 1.1rem;
+  }
+</style>

@@ -34,6 +34,7 @@ import {
   readFocusFromLocation,
   type AtlasFocus,
 } from '../../atlas/url-state'
+import { renderDeferredInspectorPanel } from '../../atlas/inspector-dom'
 
 export type AtlasEnhancementState = 'enhanced' | 'fallback' | 'list'
 
@@ -276,6 +277,7 @@ function syncSelectionDom(
   region: HTMLElement,
   selection: SelectionModel,
   scene: AtlasSceneHandle | null,
+  payload: AtlasPayload,
 ): void {
   const focus = focusFromSelection(selection)
   const state = selection.state
@@ -303,23 +305,7 @@ function syncSelectionDom(
         : 'false',
     )
   }
-  for (const panel of Array.from(
-    region.querySelectorAll<HTMLElement>('[data-atlas-inspector-node]'),
-  )) {
-    panel.hidden =
-      focus?.kind !== 'node' ||
-      attribute(panel, 'data-atlas-inspector-node') !== focus.key
-  }
-  for (const panel of Array.from(
-    region.querySelectorAll<HTMLElement>('[data-atlas-inspector-relation]'),
-  )) {
-    panel.hidden =
-      focus?.kind !== 'relation' ||
-      attribute(panel, 'data-atlas-inspector-relation') !== focus.key
-  }
-  region
-    .querySelector<HTMLElement>('[data-atlas-inspector-prompt]')
-    ?.toggleAttribute('hidden', focus != null)
+  renderDeferredInspectorPanel(region, payload, focus)
   try {
     scene?.setSelection?.(focus)
   } catch {
@@ -414,7 +400,7 @@ function createProjection2dHandle(
     if (focus?.kind !== 'node' && viewMode === 'neighborhood') {
       viewMode = 'overview'
     }
-    syncSelectionDom(region, selection, null)
+    syncSelectionDom(region, selection, null, payload)
     renderProjection2d(
       region,
       payload,
@@ -564,7 +550,7 @@ async function runEnhancement(
   let picking: Disposable | null = null
   let labels: unknown = null
   let unsubscribe = selection.subscribe(() =>
-    syncSelectionDom(region, selection, scene),
+    syncSelectionDom(region, selection, scene, payload),
   )
   const cleanups: Array<() => void> = [unsubscribe]
   let disposed = false
@@ -671,7 +657,7 @@ async function runEnhancement(
             applySelection(selection, adoptedFocus)
           }
           unsubscribe = selection.subscribe(() =>
-            syncSelectionDom(region, selection, scene),
+            syncSelectionDom(region, selection, scene, payload),
           )
           cleanups.push(unsubscribe)
           region.setAttribute('data-atlas-refresh', 'adopted')
@@ -680,7 +666,7 @@ async function runEnhancement(
             region.setAttribute('data-atlas-etag', detail.etag)
           }
           scene?.setPayload?.(payload)
-          syncSelectionDom(region, selection, scene)
+          syncSelectionDom(region, selection, scene, payload)
         },
         onKeep: (outcome) => {
           if (!disposed) region.setAttribute('data-atlas-refresh', outcome)
@@ -847,7 +833,7 @@ async function runEnhancement(
   }
   liveHandle = handle
   writePresentation(region, handle.state, handle.reason, '3d')
-  syncSelectionDom(region, selection, scene)
+  syncSelectionDom(region, selection, scene, payload)
   return handle
 }
 

@@ -148,7 +148,13 @@ Remediation = virtualize or defer inspector SSR
 
 ### Plan D rule
 
-Plan D may switch About to the Atlas about-preview mode and retire the About Research Universe scene **after** citing the two parent references above. It must schedule the §19.6 inspector DOM remediation deliberately (virtualize or defer inspector SSR). Optional later: live-API green once an active Atlas version is published; expanded first-frame/drag telemetry. **Do not** reopen Plan C for redesign or full re-validation absent a real regression against this baseline.
+Plan D cites the two parent references above and must **not** reopen Plan C for redesign or full re-validation absent a real regression against the Plan C baseline. Optional later: live-API green once an active Atlas version is published; expanded first-frame/drag telemetry.
+
+### Plan D progress pointer
+
+Phase 1 (About Atlas preview) and Phase 2 (§19.6 deferred inspector SSR) are recorded in
+`docs/quality/EVIDENCE-D-TASKS.md`. Presentation DOM on fixture 72/136 measured **862**
+(≤ 2500). This does not reopen Plan C.
 
 ---
 

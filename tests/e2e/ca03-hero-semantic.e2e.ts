@@ -67,7 +67,7 @@ test.describe('CA-03 semantic integrated Home hero', () => {
     await page.goto('/en/')
     // Stage 4.1: Home has no graph region at all, so this case retires explicitly rather than
     // waiting on a locator that can never appear. The interaction contract lives on About
-    // (tests/e2e/ru-about.e2e.ts).
+    // (tests/e2e/about-atlas.e2e.ts).
     test.skip(
       (await page.locator('[data-graph-region]').count()) === 0,
       'Home ships the authored image sequence; no graph region to select from',

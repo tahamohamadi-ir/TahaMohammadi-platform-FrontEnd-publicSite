@@ -42,20 +42,18 @@ function readySnapshot(payload: AtlasPayload): AtlasSnapshot {
   }
 }
 
-describe('Atlas inspector and controls (Plan C Task 14)', () => {
-  it('server-renders an inspector block for every node and relation', async () => {
+describe('Atlas inspector and controls (Plan D Phase 2 deferred SSR)', () => {
+  it('server-renders an empty inspector mount without per-entity panels', async () => {
     const payload = readPayload('benchmark.json')
     const html = await render(AtlasPageContent, {
       locale: 'en',
       snapshot: readySnapshot(payload),
     })
 
-    for (const node of payload.nodes) {
-      expect(html).toContain(`data-atlas-inspector-node="${node.key}"`)
-    }
-    for (const relation of payload.relations) {
-      expect(html).toContain(`data-atlas-inspector-relation="${relation.key}"`)
-    }
+    expect(html).toContain('data-atlas-inspector')
+    expect(html).toContain('data-atlas-inspector-mount')
+    expect(html).not.toContain('data-atlas-inspector-node=')
+    expect(html).not.toContain('data-atlas-inspector-relation=')
   })
 
   it('shows only the prompt when there is no selection', async () => {
@@ -64,16 +62,11 @@ describe('Atlas inspector and controls (Plan C Task 14)', () => {
       locale: 'en',
       snapshot: readySnapshot(payload),
     })
-    const blocks =
-      html.match(
-        /<section\b[^>]*data-atlas-inspector-(?:node|relation)="[^"]+"[^>]*>/g,
-      ) ?? []
 
     expect(html).toMatch(/data-atlas-inspector-prompt(?![^>]*hidden)/)
     expect(html).toContain('Select a node or relation to inspect it.')
-    expect(blocks).toHaveLength(payload.nodes.length + payload.relations.length)
-    expect(blocks.every((block) => /\shidden(?:[=>\s])/.test(block))).toBe(true)
     expect(html).toMatch(/role="status"[^>]*data-atlas-announcement/)
+    expect(html).toContain('data-atlas-inspector-mount')
   })
 
   it('renders the exact filterOptions set without the anchor type', async () => {
