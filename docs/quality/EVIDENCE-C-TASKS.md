@@ -70,5 +70,13 @@ Hero v2 and Home paths listed above are byte-identical to `origin/main` for this
 ## Notes for Plan D
 
 - Public Atlas routes `/en/atlas/` and `/fa/atlas/` ship with hybrid freshness, URL focus, search/filters, inspector, 2D+3D presentations, preview shell (`noindex`), and measured pick budget under 8 ms.
-- Known debt: SSR inspector registry exceeds the 2500 DOM-node ceiling on the representative fixture; remediate with deferred/virtualized inspector hydration without raising the ceiling.
+- Known debt (official register, not waived):
+
+```text
+DOM presentation on fixture 72/136 = 5309
+Target ceiling = 2500
+Status = DEBT / NOT WAIVED
+Remediation = virtualize or defer inspector SSR
+```
+
 - About extraction and RU retirement remain Plan D.

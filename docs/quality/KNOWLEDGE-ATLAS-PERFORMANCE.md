@@ -38,11 +38,17 @@ rAF while idle. Full four-entry-point instrumentation (`drawArrays`, `drawElemen
 `drawArraysInstanced`, `drawElementsInstanced`) over 1500 ms of no interaction is asserted
 in the browser suite (Task 23).
 
-## DOM budget honesty
+## DOM budget honesty (official debt register)
 
-The presentation DOM exceedance is caused by server-rendering **every** node/relation
-inspector block (Task 14) plus the semantic index and 2D projection for the 72/136 fixture.
-Remediation is virtualization / deferred inspector hydration — **not** raising 2500.
+```text
+DOM presentation on fixture 72/136 = 5309
+Target ceiling = 2500
+Status = DEBT / NOT WAIVED
+Remediation = virtualize or defer inspector SSR
+```
+
+Cause: Task 14 SSR-renders every node/relation inspector block plus the semantic index
+and 2D projection. Ceiling stays **2500** (§19.6). Do not raise it to pass.
 
 ## Broad-phase
 

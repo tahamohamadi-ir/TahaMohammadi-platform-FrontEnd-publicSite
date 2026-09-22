@@ -86,7 +86,15 @@ Presentation: Astro routes `/en/atlas/` + `/fa/atlas/` (+ draft preview shells),
 Full table: `docs/quality/KNOWLEDGE-ATLAS-PERFORMANCE.md`.
 
 **Pass:** pick p95, payload/snapshot gzip, label-chip headroom, unit idle-rAF.  
-**Fail (documented):** presentation DOM **5309 > 2500** because Task 14 SSR-renders every inspector block for the 72/136 fixture. Remediation is virtualization / deferred hydration — **not** raising the ceiling.  
+**Fail (documented, not waived):**
+
+```text
+DOM presentation on fixture 72/136 = 5309
+Target ceiling = 2500
+Status = DEBT / NOT WAIVED
+Remediation = virtualize or defer inspector SSR
+```
+
 **Deferred / N/A:** interactive first-frame & drag p95 full instrumentation; backend layout timing (Plan A).
 
 ---
