@@ -8,4 +8,5 @@ playwright-report
 test-results
 contracts/design-authority
 tests/fixtures/contracts
+tests/fixtures/atlas
 src/generated
