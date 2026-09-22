@@ -1,0 +1,74 @@
+---
+/**
+ * About Atlas 2D preview (Plan D Task 7): a thin section composing the
+ * existing 2D projection in `about-preview` mode over the active Atlas
+ * snapshot. No canvas, no Three.js import, no scene module — the module
+ * graph is `projection-2d` + `projection-svg` + `snapshot` only.
+ * Pure server render: nodes link to `/{locale}/atlas/?focus=node:<key>`,
+ * the CTA links to `/{locale}/atlas/`, and the unavailable state keeps
+ * the CTA while saying so honestly.
+ */
+import AtlasProjection2d from '../atlas/AtlasProjection2d.astro'
+import type { AtlasPayload } from '../../lib/atlas/model'
+import type { Locale } from '../../lib/navigation'
+
+interface Props {
+  locale: Locale
+  status: 'ready' | 'unavailable'
+  payload?: AtlasPayload | null
+}
+
+const { locale, status, payload = null } = Astro.props
+const ready = status === 'ready' && payload !== null
+const nodes = ready && payload ? payload.nodes.slice(0, 10) : []
+const heading = locale === 'en' ? 'Research universe' : 'جهان پژوهش'
+const lead =
+  locale === 'en'
+    ? 'A 2D preview of the active knowledge atlas — open the full atlas to explore every node.'
+    : 'پیش‌نمایشی دوبعدی از اطلس دانش فعال — برای کاوش همه گره‌ها اطلس کامل را باز کنید.'
+const ctaLabel = locale === 'en' ? 'Open the full atlas' : 'باز کردن اطلس کامل'
+const unavailableTitle = locale === 'en' ? 'Atlas unavailable' : 'اطلس در دسترس نیست'
+const unavailableMessage =
+  locale === 'en'
+    ? 'The knowledge atlas has no active version right now — the full atlas will return once one is published.'
+    : 'اطلس دانش در حال حاضر نسخه فعالی ندارد — با انتشار نسخه جدید، اطلس کامل بازمی‌گردد.'
+const atlasHref = `/${locale}/atlas/`
+const focusHref = (key: string) => `/${locale}/atlas/?focus=node:${key}`
+---
+
+<section
+  class="about-atlas-preview"
+  data-about-atlas-preview={status}
+  aria-labelledby="about-atlas-preview-title"
+>
+  <h2 id="about-atlas-preview-title" class="about-page__section-title">
+    {heading}
+  </h2>
+  <p class="about-page__prose">{lead}</p>
+
+  {
+    ready && payload ? (
+      <AtlasProjection2d payload={payload} mode="about-preview" />
+      <ul class="about-atlas-preview__nodes">
+        {nodes.map((node) => (
+          <li>
+            <a href={focusHref(node.key)}>{node.label ?? node.key}</a>
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <div class="about-atlas-preview__unavailable" role="status">
+        <p>
+          <strong>{unavailableTitle}</strong>
+        </p>
+        <p>{unavailableMessage}</p>
+      </div>
+    )
+  }
+
+  <p>
+    <a class="about-atlas-preview__cta" href={atlasHref}>
+      {ctaLabel}
+    </a>
+  </p>
+</section>
