@@ -124,4 +124,20 @@ describe('enhanceAtlasRegion (Plan C Task 15)', () => {
     expect(order).toEqual(['refresh', 'scene'])
     expect(element.attrs.get('data-atlas-refresh')).toBe('not-modified')
   })
+
+  it('forwards the reduced-motion preference live without a DOM', async () => {
+    const { resetAtlasEnhancementForTests } = await import('./enhancement')
+    resetAtlasEnhancementForTests()
+    const element = region(READY)
+    const seen: string[] = []
+    await enhanceAtlasRegion(element as never, {
+      assumeWebgl: true,
+      loadScene: vi.fn().mockResolvedValue({ default: {} }),
+      reducedMotion: { matches: true },
+      onMotionChange: (motion) => {
+        seen.push(motion)
+      },
+    })
+    expect(seen).toEqual(['reduced'])
+  })
 })

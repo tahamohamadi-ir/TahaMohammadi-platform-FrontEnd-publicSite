@@ -1,9 +1,15 @@
 /** Atlas presentation (Plan C Tasks 6/14: shell + controls; Task 21 owns parity/RTL/a11y).
- * Logical properties only — EN and FA share topology, never mirrored geometry. */
+ * Logical properties only — EN and FA share topology, never mirrored geometry.
+ *
+ * RTL note: direction follows the document (`dir` on `<html>`); geometry is
+ * never mirrored — the same keys project to the same coordinates in both
+ * locales (see `parity.test.ts`). Spacing uses logical properties throughout
+ * so the layout reflects automatically. */
 .atlas {
   margin-inline: auto;
   max-inline-size: 72rem;
   padding-inline: 1.25rem;
+  container-type: inline-size;
 }
 
 .atlas__header {
@@ -56,4 +62,31 @@
 .atlas-controls :focus-visible {
   outline: 2px solid currentColor;
   outline-offset: 2px;
+}
+
+/* Narrow viewports reflow instead of overflowing: controls wrap, the
+ * inspector stays in natural document flow below the graph (spec §14.5 —
+ * no horizontal overflow at 320/390/768px; Task 24 documents the check). */
+.atlas-controls__view,
+.atlas-controls__filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.atlas__projection {
+  max-inline-size: 100%;
+  overflow-x: clip;
+}
+
+/* Reduced motion changes nothing structurally: the SVG has no motion to
+ * reduce (spec §14.5). Transitions are removed by the global
+ * `prefers-reduced-motion` rules; this guard keeps Atlas-local additions
+ * honest if any are introduced later. */
+@media (prefers-reduced-motion: reduce) {
+  .atlas__projection,
+  .atlas-controls__chip,
+  .atlas-controls__button {
+    transition: none;
+  }
 }

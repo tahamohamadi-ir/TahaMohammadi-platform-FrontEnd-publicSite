@@ -49,6 +49,16 @@ export interface EnhanceAtlasOptions {
   onSelection?: (focus: AtlasFocus | null) => void
   /** Test seam: pretend `WebGLRenderingContext` exists without a window. */
   assumeWebgl?: boolean
+  /**
+   * Reduced-motion subscription (Task 21): the page script owns the
+   * `matchMedia('(prefers-reduced-motion: reduce)')` change listener and
+   * forwards through `onMotionChange`; the scene applies it via `setMotion`
+   * with no rebuild. The seam stays a plain value so tests need no DOM.
+   */
+  reducedMotion?: {
+    matches: boolean
+  }
+  onMotionChange?: (motion: 'reduced' | 'full') => void
 }
 
 export interface AtlasEnhancementHandle {
@@ -163,6 +173,18 @@ export async function enhanceAtlasRegion(
   region.setAttribute('data-atlas-presentation', '3d')
   // Labels module wiring lands with the scene (Task 16); the import seam is
   // proven here so the orchestrator never grows a second lazy path.
+  // Reduced-motion live subscription (Task 21): the scene applies it via
+  // `setMotion` with no rebuild; the page script owns the `change` listener
+  // and forwards through `onMotionChange` (the orchestrator never touches
+  // the DOM event bus, so the seam stays unit-testable without a DOM).
+  if (options.reducedMotion && options.onMotionChange) {
+    try {
+      const initial = options.reducedMotion.matches
+      options.onMotionChange(initial ? 'reduced' : 'full')
+    } catch {
+      // Bookkeeping must never break enhancement.
+    }
+  }
   return {
     state: 'enhanced',
     reason: null,
