@@ -326,10 +326,13 @@ describe('CA-03 Home integration', () => {
     expect(hero).not.toContain('HeroGraph')
   })
 
-  // The graph experience was moved, not weakened: About is still the interactive surface.
+  // The graph experience was moved, not weakened: About is still the
+  // interactive surface — now via the Atlas about-preview (Plan D Task 7),
+  // which replaced the legacy hero-graph mount and its loader.
   it('keeps the interactive graph on About', () => {
     const about = readSource('src/components/about/AboutPageContent.astro')
-    expect(about).toContain('loadHeroGraph')
+    expect(about).toContain('AboutAtlasPreview')
+    expect(about).not.toContain('loadHeroGraph')
   })
 
   it('keeps the optional template slot for compatibility', () => {
