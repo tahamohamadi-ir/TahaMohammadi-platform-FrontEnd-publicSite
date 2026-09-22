@@ -1,77 +1,147 @@
 ---
 /**
- * About Atlas 2D preview (Plan D Task 7): a thin section composing the
- * existing 2D projection in `about-preview` mode over the active Atlas
- * snapshot. No canvas, no Three.js import, no scene module — the module
- * graph is `projection-2d` + `projection-svg` + `snapshot` only.
- * Pure server render: nodes link to `/{locale}/atlas/?focus=node:<key>`,
- * the CTA links to `/{locale}/atlas/`, and the unavailable state keeps
- * the CTA while saying so honestly.
+ * Plan D Phase 1 — thin Atlas about-preview for the About narrative.
+ * Full Knowledge Atlas chrome (search, filters, inspector SSR) stays on /atlas/.
  */
 import AtlasProjection2d from '../atlas/AtlasProjection2d.astro'
-import type { AtlasPayload } from '../../lib/atlas/model'
+import {
+  fetchAtlasSnapshot,
+  type AtlasSnapshot,
+} from '../../lib/atlas/snapshot'
 import type { Locale } from '../../lib/navigation'
+import '../../styles/atlas.css'
 
 interface Props {
   locale: Locale
-  status: 'ready' | 'unavailable'
-  payload?: AtlasPayload | null
+  /** Injected in tests; production About pages omit and fetch at build time. */
+  snapshot?: AtlasSnapshot
 }
 
-const { locale, status, payload = null } = Astro.props
-const ready = status === 'ready' && payload !== null
-const nodes = ready && payload ? payload.nodes.slice(0, 10) : []
-const heading = locale === 'en' ? 'Research universe' : 'جهان پژوهش'
-const lead =
+const { locale } = Astro.props
+const snapshot: AtlasSnapshot =
+  Astro.props.snapshot ?? (await fetchAtlasSnapshot(locale))
+
+const copy =
   locale === 'en'
-    ? 'A 2D preview of the active knowledge atlas — open the full atlas to explore every node.'
-    : 'پیش‌نمایشی دوبعدی از اطلس دانش فعال — برای کاوش همه گره‌ها اطلس کامل را باز کنید.'
-const ctaLabel = locale === 'en' ? 'Open the full atlas' : 'باز کردن اطلس کامل'
-const unavailableTitle =
-  locale === 'en' ? 'Atlas unavailable' : 'اطلس در دسترس نیست'
-const unavailableMessage =
-  locale === 'en'
-    ? 'The knowledge atlas has no active version right now — the full atlas will return once one is published.'
-    : 'اطلس دانش در حال حاضر نسخه فعالی ندارد — با انتشار نسخه جدید، اطلس کامل بازمی‌گردد.'
+    ? {
+        heading: 'Knowledge Atlas',
+        lead: 'A compact preview of the published knowledge map behind this profile. Open the full Atlas to search, filter, and inspect every record.',
+        cta: 'Open the Knowledge Atlas',
+        unavailableTitle: 'Atlas unavailable',
+        unavailableMessage:
+          'The Atlas has no published version right now. The full Atlas page will show the same honest state.',
+        invalidTitle: 'Atlas data failed validation',
+        invalidMessage:
+          'The published Atlas data failed validation, so nothing is shown here.',
+      }
+    : {
+        heading: 'اطلس دانش',
+        lead: 'پیش‌نمایش فشردهٔ نقشهٔ دانش منتشرشده در پس این پروفایل. برای جستجو، فیلتر و بازرسی همهٔ رکوردها اطلس کامل را باز کنید.',
+        cta: 'باز کردن اطلس دانش',
+        unavailableTitle: 'اطلس در دسترس نیست',
+        unavailableMessage:
+          'در حال حاضر نسخه منتشرشده‌ای از اطلس وجود ندارد. صفحهٔ اطلس کامل همین وضعیت صادقانه را نشان می‌دهد.',
+        invalidTitle: 'داده اطلس اعتبارسنجی نشد',
+        invalidMessage:
+          'داده منتشرشده اطلس اعتبارسنجی نشد، پس چیزی اینجا نمایش داده نمی‌شود.',
+      }
+
 const atlasHref = `/${locale}/atlas/`
-const focusHref = (key: string) => `/${locale}/atlas/?focus=node:${key}`
+const status = snapshot.status
 ---
 
 <section
-  class="about-atlas-preview"
-  data-about-atlas-preview={status}
-  aria-labelledby="about-atlas-preview-title"
+  class="about-atlas"
+  id="about-atlas"
+  data-about-atlas
+  data-atlas-status={status}
+  aria-labelledby="about-atlas-heading"
 >
-  <h2 id="about-atlas-preview-title" class="about-page__section-title">
-    {heading}
-  </h2>
-  <p class="about-page__prose">{lead}</p>
+  <h2 id="about-atlas-heading" class="about-atlas__heading">{copy.heading}</h2>
+  <p class="about-atlas__lead">{copy.lead}</p>
 
   {
-    ready && payload ? (
-      <>
-        <AtlasProjection2d payload={payload} mode="about-preview" />
-        <ul class="about-atlas-preview__nodes">
-          {nodes.map((node) => (
-            <li>
-              <a href={focusHref(node.key)}>{node.label ?? node.key}</a>
-            </li>
-          ))}
-        </ul>
-      </>
+    snapshot.status === 'ready' ? (
+      <div class="about-atlas__stage" data-about-atlas-stage>
+        <AtlasProjection2d
+          payload={snapshot.payload}
+          mode="about-preview"
+          viewport={{ width: 640, height: 420 }}
+        />
+      </div>
+    ) : snapshot.status === 'invalid' ? (
+      <div class="about-atlas__state" role="status">
+        <p class="about-atlas__state-title">{copy.invalidTitle}</p>
+        <p class="about-atlas__state-message">{copy.invalidMessage}</p>
+      </div>
     ) : (
-      <div class="about-atlas-preview__unavailable" role="status">
-        <p>
-          <strong>{unavailableTitle}</strong>
-        </p>
-        <p>{unavailableMessage}</p>
+      <div class="about-atlas__state" role="status">
+        <p class="about-atlas__state-title">{copy.unavailableTitle}</p>
+        <p class="about-atlas__state-message">{copy.unavailableMessage}</p>
       </div>
     )
   }
 
-  <p>
-    <a class="about-atlas-preview__cta" href={atlasHref}>
-      {ctaLabel}
-    </a>
+  <p class="about-atlas__cta">
+    <a class="about-atlas__link" href={atlasHref}>{copy.cta}</a>
   </p>
 </section>
+
+<style>
+  .about-atlas {
+    margin-block: 1.5rem 2rem;
+  }
+
+  .about-atlas__heading {
+    font-size: 1.375rem;
+    line-height: 1.3;
+    margin-block: 0 0.5rem;
+  }
+
+  .about-atlas__lead {
+    font-size: 1rem;
+    line-height: 1.7;
+    max-inline-size: 40rem;
+    margin-block: 0 1rem;
+  }
+
+  .about-atlas__stage {
+    border: 1px solid color-mix(in srgb, currentColor 16%, transparent);
+    border-radius: 0.5rem;
+    overflow: hidden;
+    margin-block: 0 1rem;
+    max-inline-size: 40rem;
+  }
+
+  .about-atlas__stage :global(.atlas-projection) {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .about-atlas__state {
+    margin-block: 0 1rem;
+    max-inline-size: 40rem;
+  }
+
+  .about-atlas__state-title {
+    font-weight: 600;
+    margin-block: 0 0.25rem;
+  }
+
+  .about-atlas__state-message {
+    margin-block: 0;
+    line-height: 1.6;
+  }
+
+  .about-atlas__link {
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+  }
+
+  .about-atlas__link:focus-visible {
+    outline: 2px solid var(--color-focus, #16b8a6);
+    outline-offset: 2px;
+  }
+</style>
