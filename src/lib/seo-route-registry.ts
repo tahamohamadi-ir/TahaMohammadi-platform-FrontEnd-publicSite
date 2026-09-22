@@ -10,6 +10,7 @@ export type SeoLocale = (typeof LOCALES)[number]
 export const LOCALE_INDEX_ROUTES = [
   '',
   'about',
+  'atlas',
   'research',
   'publications',
   'projects',

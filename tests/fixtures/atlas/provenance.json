@@ -1,0 +1,58 @@
+{
+  "backendSha": "bdb546f4a1c269b0d3b9784cc72dc225cb862e21",
+  "files": {
+    "benchmark": {
+      "contractVersion": "atlas01-1.0.0",
+      "groupCount": 6,
+      "locale": "en",
+      "nodeCount": 72,
+      "relationCount": 136,
+      "sha256": "a9ede87b10cf853ca26550ddebf4567eb9c4e791ff2af5a5f0640cad305ab31f",
+      "versionMeta": {
+        "id": 2,
+        "layoutRevision": 2,
+        "nodeCount": 72,
+        "relationCount": 136,
+        "revision": "2-2026-09-21T15:56:58.378345+00:00"
+      }
+    },
+    "en": {
+      "contractVersion": "atlas01-1.0.0",
+      "groupCount": 0,
+      "locale": "en",
+      "nodeCount": 4,
+      "relationCount": 3,
+      "sha256": "28a4723f32323472f556f343d05a79119efdb451ecbc0c37e4fe3ec557e9062e",
+      "versionMeta": {
+        "id": 1,
+        "layoutRevision": 2,
+        "nodeCount": 4,
+        "relationCount": 3,
+        "revision": "1-2026-09-21T15:56:57.762692+00:00"
+      }
+    },
+    "fa": {
+      "contractVersion": "atlas01-1.0.0",
+      "groupCount": 0,
+      "locale": "fa",
+      "nodeCount": 4,
+      "relationCount": 3,
+      "sha256": "1377a351061fe2278286e571b36aa1f060ad627f30117d1803aa58f3aae7f289",
+      "versionMeta": {
+        "id": 1,
+        "layoutRevision": 2,
+        "nodeCount": 4,
+        "relationCount": 3,
+        "revision": "1-2026-09-21T15:56:57.762692+00:00"
+      }
+    }
+  },
+  "generator": "scripts/atlas-generate-fixtures.py",
+  "sources": [
+    "apps.atlas.tests.factories.atlas_active_version (en/fa)",
+    "apps.atlas.tests.factories.atlas_scale_fixture (benchmark)",
+    "apps.atlas.layout.apply_layout",
+    "apps.atlas.projection.build_locale_projection",
+    "apps.atlas.projection.canonical_json"
+  ]
+}

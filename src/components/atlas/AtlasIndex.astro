@@ -1,0 +1,69 @@
+---
+/**
+ * No-JS semantic index of the Atlas topology (Plan C Task 6).
+ * Nodes as <ul>, relations as <ol> with labelled endpoints, group sections.
+ * Presentation only — interaction twins arrive as native HTML controls.
+ */
+import type { AtlasIndexModel } from '../../lib/atlas/snapshot'
+import type { Locale } from '../../lib/navigation'
+
+interface Props {
+  locale: Locale
+  html: AtlasIndexModel
+}
+
+const { locale, html } = Astro.props
+const copy =
+  locale === 'en'
+    ? { nodes: 'Domains & works', relations: 'Relations', groups: 'Groups' }
+    : { nodes: 'حوزه‌ها و آثار', relations: 'رابطه‌ها', groups: 'گروه‌ها' }
+---
+
+<div class="atlas-index">
+  <h2 class="atlas-index__heading">{copy.nodes}</h2>
+  <ul class="atlas-index__nodes" data-atlas-nodes>
+    {
+      html.nodes.map((node) => (
+        <li class="atlas-index__node" data-atlas-node={node.key}>
+          {node.href ? (
+            <a class="atlas-index__link" href={node.href}>
+              {node.label}
+            </a>
+          ) : (
+            <span class="atlas-index__label">{node.label}</span>
+          )}
+        </li>
+      ))
+    }
+  </ul>
+
+  <h2 class="atlas-index__heading">{copy.relations}</h2>
+  <ol class="atlas-index__relations" data-atlas-relations>
+    {
+      html.relations.map((relation) => (
+        <li class="atlas-index__relation" data-atlas-relation={relation.key}>
+          <span class="atlas-index__endpoint">{relation.sourceLabel}</span>
+          <span class="atlas-index__arrow" aria-hidden="true">
+            {' → '}
+          </span>
+          <span class="atlas-index__endpoint">{relation.targetLabel}</span>
+        </li>
+      ))
+    }
+  </ol>
+
+  {
+    html.groups.map((group) => (
+      <section class="atlas-index__group" data-atlas-group={group.key}>
+        <h2 class="atlas-index__heading">{group.label}</h2>
+        <ul class="atlas-index__members">
+          {group.nodeKeys.map((key) => (
+            <li class="atlas-index__member" data-atlas-member={key}>
+              {key}
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))
+  }
+</div>

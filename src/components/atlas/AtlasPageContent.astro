@@ -1,0 +1,66 @@
+---
+/**
+ * Atlas page composition (Plan C Tasks 6/8 + Task 23 runtime wiring).
+ * Body markup comes from `buildSharedAtlasBodyHtml` so public and preview
+ * shells share one presentation path. Authorization is never performed here.
+ *
+ * Runtime wiring lives in `src/scripts/atlas-runtime.ts` (bundled entry,
+ * NOT inline: static imports must resolve to hashed `/_astro/` chunks, and
+ * the 3D scene stays a lazy dynamic import so mobile never downloads
+ * three.js). No-JS SSR stays complete — the script only enhances.
+ */
+import { buildSharedAtlasBodyHtml } from '../../lib/atlas/presentation'
+import type { AtlasSnapshot } from '../../lib/atlas/snapshot'
+import type { Locale } from '../../lib/navigation'
+
+interface Props {
+  locale: Locale
+  snapshot: AtlasSnapshot
+  /** True only when a validated draft preview payload is being shown. */
+  preview?: boolean
+  /** Optional owner-facing label; never names a draft or capability. */
+  previewLabel?: string
+}
+
+const { locale, snapshot, preview = false, previewLabel } = Astro.props
+const copy =
+  locale === 'en'
+    ? {
+        eyebrow: 'Knowledge graph',
+        title: 'Knowledge Atlas',
+        lead: 'Every domain, project and publication — one navigable map.',
+      }
+    : {
+        eyebrow: 'نقشه دانش',
+        title: 'اطلس دانش',
+        lead: 'همه حوزه‌ها، پروژه‌ها و انتشارها — یک نقشه قابل پیمایش.',
+      }
+
+const status = snapshot.status
+const revision =
+  status === 'ready' ? snapshot.payload.version.revision : undefined
+const etag = status === 'ready' ? snapshot.etag : undefined
+const bodyHtml = buildSharedAtlasBodyHtml(locale, snapshot)
+const contract =
+  status === 'ready' ? snapshot.payload.contractVersion : undefined
+---
+
+<section
+  class="atlas"
+  data-atlas-region
+  data-atlas-status={status}
+  data-atlas-presentation="list"
+  data-atlas-contract={contract}
+  data-atlas-locale={locale}
+  data-atlas-revision={revision}
+  data-atlas-etag={etag}
+  data-atlas-preview={preview ? 'true' : 'false'}
+>
+  <header class="atlas__header">
+    <p class="atlas__eyebrow">{copy.eyebrow}</p>
+    <h1 class="atlas__title">{copy.title}</h1>
+    <p class="atlas__lead">{copy.lead}</p>
+    {previewLabel ? <p class="atlas__preview-label">{previewLabel}</p> : null}
+  </header>
+  <div data-atlas-body set:html={bodyHtml} />
+</section>

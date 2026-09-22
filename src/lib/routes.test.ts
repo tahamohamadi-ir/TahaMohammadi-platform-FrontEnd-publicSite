@@ -89,4 +89,20 @@ describe('locale route helpers', () => {
       permanent: true,
     })
   })
+
+  it('builds the bilingual Atlas route with mutual alternates', () => {
+    expect(buildCanonicalUrl('https://tahamohamadi.ir', 'en', 'atlas')).toBe(
+      'https://tahamohamadi.ir/en/atlas/',
+    )
+    expect(buildCanonicalUrl('https://tahamohamadi.ir', 'fa', 'atlas')).toBe(
+      'https://tahamohamadi.ir/fa/atlas/',
+    )
+    expect(
+      buildAlternateLinks('https://tahamohamadi.ir', 'en', 'atlas', true),
+    ).toEqual([
+      { hreflang: 'en', href: 'https://tahamohamadi.ir/en/atlas/' },
+      { hreflang: 'fa', href: 'https://tahamohamadi.ir/fa/atlas/' },
+      { hreflang: 'x-default', href: 'https://tahamohamadi.ir/fa/atlas/' },
+    ])
+  })
 })

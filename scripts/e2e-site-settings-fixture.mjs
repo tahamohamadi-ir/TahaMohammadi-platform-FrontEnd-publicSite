@@ -31,6 +31,7 @@
  * server is started by scripts/playwright-web-server.mjs and never participates
  * in a normal, staging or production build.
  */
+import { createHash } from 'node:crypto'
 import { createServer } from 'node:http'
 import { readFileSync } from 'node:fs'
 import path from 'node:path'
@@ -52,6 +53,11 @@ const homeContentPath = path.join(
   'tests/fixtures/home-content/home-content.fixture.json',
 )
 
+/** Atlas fixtures (Plan C Task 4): served beside the settings/home routes. */
+const atlasFixtureDir = path.join(repositoryRoot, 'tests', 'fixtures', 'atlas')
+
+const ATLAS_LOCALE_PATTERN = /^\/api\/atlas\/(en|fa)\/?$/
+
 const port = Number(process.env.TM_E2E_SETTINGS_PORT)
 
 if (!Number.isInteger(port) || port <= 0 || port > 65535) {
@@ -63,9 +69,16 @@ if (!Number.isInteger(port) || port <= 0 || port > 65535) {
 
 let fixture
 let homeContent
+/** Atlas fixture bytes + ETag, read once at startup (Plan C Task 4). */
+let atlasFixtures = {}
 try {
   fixture = JSON.parse(readFileSync(fixturePath, 'utf8'))
   homeContent = JSON.parse(readFileSync(homeContentPath, 'utf8'))
+  for (const locale of ['en', 'fa']) {
+    const bytes = readFileSync(path.join(atlasFixtureDir, `${locale}.json`))
+    const etag = `"${createHash('sha256').update(bytes).digest('hex').slice(0, 16)}"`
+    atlasFixtures[locale] = { bytes, etag }
+  }
 } catch (error) {
   console.error(
     `e2e-site-settings-fixture: cannot read its fixtures: ${error.message}`,
@@ -96,6 +109,30 @@ function homeContentPayload(pathname) {
 
 const server = createServer((request, response) => {
   const { pathname } = new URL(request.url ?? '/', 'http://127.0.0.1')
+  const atlasMatch = ATLAS_LOCALE_PATTERN.exec(pathname)
+  if (atlasMatch) {
+    const entry = atlasFixtures[atlasMatch[1]]
+    if (!entry) {
+      response.writeHead(404, { 'content-type': 'application/json' })
+      response.end('{"detail":"Not Found"}')
+      return
+    }
+    if (request.headers['if-none-match'] === entry.etag) {
+      response.writeHead(304, {
+        etag: entry.etag,
+        'cache-control': 'public, max-age=60',
+      })
+      response.end()
+      return
+    }
+    response.writeHead(200, {
+      'content-type': 'application/json',
+      etag: entry.etag,
+      'cache-control': 'public, max-age=60',
+    })
+    response.end(entry.bytes)
+    return
+  }
   const match = LOCALE_PATTERN.exec(pathname)
   const payload = match ? fixture[match[1]] : homeContentPayload(pathname)
 

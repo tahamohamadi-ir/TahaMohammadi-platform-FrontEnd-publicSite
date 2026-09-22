@@ -19,6 +19,10 @@ interface Props {
   alternateAvailable?: boolean
   /** Hide footer promo band when the page already shows an equivalent CTA (default: compact footer). */
   hideFooterPromo?: boolean
+  /** Robots directive forwarded to BaseLayout (preview shells use noindex). */
+  robots?: string
+  /** When false, omit pagefind body marker so the page is not search-indexed. */
+  searchIndexable?: boolean
 }
 
 const {
@@ -29,6 +33,8 @@ const {
   pathSegment,
   alternateAvailable = false,
   hideFooterPromo = true,
+  robots,
+  searchIndexable = true,
 } = Astro.props
 const currentPath = Astro.url.pathname
 const dir = getDir(locale)
@@ -55,6 +61,7 @@ const alternateHref = buildLanguageToggleHref(
   alternates={alternates}
   description={description}
   socialImage={socialImage}
+  robots={robots}
 >
   <SkipLink locale={locale} />
   <Header
@@ -63,7 +70,13 @@ const alternateHref = buildLanguageToggleHref(
     alternateHref={alternateHref}
     alternateAvailable={alternateAvailable}
   />
-  <main id="main-content" class="site-main" tabindex="-1" data-pagefind-body>
+  <main
+    id="main-content"
+    class="site-main"
+    tabindex="-1"
+    data-pagefind-body={searchIndexable ? true : undefined}
+    data-pagefind-ignore={searchIndexable ? undefined : 'all'}
+  >
     <slot />
   </main>
   <Footer locale={locale} hidePromo={hideFooterPromo} />

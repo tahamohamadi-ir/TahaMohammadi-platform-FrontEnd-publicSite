@@ -1,0 +1,117 @@
+---
+/**
+ * Atlas control surfaces (Plan C Task 14): search input, one native filter
+ * chip per visible node type, and view controls — all native form controls,
+ * every one keyboard-reachable with a visible focus style and 44px targets.
+ */
+import { filterOptions } from '../../lib/atlas/filters'
+import type { AtlasPayload } from '../../lib/atlas/model'
+import type { Locale } from '../../lib/navigation'
+
+interface Props {
+  locale: Locale
+  payload: AtlasPayload
+}
+
+const { locale, payload } = Astro.props
+const options = filterOptions(payload)
+const copy =
+  locale === 'en'
+    ? {
+        searchLabel: 'Search the Atlas',
+        searchPlaceholder: 'Search nodes and relations…',
+        filtersLabel: 'Filter by type',
+        all: 'All',
+        viewLabel: 'View controls',
+        neighbourhood: 'View neighbourhood',
+        zoomIn: 'Zoom in',
+        zoomOut: 'Zoom out',
+        focus: 'Focus',
+        reset: 'Reset',
+        clear: 'Clear',
+        overview: 'Back to overview',
+      }
+    : {
+        searchLabel: 'جست‌وجو در اطلس',
+        searchPlaceholder: 'جست‌وجوی گره‌ها و رابطه‌ها…',
+        filtersLabel: 'پالایش بر اساس نوع',
+        all: 'همه',
+        viewLabel: 'کنترل‌های نما',
+        neighbourhood: 'نمایش همسایگی',
+        zoomIn: 'بزرگ‌نمایی',
+        zoomOut: 'کوچک‌نمایی',
+        focus: 'تمرکز',
+        reset: 'بازنشانی',
+        clear: 'پاک کردن',
+        overview: 'بازگشت به نمای کلی',
+      }
+---
+
+<div class="atlas-controls" data-atlas-controls>
+  <div class="atlas-controls__search">
+    <label class="atlas-controls__label" for="atlas-search">
+      {copy.searchLabel}
+    </label>
+    <input
+      id="atlas-search"
+      class="atlas-controls__input"
+      data-atlas-search
+      type="search"
+      name="q"
+      autocomplete="off"
+      placeholder={copy.searchPlaceholder}
+    />
+  </div>
+
+  <fieldset class="atlas-controls__filters">
+    <legend class="atlas-controls__label">{copy.filtersLabel}</legend>
+    <button
+      class="atlas-controls__chip"
+      data-atlas-filter="all"
+      type="button"
+      aria-pressed="true"
+    >
+      {copy.all}
+    </button>
+    {
+      options.map((option) => (
+        <button
+          class="atlas-controls__chip"
+          data-atlas-filter={option.key}
+          type="button"
+          aria-pressed="false"
+        >
+          {option.label} ({option.count})
+        </button>
+      ))
+    }
+  </fieldset>
+
+  <div class="atlas-controls__view" role="group" aria-label={copy.viewLabel}>
+    <button
+      class="atlas-controls__button"
+      data-atlas-neighbourhood
+      type="button"
+    >
+      {copy.neighbourhood}
+    </button>
+    <button class="atlas-controls__button" data-atlas-zoom-in type="button">
+      {copy.zoomIn}
+    </button>
+    <button class="atlas-controls__button" data-atlas-zoom-out type="button">
+      {copy.zoomOut}
+    </button>
+    <button class="atlas-controls__button" data-atlas-focus type="button">
+      {copy.focus}
+    </button>
+    <button class="atlas-controls__button" data-atlas-reset type="button">
+      {copy.reset}
+    </button>
+    <button class="atlas-controls__button" data-atlas-clear type="button">
+      {copy.clear}
+    </button>
+    <button class="atlas-controls__button" data-atlas-overview type="button">
+      {copy.overview}
+    </button>
+  </div>
+</div>

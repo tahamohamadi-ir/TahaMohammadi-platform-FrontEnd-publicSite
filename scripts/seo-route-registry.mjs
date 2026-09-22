@@ -9,6 +9,7 @@ export const LOCALES = ['fa', 'en']
 export const LOCALE_INDEX_ROUTES = [
   '',
   'about',
+  'atlas',
   'research',
   'publications',
   'projects',

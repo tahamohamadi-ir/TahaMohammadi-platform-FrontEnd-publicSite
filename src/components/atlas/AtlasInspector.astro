@@ -1,0 +1,81 @@
+---
+/**
+ * Node + relation inspector blocks, server-rendered for every entity
+ * (Plan C Task 14). Only the selected block is visible once JS runs; with no
+ * selection the prompt shows and every block stays hidden. A `role="status"`
+ * target carries one polite announcement per selection change.
+ */
+import {
+  nodeInspectorModel,
+  relationInspectorModel,
+} from '../../lib/atlas/inspector'
+import type { AtlasPayload } from '../../lib/atlas/model'
+import type { Locale } from '../../lib/navigation'
+
+interface Props {
+  locale: Locale
+  payload: AtlasPayload
+  prompt: string
+}
+
+const { locale, payload, prompt } = Astro.props
+const nodeBlocks = payload.nodes.map((node) => ({
+  key: `node:${node.key}`,
+  model: nodeInspectorModel(payload, node.key, locale),
+}))
+const relationBlocks = payload.relations.map((relation) => ({
+  key: `relation:${relation.key}`,
+  model: relationInspectorModel(payload, relation.key, locale),
+}))
+---
+
+<div class="atlas-inspector" data-atlas-inspector>
+  <p
+    class="atlas-inspector__announcer"
+    data-atlas-announcer
+    role="status"
+    aria-live="polite"
+  >
+    {prompt}
+  </p>
+  <p class="atlas-inspector__prompt" data-atlas-inspector-prompt>
+    {prompt}
+  </p>
+  {
+    [...nodeBlocks, ...relationBlocks].map((block) => (
+      <article
+        class="atlas-inspector__block"
+        data-atlas-inspector-block={block.key}
+        hidden
+      >
+        {block.model.sections.map((section) => (
+          <section
+            class="atlas-inspector__section"
+            data-atlas-section={section.id}
+          >
+            <h3 class="atlas-inspector__heading">{section.heading}</h3>
+            <ul class="atlas-inspector__items">
+              {section.items.map((item) => (
+                <li class="atlas-inspector__item">
+                  {item.href ? (
+                    <a class="atlas-inspector__link" href={item.href}>
+                      {item.label}
+                    </a>
+                  ) : (
+                    <span class="atlas-inspector__label">{item.label}</span>
+                  )}
+                  {item.relationLabel ? (
+                    <span class="atlas-inspector__relation">
+                      {' '}
+                      — {item.relationLabel}
+                    </span>
+                  ) : null}
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))}
+      </article>
+    ))
+  }
+</div>
