@@ -27,7 +27,8 @@ const lead =
     ? 'A 2D preview of the active knowledge atlas — open the full atlas to explore every node.'
     : 'پیش‌نمایشی دوبعدی از اطلس دانش فعال — برای کاوش همه گره‌ها اطلس کامل را باز کنید.'
 const ctaLabel = locale === 'en' ? 'Open the full atlas' : 'باز کردن اطلس کامل'
-const unavailableTitle = locale === 'en' ? 'Atlas unavailable' : 'اطلس در دسترس نیست'
+const unavailableTitle =
+  locale === 'en' ? 'Atlas unavailable' : 'اطلس در دسترس نیست'
 const unavailableMessage =
   locale === 'en'
     ? 'The knowledge atlas has no active version right now — the full atlas will return once one is published.'
@@ -48,14 +49,16 @@ const focusHref = (key: string) => `/${locale}/atlas/?focus=node:${key}`
 
   {
     ready && payload ? (
-      <AtlasProjection2d payload={payload} mode="about-preview" />
-      <ul class="about-atlas-preview__nodes">
-        {nodes.map((node) => (
-          <li>
-            <a href={focusHref(node.key)}>{node.label ?? node.key}</a>
-          </li>
-        ))}
-      </ul>
+      <>
+        <AtlasProjection2d payload={payload} mode="about-preview" />
+        <ul class="about-atlas-preview__nodes">
+          {nodes.map((node) => (
+            <li>
+              <a href={focusHref(node.key)}>{node.label ?? node.key}</a>
+            </li>
+          ))}
+        </ul>
+      </>
     ) : (
       <div class="about-atlas-preview__unavailable" role="status">
         <p>
