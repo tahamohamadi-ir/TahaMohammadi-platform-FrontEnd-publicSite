@@ -46,27 +46,6 @@
   display: none;
 }
 
-/* The canvas is a PRESENTATION layer, never a layout participant.
-   With no CSS size, a canvas's used width comes from its `width` attribute, and
-   the scene writes that attribute from `stage.clientWidth` on every resize
-   (`scene-core.ts` calls `renderer.setSize(w, h, false)` and deliberately never
-   touches styles). The attribute then becomes an intrinsic min-content floor for
-   every ancestor track, so after a wide layout has been measured the chain can no
-   longer shrink: shrinking the viewport to mobile left the stage at its desktop
-   width, the page overflowed horizontally, and the next `applySize()` re-read the
-   inflated `stage.clientWidth` and grew the canvas again (measured: 927px stage
-   at a 390px viewport, then 1390px after one resize event).
-   `.ru-labels` and `.ru-leaders` are already absolutely positioned for the same
-   reason; the canvas now matches them, so the scene slot's size is decided by CSS
-   alone and `stage.clientWidth` is always the true available width. */
-.ru-about__stage > .ru-canvas {
-  position: absolute;
-  inset: 0;
-  inline-size: 100%;
-  block-size: 100%;
-  min-inline-size: 0;
-}
-
 /* Projected labels: decorative pointer shortcuts, never a keyboard tree. */
 .ru-labels {
   position: absolute;
@@ -166,92 +145,6 @@ html[data-theme='light'] .ru-leaders line {
 
 .ru-scene[data-universe-interactive='true']:active {
   cursor: grabbing;
-}
-
-/* ---------------------------------------------------------------------------
-   About: the full interactive universe.
-   --------------------------------------------------------------------------- */
-.ru-about {
-  display: grid;
-  gap: var(--space-5, 1.25rem);
-  max-inline-size: 1280px;
-  margin-inline: auto;
-  padding-block: var(--space-10, 2.5rem);
-  padding-inline: max(1rem, env(safe-area-inset-inline, 1rem));
-  inline-size: 100%;
-  box-sizing: border-box;
-  color: var(--color-ink, inherit);
-}
-
-.ru-about__heading {
-  margin: 0;
-  font-size: var(--font-size-2xl, 1.5rem);
-}
-
-.ru-about__lead {
-  margin: 0;
-  max-inline-size: var(--layout-prose, 62ch);
-  font-size: var(--font-size-base, 1rem);
-  line-height: var(--font-line-height-base, 1.7);
-  color: var(--color-ink-secondary, inherit);
-}
-
-.ru-about__stage-wrap {
-  position: relative;
-}
-
-.ru-about__stage {
-  position: relative;
-  min-block-size: 70vh;
-  max-block-size: 85vh;
-  block-size: 74vh;
-  display: grid;
-  place-items: center;
-  overflow: hidden;
-  border: 1px solid var(--color-border-subtle, currentColor);
-  border-radius: var(--radius-lg, 1rem);
-  background: radial-gradient(
-    ellipse at center,
-    color-mix(in srgb, var(--color-brand) 7%, transparent),
-    transparent 70%
-  );
-  touch-action: pan-y;
-}
-
-@media (min-width: 1024px) {
-  .ru-about__stage {
-    min-block-size: 70vh;
-    block-size: 80vh;
-    max-block-size: 85vh;
-  }
-}
-
-/* Mobile: the enclosing page template already supplies the page gutter
-   (`24px` in `.tm-template__main`), so repeating a 16px inset inside the section
-   only shrank the stage — 293px at a 390px viewport, below the 320–360px the
-   mobile contract asks for. Text keeps the template's gutter either way. */
-@media (max-width: 640px) {
-  .ru-about {
-    padding-inline: 0;
-  }
-
-  /* Long domain names ("Story-Driven Dashboard Design Framework") otherwise take
-     most of a narrow stage, leaving the graph almost no room to read. */
-  .ru-about .ru-label {
-    max-inline-size: 9rem;
-  }
-}
-
-/* Camera controls: real buttons, so zoom/reset are keyboard reachable without
-   making the canvas focusable. */
-.ru-about__controls {
-  position: absolute;
-  inset-block-end: var(--space-4, 1rem);
-  inset-inline-end: var(--space-4, 1rem);
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2, 0.5rem);
-  z-index: 2;
 }
 
 .ru-btn {
@@ -499,8 +392,7 @@ html[data-theme='light'] .ru-leaders line {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ru *,
-  .ru-about * {
+  .ru * {
     transition: none !important;
     animation: none !important;
   }
@@ -585,92 +477,6 @@ html[data-theme='light'] .ru-leaders line {
   font-family: var(--font-display);
   font-size: 15px;
   font-weight: 600;
-}
-
-/* --- About workspace: graph + contextual inspector ------------------------
-   The inspector sits BESIDE the graph on desktop instead of several scroll
-   lengths below it: selection is an interaction with the graph, so its detail
-   belongs next to the interaction. */
-@media (min-width: 1024px) {
-  .ru-about__workspace {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(272px, 340px);
-    gap: var(--space-6, 24px);
-    align-items: start;
-  }
-
-  .ru-about__inspector {
-    position: sticky;
-    inset-block-start: 96px;
-  }
-}
-
-.ru-about__inspector {
-  border: 1px solid var(--color-border-subtle, currentColor);
-  border-radius: var(--radius-lg, 16px);
-  padding: var(--space-4, 16px);
-  background: color-mix(in srgb, var(--color-surface) 55%, transparent);
-}
-
-/* Mobile About: detail appears directly under the graph, and only once the
-   visitor has selected something — "tap node -> contextual detail" instead of a
-   form of panels waiting on screen. */
-@media (max-width: 1023px) {
-  .ru-about__inspector {
-    margin-block-start: var(--space-4, 16px);
-  }
-
-  .ru-about:not([data-universe-selection='true']) .ru-about__inspector {
-    display: none;
-  }
-}
-
-/* --- Compact floating control cluster -------------------------------------
-   The five full-width text buttons made the visualisation look like a debug
-   tool. This is the same five actions as an icon cluster: compact, floating,
-   and still real buttons with accessible names and visible focus. */
-.ru-controls {
-  position: absolute;
-  inset-block-end: var(--space-3, 12px);
-  inset-inline-end: var(--space-3, 12px);
-  display: flex;
-  gap: 2px;
-  padding: 3px;
-  border-radius: var(--radius-pill, 999px);
-  border: 1px solid var(--color-border-subtle, currentColor);
-  background: color-mix(in srgb, var(--color-surface) 84%, transparent);
-  backdrop-filter: blur(6px);
-}
-
-.ru-controls__button {
-  inline-size: 30px;
-  block-size: 30px;
-  display: grid;
-  place-items: center;
-  border: 0;
-  border-radius: var(--radius-pill, 999px);
-  background: transparent;
-  color: var(--color-ink-secondary);
-  cursor: pointer;
-  transition:
-    color 140ms ease,
-    background-color 140ms ease;
-}
-
-.ru-controls__button:hover {
-  color: var(--color-ink);
-  background: color-mix(in srgb, var(--color-ink) 10%, transparent);
-}
-
-.ru-controls__button:focus-visible {
-  outline: 2px solid var(--color-focus, var(--color-brand));
-  outline-offset: 2px;
-}
-
-/* "Clear selection" only means something while something is selected. The region
-   already publishes that state, so no script has to manage visibility. */
-.ru-about:not([data-universe-selection='true']) .ru-controls__button--clear {
-  display: none;
 }
 
 /* --- Mobile Home labels ---------------------------------------------------
