@@ -96,6 +96,11 @@ describe('procedural runtime — no authored asset, no orbital implementation', 
 
   it('still contains the modules the direction is made of', () => {
     // Guards against the scan silently passing because the directory moved.
+    // The list is the set the LIVE Atlas 3D scene actually imports
+    // (src/lib/visual/atlas/scene.ts) plus the two modules it reaches
+    // transitively. The retired Home/About scene factories are intentionally
+    // absent: they had no importer after the Home hero path and the About
+    // Three.js mount were retired.
     const names = runtimeSources().map((entry) => entry.name)
     for (const required of [
       'spheres.ts',
@@ -104,8 +109,13 @@ describe('procedural runtime — no authored asset, no orbital implementation', 
       'nodes.ts',
       'edges.ts',
       'materials.ts',
-      'home-scene.ts',
-      'about-scene.ts',
+      'core-object.ts',
+      'scene-core.ts',
+      'theme.ts',
+      'labels.ts',
+      'leaders.ts',
+      'hit-testing.ts',
+      'dispose.ts',
     ]) {
       expect(names).toContain(required)
     }
