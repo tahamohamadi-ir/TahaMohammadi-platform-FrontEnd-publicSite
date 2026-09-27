@@ -106,3 +106,47 @@ describe('AboutAtlasPreview (Plan D Phase 1)', () => {
     expect(html).toContain('data-atlas-projection="about-preview"')
   })
 })
+
+/**
+ * The About preview carried the same production defect as /atlas/: the build
+ * embeds `unavailable` when PUBLIC_API_BASE_URL is empty, and nothing ever
+ * recovered it, so /en/about/ showed "Atlas unavailable" beside a perfectly
+ * valid knowledge map. These cases pin the recovery seam.
+ */
+describe('AboutAtlasPreview runtime recovery seam', () => {
+  it('marks a non-ready About region as revalidatable', async () => {
+    const html = await render(AboutAtlasPreview, {
+      locale: 'en',
+      snapshot: { status: 'unavailable' },
+    })
+
+    // The recovery script only runs where the region is present and the
+    // locale is known; without both, a client fetch would be guesswork.
+    expect(html).toContain('data-atlas-revalidation-target')
+    expect(html).toContain('data-about-atlas-body')
+    expect(html).toContain('data-atlas-locale="en"')
+  })
+
+  it('does not revalidate a ready About preview', async () => {
+    const html = await render(AboutAtlasPreview, {
+      locale: 'en',
+      snapshot: readySnapshot(readPayload('en.json')),
+    })
+
+    // Already authoritative: a fetch here would be a wasted request and a
+    // chance to regress a page that is already correct.
+    expect(html).not.toContain('data-atlas-revalidation-target')
+  })
+
+  it('keeps the honest state in the no-JS server render', async () => {
+    const html = await render(AboutAtlasPreview, {
+      locale: 'fa',
+      snapshot: { status: 'unavailable' },
+    })
+
+    // The honest Persian state must survive in the served HTML, because a
+    // visitor with JavaScript disabled sees exactly this.
+    expect(html).toContain('اطلس در دسترس نیست')
+    expect(html).not.toContain('data-atlas-node=')
+  })
+})

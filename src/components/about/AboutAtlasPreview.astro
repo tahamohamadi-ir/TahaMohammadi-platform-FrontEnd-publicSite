@@ -48,6 +48,11 @@ const copy =
 
 const atlasHref = `/${locale}/atlas/`
 const status = snapshot.status
+/**
+ * Only a non-ready preview is revalidated client-side. A `ready` preview is
+ * already authoritative, so it is never marked and never re-fetched.
+ */
+const needsRevalidation = status === 'unavailable' || status === 'invalid'
 ---
 
 <section
@@ -55,37 +60,48 @@ const status = snapshot.status
   id="about-atlas"
   data-about-atlas
   data-atlas-status={status}
+  data-atlas-locale={locale}
+  {...(needsRevalidation ? { 'data-atlas-revalidation-target': '' } : {})}
   aria-labelledby="about-atlas-heading"
 >
   <h2 id="about-atlas-heading" class="about-atlas__heading">{copy.heading}</h2>
   <p class="about-atlas__lead">{copy.lead}</p>
 
-  {
-    snapshot.status === 'ready' ? (
-      <div class="about-atlas__stage" data-about-atlas-stage>
-        <AtlasProjection2d
-          payload={snapshot.payload}
-          mode="about-preview"
-          viewport={{ width: 640, height: 420 }}
-        />
-      </div>
-    ) : snapshot.status === 'invalid' ? (
-      <div class="about-atlas__state" role="status">
-        <p class="about-atlas__state-title">{copy.invalidTitle}</p>
-        <p class="about-atlas__state-message">{copy.invalidMessage}</p>
-      </div>
-    ) : (
-      <div class="about-atlas__state" role="status">
-        <p class="about-atlas__state-title">{copy.unavailableTitle}</p>
-        <p class="about-atlas__state-message">{copy.unavailableMessage}</p>
-      </div>
-    )
-  }
+  <div data-about-atlas-body>
+    {
+      snapshot.status === 'ready' ? (
+        <div class="about-atlas__stage" data-about-atlas-stage>
+          <AtlasProjection2d
+            payload={snapshot.payload}
+            mode="about-preview"
+            viewport={{ width: 640, height: 420 }}
+          />
+        </div>
+      ) : snapshot.status === 'invalid' ? (
+        <div class="about-atlas__state" role="status">
+          <p class="about-atlas__state-title">{copy.invalidTitle}</p>
+          <p class="about-atlas__state-message">{copy.invalidMessage}</p>
+        </div>
+      ) : (
+        <div class="about-atlas__state" role="status">
+          <p class="about-atlas__state-title">{copy.unavailableTitle}</p>
+          <p class="about-atlas__state-message">{copy.unavailableMessage}</p>
+        </div>
+      )
+    }
+  </div>
 
   <p class="about-atlas__cta">
     <a class="about-atlas__link" href={atlasHref}>{copy.cta}</a>
   </p>
 </section>
+
+{/* Availability recovery — same contract as /atlas/, own entry point. */}
+{
+  needsRevalidation && (
+    <script src="../../scripts/atlas-about-revalidate.ts" />
+  )
+}
 
 <style>
   .about-atlas {

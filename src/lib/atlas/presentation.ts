@@ -257,6 +257,35 @@ export function buildSharedAtlasBodyHtml(
   return buildStateHtml(locale, 'error')
 }
 
+/**
+ * About preview body HTML.
+ *
+ * The About narrative shows a compact 2D projection of the same published
+ * topology, without the full Atlas chrome (search, filters, inspector). It
+ * exists so the client-side availability recovery on the About page renders
+ * through the SAME projection builder the server render uses, rather than a
+ * second, drift-prone implementation.
+ *
+ * The honest state copy is reused verbatim from `stateCopy`, so the server
+ * render and the client recovery cannot disagree about what "unavailable"
+ * means in either language.
+ */
+export function buildAboutPreviewHtml(
+  payload: AtlasPayload,
+  locale: 'en' | 'fa',
+  focusKey?: string | null,
+): string {
+  return buildProjectionHtml(payload, focusKey).html
+}
+
+/** The exact honest-state markup the About preview renders when not ready. */
+export function buildAboutStateHtml(
+  locale: 'en' | 'fa',
+  state: 'empty' | 'error',
+): string {
+  return buildStateHtml(locale, state)
+}
+
 export interface PreviewRegionLike {
   dataset: DOMStringMap | Record<string, string | undefined>
   querySelector(selectors: string): { innerHTML: string } | null

@@ -28,9 +28,61 @@ import {
   buildAtlasIndexModel,
   type AtlasSnapshot,
 } from '../../atlas/snapshot'
+import type { AtlasPayload } from '../../atlas/model'
 import { validateAtlasPayload, type AtlasRejection } from '../../atlas/validate'
 
-export type RevalidationState =
+/**
+ * Fetch and validate the public Atlas payload for a locale.
+ *
+ * Shared by both client recovery entries (the full Atlas route and the About
+ * preview) so there is exactly ONE network contract in the codebase: a single
+ * anonymous same-origin GET, no credentials, no token, no reader identifier,
+ * and the existing validator — a validator validates, never reshapes.
+ *
+ * This performs no DOM work and never throws; the caller decides what to
+ * render, and every non-`ok` outcome means the honest state stays.
+ */
+export type AtlasFetchOutcome =
+  | { state: 'ok'; payload: AtlasPayload; etag: string | null }
+  | { state: 'kept-unavailable' }
+  | { state: 'kept-invalid'; reason: AtlasRejection }
+  | { state: 'kept-error' }
+
+export async function revalidateAtlasPayload(
+  locale: 'en' | 'fa',
+  fetchFn: typeof fetch = fetch,
+): Promise<AtlasFetchOutcome> {
+  let response: Response
+  try {
+    response = await fetchFn(`/api/atlas/${locale}`, {
+      credentials: 'omit',
+      headers: { Accept: 'application/json' },
+    })
+  } catch {
+    return { state: 'kept-error' }
+  }
+
+  // 404 = the backend genuinely has no active version. That stays honest.
+  if (response.status === 404 || !response.ok) {
+    return { state: 'kept-unavailable' }
+  }
+
+  let raw: unknown
+  try {
+    raw = await response.json()
+  } catch {
+    return { state: 'kept-invalid', reason: 'not-object' }
+  }
+
+  const validated = validateAtlasPayload(raw)
+  if (!validated.ok) {
+    return { state: 'kept-invalid', reason: validated.reason }
+  }
+
+  return { state: 'ok', payload: validated.payload, etag: readEtag(response) }
+}
+
+export type RevalidationStateName =
   | 'recovered'
   | 'kept-unavailable'
   | 'kept-invalid'
@@ -148,42 +200,19 @@ export async function revalidateAtlasRegion(
   const body = bodyOf(region)
   if (!body) return { state: 'not-eligible' }
 
-  let response: Response
-  try {
-    response = await fetchFn(`/api/atlas/${locale}`, {
-      credentials: 'omit',
-      headers: { Accept: 'application/json' },
-    })
-  } catch {
-    region.setAttribute('data-atlas-revalidation', 'kept-error')
-    return { state: 'kept-error' }
-  }
-
-  // 404 = the backend genuinely has no active version. That stays honest.
-  if (response.status === 404 || !response.ok) {
-    region.setAttribute('data-atlas-revalidation', 'kept-unavailable')
-    return { state: 'kept-unavailable' }
-  }
-
-  let raw: unknown
-  try {
-    raw = await response.json()
-  } catch {
-    region.setAttribute('data-atlas-revalidation', 'kept-invalid')
-    return { state: 'kept-invalid', reason: 'not-object' }
-  }
-
-  const validated = validateAtlasPayload(raw)
-  if (!validated.ok) {
-    region.setAttribute('data-atlas-revalidation', 'kept-invalid')
-    return { state: 'kept-invalid', reason: validated.reason }
+  // One shared fetch + validate, so this route and the About preview can
+  // never drift into two different network or validation contracts.
+  const outcome = await revalidateAtlasPayload(locale, fetchFn)
+  if (outcome.state !== 'ok') {
+    region.setAttribute('data-atlas-revalidation', outcome.state)
+    return outcome
   }
 
   const snapshot: Extract<AtlasSnapshot, { status: 'ready' }> = {
     status: 'ready',
-    payload: validated.payload,
-    etag: readEtag(response),
-    html: buildAtlasIndexModel(validated.payload),
+    payload: outcome.payload,
+    etag: outcome.etag,
+    html: buildAtlasIndexModel(outcome.payload),
   }
   adopt(region, locale, body, snapshot)
   return { state: 'recovered' }
