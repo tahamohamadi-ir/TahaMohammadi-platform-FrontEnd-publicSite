@@ -8,6 +8,10 @@
  */
 import { enhanceAtlasRegion } from '../lib/visual/atlas/enhancement'
 import {
+  revalidateAtlasRegion,
+  resolveRevalidationTarget,
+} from '../lib/visual/atlas/revalidate'
+import {
   createSelectionModel,
   type AtlasFocus,
   type SelectionModel,
@@ -243,11 +247,7 @@ function wireRegion(region: Element) {
   })
 }
 
-function enhanceAtlas() {
-  const region = document.querySelector(
-    '[data-atlas-region][data-atlas-status="ready"]',
-  )
-  if (!(region instanceof HTMLElement)) return
+function startEnhancement(region: HTMLElement) {
   wireRegion(region)
   // Desktop 3D on capable viewports; the orchestrator falls back to 2D
   // honestly on every failure. dispose-all on page leave.
@@ -289,6 +289,41 @@ function enhanceAtlas() {
     run()
   }
   void buildFocusUrl
+}
+
+/**
+ * Availability recovery.
+ *
+ * The static build embeds an honest `unavailable`/`invalid` region whenever it
+ * could not reach the API (an empty `PUBLIC_API_BASE_URL` in a production
+ * build is the common case). Selecting only the `ready` region meant a healthy
+ * public API could never rescue that page — the feature shipped dead.
+ *
+ * Recovery is a strict enhancement: one anonymous same-origin GET, validated
+ * by the existing validator, rendered by the existing shared presentation
+ * path. Any failure keeps the server-rendered honest state untouched, so a
+ * visitor with JavaScript disabled — or on a failed network — still sees a
+ * truthful page.
+ */
+function enhanceAtlas() {
+  const target = resolveRevalidationTarget(document)
+  if (!target || !(target.region instanceof HTMLElement)) return
+  const { region } = target
+
+  if (!target.needsRevalidation) {
+    startEnhancement(region)
+    return
+  }
+
+  void revalidateAtlasRegion(region, { locale: target.locale })
+    .then((outcome) => {
+      // Only a recovered region has a payload to wire; every other outcome
+      // already left the honest SSR state in place.
+      if (outcome.state === 'recovered') startEnhancement(region)
+    })
+    .catch(() => {
+      // Never break the page; the honest state stays.
+    })
 }
 
 enhanceAtlas()
