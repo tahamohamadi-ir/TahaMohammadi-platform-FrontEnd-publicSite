@@ -15,28 +15,16 @@
  */
 
 /* ---------------------------------------------------------------------------
-   Home: the guided stage is taller and holds position while its track scrolls,
-   which is what gives the four designed states room to play. The document order
-   and the hero's frozen section order are unchanged.
+   Retired (Plan D Task 11, public-site 034b73a): the Home guided stage
+   `.ru-track` / `.ru-stage` and the `.ru-scene` slot lost their only emitters
+   when the unwired Home research-universe hero path was removed.
+
+   Kept, because the live Knowledge Atlas scene still uses them: the
+   `.ru-label*` / `.ru-leaders` class layer plus the `--ru-presentation`,
+   `--ru-node-radius`, `--ru-edge-bow`, `--ru-shared-sphere` and
+   `--ru-label-gap` custom properties. Evidence: DEAD-CODE-INVENTORY.md
+   §3.3/§3.7.
    --------------------------------------------------------------------------- */
-.ru-track {
-  position: relative;
-  min-block-size: 62vh;
-}
-
-/* The stage holds position inside its own track. It deliberately does NOT set
-   min-block-size: `.hg-scene` in hero-graph.css owns the reserved slot size, and
-   two competing declarations would make the reserved height cascade-dependent. */
-.ru-stage {
-  position: static;
-}
-
-@media (min-width: 1024px) {
-  .ru-stage {
-    position: sticky;
-    inset-block-start: 12vh;
-  }
-}
 
 .ru-canvas {
   display: block;
@@ -126,26 +114,7 @@ html[data-theme='light'] .ru-leaders line {
   opacity: 0.54;
 }
 
-/* The scene slot itself: a calm instrument backdrop, no ornament. */
-.ru-scene {
-  position: relative;
-  display: grid;
-  place-items: center;
-  overflow: hidden;
-  background: radial-gradient(
-    ellipse at center,
-    color-mix(in srgb, var(--color-brand) 6%, transparent),
-    transparent 68%
-  );
-}
-
-.ru-scene[data-universe-interactive='true'] {
-  cursor: grab;
-}
-
-.ru-scene[data-universe-interactive='true']:active {
-  cursor: grabbing;
-}
+/* Retired: the `.ru-scene` slot (Plan D Task 11) — no emitter remains. */
 
 .ru-btn {
   display: inline-flex;
@@ -372,12 +341,6 @@ html[data-theme='light'] .ru-leaders line {
   display: none;
 }
 
-.ru[data-universe-status='empty'] .ru-scene,
-.ru[data-universe-status='error'] .ru-scene,
-.ru[data-universe-status='unavailable'] .ru-scene {
-  display: none;
-}
-
 /* Screen-reader-only helper for the state readout. */
 .ru-visually-hidden {
   position: absolute;
@@ -395,15 +358,6 @@ html[data-theme='light'] .ru-leaders line {
   .ru * {
     transition: none !important;
     animation: none !important;
-  }
-
-  .ru-track {
-    min-block-size: 0;
-  }
-
-  .ru-stage {
-    position: static;
-    inset-block-start: auto;
   }
 }
 
