@@ -1,14 +1,12 @@
-import { readFileSync } from 'node:fs'
+﻿import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { experimental_AstroContainer as AstroContainer } from 'astro/container'
 import { describe, expect, it } from 'vitest'
 
 import {
   adaptHeroGraph,
   createStaticRelatedResolver,
   type GraphPayloadOut,
-  type HeroGraphModel,
 } from '../../lib/hero-graph-content'
 import {
   SCENE_CONTRACT_VERSION,
@@ -20,8 +18,6 @@ import {
   toScenePayload,
   validateScenePayload,
 } from '../../lib/visual/scene-contract'
-import GraphNodeList from './GraphNodeList.astro'
-import HeroGraph from './HeroGraph.astro'
 
 const repositoryRoot = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -29,18 +25,6 @@ const repositoryRoot = path.resolve(
   '..',
   '..',
 )
-
-type Component = Parameters<
-  Awaited<ReturnType<typeof AstroContainer.create>>['renderToString']
->[0]
-
-async function render(
-  component: Component,
-  props: Record<string, unknown> = {},
-) {
-  const container = await AstroContainer.create()
-  return container.renderToString(component, { props })
-}
 
 function readSource(relativePath: string): string {
   return readFileSync(path.join(repositoryRoot, relativePath), 'utf8')
@@ -87,7 +71,7 @@ const resolver = createStaticRelatedResolver([
   },
 ])
 
-function readyModel(): Extract<HeroGraphModel, { status: 'ready' }> {
+function readyModel() {
   const model = adaptHeroGraph(readFixturePayload(), {
     locale: 'en',
     resolveRelatedHref: resolver,
@@ -203,114 +187,6 @@ describe('CA-03 locked scene contract', () => {
   })
 })
 
-describe('CA-03 semantic HeroGraph', () => {
-  it('renders the ready graph with native controls and a hidden canvas', async () => {
-    const html = await render(HeroGraph, { locale: 'en', graph: readyModel() })
-    expect(html).toMatch(/data-graph-region/)
-    expect(html).toMatch(/data-graph-status="ready"/)
-    expect(html).toMatch(/data-graph-locale="en"/)
-    expect(html).toMatch(/data-scene-contract="ca03-1.0.0"/)
-    expect(html).toMatch(/<h2 id="home-graph-heading"[^>]*>/)
-    expect(html).toContain('Research Statement')
-    expect(html.match(/<details[\s>]/g)?.length).toBe(5)
-    expect(html.match(/<summary[\s>]/g)?.length).toBe(5)
-    expect(html).toMatch(/data-graph-canvas/)
-    expect(html).toMatch(/aria-hidden="true"/)
-    expect(html).toMatch(/<canvas[^>]*hidden/)
-    expect(html).toMatch(/data-graph-detail/)
-    expect(html).toMatch(/Select a node to read its summary/)
-    expect(html).not.toMatch(/data-theme-picture/)
-    expect(html).not.toMatch(/portal-orbit/)
-    expect(html).not.toMatch(/<h1[\s>]/)
-  })
-
-  it('renders only resolver-verified links and an API-only edge index', async () => {
-    const html = await render(HeroGraph, { locale: 'en', graph: readyModel() })
-    expect(html).toMatch(/href="\/en\/research\/human-centered-ai\/"/)
-    expect(html.match(/data-graph-edge="/g)?.length).toBe(4)
-    expect(html).toContain('Human-Centered AI')
-    expect(html).not.toMatch(/tabindex/i)
-  })
-
-  it('shows the selected node in the reserved detail area', async () => {
-    const html = await render(HeroGraph, {
-      locale: 'en',
-      graph: readyModel(),
-      selectedId: 'node-02',
-    })
-    const detail = html.match(/data-graph-detail[\s\S]*?<\/div>/)?.[0] ?? ''
-    expect(detail).toContain('Visual Analytics')
-    expect(detail).toContain('Inspectable evidence for real decisions.')
-    expect(detail).toMatch(/href="\/en\/blog\/vtd-edge\/"/)
-  })
-
-  it('renders honest empty, error, and unavailable states without fake nodes', async () => {
-    const states: Array<{
-      graph: HeroGraphModel
-      status: string
-      copy: RegExp
-    }> = [
-      {
-        graph: { status: 'empty', locale: 'en', warnings: [] },
-        status: 'empty',
-        copy: /No graph nodes yet/,
-      },
-      {
-        graph: { status: 'error', locale: 'en', issues: ['fixture'] },
-        status: 'error',
-        copy: /Graph data could not be shown/,
-      },
-      {
-        graph: { status: 'unavailable', locale: 'fa' },
-        status: 'unavailable',
-        copy: /گراف پژوهشی در دسترس نیست/,
-      },
-    ]
-    for (const state of states) {
-      const html = await render(HeroGraph, {
-        locale: state.graph.locale,
-        graph: state.graph,
-      })
-      expect(html).toMatch(new RegExp(`data-graph-status="${state.status}"`))
-      expect(html).toMatch(state.copy)
-      expect(html).not.toMatch(/data-graph-node=/)
-      expect(html).not.toMatch(/data-graph-canvas/)
-    }
-  })
-})
-
-describe('CA-03 GraphNodeList', () => {
-  it('renders one native disclosure per node with summaries and links', async () => {
-    const model = readyModel()
-    const html = await render(GraphNodeList, {
-      locale: 'en',
-      nodes: model.nodes,
-      selectedId: 'node-03',
-      listLabel: 'Research graph nodes',
-    })
-    expect(html).toMatch(/aria-label="Research graph nodes"/)
-    expect(html.match(/data-graph-node="/g)?.length).toBe(5)
-    expect(html).toMatch(/data-x="-80"/)
-    expect(html).toMatch(/data-color-role="brand"/)
-    expect(html.match(/<a[\s>]/g)?.length).toBe(4)
-    expect(html).not.toMatch(/tabindex/i)
-    expect(html).not.toMatch(/aria-disabled/i)
-  })
-
-  it('renders no anchors while related records stay unresolved', async () => {
-    const unresolved = adaptHeroGraph(readFixturePayload(), { locale: 'en' })
-    if (unresolved.status !== 'ready') throw new Error('expected ready model')
-    const html = await render(GraphNodeList, {
-      locale: 'en',
-      nodes: unresolved.nodes,
-      selectedId: null,
-      listLabel: 'Research graph nodes',
-    })
-    expect(html).not.toMatch(/<a[\s>]/)
-    expect(html.match(/<details[\s>]/g)?.length).toBe(5)
-  })
-})
-
 describe('CA-03 Home integration', () => {
   it('keeps the interactive graph off Home and wires the image sequence instead', () => {
     for (const locale of ['fa', 'en'] as const) {
@@ -327,7 +203,7 @@ describe('CA-03 Home integration', () => {
   })
 
   // The graph experience was moved, not weakened: About is still the
-  // interactive surface — now via the Atlas about-preview (Plan D Task 7),
+  // interactive surface â€” now via the Atlas about-preview (Plan D Task 7),
   // which replaced the legacy hero-graph mount and its loader.
   it('keeps the interactive graph on About', () => {
     const about = readSource('src/components/about/AboutPageContent.astro')

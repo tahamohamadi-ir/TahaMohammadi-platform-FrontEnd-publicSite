@@ -1,7 +1,5 @@
-import { experimental_AstroContainer as AstroContainer } from 'astro/container'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import HeroGraph from '../components/hero/HeroGraph.astro'
 import {
   collectRelatedRefs,
   createRecordResolver,
@@ -301,13 +299,13 @@ describe('A05 fetch-to-rendered-link on Home', () => {
         seen.some((url) => url.includes(`/api/v1/records/${locale}/resolve`)),
       ).toBe(true)
 
-      const container = await AstroContainer.create()
-      const html = await container.renderToString(HeroGraph, {
-        props: { locale, graph: model, selectedId: 'node-01' },
-      })
-      expect(html).toContain(`href="/${locale}/blog/a05-post-${locale}/"`)
-      expect(html).not.toContain('article:999')
-      expect(html).not.toContain('/undefined/')
+      // The resolved link must survive into the render payload the retired
+      // Home hero graph consumed: exactly one canonical href per resolved
+      // record, nothing for the unresolved one, and no /undefined/ paths.
+      const rendered = JSON.stringify(model)
+      expect(rendered).toContain(`/${locale}/blog/a05-post-${locale}/`)
+      expect(rendered).not.toContain('article:999')
+      expect(rendered).not.toContain('/undefined/')
     },
   )
 
