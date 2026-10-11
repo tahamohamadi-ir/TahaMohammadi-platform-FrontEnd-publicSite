@@ -319,7 +319,7 @@ export function createAtlasScene(options: AtlasSceneOptions): AtlasSceneHandle {
   const factory =
     options.coreFactory ??
     ((coreOptions: SceneCoreOptions) => createSceneCore(coreOptions))
-  let core: AtlasSceneCore | null = null
+  let core: AtlasSceneCore | null
   try {
     core = factory({
       canvas: options.canvas,

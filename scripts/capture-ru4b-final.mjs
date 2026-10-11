@@ -676,7 +676,7 @@ async function main() {
     await graphAudit.goto(`${BASE}/en/`)
     const audit = await graphAudit.evaluate(() => {
       const payloadElement = document.querySelector('[data-universe-payload]')
-      let payload = null
+      let payload
       try {
         payload = payloadElement ? JSON.parse(payloadElement.textContent) : null
       } catch {
