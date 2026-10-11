@@ -225,6 +225,16 @@ const seriesFilters =
                         .filter(Boolean)
                         .join(' · ')}
                     </p>
+                    {article.topic_tags?.length ? (
+                      <ul
+                        class="writing-page__tags"
+                        aria-label={locale === 'en' ? 'Topics' : 'موضوعات'}
+                      >
+                        {article.topic_tags.map((tag) => (
+                          <li class="writing-page__tag">{tag.name}</li>
+                        ))}
+                      </ul>
+                    ) : null}
                     {article.series?.length ? (
                       <p class="writing-page__card-series">
                         {article.series.map((item) => (

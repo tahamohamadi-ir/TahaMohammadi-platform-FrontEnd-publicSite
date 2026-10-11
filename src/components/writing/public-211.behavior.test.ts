@@ -79,6 +79,14 @@ describe('PUBLIC-211/212 writing pages', () => {
                 published_at: '2026-01-01T00:00:00Z',
               },
             ],
+            topic_tags: [
+              {
+                locale: 'en',
+                slug: 'visual-analytics',
+                name: 'Visual analytics',
+                description: '',
+              },
+            ],
           },
         ],
       },
@@ -87,6 +95,7 @@ describe('PUBLIC-211/212 writing pages', () => {
     expect(html).toContain('Visual Discourse')
     expect(html).toMatch(/href="\/en\/blog\/visual-discourse\/"/)
     expect(html).toMatch(/href="\/en\/blog\/series\/notes\/"/)
+    expect(html).toContain('Visual analytics')
     expect(html).toMatch(/href="\/en\/books\/dashboard-book\/"/)
     expect(html).toContain('Search writing')
     expect(html).toContain('Books')
@@ -124,5 +133,7 @@ describe('PUBLIC-211/212 writing pages', () => {
     expect(html).toContain('Sanitized body paragraph.')
     expect(html).toContain('Visual analytics')
     expect(html).toContain('8 min read')
+    expect(html).toContain('Published')
+    expect(html).toContain('2026')
   })
 })

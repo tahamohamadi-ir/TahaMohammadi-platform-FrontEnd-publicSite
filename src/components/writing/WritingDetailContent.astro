@@ -6,6 +6,7 @@ import Link from '../ui/Link.astro'
 import StoryDocument from '../story/StoryDocument.astro'
 import { hasStoryContent } from '../../lib/story-content'
 import {
+  formatPublishedDate,
   formatReadingTime,
   getWritingRouteTitle,
   getWritingUnavailableCopy,
@@ -60,6 +61,16 @@ const writingHref = localePath(locale, 'blog')
         ) : null}
 
         <dl class="writing-page__meta">
+          {formatPublishedDate(locale, model.article.published_at) ? (
+            <>
+              <dt>{locale === 'en' ? 'Published' : 'انتشار'}</dt>
+              <dd>
+                <time datetime={model.article.published_at ?? undefined}>
+                  {formatPublishedDate(locale, model.article.published_at)}
+                </time>
+              </dd>
+            </>
+          ) : null}
           {formatReadingTime(locale, model.article.reading_time_minutes) ? (
             <>
               <dt>{locale === 'en' ? 'Reading time' : 'زمان مطالعه'}</dt>
@@ -84,6 +95,12 @@ const writingHref = localePath(locale, 'blog')
                   </a>
                 ))}
               </dd>
+            </>
+          ) : null}
+          {model.article.accessibility_notes?.trim() ? (
+            <>
+              <dt>{locale === 'en' ? 'Accessibility' : 'دسترسی'}</dt>
+              <dd>{model.article.accessibility_notes}</dd>
             </>
           ) : null}
         </dl>
