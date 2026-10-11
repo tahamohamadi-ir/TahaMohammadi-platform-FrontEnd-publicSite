@@ -2,13 +2,13 @@
 
 Honest client-side revalidation for the public Knowledge Atlas.
 
-| | |
-|---|---|
-| **Base commit** | `bddcebea0a653dfd8b2402f9e2d76d99b0a2de6b` (`main`) |
-| **Branch** | `fix/atlas-runtime-availability` |
-| **Worktree** | `D:/Project/.atlas-worktrees/public-site-atlas-runtime` |
-| **Result commit** | _recorded below after commit_ |
-| **Status** | Implemented and verified locally. **NOT deployed. NOT owner-accepted. NOT pushed or merged.** |
+|                   |                                                                                               |
+| ----------------- | --------------------------------------------------------------------------------------------- |
+| **Base commit**   | `bddcebea0a653dfd8b2402f9e2d76d99b0a2de6b` (`main`)                                           |
+| **Branch**        | `fix/atlas-runtime-availability`                                                              |
+| **Worktree**      | `D:/Project/.atlas-worktrees/public-site-atlas-runtime`                                       |
+| **Result commit** | _recorded below after commit_                                                                 |
+| **Status**        | Implemented and verified locally. **NOT deployed. NOT owner-accepted. NOT pushed or merged.** |
 
 ---
 
@@ -57,7 +57,7 @@ Owns the recovery decision and the single request.
 - `resolveRevalidationTarget(root)` — selects the **bare** `[data-atlas-region]`
   and returns `{region, locale, needsRevalidation}`. This is where the old
   ready-only selector lived; the fix is to match the region and return the
-  decision *as data*, so one selection path serves both cases.
+  decision _as data_, so one selection path serves both cases.
 - `revalidateAtlasRegion(region, {locale, fetchFn})` — **one** same-origin
   `GET /api/atlas/{locale}` with `credentials: 'omit'` and
   `Accept: application/json`. No `Authorization`, no `If-None-Match` (there is
@@ -80,7 +80,6 @@ the outcome is `recovered` — otherwise the honest SSR state simply stays.
 ### `src/lib/visual/atlas/revalidate.test.ts` (new, 14 tests)
 
 ---
-
 
 ## 3. RED before GREEN — real output
 
@@ -136,28 +135,32 @@ into a node-environment test without a DOM.
    Duration  352ms
 ```
 
-
 ## 4. Acceptance commands — real output
 
 All four ran in the worktree on the final state.
 
 **`npm run lint`**
+
 ```
 > tahamohammadi-public-site@0.0.1 lint
 > eslint .
 ```
+
 Clean — no findings, exit 0.
 
 **`npm test`**
+
 ```
  Test Files  121 passed (121)
       Tests  727 passed | 4 skipped (731)
    Start at  04:54:39
    Duration  177.90s (transform 19.16s, setup 0ms, import 108.03s, tests 52.23s, environment 10ms)
 ```
+
 The 4 skipped are pre-existing skips, not new ones.
 
 **`npm run build`**
+
 ```
 [pagefind] Pagefind indexed 22 en pages into ...\dist\pagefind\en
 [pagefind] Pagefind indexed 22 fa pages into ...\dist\pagefind\fa
@@ -167,6 +170,7 @@ The 4 skipped are pre-existing skips, not new ones.
 ```
 
 **`npm run validate:seo`**
+
 ```
 PASS: SEO artifacts validated; sitemap covers 16 index routes x 2 locales;
 44 locale HTML pages passed canonical/hreflang checks; per-locale Pagefind indexes present.
@@ -187,7 +191,8 @@ implement it in this slice, deliberately.**
 
 The reasoning, both sides:
 
-*Why it should have it:*
+_Why it should have it:_
+
 - The About preview carries the **same** production symptom: `data-about-atlas`
   with `data-atlas-status="unavailable"` while the API is healthy. A visitor on
   `/en/about/` sees "Atlas unavailable" next to a perfectly valid knowledge map.
@@ -195,7 +200,8 @@ The reasoning, both sides:
   disagreeing about the same published version. The About page already ships a
   CTA into the full Atlas, so the narrative would contradict itself.
 
-*Why it is not in this commit:*
+_Why it is not in this commit:_
+
 - `AboutAtlasPreview.astro` renders its stage through the Astro component
   `AtlasProjection2d.astro` and **ships no runtime script at all**.
   `atlas-runtime.ts` is referenced only by `src/pages/{en,fa}/atlas/index.astro`
@@ -216,7 +222,7 @@ The reasoning, both sides:
   recovered markup contains no `tabindex` anywhere, keeps `aria-hidden="true"`
   on the decorative 2D projection, and exposes interactive facts only as native
   `<button>` / `<input>` — never a div with a handler.
-- **One renderer.** A runtime test asserts `atlas-runtime.ts` does *not* import
+- **One renderer.** A runtime test asserts `atlas-runtime.ts` does _not_ import
   `buildSharedAtlasBodyHtml`; recovery markup must come from the shared path in
   `revalidate.ts`.
 - **Locale parity.** `resolveRevalidationTarget` reads `data-atlas-locale`, so
@@ -235,7 +241,7 @@ The reasoning, both sides:
 3. **First region only.** `resolveRevalidationTarget` returns the first matching
    region. No current route has two; noted rather than pre-solved.
 4. **The build-time cause is untouched.** `fetchAtlasSnapshot` still returns
-   `unavailable` when `PUBLIC_API_BASE_URL` is empty, so the *static* HTML is
+   `unavailable` when `PUBLIC_API_BASE_URL` is empty, so the _static_ HTML is
    still wrong and the fix is entirely client-side. Setting
    `PUBLIC_API_BASE_URL` at build time would fix first paint properly and is
    arguably the better long-term route — but it needs deployment/owner
@@ -253,7 +259,7 @@ This is the most important section in the handoff.
 - **NOT owner-accepted.** No owner has reviewed this change.
 - **NOT verified against the live production API.** All verification used the
   checked-in fixture `tests/fixtures/atlas/en.json` and a local static build.
-  That the *real* `https://tahamohamadi.ir/api/atlas/en` body passes
+  That the _real_ `https://tahamohamadi.ir/api/atlas/en` body passes
   `validateAtlasPayload` end-to-end in a browser is **assumed, not measured**.
 - **NOT verified in a real browser.** No Playwright run. The runtime entry is
   covered by a source-level guard plus a unit-tested module, not a live DOM.
@@ -267,8 +273,9 @@ This is the most important section in the handoff.
 An unexecuted command is not a pass. Sections 4 and 8 together are the honest
 state of this work.
 
-  (plus a comment in `AtlasPageContent.astro`). There is no
-  `[data-atlas-body]` mount and no bundled entry on that route.
+(plus a comment in `AtlasPageContent.astro`). There is no
+`[data-atlas-body]` mount and no bundled entry on that route.
+
 - Fixing it properly therefore means adding a second client entry for the About
   route, or generalising the existing one. That is a larger change with its own
   performance budget and no-JS surface on a page outside this task's scope —

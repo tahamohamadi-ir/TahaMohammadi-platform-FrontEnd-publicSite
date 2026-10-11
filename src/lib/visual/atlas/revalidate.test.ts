@@ -72,7 +72,6 @@ function okResponse(body: unknown, etag: string | null = '"v1"'): Response {
   } as unknown as Response
 }
 
-
 describe('revalidateAtlasRegion — SSR unavailable/invalid recovery', () => {
   it('recovers an unavailable region to a rendered, validated Atlas', async () => {
     const payload = readPayload('en.json')
@@ -103,7 +102,9 @@ describe('revalidateAtlasRegion — SSR unavailable/invalid recovery', () => {
 
   it('performs exactly one anonymous same-origin GET and no more', async () => {
     const target = region('unavailable', SSR_UNAVAILABLE_BODY)
-    const fetchFn = vi.fn().mockResolvedValue(okResponse(readPayload('en.json')))
+    const fetchFn = vi
+      .fn()
+      .mockResolvedValue(okResponse(readPayload('en.json')))
 
     await revalidateAtlasRegion(target as never, {
       locale: 'fa',
@@ -126,12 +127,13 @@ describe('revalidateAtlasRegion — SSR unavailable/invalid recovery', () => {
     expect(url).not.toContain('#')
   })
 
-
   it('keeps the honest SSR state when the API has no published version', async () => {
     const target = region('unavailable', SSR_UNAVAILABLE_BODY)
-    const fetchFn = vi
-      .fn()
-      .mockResolvedValue({ ok: false, status: 404, headers: { get: () => null } })
+    const fetchFn = vi.fn().mockResolvedValue({
+      ok: false,
+      status: 404,
+      headers: { get: () => null },
+    })
 
     const outcome = await revalidateAtlasRegion(target as never, {
       locale: 'en',
@@ -191,7 +193,9 @@ describe('revalidateAtlasRegion — SSR unavailable/invalid recovery', () => {
 
   it('keeps accessibility: no tab stops, presentation stays aria-hidden', async () => {
     const target = region('unavailable', SSR_UNAVAILABLE_BODY)
-    const fetchFn = vi.fn().mockResolvedValue(okResponse(readPayload('en.json')))
+    const fetchFn = vi
+      .fn()
+      .mockResolvedValue(okResponse(readPayload('en.json')))
 
     await revalidateAtlasRegion(target as never, {
       locale: 'en',
@@ -248,9 +252,7 @@ describe('resolveRevalidationTarget — runtime wiring', () => {
   })
 
   it('returns null when the page has no Atlas region', () => {
-    expect(
-      resolveRevalidationTarget({ querySelector: () => null }),
-    ).toBeNull()
+    expect(resolveRevalidationTarget({ querySelector: () => null })).toBeNull()
   })
 })
 

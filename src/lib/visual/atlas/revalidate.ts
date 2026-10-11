@@ -24,10 +24,7 @@
  * matching `enhancement.ts`.
  */
 import { buildSharedAtlasBodyHtml } from '../../atlas/presentation'
-import {
-  buildAtlasIndexModel,
-  type AtlasSnapshot,
-} from '../../atlas/snapshot'
+import { buildAtlasIndexModel, type AtlasSnapshot } from '../../atlas/snapshot'
 import type { AtlasPayload } from '../../atlas/model'
 import { validateAtlasPayload, type AtlasRejection } from '../../atlas/validate'
 
@@ -138,9 +135,9 @@ export interface RevalidationRoot {
 export function resolveRevalidationTarget(
   root: RevalidationRoot,
 ): RevalidationTarget | null {
-  const region = root.querySelector('[data-atlas-region]') as
-    | AtlasRevalidationRegion
-    | null
+  const region = root.querySelector(
+    '[data-atlas-region]',
+  ) as AtlasRevalidationRegion | null
   if (!region) return null
   const locale: 'en' | 'fa' =
     region.getAttribute('data-atlas-locale') === 'fa' ? 'fa' : 'en'

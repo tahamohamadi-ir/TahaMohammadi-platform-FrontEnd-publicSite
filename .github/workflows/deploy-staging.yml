@@ -50,6 +50,10 @@ jobs:
   deploy:
     name: Deploy public site to staging
     needs: verify
+    # Staging was removed 2026-09-26. A push to main must not SSH into the
+    # old host or rewrite the shared edge. Dispatch this job only after a
+    # new staging topology exists.
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     environment: staging
     env:

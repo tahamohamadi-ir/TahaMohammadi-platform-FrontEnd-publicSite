@@ -61,7 +61,7 @@ const needsRevalidation = status === 'unavailable' || status === 'invalid'
   data-about-atlas
   data-atlas-status={status}
   data-atlas-locale={locale}
-  {...(needsRevalidation ? { 'data-atlas-revalidation-target': '' } : {})}
+  {...needsRevalidation ? { 'data-atlas-revalidation-target': '' } : {}}
   aria-labelledby="about-atlas-heading"
 >
   <h2 id="about-atlas-heading" class="about-atlas__heading">{copy.heading}</h2>
@@ -97,11 +97,7 @@ const needsRevalidation = status === 'unavailable' || status === 'invalid'
 </section>
 
 {/* Availability recovery — same contract as /atlas/, own entry point. */}
-{
-  needsRevalidation && (
-    <script src="../../scripts/atlas-about-revalidate.ts" />
-  )
-}
+{needsRevalidation && <script src="../../scripts/atlas-about-revalidate.ts" />}
 
 <style>
   .about-atlas {
