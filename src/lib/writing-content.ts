@@ -12,6 +12,7 @@ import {
 } from './api/client'
 import { buildPublicApiUrl, canFetchPublicApi } from './api/resolve-url'
 import { primaryNav, type Locale } from './navigation'
+import { listSeries, type SeriesListOut } from './series-content'
 
 export type ArticleListOut = components['schemas']['ArticleListOut']
 export type ArticleDetailOut = components['schemas']['ArticleDetailOut']
@@ -19,7 +20,12 @@ export type BookListOut = components['schemas']['BookListOut']
 
 export type WritingIndexModel =
   | { status: 'unavailable' }
-  | { status: 'ready'; articles: ArticleListOut[]; books: BookListOut[] }
+  | {
+      status: 'ready'
+      articles: ArticleListOut[]
+      books: BookListOut[]
+      series?: SeriesListOut[]
+    }
 
 export type WritingDetailModel =
   { status: 'unavailable' } | { status: 'ready'; article: ArticleDetailOut }
@@ -197,15 +203,16 @@ export async function fetchWritingIndex(
     return { status: 'unavailable' }
   }
 
-  const [articles, books] = await Promise.all([
+  const [articles, books, series] = await Promise.all([
     listArticles(locale),
     listBooks(locale),
+    listSeries(locale),
   ])
-  if (!articles.length && !books.length) {
+  if (!articles.length && !books.length && !series.length) {
     return { status: 'unavailable' }
   }
 
-  return { status: 'ready', articles, books }
+  return { status: 'ready', articles, books, series }
 }
 
 export async function fetchArticleDetail(

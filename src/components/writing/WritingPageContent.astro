@@ -170,6 +170,38 @@ const seriesFilters =
           </section>
         ) : null}
 
+        {model.series?.length ? (
+          <section
+            class="writing-page__section"
+            aria-labelledby="writing-series-title"
+          >
+            <h2 id="writing-series-title" class="writing-page__section-title">
+              {locale === 'en' ? 'Series' : 'مجموعه‌ها'}
+            </h2>
+            <ul class="writing-page__list">
+              {model.series.map((series) => (
+                <li>
+                  <article class="writing-page__card">
+                    <h3 class="writing-page__card-title">
+                      <a
+                        href={localePath(locale, `blog/series/${series.slug}`)}
+                        class="writing-page__card-link"
+                      >
+                        {series.title}
+                      </a>
+                    </h3>
+                    {series.description ? (
+                      <p class="writing-page__card-summary">
+                        {series.description}
+                      </p>
+                    ) : null}
+                  </article>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
+
         {model.articles.length ? (
           <section
             class="writing-page__section"

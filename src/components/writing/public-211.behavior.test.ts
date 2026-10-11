@@ -59,6 +59,14 @@ describe('PUBLIC-211/212 writing pages', () => {
             updated_at: null,
           },
         ],
+        series: [
+          {
+            locale: 'en',
+            slug: 'field-notes',
+            title: 'Field notes',
+            description: 'A published series.',
+          },
+        ],
         articles: [
           {
             locale: 'en',
@@ -95,6 +103,8 @@ describe('PUBLIC-211/212 writing pages', () => {
     expect(html).toContain('Visual Discourse')
     expect(html).toMatch(/href="\/en\/blog\/visual-discourse\/"/)
     expect(html).toMatch(/href="\/en\/blog\/series\/notes\/"/)
+    expect(html).toMatch(/href="\/en\/blog\/series\/field-notes\/"/)
+    expect(html).toContain('A published series.')
     expect(html).toContain('Visual analytics')
     expect(html).toMatch(/href="\/en\/books\/dashboard-book\/"/)
     expect(html).toContain('Search writing')

@@ -2,7 +2,11 @@ import { experimental_AstroContainer as AstroContainer } from 'astro/container'
 import { describe, expect, it } from 'vitest'
 import CollectionPage from '../components/series/CollectionPage.astro'
 import DetailPage from '../components/series/DetailPage.astro'
-import { getSeriesRouteTitle, getSeriesUnavailableCopy } from './series-content'
+import {
+  getSeriesRouteTitle,
+  getSeriesUnavailableCopy,
+  seriesListPath,
+} from './series-content'
 
 type Component = Parameters<
   Awaited<ReturnType<typeof AstroContainer.create>>['renderToString']
@@ -26,6 +30,8 @@ describe('PU-16 Series Product Family (F12)', () => {
 
     const faUnavailable = getSeriesUnavailableCopy('fa')
     expect(faUnavailable.title).toBe('مجموعه مقالات در دسترس نیست')
+    expect(seriesListPath('en')).toBe('/api/series/en')
+    expect(seriesListPath('fa')).toBe('/api/series/fa')
   })
 
   it('renders series list page with items and canonical links', async () => {

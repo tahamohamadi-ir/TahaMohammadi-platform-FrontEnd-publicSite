@@ -70,12 +70,17 @@ async function fetchJson<T>(path: string): Promise<T> {
 export async function listSeries(locale: Locale): Promise<SeriesListOut[]> {
   if (!canFetchPublicApi()) return []
   try {
-    const items = await fetchJson<SeriesListOut[]>(`/series/${locale}`)
+    const items = await fetchJson<SeriesListOut[]>(seriesListPath(locale))
     if (!Array.isArray(items)) return []
     return items
   } catch {
     return []
   }
+}
+
+/** Public list route. The API is mounted at `/api/`, not at the site root. */
+export function seriesListPath(locale: Locale): string {
+  return `/api/series/${locale}`
 }
 
 export async function fetchSeriesIndex(
