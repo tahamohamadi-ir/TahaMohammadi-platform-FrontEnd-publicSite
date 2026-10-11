@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest'
 import {
   formatArticleCardMeta,
   formatBookCardMeta,
+  formatPublishedDate,
   formatReadingTime,
   getWritingRouteTitle,
   getWritingUnavailableCopy,
@@ -24,6 +25,9 @@ describe('writing content helpers', () => {
     expect(formatReadingTime('en', 8)).toBe('8 min read')
     expect(formatReadingTime('fa', 8)).toBe('8 دقیقه مطالعه')
     expect(formatReadingTime('en', 0)).toBe('')
+    expect(formatPublishedDate('en', '2026-01-15T00:00:00Z')).toContain('2026')
+    expect(formatPublishedDate('en', null)).toBe('')
+    expect(formatPublishedDate('fa', 'not-a-date')).toBe('')
 
     expect(
       formatArticleCardMeta('en', {

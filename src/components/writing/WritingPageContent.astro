@@ -9,8 +9,9 @@ import PageFamilyOptionalUpdatesShell from '../page-family/PageFamilyOptionalUpd
 import PageFamilyCollaborateBandShell from '../page-family/PageFamilyCollaborateBandShell.astro'
 import ContentState from '../state/ContentState.astro'
 import {
-  formatArticleCardMeta,
   formatBookCardMeta,
+  formatPublishedDate,
+  formatReadingTime,
   getWritingRouteTitle,
   getWritingUnavailableCopy,
   type WritingIndexModel,
@@ -186,9 +187,18 @@ const filterLabels =
               {model.articles.map((article) => (
                 <li>
                   <article class="writing-page__card">
+                    {article.featured_image?.url ? (
+                      <img
+                        class="writing-page__card-image"
+                        src={article.featured_image.url}
+                        alt={article.featured_image.alt || ''}
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    ) : null}
                     <h3 class="writing-page__card-title">
                       <a
-                        href={localePath(locale, `writing/${article.slug}`)}
+                        href={localePath(locale, `blog/${article.slug}`)}
                         class="writing-page__card-link"
                       >
                         {article.title}
@@ -200,8 +210,28 @@ const filterLabels =
                       </p>
                     ) : null}
                     <p class="writing-page__card-meta">
-                      {formatArticleCardMeta(locale, article)}
+                      {[
+                        formatReadingTime(locale, article.reading_time_minutes),
+                        formatPublishedDate(locale, article.published_at),
+                      ]
+                        .filter(Boolean)
+                        .join(' · ')}
                     </p>
+                    {article.series?.length ? (
+                      <p class="writing-page__card-series">
+                        {article.series.map((item) => (
+                          <a
+                            href={localePath(
+                              locale,
+                              `blog/series/${item.slug}`,
+                            )}
+                            class="writing-page__series-link"
+                          >
+                            {item.title}
+                          </a>
+                        ))}
+                      </p>
+                    ) : null}
                   </article>
                 </li>
               ))}

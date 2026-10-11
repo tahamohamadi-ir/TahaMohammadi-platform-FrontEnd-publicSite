@@ -87,13 +87,24 @@ describe('PUBLIC-211/212 writing pages', () => {
             license: 'CC-BY',
             published_at: '2026-01-01T00:00:00Z',
             updated_at: null,
+            series: [
+              {
+                locale: 'en',
+                slug: 'notes',
+                title: 'Notes',
+                description: '',
+                ordering: 1,
+                published_at: '2026-01-01T00:00:00Z',
+              },
+            ],
           },
         ],
       },
     })
     expect(html).toContain('Dashboard Book')
     expect(html).toContain('Visual Discourse')
-    expect(html).toMatch(/href="\/en\/writing\/visual-discourse\/"/)
+    expect(html).toMatch(/href="\/en\/blog\/visual-discourse\/"/)
+    expect(html).toMatch(/href="\/en\/blog\/series\/notes\/"/)
     expect(html).toContain('Books')
     expect(html).toContain('Articles')
   })

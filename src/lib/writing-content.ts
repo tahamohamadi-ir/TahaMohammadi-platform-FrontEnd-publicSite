@@ -84,6 +84,18 @@ export function formatReadingTime(locale: Locale, minutes: number): string {
   return locale === 'en' ? `${minutes} min read` : `${minutes} دقیقه مطالعه`
 }
 
+export function formatPublishedDate(
+  locale: Locale,
+  publishedAt: string | null | undefined,
+): string {
+  if (!publishedAt) return ''
+  const date = new Date(publishedAt)
+  if (Number.isNaN(date.getTime())) return ''
+  return new Intl.DateTimeFormat(locale === 'fa' ? 'fa-IR' : 'en', {
+    dateStyle: 'medium',
+  }).format(date)
+}
+
 export function formatArticleCardMeta(
   locale: Locale,
   article: ArticleListOut,

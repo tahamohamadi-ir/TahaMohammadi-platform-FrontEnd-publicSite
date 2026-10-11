@@ -75,7 +75,11 @@ const writingHref = localePath(locale, 'blog')
             <>
               <dt>{locale === 'en' ? 'Series' : 'مجموعه'}</dt>
               <dd>
-                {model.article.series.map((item) => item.title).join(', ')}
+                {model.article.series.map((item) => (
+                  <a href={localePath(locale, `blog/series/${item.slug}`)}>
+                    {item.title}
+                  </a>
+                ))}
               </dd>
             </>
           ) : null}

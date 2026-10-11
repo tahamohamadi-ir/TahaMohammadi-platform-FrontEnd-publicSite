@@ -120,7 +120,7 @@ describe('PU-15 Articles Product Family', () => {
 
     expect(html).toContain('Engineering Reliable Distributed Systems')
     expect(html).toContain(
-      '/en/writing/engineering-reliable-distributed-systems',
+      '/en/blog/engineering-reliable-distributed-systems',
     )
   })
 
