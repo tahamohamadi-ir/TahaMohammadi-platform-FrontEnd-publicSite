@@ -96,6 +96,59 @@ export function formatPublishedDate(
   }).format(date)
 }
 
+export const BLOG_PAGE_SIZE = 8
+
+export type BlogIndexItem = {
+  text: string
+  series: string[]
+}
+
+export type ArticleNeighbor = {
+  slug: string
+  title: string
+}
+
+/** Keep only items whose visible text and series match the reader's controls. */
+export function matchBlogItem(
+  item: BlogIndexItem,
+  query: string,
+  seriesSlug: string | null,
+): boolean {
+  if (seriesSlug && !item.series.includes(seriesSlug)) return false
+  const needle = query.trim().toLocaleLowerCase()
+  if (!needle) return true
+  return item.text.toLocaleLowerCase().includes(needle)
+}
+
+export function paginateBlogItems<T>(
+  items: T[],
+  page: number,
+  pageSize = BLOG_PAGE_SIZE,
+): { page: number; pageCount: number; items: T[] } {
+  const pageCount = Math.max(1, Math.ceil(items.length / pageSize))
+  const current = Math.min(Math.max(page, 1), pageCount)
+  const start = (current - 1) * pageSize
+  return {
+    page: current,
+    pageCount,
+    items: items.slice(start, start + pageSize),
+  }
+}
+
+export function articleNeighbors(
+  articles: Array<{ slug: string; title: string }>,
+  slug: string,
+): { previous: ArticleNeighbor | null; next: ArticleNeighbor | null } {
+  const index = articles.findIndex((item) => item.slug === slug)
+  if (index < 0) return { previous: null, next: null }
+  const previous = index > 0 ? articles[index - 1] : undefined
+  const next = index < articles.length - 1 ? articles[index + 1] : undefined
+  return {
+    previous: previous ? { slug: previous.slug, title: previous.title } : null,
+    next: next ? { slug: next.slug, title: next.title } : null,
+  }
+}
+
 export function formatArticleCardMeta(
   locale: Locale,
   article: ArticleListOut,

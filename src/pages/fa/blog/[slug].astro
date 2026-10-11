@@ -3,7 +3,9 @@ import SiteLayout from '../../../layouts/SiteLayout.astro'
 import { pickDetailSeo } from '../../../lib/seo'
 import WritingDetailContent from '../../../components/writing/WritingDetailContent.astro'
 import {
+  articleNeighbors,
   fetchArticleDetail,
+  listArticles,
   listArticleSlugs,
   resolveWritingAlternateAvailability,
 } from '../../../lib/writing-content'
@@ -26,6 +28,7 @@ const alternateAvailable = await resolveWritingAlternateAvailability(
   locale,
   slug,
 )
+const neighbors = articleNeighbors(await listArticles(locale), slug)
 const pageTitle = `${model.article.title} — طه محمدی`
 const detailSeo = pickDetailSeo(model.article.seo)
 ---
@@ -38,5 +41,10 @@ const detailSeo = pickDetailSeo(model.article.seo)
   description={detailSeo.description}
   socialImage={detailSeo.socialImage}
 >
-  <WritingDetailContent locale={locale} model={model} />
+  <WritingDetailContent
+    locale={locale}
+    model={model}
+    previous={neighbors.previous}
+    next={neighbors.next}
+  />
 </SiteLayout>

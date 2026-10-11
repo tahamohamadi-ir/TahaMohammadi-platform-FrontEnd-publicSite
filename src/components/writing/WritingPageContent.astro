@@ -21,6 +21,7 @@ import {
   getWritingHeroEyebrow,
 } from '../../lib/page-family-empty-chrome'
 import { localePath, type Locale } from '../../lib/navigation'
+import { canonicalPath } from '../../lib/routes'
 
 interface Props {
   locale: Locale
@@ -29,6 +30,38 @@ interface Props {
 
 const { locale, model } = Astro.props
 const emptyCopy = getWritingUnavailableCopy(locale)
+const readyCopy =
+  locale === 'en'
+    ? {
+        search: 'Search writing',
+        searchPlaceholder: 'Search title, excerpt, or series',
+        allSeries: 'All series',
+        empty: 'No writing matches this search.',
+        previous: 'Previous',
+        next: 'Next',
+        pages: 'Writing pages',
+      }
+    : {
+        search: 'جستجوی نوشته‌ها',
+        searchPlaceholder: 'جستجوی عنوان، خلاصه یا مجموعه',
+        allSeries: 'همهٔ مجموعه‌ها',
+        empty: 'نوشته‌ای با این جستجو پیدا نشد.',
+        previous: 'قبلی',
+        next: 'بعدی',
+        pages: 'صفحه‌های نوشتار',
+      }
+const seriesFilters =
+  model.status === 'ready'
+    ? [
+        ...new Map(
+          model.articles.flatMap((article) =>
+            (article.series ?? []).map(
+              (item) => [item.slug, item.title] as const,
+            ),
+          ),
+        ).entries(),
+      ].map(([slug, title]) => ({ slug, title }))
+    : []
 const filterLabels =
   locale === 'en'
     ? {
@@ -148,7 +181,46 @@ const filterLabels =
         summary={getPageFamilyHeroSummary(locale, 'writing')}
       />
 
-      <div slot="records" class="writing-page__sections">
+      <div slot="records" class="writing-page__sections" data-blog-index>
+        {model.articles.length ? (
+          <div class="writing-page__controls">
+            <label class="writing-page__search-label">
+              {readyCopy.search}
+              <input
+                type="search"
+                class="writing-page__search"
+                placeholder={readyCopy.searchPlaceholder}
+                data-blog-search
+              />
+            </label>
+            {seriesFilters.length ? (
+              <div
+                class="writing-page__series-filters"
+                role="group"
+                aria-label={readyCopy.allSeries}
+              >
+                <button
+                  type="button"
+                  class="writing-page__series-filter"
+                  data-blog-series-filter=""
+                  aria-pressed="true"
+                >
+                  {readyCopy.allSeries}
+                </button>
+                {seriesFilters.map((item) => (
+                  <button
+                    type="button"
+                    class="writing-page__series-filter"
+                    data-blog-series-filter={item.slug}
+                    aria-pressed="false"
+                  >
+                    {item.title}
+                  </button>
+                ))}
+              </div>
+            ) : null}
+          </div>
+        ) : null}
         {model.books.length ? (
           <section
             class="writing-page__section"
@@ -161,7 +233,14 @@ const filterLabels =
               {model.books.map((book) => (
                 <li>
                   <article class="writing-page__card">
-                    <h3 class="writing-page__card-title">{book.title}</h3>
+                    <h3 class="writing-page__card-title">
+                      <a
+                        href={canonicalPath('book', locale, book.slug)}
+                        class="writing-page__card-link"
+                      >
+                        {book.title}
+                      </a>
+                    </h3>
                     {book.isbn ? (
                       <p class="writing-page__card-isbn">ISBN {book.isbn}</p>
                     ) : null}
@@ -185,7 +264,20 @@ const filterLabels =
             </h2>
             <ul class="writing-page__list">
               {model.articles.map((article) => (
-                <li>
+                <li
+                  data-blog-item
+                  data-blog-text={[
+                    article.title,
+                    article.excerpt,
+                    ...(article.series ?? []).map((item) => item.title),
+                    ...(article.topic_tags ?? []).map((tag) => tag.name),
+                  ]
+                    .join(' ')
+                    .toLocaleLowerCase()}
+                  data-blog-series={(article.series ?? [])
+                    .map((item) => item.slug)
+                    .join(' ')}
+                >
                   <article class="writing-page__card">
                     {article.featured_image?.url ? (
                       <img
@@ -236,9 +328,27 @@ const filterLabels =
                 </li>
               ))}
             </ul>
+            <p class="writing-page__none" data-blog-empty hidden>
+              {readyCopy.empty}
+            </p>
+            <nav
+              class="writing-page__pages"
+              data-blog-pages
+              aria-label={readyCopy.pages}
+              hidden
+            >
+              <button type="button" data-blog-prev>
+                {readyCopy.previous}
+              </button>
+              <span data-blog-page-status />
+              <button type="button" data-blog-next>
+                {readyCopy.next}
+              </button>
+            </nav>
           </section>
         ) : null}
       </div>
+      <script src="../../scripts/blog-index.ts" />
     </EditorialIndexTemplate>
   )
 }

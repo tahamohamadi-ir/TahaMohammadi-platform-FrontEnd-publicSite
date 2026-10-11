@@ -148,6 +148,6 @@ describe('PU-15 Articles Product Family', () => {
 
     expect(html).toContain('معماری سامانه‌های مدرن')
     expect(html).toContain('زمان مطالعه')
-    expect(html).toContain('← بازگشت به وبلاگ')
+    expect(html).toContain('بازگشت به وبلاگ')
   })
 })

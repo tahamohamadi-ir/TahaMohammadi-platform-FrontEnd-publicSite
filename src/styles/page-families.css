@@ -2020,6 +2020,47 @@ html[data-theme='dark'] .pf-index-featured__card {
   border-radius: var(--radius-md);
 }
 
+.writing-page__controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-block-end: var(--space-6);
+}
+
+.writing-page__search-label {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.writing-page__series-filters,
+.writing-page__pages,
+.writing-page__neighbors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.writing-page__neighbor--next {
+  margin-inline-start: auto;
+}
+
+.writing-page__series-filter,
+.writing-page__pages button {
+  font: inherit;
+  color: var(--color-ink);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-3);
+}
+
+.writing-page__series-filter[aria-pressed='true'] {
+  color: var(--color-brand);
+  border-color: var(--color-brand);
+}
+
 .writing-page__card-summary,
 .writing-page__card-meta,
 .writing-page__card-isbn {

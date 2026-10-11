@@ -1,10 +1,13 @@
 import { describe, expect, it } from 'vitest'
 
 import {
+  articleNeighbors,
   formatArticleCardMeta,
   formatBookCardMeta,
   formatPublishedDate,
   formatReadingTime,
+  matchBlogItem,
+  paginateBlogItems,
   getWritingRouteTitle,
   getWritingUnavailableCopy,
   resolveWritingAlternateAvailability,
@@ -28,6 +31,39 @@ describe('writing content helpers', () => {
     expect(formatPublishedDate('en', '2026-01-15T00:00:00Z')).toContain('2026')
     expect(formatPublishedDate('en', null)).toBe('')
     expect(formatPublishedDate('fa', 'not-a-date')).toBe('')
+
+    expect(
+      matchBlogItem(
+        { text: 'Visual Discourse essay', series: ['notes'] },
+        'discourse',
+        'notes',
+      ),
+    ).toBe(true)
+    expect(
+      matchBlogItem(
+        { text: 'Visual Discourse essay', series: ['notes'] },
+        'discourse',
+        'other',
+      ),
+    ).toBe(false)
+    expect(paginateBlogItems([1, 2, 3], 2, 2)).toEqual({
+      page: 2,
+      pageCount: 2,
+      items: [3],
+    })
+    expect(
+      articleNeighbors(
+        [
+          { slug: 'one', title: 'One' },
+          { slug: 'two', title: 'Two' },
+          { slug: 'three', title: 'Three' },
+        ],
+        'two',
+      ),
+    ).toEqual({
+      previous: { slug: 'one', title: 'One' },
+      next: { slug: 'three', title: 'Three' },
+    })
 
     expect(
       formatArticleCardMeta('en', {

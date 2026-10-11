@@ -9,6 +9,7 @@ import {
   formatReadingTime,
   getWritingRouteTitle,
   getWritingUnavailableCopy,
+  type ArticleNeighbor,
   type WritingDetailModel,
 } from '../../lib/writing-content'
 import { localePath, type Locale } from '../../lib/navigation'
@@ -16,9 +17,11 @@ import { localePath, type Locale } from '../../lib/navigation'
 interface Props {
   locale: Locale
   model: WritingDetailModel
+  previous?: ArticleNeighbor | null
+  next?: ArticleNeighbor | null
 }
 
-const { locale, model } = Astro.props
+const { locale, model, previous = null, next = null } = Astro.props
 const writingHref = localePath(locale, 'blog')
 ---
 
@@ -108,13 +111,37 @@ const writingHref = localePath(locale, 'blog')
         ) : null}
       </div>
 
-      <p slot="related" class="writing-page__back">
+      <nav
+        slot="related"
+        class="writing-page__neighbors"
+        aria-label={locale === 'en' ? 'More writing' : 'نوشته‌های دیگر'}
+      >
+        {previous ? (
+          <a
+            class="writing-page__neighbor"
+            rel="prev"
+            href={localePath(locale, `blog/${previous.slug}`)}
+          >
+            {locale === 'en' ? 'Previous' : 'قبلی'}: {previous.title}
+          </a>
+        ) : (
+          <span />
+        )}
         <Link
           href={writingHref}
-          label={locale === 'en' ? '← Back to blog' : '← بازگشت به وبلاگ'}
+          label={locale === 'en' ? 'Back to blog' : 'بازگشت به وبلاگ'}
           variant="standalone"
         />
-      </p>
+        {next ? (
+          <a
+            class="writing-page__neighbor writing-page__neighbor--next"
+            rel="next"
+            href={localePath(locale, `blog/${next.slug}`)}
+          >
+            {locale === 'en' ? 'Next' : 'بعدی'}: {next.title}
+          </a>
+        ) : null}
+      </nav>
     </LongFormDetailTemplate>
   )
 }

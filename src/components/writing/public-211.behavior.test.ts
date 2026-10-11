@@ -105,6 +105,8 @@ describe('PUBLIC-211/212 writing pages', () => {
     expect(html).toContain('Visual Discourse')
     expect(html).toMatch(/href="\/en\/blog\/visual-discourse\/"/)
     expect(html).toMatch(/href="\/en\/blog\/series\/notes\/"/)
+    expect(html).toMatch(/href="\/en\/books\/dashboard-book\/"/)
+    expect(html).toContain('Search writing')
     expect(html).toContain('Books')
     expect(html).toContain('Articles')
   })
