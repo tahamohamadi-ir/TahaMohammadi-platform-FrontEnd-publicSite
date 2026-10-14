@@ -15,3 +15,20 @@ test-results/
 .DS_Store
 Thumbs.db
 .repowise/
+
+# Local agent tooling copies
+/.adal/
+/.agents/
+/.claude/
+/.gemini/
+/.grok/
+/.kiro/
+/.windsurf/
+/.cursor/hooks/
+/.cursor/hooks.json
+/.cursor/mcp.json
+/.cursor/rules/graft.mdc
+/GEMINI.md
+/opencode.json
+/.mcp.json
+/.ignore
