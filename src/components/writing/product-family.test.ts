@@ -119,9 +119,7 @@ describe('PU-15 Articles Product Family', () => {
     })
 
     expect(html).toContain('Engineering Reliable Distributed Systems')
-    expect(html).toContain(
-      '/en/blog/engineering-reliable-distributed-systems',
-    )
+    expect(html).toContain('/en/blog/engineering-reliable-distributed-systems')
   })
 
   it('renders Persian article detail with proper RTL labels', async () => {
