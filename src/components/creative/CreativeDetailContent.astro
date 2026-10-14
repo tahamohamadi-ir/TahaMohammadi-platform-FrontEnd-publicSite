@@ -11,6 +11,11 @@ import {
   getCreativeUnavailableCopy,
   type CreativeDetailModel,
 } from '../../lib/creative-content'
+import {
+  formatAccessState,
+  formatCreativeWorkType,
+  formatLicense,
+} from '../../lib/catalog-labels'
 import { localePath, type Locale } from '../../lib/navigation'
 
 interface Props {
@@ -53,7 +58,7 @@ const creativeHref = localePath(locale, 'gallery')
           {model.work.work_type ? (
             <>
               <dt>{locale === 'en' ? 'Type' : 'نوع'}</dt>
-              <dd>{model.work.work_type}</dd>
+              <dd>{formatCreativeWorkType(model.work.work_type, locale)}</dd>
             </>
           ) : null}
           {model.work.creator_name ? (
@@ -75,13 +80,13 @@ const creativeHref = localePath(locale, 'gallery')
           {model.work.access_state ? (
             <>
               <dt>{locale === 'en' ? 'Access' : 'دسترسی'}</dt>
-              <dd>{model.work.access_state}</dd>
+              <dd>{formatAccessState(model.work.access_state, locale)}</dd>
             </>
           ) : null}
           {model.work.license ? (
             <>
               <dt>{locale === 'en' ? 'License' : 'مجوز'}</dt>
-              <dd>{model.work.license}</dd>
+              <dd>{formatLicense(model.work.license, locale)}</dd>
             </>
           ) : null}
           {model.work.rights_statement ? (

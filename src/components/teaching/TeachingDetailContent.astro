@@ -11,6 +11,14 @@ import {
   splitBodyParagraphs,
   type TeachingDetailModel,
 } from '../../lib/teaching-content'
+import {
+  formatAccessState,
+  formatAvailability,
+  formatCourseFormat,
+  formatCourseLanguage,
+  formatCourseLevel,
+  formatLicense,
+} from '../../lib/catalog-labels'
 import { localePath, type Locale } from '../../lib/navigation'
 
 interface Props {
@@ -73,13 +81,13 @@ const teachingHref = localePath(locale, 'education')
           {model.record.access_state ? (
             <>
               <dt>{locale === 'en' ? 'Access' : 'دسترسی'}</dt>
-              <dd>{model.record.access_state}</dd>
+              <dd>{formatAccessState(model.record.access_state, locale)}</dd>
             </>
           ) : null}
           {model.record.license ? (
             <>
               <dt>{locale === 'en' ? 'License' : 'مجوز'}</dt>
-              <dd>{model.record.license}</dd>
+              <dd>{formatLicense(model.record.license, locale)}</dd>
             </>
           ) : null}
         </dl>
@@ -132,25 +140,27 @@ const teachingHref = localePath(locale, 'education')
           {model.record.level ? (
             <>
               <dt>{locale === 'en' ? 'Level' : 'سطح'}</dt>
-              <dd>{model.record.level}</dd>
+              <dd>{formatCourseLevel(model.record.level, locale)}</dd>
             </>
           ) : null}
           {model.record.course_format ? (
             <>
               <dt>{locale === 'en' ? 'Format' : 'قالب'}</dt>
-              <dd>{model.record.course_format}</dd>
+              <dd>{formatCourseFormat(model.record.course_format, locale)}</dd>
             </>
           ) : null}
           {model.record.course_language ? (
             <>
               <dt>{locale === 'en' ? 'Language' : 'زبان'}</dt>
-              <dd>{model.record.course_language}</dd>
+              <dd>
+                {formatCourseLanguage(model.record.course_language, locale)}
+              </dd>
             </>
           ) : null}
           {model.record.availability ? (
             <>
               <dt>{locale === 'en' ? 'Availability' : 'دسترس‌پذیری'}</dt>
-              <dd>{model.record.availability}</dd>
+              <dd>{formatAvailability(model.record.availability, locale)}</dd>
             </>
           ) : null}
           {model.record.last_updated ? (
@@ -162,7 +172,7 @@ const teachingHref = localePath(locale, 'education')
           {model.record.license ? (
             <>
               <dt>{locale === 'en' ? 'License' : 'مجوز'}</dt>
-              <dd>{model.record.license}</dd>
+              <dd>{formatLicense(model.record.license, locale)}</dd>
             </>
           ) : null}
         </dl>

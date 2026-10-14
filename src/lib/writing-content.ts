@@ -12,6 +12,7 @@ import {
 } from './api/client'
 import { buildPublicApiUrl, canFetchPublicApi } from './api/resolve-url'
 import { primaryNav, type Locale } from './navigation'
+import { formatAccessState } from './catalog-labels'
 import { listSeries, type SeriesListOut } from './series-content'
 
 export type ArticleListOut = components['schemas']['ArticleListOut']
@@ -167,12 +168,15 @@ export function formatArticleCardMeta(
     .join(' · ')
 }
 
-export function formatBookCardMeta(book: BookListOut): string {
+export function formatBookCardMeta(
+  book: BookListOut,
+  locale: Locale = 'en',
+): string {
   return [
     book.authors,
     book.publisher,
     book.publication_date,
-    book.access_state,
+    formatAccessState(book.access_state, locale),
   ]
     .filter(Boolean)
     .join(' · ')

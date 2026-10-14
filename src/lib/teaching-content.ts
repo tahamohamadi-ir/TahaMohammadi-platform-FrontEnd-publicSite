@@ -11,6 +11,13 @@ import {
   PublicApiError,
 } from './api/client'
 import { buildPublicApiUrl, canFetchPublicApi } from './api/resolve-url'
+import {
+  formatAccessState,
+  formatAvailability,
+  formatCourseFormat,
+  formatCourseLanguage,
+  formatCourseLevel,
+} from './catalog-labels'
 import { primaryNav, type Locale } from './navigation'
 import { splitBodyParagraphs } from './research-content'
 
@@ -88,19 +95,30 @@ export function getTeachingUnavailableCopy(locale: Locale): {
       }
 }
 
-export function formatCourseCardMeta(course: CourseListOut): string {
+export function formatCourseCardMeta(
+  course: CourseListOut,
+  locale: Locale = 'en',
+): string {
   return [
-    course.level,
-    course.course_format,
-    course.course_language,
-    course.availability,
+    formatCourseLevel(course.level, locale),
+    formatCourseFormat(course.course_format, locale),
+    formatCourseLanguage(course.course_language, locale),
+    formatAvailability(course.availability, locale),
   ]
     .filter(Boolean)
     .join(' · ')
 }
 
-export function formatTalkCardMeta(talk: TalkListOut): string {
-  return [talk.event_name, talk.event_date, talk.location, talk.access_state]
+export function formatTalkCardMeta(
+  talk: TalkListOut,
+  locale: Locale = 'en',
+): string {
+  return [
+    talk.event_name,
+    talk.event_date,
+    talk.location,
+    formatAccessState(talk.access_state, locale),
+  ]
     .filter(Boolean)
     .join(' · ')
 }

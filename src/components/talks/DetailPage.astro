@@ -10,6 +10,7 @@ import {
   getTalksUnavailableCopy,
   type TalkDetailModel,
 } from '../../lib/talks-content'
+import { formatAccessState, formatLicense } from '../../lib/catalog-labels'
 import { localePath, type Locale } from '../../lib/navigation'
 
 interface Props {
@@ -72,13 +73,13 @@ const talksHref = localePath(locale, 'talks')
           {model.talk.license ? (
             <>
               <dt>{locale === 'en' ? 'License' : 'مجوز'}</dt>
-              <dd>{model.talk.license}</dd>
+              <dd>{formatLicense(model.talk.license, locale)}</dd>
             </>
           ) : null}
           {model.talk.access_state ? (
             <>
               <dt>{locale === 'en' ? 'Access' : 'دسترسی'}</dt>
-              <dd>{model.talk.access_state}</dd>
+              <dd>{formatAccessState(model.talk.access_state, locale)}</dd>
             </>
           ) : null}
         </dl>

@@ -11,6 +11,7 @@ import {
   PublicApiError,
 } from './api/client'
 import { buildPublicApiUrl, canFetchPublicApi } from './api/resolve-url'
+import { formatAccessState, formatCreativeWorkType } from './catalog-labels'
 import { primaryNav, type Locale } from './navigation'
 
 export type CreativeWorkListOut = components['schemas']['CreativeWorkListOut']
@@ -73,12 +74,15 @@ export function getCreativeEmptyCopy(locale: Locale): {
       }
 }
 
-export function formatCreativeCardMeta(work: CreativeWorkListOut): string {
+export function formatCreativeCardMeta(
+  work: CreativeWorkListOut,
+  locale: Locale = 'en',
+): string {
   return [
-    work.work_type,
+    formatCreativeWorkType(work.work_type, locale),
     work.creator_name,
     work.creation_date,
-    work.access_state,
+    formatAccessState(work.access_state, locale),
   ]
     .filter(Boolean)
     .join(' · ')

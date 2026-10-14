@@ -10,6 +10,7 @@ import {
   getBooksUnavailableCopy,
   type BookDetailModel,
 } from '../../lib/books-content'
+import { formatAccessState, formatLicense } from '../../lib/catalog-labels'
 import { localePath, type Locale } from '../../lib/navigation'
 
 interface Props {
@@ -83,13 +84,13 @@ const booksHref = localePath(locale, 'books')
           {model.book.license ? (
             <>
               <dt>{locale === 'en' ? 'License' : 'مجوز'}</dt>
-              <dd>{model.book.license}</dd>
+              <dd>{formatLicense(model.book.license, locale)}</dd>
             </>
           ) : null}
           {model.book.access_state ? (
             <>
               <dt>{locale === 'en' ? 'Access' : 'دسترسی'}</dt>
-              <dd>{model.book.access_state}</dd>
+              <dd>{formatAccessState(model.book.access_state, locale)}</dd>
             </>
           ) : null}
         </dl>

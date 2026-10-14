@@ -11,6 +11,11 @@ import {
   type PublicationDetailModel,
 } from '../../lib/publications-content'
 import { splitBodyParagraphs } from '../../lib/research-content'
+import {
+  formatAcademicStage,
+  formatAccessState,
+  formatPublicationType,
+} from '../../lib/catalog-labels'
 import { localePath, type Locale } from '../../lib/navigation'
 
 interface Props {
@@ -57,19 +62,28 @@ const publicationsHref = localePath(locale, 'publications')
           {model.publication.publication_type ? (
             <>
               <dt>{locale === 'en' ? 'Type' : 'نوع'}</dt>
-              <dd>{model.publication.publication_type}</dd>
+              <dd>
+                {formatPublicationType(
+                  model.publication.publication_type,
+                  locale,
+                )}
+              </dd>
             </>
           ) : null}
           {model.publication.academic_stage ? (
             <>
               <dt>{locale === 'en' ? 'Stage' : 'مرحله'}</dt>
-              <dd>{model.publication.academic_stage}</dd>
+              <dd>
+                {formatAcademicStage(model.publication.academic_stage, locale)}
+              </dd>
             </>
           ) : null}
           {model.publication.access_state ? (
             <>
               <dt>{locale === 'en' ? 'Access' : 'دسترسی'}</dt>
-              <dd>{model.publication.access_state}</dd>
+              <dd>
+                {formatAccessState(model.publication.access_state, locale)}
+              </dd>
             </>
           ) : null}
           {model.publication.doi ? (

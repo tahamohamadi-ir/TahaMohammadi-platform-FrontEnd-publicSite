@@ -12,6 +12,7 @@ import {
   type PublicationsIndexModel,
 } from '../../lib/publications-content'
 import { getResearchSubNavLabels } from '../../lib/page-family-empty-chrome'
+import { formatPublicationType } from '../../lib/catalog-labels'
 import { localePath, type Locale } from '../../lib/navigation'
 
 interface Props {
@@ -152,7 +153,7 @@ const filterLabels =
               </p>
               {publication.publication_type ? (
                 <p class="publications-page__card-type">
-                  {publication.publication_type}
+                  {formatPublicationType(publication.publication_type, locale)}
                 </p>
               ) : null}
             </article>

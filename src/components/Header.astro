@@ -76,7 +76,9 @@ const searchLabel = Object.hasOwn(copy, 'nav.search')
           />
           <span class="site-header__brand-text">
             <span class="site-header__brand-name">{brandNameDisplay}</span>
-            <span class="site-header__brand-role">{roleLine}</span>
+            {roleLine ? (
+              <span class="site-header__brand-role">{roleLine}</span>
+            ) : null}
           </span>
         </a>
       )

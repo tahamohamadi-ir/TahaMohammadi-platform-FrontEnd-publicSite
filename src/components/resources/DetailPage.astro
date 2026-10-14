@@ -11,6 +11,7 @@ import {
   getResourcesUnavailableCopy,
   type ResourceDetailModel,
 } from '../../lib/resources-content'
+import { formatAccessState, formatDownloadType } from '../../lib/catalog-labels'
 import { localePath, type Locale } from '../../lib/navigation'
 
 interface Props {
@@ -49,7 +50,9 @@ const resourcesHref = localePath(locale, 'resources')
           {model.resource.download_type ? (
             <>
               <dt>{locale === 'en' ? 'Type' : 'نوع پرونده'}</dt>
-              <dd>{model.resource.download_type}</dd>
+              <dd>
+                {formatDownloadType(model.resource.download_type, locale)}
+              </dd>
             </>
           ) : null}
           {model.resource.language ? (
@@ -79,7 +82,7 @@ const resourcesHref = localePath(locale, 'resources')
           {model.resource.access_state ? (
             <>
               <dt>{locale === 'en' ? 'Access' : 'دسترسی'}</dt>
-              <dd>{model.resource.access_state}</dd>
+              <dd>{formatAccessState(model.resource.access_state, locale)}</dd>
             </>
           ) : null}
         </dl>
