@@ -27,17 +27,18 @@ describe('PU-18 CV Product Family (F13)', () => {
     expect(meta).toBe('PDF · 2026-03-01 · 200 KB')
   })
 
-  it('renders structural empty-state chrome when CV downloads are unavailable', async () => {
+  it('renders one honest unavailable state when CV downloads are unavailable, not fabricated chrome', async () => {
     const html = await render(CvPageContent, {
       locale: 'en',
       model: { status: 'unavailable' },
     })
 
-    expect(html).toContain('AboutContactUtilityTemplate')
+    expect(html).toContain('data-state-variant="unavailable"')
     expect(html).toContain(
       'The current public CV is not yet available for download',
     )
-    expect(html).toContain('PageFamilyProfileHeroShell')
+    expect(html).not.toContain('AboutContactUtilityTemplate')
+    expect(html).not.toContain('PageFamilyProfileHeroShell')
   })
 
   it('renders download list when approved public downloads are available', async () => {

@@ -17,21 +17,29 @@ async function render(
 }
 
 describe('PUBLIC-230 contact page', () => {
-  it('renders structural empty-state chrome when contact details are absent', async () => {
+  it('renders one honest unavailable state when contact details are absent, not fabricated chrome', async () => {
+    // Empty-state policy: see the equivalent test in
+    // src/components/projects/public-210.behavior.test.ts. The contact
+    // sidebar's "contact methods" cards (PageFamilyContactSidebarShell)
+    // render a fabricated "From approved CMS record" value next to each
+    // method label, so it does not get a real/static-chrome exception the
+    // way AboutAtlasPreview does on the About page.
     const html = await render(ContactPageContent, {
       locale: 'en',
       model: { status: 'unavailable' },
     })
-    expect(html).toMatch(/data-visual-id="AboutContactUtilityTemplate"/)
-    expect(html).toMatch(/data-state-variant="empty"/)
-    expect(html).toMatch(/data-visual-id="PageFamilyContactHeroShell"/)
-    expect(html).toMatch(/pf-index-contact-hero__title/)
-    expect(html).toMatch(/Collaboration|همکاری/)
-    expect(html).toMatch(/data-visual-id="PageFamilyTopicCardsShell"/)
-    expect(html).toMatch(/data-visual-id="PageFamilyContactSidebarShell"/)
-    expect(html).toMatch(/data-visual-id="PageFamilyFaqShell"/)
-    expect(html).toMatch(/data-visual-id="PageFamilySendWorkflowShell"/)
+    expect(html).toMatch(/data-visual-id="ContentState"/)
+    expect(html).toMatch(/data-state-variant="unavailable"/)
+    expect(html).toMatch(/<h1[\s>]/)
+    expect(html).toContain('Contact')
+    expect(html).toMatch(/href="\/en\/home\/"/)
+    expect(html).not.toMatch(/data-visual-id="PageFamilyContactHeroShell"/)
+    expect(html).not.toMatch(/data-visual-id="PageFamilyTopicCardsShell"/)
+    expect(html).not.toMatch(/data-visual-id="PageFamilyContactSidebarShell"/)
+    expect(html).not.toMatch(/data-visual-id="PageFamilyFaqShell"/)
+    expect(html).not.toMatch(/data-visual-id="PageFamilySendWorkflowShell"/)
     expect(html).not.toMatch(/data-contact-form/)
+    expect(html).not.toMatch(/disabled/)
   })
 
   it('renders owner-published contact details and noscript form fields', async () => {
@@ -86,19 +94,20 @@ describe('PUBLIC-230 contact page', () => {
 })
 
 describe('PUBLIC-230 cv page', () => {
-  it('renders structural empty-state chrome when downloads are absent', async () => {
+  it('renders one honest unavailable state when downloads are absent, not fabricated chrome', async () => {
     const html = await render(CvPageContent, {
       locale: 'en',
       model: { status: 'unavailable' },
     })
-    expect(html).toMatch(/data-visual-id="AboutContactUtilityTemplate"/)
-    expect(html).toMatch(/data-state-variant="empty"/)
+    expect(html).toMatch(/data-visual-id="ContentState"/)
+    expect(html).toMatch(/data-state-variant="unavailable"/)
     expect(html).toContain('CV')
     expect(html).toMatch(/<h1[\s>]/)
-    expect(html).toMatch(/data-visual-id="PageFamilyProfileHeroShell"/)
-    expect(html).toMatch(/data-visual-id="PageFamilyDownloadListShell"/)
-    expect(html).toMatch(/data-visual-id="PageFamilySkillsGridShell"/)
-    expect(html).toMatch(/data-visual-id="PageFamilySelectedOutputsShell"/)
+    expect(html).not.toMatch(/data-visual-id="AboutContactUtilityTemplate"/)
+    expect(html).not.toMatch(/data-visual-id="PageFamilyProfileHeroShell"/)
+    expect(html).not.toMatch(/data-visual-id="PageFamilyDownloadListShell"/)
+    expect(html).not.toMatch(/data-visual-id="PageFamilySkillsGridShell"/)
+    expect(html).not.toMatch(/data-visual-id="PageFamilySelectedOutputsShell"/)
   })
 
   it('renders download cards when the model is ready', async () => {

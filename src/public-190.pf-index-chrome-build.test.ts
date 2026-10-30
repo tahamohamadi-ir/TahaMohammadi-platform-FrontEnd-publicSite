@@ -8,89 +8,72 @@ const repositoryRoot = path.resolve(
   '..',
 )
 
-const PF_INDEX_CHROME_ROUTES = [
-  {
-    route: 'en/publications/index.html',
-    markers: [
-      'CollectionIndexTemplate',
-      'PageFamilyIndexHero',
-      'PageFamilySubNavShell',
-      'PageFamilyPublicationsSidebarShell',
-      'PageFamilySelectedPublicationsShell',
-      'PageFamilyBibliographyRowPlaceholder',
-      'page-families',
-    ],
-  },
-  {
-    route: 'en/research/index.html',
-    markers: [
-      'CollectionIndexTemplate',
-      'PageFamilyIndexHero',
-      'PageFamilySubNavShell',
-      'PageFamilyConstellationShell',
-      'PageFamilyResearchDirectionsShell',
-      'PageFamilyResearchFitShell',
-      'PageFamilySelectedPublicationsShell',
-      'page-families',
-    ],
-  },
-  {
-    route: 'en/contact/index.html',
-    markers: [
-      'PageFamilyContactHeroShell',
-      'PageFamilyTopicCardsShell',
-      'PageFamilyContactSidebarShell',
-      'page-families',
-    ],
-  },
-  {
-    route: 'en/cv/index.html',
-    markers: [
-      'AboutContactUtilityTemplate',
-      'PageFamilyProfileHeroShell',
-      'PageFamilySubNavShell',
-      'page-families',
-    ],
-  },
-  {
-    route: 'en/about/index.html',
-    markers: [
-      'AboutContactUtilityTemplate',
-      'PageFamilyProfileHeroShell',
-      'page-families',
-    ],
-  },
-  {
-    route: 'en/gallery/empty-shell/index.html',
-    markers: [
-      'PageFamilyCreativeDetailShell',
-      'PageFamilyCollaborateBandShell',
-      'page-families',
-      'Awaiting approved CMS copy',
-    ],
-  },
-  {
-    route: 'fa/gallery/empty-shell/index.html',
-    markers: [
-      'PageFamilyCreativeDetailShell',
-      'PageFamilyCollaborateBandShell',
-      'page-families',
-    ],
-  },
+// Empty-state policy: an unpublished page-family index/detail renders one
+// honest ContentState (title, message, a real way home) — not a wireframe
+// replica of a populated page (fake filters, disabled chips, placeholder
+// rows, fake pagination, fake "featured"/sidebar/sub-nav shells). See
+// Docs/04-design/CONTENT-STATE-MATRIX.md and the equivalent per-page tests
+// in src/components/{about,contact,creative,cv,projects,publications,
+// research,teaching,writing}/*.test.ts.
+const PF_INDEX_UNAVAILABLE_ROUTES = [
+  'en/publications/index.html',
+  'en/research/index.html',
+  'en/contact/index.html',
+  'en/cv/index.html',
+  'en/about/index.html',
+  'en/projects/index.html',
+  'en/gallery/index.html',
+  'en/blog/index.html',
+  'en/education/index.html',
+  // "empty-shell" is a reserved design-QA fixture slug; it now renders the
+  // same honest unavailable-detail ContentState as a real unavailable
+  // creative detail page (see CreativeDetailContent.astro).
+  'en/gallery/empty-shell/index.html',
+  'fa/gallery/empty-shell/index.html',
 ] as const
 
-describe('PUBLIC-190 PF index build chrome', () => {
-  it('ships full template and shell markers in static build HTML', () => {
-    for (const entry of PF_INDEX_CHROME_ROUTES) {
-      const filePath = path.join(repositoryRoot, 'dist', entry.route)
-      expect(existsSync(filePath), `${entry.route} must exist in dist`).toBe(
-        true,
-      )
+const FABRICATED_CHROME_MARKERS = [
+  'PageFamilySubNavShell',
+  'PageFamilyPublicationsSidebarShell',
+  'PageFamilySelectedPublicationsShell',
+  'PageFamilyBibliographyRowPlaceholder',
+  'PageFamilyConstellationShell',
+  'PageFamilyResearchDirectionsShell',
+  'PageFamilyResearchFitShell',
+  'PageFamilyContactHeroShell',
+  'PageFamilyTopicCardsShell',
+  'PageFamilyContactSidebarShell',
+  'PageFamilyProfileHeroShell',
+  'PageFamilyIndexHero',
+  'PageFamilyFeaturedShell',
+  'PageFamilyContentRowPlaceholder',
+  'PageFamilyEvidenceGridShell',
+  'PageFamilySortShell',
+  'PageFamilyPaginationShell',
+  'PageFamilyCollaborateBandShell',
+  'PageFamilyMediaGridPlaceholder',
+  'PageFamilyListCardShell',
+  'PageFamilyPathProcessShell',
+  'PageFamilyFeaturedPathShell',
+  'PageFamilyTeachingFilterDropdowns',
+  'PageFamilyCreativeDetailShell',
+  'Awaiting approved CMS copy',
+] as const
+
+describe('PUBLIC-190 PF index/detail build chrome', () => {
+  it('ships one honest ContentState in static build HTML, never fabricated chrome', () => {
+    for (const route of PF_INDEX_UNAVAILABLE_ROUTES) {
+      const filePath = path.join(repositoryRoot, 'dist', route)
+      expect(existsSync(filePath), `${route} must exist in dist`).toBe(true)
       const html = readFileSync(filePath, 'utf8')
-      for (const marker of entry.markers) {
-        expect(html).toContain(marker)
+      expect(html, route).toContain('data-visual-id="ContentState"')
+      expect(html, route).toMatch(/data-state-variant="(unavailable|empty)"/)
+      expect(html, route).toMatch(/<h1[\s>]/)
+      for (const marker of FABRICATED_CHROME_MARKERS) {
+        expect(html, `${route} must not contain ${marker}`).not.toContain(
+          marker,
+        )
       }
-      expect(html).toMatch(/<h1[\s>]/)
     }
   })
 })

@@ -1,14 +1,6 @@
 ---
 import AboutContactUtilityTemplate from '../templates/AboutContactUtilityTemplate.astro'
 import PageFamilyProfileHeroShell from '../page-family/PageFamilyProfileHeroShell.astro'
-import PageFamilySubNavShell from '../page-family/PageFamilySubNavShell.astro'
-import PageFamilyHowIWorkShell from '../page-family/PageFamilyHowIWorkShell.astro'
-import PageFamilyJourneyFlowShell from '../page-family/PageFamilyJourneyFlowShell.astro'
-import PageFamilySplitTimelineShell from '../page-family/PageFamilySplitTimelineShell.astro'
-import PageFamilySkillsGridShell from '../page-family/PageFamilySkillsGridShell.astro'
-import PageFamilySelectedOutputsShell from '../page-family/PageFamilySelectedOutputsShell.astro'
-import PageFamilyDownloadListShell from '../page-family/PageFamilyDownloadListShell.astro'
-import PageFamilyCollaborateBandShell from '../page-family/PageFamilyCollaborateBandShell.astro'
 import AboutAtlasPreview from './AboutAtlasPreview.astro'
 import ContentState from '../state/ContentState.astro'
 import {
@@ -16,9 +8,8 @@ import {
   splitBodyParagraphs,
   type AboutPageModel,
 } from '../../lib/about-profile'
-import { getAboutSubNavLabels } from '../../lib/page-family-empty-chrome'
 import type { AtlasSnapshot } from '../../lib/atlas/snapshot'
-import { type Locale } from '../../lib/navigation'
+import { localePath, type Locale } from '../../lib/navigation'
 
 interface Props {
   locale: Locale
@@ -32,8 +23,6 @@ interface Props {
 
 const { locale, model, atlasSnapshot } = Astro.props
 const emptyCopy = getAboutUnavailableCopy(locale)
-const subNavLabels = getAboutSubNavLabels(locale)
-const tabRegion = locale === 'en' ? 'About profile sections' : 'بخش‌های پروفایل'
 const sectionLabels =
   locale === 'en'
     ? {
@@ -52,39 +41,21 @@ const sectionLabels =
 
 {
   model.status === 'unavailable' ? (
-    <AboutContactUtilityTemplate class="about-page about-page--empty">
-      <PageFamilyProfileHeroShell slot="lead" locale={locale} family="about" />
-
-      <div slot="records" class="about-page__sections pf-index-empty__shell">
-        <PageFamilySubNavShell
-          locale={locale}
-          labels={subNavLabels}
-          regionLabel={tabRegion}
-        />
-
-        <AboutAtlasPreview locale={locale} snapshot={atlasSnapshot} />
-
-        <PageFamilyHowIWorkShell locale={locale} />
-        <PageFamilyJourneyFlowShell locale={locale} />
-        <PageFamilySplitTimelineShell locale={locale} />
-        <PageFamilySkillsGridShell locale={locale} />
-        <PageFamilySelectedOutputsShell locale={locale} />
-        <PageFamilyDownloadListShell locale={locale} />
-        <PageFamilyCollaborateBandShell
-          locale={locale}
-          variant="dual"
-          context="about"
-        />
-
-        <ContentState
-          variant="empty"
-          locale={locale}
-          headingLevel="h2"
-          title={emptyCopy.title}
-          message={emptyCopy.message}
-        />
-      </div>
-    </AboutContactUtilityTemplate>
+    <div class="about-page about-page--unavailable">
+      <ContentState
+        variant="unavailable"
+        locale={locale}
+        headingLevel="h1"
+        title={emptyCopy.title}
+        message={emptyCopy.message}
+        actionLabel={locale === 'en' ? 'Back to home' : 'بازگشت به خانه'}
+        actionHref={localePath(locale, 'home')}
+      />
+      {/* The Atlas preview is real, independently-loaded content with its
+        own honest states (ready/unavailable) — not fake profile chrome —
+        so it stays visible even when the profile text itself is not. */}
+      <AboutAtlasPreview locale={locale} snapshot={atlasSnapshot} />
+    </div>
   ) : (
     <AboutContactUtilityTemplate class="about-page">
       <PageFamilyProfileHeroShell

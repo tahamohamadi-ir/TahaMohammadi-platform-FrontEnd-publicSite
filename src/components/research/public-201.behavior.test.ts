@@ -17,32 +17,31 @@ async function render(
 }
 
 describe('PUBLIC-201 research pages', () => {
-  it('renders structural empty-state chrome on the research index', async () => {
+  it('renders one honest unavailable state on the research index, not fabricated chrome', async () => {
+    // Empty-state policy: see the equivalent test in
+    // src/components/projects/public-210.behavior.test.ts.
     const html = await render(ResearchPageContent, {
       locale: 'en',
       model: { status: 'unavailable' },
     })
-    expect(html).toMatch(/data-visual-id="CollectionIndexTemplate"/)
-    expect(html).toMatch(/data-state-variant="empty"/)
-    expect(html).toContain('Research')
+    expect(html).toMatch(/data-visual-id="ContentState"/)
+    expect(html).toMatch(/data-state-variant="unavailable"/)
     expect(html).toMatch(/<h1[\s>]/)
-    expect(html).toMatch(/data-visual-id="PageFamilyIndexHero"/)
-    expect(html).toMatch(/Researcher · Engineer · Designer/)
-    expect(html).toMatch(/portal-orbit-light/)
-    expect(html).toMatch(/blog-coral-stairs/)
-    expect(html).toMatch(/data-visual-id="PageFamilyConstellationShell"/)
-    expect(html).toMatch(/pf-index-constellation__legend/)
-    expect(html).toMatch(/pf-index-constellation__svg/)
-    expect(html).toMatch(/data-visual-id="PageFamilyResearchFitShell"/)
-    expect(html).toMatch(/data-visual-id="PageFamilyResearchDirectionsShell"/)
-    expect(html).toMatch(/data-visual-id="PageFamilySelectedPublicationsShell"/)
-    expect(html).toMatch(
+    expect(html).toContain('Research')
+    expect(html).toMatch(/href="\/en\/home\/"/)
+    expect(html).not.toMatch(/data-visual-id="PageFamilyIndexHero"/)
+    expect(html).not.toMatch(/data-visual-id="PageFamilyConstellationShell"/)
+    expect(html).not.toMatch(/data-visual-id="PageFamilyResearchFitShell"/)
+    expect(html).not.toMatch(
+      /data-visual-id="PageFamilyResearchDirectionsShell"/,
+    )
+    expect(html).not.toMatch(
+      /data-visual-id="PageFamilySelectedPublicationsShell"/,
+    )
+    expect(html).not.toMatch(
       /data-visual-id="PageFamilyBibliographyRowPlaceholder"/,
     )
-    expect(html).toMatch(/research-page__band/)
-    expect(html).toMatch(/data-visual-id="PageFamilyCollaborateBandShell"/)
-    expect(html).toMatch(/Let(?:'|&#39;)s collaborate on research/)
-    expect(html).toMatch(/Let(?:'|&#39;)s Connect/)
+    expect(html).not.toMatch(/data-visual-id="PageFamilyCollaborateBandShell"/)
   })
 
   it('renders topic cards when the index model is ready', async () => {

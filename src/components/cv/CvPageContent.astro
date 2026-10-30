@@ -1,11 +1,6 @@
 ---
 import AboutContactUtilityTemplate from '../templates/AboutContactUtilityTemplate.astro'
 import PageFamilyProfileHeroShell from '../page-family/PageFamilyProfileHeroShell.astro'
-import PageFamilySubNavShell from '../page-family/PageFamilySubNavShell.astro'
-import PageFamilySkillsGridShell from '../page-family/PageFamilySkillsGridShell.astro'
-import PageFamilySelectedOutputsShell from '../page-family/PageFamilySelectedOutputsShell.astro'
-import PageFamilyDownloadListShell from '../page-family/PageFamilyDownloadListShell.astro'
-import PageFamilyCollaborateBandShell from '../page-family/PageFamilyCollaborateBandShell.astro'
 import ContentState from '../state/ContentState.astro'
 import Link from '../ui/Link.astro'
 import {
@@ -13,8 +8,7 @@ import {
   getCvUnavailableCopy,
   type CvPageModel,
 } from '../../lib/cv-content'
-import { getAboutSubNavLabels } from '../../lib/page-family-empty-chrome'
-import { type Locale } from '../../lib/navigation'
+import { localePath, type Locale } from '../../lib/navigation'
 
 interface Props {
   locale: Locale
@@ -23,45 +17,21 @@ interface Props {
 
 const { locale, model } = Astro.props
 const emptyCopy = getCvUnavailableCopy(locale)
-const subNavLabels = getAboutSubNavLabels(locale)
-const tabRegion = locale === 'en' ? 'CV sections' : 'بخش‌های رزومه'
 ---
 
 {
   model.status === 'unavailable' ? (
-    <AboutContactUtilityTemplate class="cv-page cv-page--empty">
-      <PageFamilyProfileHeroShell
-        slot="lead"
+    <div class="cv-page cv-page--unavailable">
+      <ContentState
+        variant="unavailable"
         locale={locale}
-        family="cv"
-        eyebrow={locale === 'en' ? 'Documents' : 'اسناد'}
+        headingLevel="h1"
+        title={emptyCopy.title}
+        message={emptyCopy.message}
+        actionLabel={locale === 'en' ? 'Back to home' : 'بازگشت به خانه'}
+        actionHref={localePath(locale, 'home')}
       />
-
-      <div slot="records" class="cv-page__sections pf-index-empty__shell">
-        <PageFamilySubNavShell
-          locale={locale}
-          labels={subNavLabels}
-          regionLabel={tabRegion}
-          activeIndex={5}
-        />
-        <PageFamilySkillsGridShell locale={locale} />
-        <PageFamilySelectedOutputsShell locale={locale} />
-        <PageFamilyDownloadListShell locale={locale} count={3} />
-        <PageFamilyCollaborateBandShell
-          locale={locale}
-          variant="dual"
-          context="about"
-        />
-
-        <ContentState
-          variant="empty"
-          locale={locale}
-          headingLevel="h2"
-          title={emptyCopy.title}
-          message={emptyCopy.message}
-        />
-      </div>
-    </AboutContactUtilityTemplate>
+    </div>
   ) : (
     <AboutContactUtilityTemplate class="cv-page">
       <PageFamilyProfileHeroShell

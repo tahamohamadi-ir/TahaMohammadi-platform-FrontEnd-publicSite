@@ -1,12 +1,7 @@
 ---
 import CollectionIndexTemplate from '../templates/CollectionIndexTemplate.astro'
 import PageFamilyIndexHero from '../page-family/PageFamilyIndexHero.astro'
-import PageFamilyFeaturedShell from '../page-family/PageFamilyFeaturedShell.astro'
-import PageFamilyMediaGridPlaceholder from '../page-family/PageFamilyMediaGridPlaceholder.astro'
-import PageFamilyPaginationShell from '../page-family/PageFamilyPaginationShell.astro'
-import PageFamilyCollaborateBandShell from '../page-family/PageFamilyCollaborateBandShell.astro'
 import ContentState from '../state/ContentState.astro'
-import Link from '../ui/Link.astro'
 import {
   formatCreativeCardMeta,
   getCreativeEmptyCopy,
@@ -23,111 +18,21 @@ interface Props {
 
 const { locale, model } = Astro.props
 const emptyCopy = getCreativeEmptyCopy(locale)
-const filterLabels =
-  locale === 'en'
-    ? {
-        region: 'Gallery filters',
-        allWork: 'All work',
-        medium: 'Medium',
-        year: 'Year',
-        role: 'Role',
-        contact: 'Contact',
-      }
-    : {
-        region: 'پالایش‌های گالری',
-        allWork: 'همه آثار',
-        medium: 'رسانه',
-        year: 'سال',
-        role: 'نقش',
-        contact: 'تماس',
-      }
 ---
 
 {
   model.status === 'empty' ? (
-    <CollectionIndexTemplate class="creative-page creative-page--empty">
-      <PageFamilyIndexHero
-        slot="lead"
+    <div class="creative-page creative-page--empty">
+      <ContentState
+        variant="empty"
         locale={locale}
-        family="creative"
-        portal
-        eyebrow={
-          locale === 'en' ? 'Visual & creative work' : 'آثار بصری و خلاقه'
-        }
-        title={getCreativeRouteTitle(locale)}
-        summary={getPageFamilyHeroSummary(locale, 'creative')}
+        headingLevel="h1"
+        title={emptyCopy.title}
+        message={emptyCopy.message}
+        actionLabel={locale === 'en' ? 'Back to home' : 'بازگشت به خانه'}
+        actionHref={localePath(locale, 'home')}
       />
-
-      <PageFamilyFeaturedShell
-        slot="featured"
-        locale={locale}
-        family="creative"
-      />
-
-      <div
-        slot="filters"
-        class="creative-page__filters pf-index-empty__filters pf-index-empty__filters--collection"
-        role="group"
-        aria-label={filterLabels.region}
-        aria-disabled="true"
-      >
-        <p class="creative-page__filters-active pf-index-empty__filter-active">
-          {filterLabels.allWork}
-        </p>
-        <div class="creative-page__filters-controls">
-          <button
-            type="button"
-            class="pf-index-empty__filter-chip pf-index-empty__filter-chip--dropdown"
-            disabled
-          >
-            {filterLabels.medium}
-          </button>
-          <button
-            type="button"
-            class="pf-index-empty__filter-chip pf-index-empty__filter-chip--dropdown"
-            disabled
-          >
-            {filterLabels.year}
-          </button>
-          <button
-            type="button"
-            class="pf-index-empty__filter-chip pf-index-empty__filter-chip--dropdown"
-            disabled
-          >
-            {filterLabels.role}
-          </button>
-        </div>
-        <Link
-          href={localePath(locale, 'contact')}
-          label={filterLabels.contact}
-          variant="standalone"
-          class="creative-page__filters-contact"
-        />
-      </div>
-
-      <div
-        slot="records"
-        class="creative-page__grid-shell pf-index-empty__shell"
-      >
-        <PageFamilyMediaGridPlaceholder locale={locale} family="creative" />
-        <ContentState
-          variant="empty"
-          locale={locale}
-          headingLevel="h2"
-          title={emptyCopy.title}
-          message={emptyCopy.message}
-        />
-      </div>
-
-      <PageFamilyPaginationShell slot="pagination" locale={locale} />
-
-      <PageFamilyCollaborateBandShell
-        slot="footer"
-        locale={locale}
-        context="creative"
-        variant="collaborate-only"
-      />
-    </CollectionIndexTemplate>
+    </div>
   ) : (
     <CollectionIndexTemplate class="creative-page">
       <PageFamilyIndexHero

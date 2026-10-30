@@ -1,12 +1,6 @@
 ---
 import CollectionIndexTemplate from '../templates/CollectionIndexTemplate.astro'
 import PageFamilyIndexHero from '../page-family/PageFamilyIndexHero.astro'
-import PageFamilyFeaturedShell from '../page-family/PageFamilyFeaturedShell.astro'
-import PageFamilyContentRowPlaceholder from '../page-family/PageFamilyContentRowPlaceholder.astro'
-import PageFamilyEvidenceGridShell from '../page-family/PageFamilyEvidenceGridShell.astro'
-import PageFamilySortShell from '../page-family/PageFamilySortShell.astro'
-import PageFamilyPaginationShell from '../page-family/PageFamilyPaginationShell.astro'
-import PageFamilyCollaborateBandShell from '../page-family/PageFamilyCollaborateBandShell.astro'
 import ContentState from '../state/ContentState.astro'
 import {
   formatProjectAvailability,
@@ -15,10 +9,6 @@ import {
   getProjectsUnavailableCopy,
   type ProjectsIndexModel,
 } from '../../lib/projects-content'
-import {
-  getPageFamilyHeroSummary,
-  getProjectsHeroNotice,
-} from '../../lib/page-family-empty-chrome'
 import { localePath, type Locale } from '../../lib/navigation'
 
 interface Props {
@@ -28,142 +18,21 @@ interface Props {
 
 const { locale, model } = Astro.props
 const emptyCopy = getProjectsUnavailableCopy(locale)
-const filterLabels =
-  locale === 'en'
-    ? {
-        region: 'Project filters',
-        allProjects: 'All projects',
-        research: 'Research',
-        ai: 'AI',
-        dataSystems: 'Data systems',
-        software: 'Software',
-        design: 'Design',
-        search: 'Search projects…',
-      }
-    : {
-        region: 'پالایش پروژه‌ها',
-        allProjects: 'همه پروژه‌ها',
-        research: 'پژوهش',
-        ai: 'هوش مصنوعی',
-        dataSystems: 'سامانه‌های داده',
-        software: 'نرم‌افزار',
-        design: 'طراحی',
-        search: 'جستجوی پروژه‌ها…',
-      }
 ---
 
 {
   model.status === 'unavailable' ? (
-    <CollectionIndexTemplate class="projects-page projects-page--empty projects-page--grid">
-      <PageFamilyIndexHero
-        slot="lead"
+    <div class="projects-page projects-page--unavailable">
+      <ContentState
+        variant="unavailable"
         locale={locale}
-        family="projects"
-        atmosphere
-        eyebrow={locale === 'en' ? 'Selected evidence' : 'شواهد منتخب'}
-        title={getProjectsRouteTitle(locale)}
-        summary={getPageFamilyHeroSummary(locale, 'projects')}
-        notice={getProjectsHeroNotice(locale)}
+        headingLevel="h1"
+        title={emptyCopy.title}
+        message={emptyCopy.message}
+        actionLabel={locale === 'en' ? 'Back to home' : 'بازگشت به خانه'}
+        actionHref={localePath(locale, 'home')}
       />
-
-      <PageFamilyFeaturedShell
-        slot="featured"
-        locale={locale}
-        family="projects"
-      />
-
-      <div
-        slot="filters"
-        class="projects-page__filters pf-index-empty__filters pf-index-empty__filters--projects"
-        role="group"
-        aria-label={filterLabels.region}
-        aria-disabled="true"
-      >
-        <div class="projects-page__filters-controls">
-          <button
-            type="button"
-            class="pf-index-empty__filter-chip pf-index-empty__filter-chip--rect pf-index-empty__filter-chip--active"
-            disabled
-            aria-pressed="true"
-          >
-            {filterLabels.allProjects}
-          </button>
-          <button
-            type="button"
-            class="pf-index-empty__filter-chip pf-index-empty__filter-chip--rect"
-            disabled
-          >
-            {filterLabels.research}
-          </button>
-          <button
-            type="button"
-            class="pf-index-empty__filter-chip pf-index-empty__filter-chip--rect"
-            disabled
-          >
-            {filterLabels.ai}
-          </button>
-          <button
-            type="button"
-            class="pf-index-empty__filter-chip pf-index-empty__filter-chip--rect"
-            disabled
-          >
-            {filterLabels.dataSystems}
-          </button>
-          <button
-            type="button"
-            class="pf-index-empty__filter-chip pf-index-empty__filter-chip--rect"
-            disabled
-          >
-            {filterLabels.software}
-          </button>
-          <button
-            type="button"
-            class="pf-index-empty__filter-chip pf-index-empty__filter-chip--rect"
-            disabled
-          >
-            {filterLabels.design}
-          </button>
-        </div>
-        <input
-          type="search"
-          class="projects-page__search pf-index-empty__search"
-          placeholder={filterLabels.search}
-          disabled
-          aria-hidden="true"
-          tabindex="-1"
-        />
-        <PageFamilySortShell locale={locale} />
-      </div>
-
-      <div
-        slot="records"
-        class="projects-page__grid-shell pf-index-empty__shell"
-      >
-        <PageFamilyContentRowPlaceholder
-          locale={locale}
-          family="projects"
-          count={6}
-          variant="project"
-        />
-        <PageFamilyEvidenceGridShell locale={locale} />
-        <ContentState
-          variant="empty"
-          locale={locale}
-          headingLevel="h2"
-          title={emptyCopy.title}
-          message={emptyCopy.message}
-        />
-      </div>
-
-      <PageFamilyPaginationShell slot="pagination" locale={locale} />
-
-      <PageFamilyCollaborateBandShell
-        slot="footer"
-        locale={locale}
-        context="projects"
-        variant="collaborate-only"
-      />
-    </CollectionIndexTemplate>
+    </div>
   ) : (
     <CollectionIndexTemplate class="projects-page">
       <PageFamilyIndexHero

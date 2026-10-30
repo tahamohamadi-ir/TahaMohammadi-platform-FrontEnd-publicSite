@@ -16,22 +16,27 @@ async function render(
 }
 
 describe('PUBLIC-200 about page', () => {
-  it('renders structural empty-state chrome when the profile is not published', async () => {
+  it('renders one honest unavailable state when the profile is not published, not fabricated chrome', async () => {
+    // Empty-state policy: see the equivalent test in
+    // src/components/projects/public-210.behavior.test.ts.
     const html = await render(AboutPageContent, {
       locale: 'en',
       model: { status: 'unavailable' },
     })
-    expect(html).toMatch(/data-visual-id="AboutContactUtilityTemplate"/)
-    expect(html).toMatch(/data-state-variant="empty"/)
-    expect(html).toMatch(/data-visual-id="PageFamilyProfileHeroShell"/)
-    expect(html).toMatch(/data-visual-id="PageFamilySubNavShell"/)
-    expect(html).toMatch(/data-visual-id="PageFamilyHowIWorkShell"/)
-    expect(html).toMatch(/data-visual-id="PageFamilyJourneyFlowShell"/)
-    expect(html).toMatch(/data-visual-id="PageFamilySplitTimelineShell"/)
-    expect(html).toMatch(/data-visual-id="PageFamilySkillsGridShell"/)
-    expect(html).toMatch(/data-visual-id="PageFamilySelectedOutputsShell"/)
-    expect(html).toMatch(/data-visual-id="PageFamilyCollaborateBandShell"/)
-    expect(html).toContain('Awaiting approved CMS copy')
+    expect(html).toMatch(/data-visual-id="ContentState"/)
+    expect(html).toMatch(/data-state-variant="unavailable"/)
+    expect(html).toMatch(/<h1[\s>]/)
+    expect(html).toContain('About')
+    expect(html).toMatch(/href="\/en\/home\/"/)
+    expect(html).not.toMatch(/data-visual-id="PageFamilyProfileHeroShell"/)
+    expect(html).not.toMatch(/data-visual-id="PageFamilySubNavShell"/)
+    expect(html).not.toMatch(/data-visual-id="PageFamilyHowIWorkShell"/)
+    expect(html).not.toMatch(/data-visual-id="PageFamilyJourneyFlowShell"/)
+    expect(html).not.toMatch(/data-visual-id="PageFamilySplitTimelineShell"/)
+    expect(html).not.toMatch(/data-visual-id="PageFamilySkillsGridShell"/)
+    expect(html).not.toMatch(/data-visual-id="PageFamilySelectedOutputsShell"/)
+    expect(html).not.toMatch(/data-visual-id="PageFamilyCollaborateBandShell"/)
+    expect(html).not.toContain('Awaiting approved CMS copy')
   })
 
   it('renders profile sections with anchor ids when ready', async () => {

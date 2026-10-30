@@ -1,17 +1,12 @@
 ---
 import CollectionIndexTemplate from '../templates/CollectionIndexTemplate.astro'
 import PageFamilyIndexHero from '../page-family/PageFamilyIndexHero.astro'
-import PageFamilySubNavShell from '../page-family/PageFamilySubNavShell.astro'
-import PageFamilyPublicationsSidebarShell from '../page-family/PageFamilyPublicationsSidebarShell.astro'
-import PageFamilySelectedPublicationsShell from '../page-family/PageFamilySelectedPublicationsShell.astro'
-import PageFamilyCollaborateBandShell from '../page-family/PageFamilyCollaborateBandShell.astro'
 import ContentState from '../state/ContentState.astro'
 import {
   getPublicationsUnavailableCopy,
   publicationsRouteTitle,
   type PublicationsIndexModel,
 } from '../../lib/publications-content'
-import { getResearchSubNavLabels } from '../../lib/page-family-empty-chrome'
 import { formatPublicationType } from '../../lib/catalog-labels'
 import { localePath, type Locale } from '../../lib/navigation'
 
@@ -22,107 +17,21 @@ interface Props {
 
 const { locale, model } = Astro.props
 const emptyCopy = getPublicationsUnavailableCopy(locale)
-const subNavLabels = getResearchSubNavLabels(locale)
-const tabRegion = locale === 'en' ? 'Research sections' : 'بخش‌های پژوهش'
-const filterLabels =
-  locale === 'en'
-    ? {
-        region: 'Publication filters',
-        allOutputs: 'All outputs',
-        journal: 'Journal',
-        conference: 'Conference',
-        chapter: 'Book chapter',
-        report: 'Report',
-        search: 'Search publications…',
-      }
-    : {
-        region: 'پالایش خروجی‌ها',
-        allOutputs: 'همه خروجی‌ها',
-        journal: 'مجله',
-        conference: 'کنفرانس',
-        chapter: 'فصل کتاب',
-        report: 'گزارش',
-        search: 'جستجوی انتشارات…',
-      }
 ---
 
 {
   model.status === 'unavailable' ? (
-    <CollectionIndexTemplate class="publications-page publications-page--empty">
-      <PageFamilyIndexHero
-        slot="lead"
+    <div class="publications-page publications-page--unavailable">
+      <ContentState
+        variant="unavailable"
         locale={locale}
-        family="publications"
-        eyebrow={locale === 'en' ? 'Bibliography' : 'فهرست خروجی‌ها'}
-        title={publicationsRouteTitle[locale]}
-        atmosphere
+        headingLevel="h1"
+        title={emptyCopy.title}
+        message={emptyCopy.message}
+        actionLabel={locale === 'en' ? 'Back to home' : 'بازگشت به خانه'}
+        actionHref={localePath(locale, 'home')}
       />
-
-      <div slot="filters" class="publications-page__nav-stack">
-        <PageFamilySubNavShell
-          locale={locale}
-          labels={subNavLabels}
-          regionLabel={tabRegion}
-          activeIndex={2}
-          class="publications-page__tabs"
-        />
-        <div
-          class="publications-page__filters pf-index-empty__filters"
-          role="group"
-          aria-label={filterLabels.region}
-          aria-disabled="true"
-        >
-          <p class="publications-page__filters-active">
-            {filterLabels.allOutputs}
-          </p>
-          <div class="publications-page__filters-controls">
-            <button type="button" class="pf-index-empty__filter-chip" disabled>
-              {filterLabels.journal}
-            </button>
-            <button type="button" class="pf-index-empty__filter-chip" disabled>
-              {filterLabels.conference}
-            </button>
-            <button type="button" class="pf-index-empty__filter-chip" disabled>
-              {filterLabels.chapter}
-            </button>
-            <button type="button" class="pf-index-empty__filter-chip" disabled>
-              {filterLabels.report}
-            </button>
-          </div>
-          <input
-            type="search"
-            class="publications-page__search pf-index-empty__search"
-            placeholder={filterLabels.search}
-            disabled
-            aria-hidden="true"
-            tabindex="-1"
-          />
-        </div>
-      </div>
-
-      <div
-        slot="records"
-        class="publications-page__layout pf-index-empty__shell"
-      >
-        <PageFamilyPublicationsSidebarShell locale={locale} />
-
-        <div class="publications-page__main">
-          <PageFamilySelectedPublicationsShell locale={locale} count={4} />
-          <PageFamilyCollaborateBandShell
-            locale={locale}
-            variant="collaborate-only"
-            context="publications"
-          />
-          <ContentState
-            variant="empty"
-            locale={locale}
-            headingLevel="h2"
-            title={emptyCopy.title}
-            message={emptyCopy.message}
-          />
-        </div>
-      </div>
-    </CollectionIndexTemplate>
+    </div>
   ) : (
     <CollectionIndexTemplate class="publications-page">
       <PageFamilyIndexHero

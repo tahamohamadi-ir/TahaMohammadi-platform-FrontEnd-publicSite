@@ -17,26 +17,28 @@ async function render(
 }
 
 describe('PUBLIC-220 teaching pages', () => {
-  it('renders structural empty-state chrome on the teaching index', async () => {
+  it('renders one honest unavailable state on the teaching index, not fabricated chrome', async () => {
+    // Empty-state policy: see the equivalent test in
+    // src/components/projects/public-210.behavior.test.ts.
     const html = await render(TeachingPageContent, {
       locale: 'en',
       model: { status: 'unavailable' },
     })
-    expect(html).toMatch(/data-visual-id="EditorialIndexTemplate"/)
-    expect(html).toMatch(/data-state-variant="empty"/)
-    expect(html).toMatch(/data-visual-id="PageFamilyIndexHero"/)
-    expect(html).toMatch(/data-visual-id="PageFamilyFeaturedPathShell"/)
-    expect(html).toMatch(/data-visual-id="PageFamilyListCardShell"/)
-    expect(html).toMatch(/data-visual-id="PageFamilyPathProcessShell"/)
-    expect(html).toMatch(/data-visual-id="PageFamilyCollaborateBandShell"/)
-    expect(html).toContain('Teaching')
+    expect(html).toMatch(/data-visual-id="ContentState"/)
+    expect(html).toMatch(/data-state-variant="unavailable"/)
     expect(html).toMatch(/<h1[\s>]/)
-    expect(html).toMatch(/teaching-page__filters/)
-    expect(html).toMatch(/teaching-page--grid/)
-    expect(html).toMatch(/pf-index-empty__filter-chip--rect/)
-    expect(html).toMatch(/data-visual-id="PageFamilyTeachingFilterDropdowns"/)
-    expect(html).toMatch(/pf-index-path--featured/)
-    expect(html).toContain('Browse paths')
+    expect(html).toContain('Education')
+    expect(html).toMatch(/href="\/en\/home\/"/)
+    expect(html).not.toMatch(/data-visual-id="EditorialIndexTemplate"/)
+    expect(html).not.toMatch(/data-visual-id="PageFamilyIndexHero"/)
+    expect(html).not.toMatch(/data-visual-id="PageFamilyFeaturedPathShell"/)
+    expect(html).not.toMatch(/data-visual-id="PageFamilyListCardShell"/)
+    expect(html).not.toMatch(/data-visual-id="PageFamilyPathProcessShell"/)
+    expect(html).not.toMatch(/data-visual-id="PageFamilyCollaborateBandShell"/)
+    expect(html).not.toMatch(
+      /data-visual-id="PageFamilyTeachingFilterDropdowns"/,
+    )
+    expect(html).not.toMatch(/disabled/)
   })
 
   it('renders course and talk cards when the index model is ready', async () => {

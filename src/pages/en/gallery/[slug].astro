@@ -5,11 +5,9 @@ import CreativeDetailContent from '../../../components/creative/CreativeDetailCo
 import {
   fetchCreativeDetail,
   getCreativeRouteTitle,
-  isCreativeDetailEmptyShellSlug,
   listCreativeSlugs,
   resolveCreativeAlternateAvailability,
 } from '../../../lib/creative-content'
-import { getCmsPlaceholderCopy } from '../../../lib/page-family-empty-chrome'
 import '../../../styles/page-families.css'
 
 export async function getStaticPaths() {
@@ -29,9 +27,7 @@ const alternateAvailable = await resolveCreativeAlternateAvailability(
   locale,
   slug,
 )
-const pageTitle = isCreativeDetailEmptyShellSlug(slug)
-  ? `${getCreativeRouteTitle(locale)} — ${getCmsPlaceholderCopy(locale)}`
-  : `${model.status === 'ready' ? model.work.title : getCreativeRouteTitle(locale)} — Taha Mohammadi`
+const pageTitle = `${model.status === 'ready' ? model.work.title : getCreativeRouteTitle(locale)} — Taha Mohammadi`
 const detailSeo = pickDetailSeo(
   model.status === 'ready' ? model.work.seo : null,
 )

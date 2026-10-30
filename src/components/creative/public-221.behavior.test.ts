@@ -17,35 +17,26 @@ async function render(
 }
 
 describe('PUBLIC-221 creative pages', () => {
-  it('renders structural empty-state chrome on the creative index', async () => {
+  it('renders one honest empty state on the creative index, not fabricated chrome', async () => {
+    // Empty-state policy: see the equivalent test in
+    // src/components/projects/public-210.behavior.test.ts.
     const html = await render(CreativePageContent, {
       locale: 'en',
       model: { status: 'empty' },
     })
-    expect(html).toMatch(/data-visual-id="CollectionIndexTemplate"/)
+    expect(html).toMatch(/data-visual-id="ContentState"/)
     expect(html).toMatch(/data-state-variant="empty"/)
-    expect(html).toMatch(/data-visual-id="PageFamilyIndexHero"/)
-    expect(html).toMatch(/data-visual-id="PageFamilyFeaturedShell"/)
-    expect(html).toMatch(/data-visual-id="PageFamilyMediaGridPlaceholder"/)
-    expect(html).toMatch(/pf-index-grid-placeholder__image--shift-/)
-    expect(html).toMatch(/data-visual-id="PageFamilyPaginationShell"/)
-    expect(html).toMatch(/pf-index-featured--creative/)
     expect(html).toContain('Gallery')
     expect(html).toMatch(/<h1[\s>]/)
-    expect(html).toMatch(/creative-page__filters/)
-    expect(html).toMatch(/pf-index-empty__filters--collection/)
-    expect(html).toMatch(/pf-index-empty__filter-chip--dropdown/)
-    expect(html).toMatch(/pf-index-hero--portal/)
-    expect(html).toMatch(/pf-index-hero__wireframe/)
-    expect(html).toContain('Where research meets form')
-    expect(html).toContain('Selected visual work')
-    expect(html).toContain('View work')
     expect(html).toContain('Published creative works are not available yet.')
-    expect(html).toContain('All work')
-    expect(html).toContain('Medium')
-    expect(html).toMatch(/data-visual-id="PageFamilyCollaborateBandShell"/)
-    expect(html).toMatch(/Let(?:'|&#39;)s collaborate on visual work/)
-    expect(html).toMatch(/Let(?:'|&#39;)s Connect/)
+    expect(html).toMatch(/href="\/en\/home\/"/)
+    expect(html).not.toMatch(/data-visual-id="CollectionIndexTemplate"/)
+    expect(html).not.toMatch(/data-visual-id="PageFamilyIndexHero"/)
+    expect(html).not.toMatch(/data-visual-id="PageFamilyFeaturedShell"/)
+    expect(html).not.toMatch(/data-visual-id="PageFamilyMediaGridPlaceholder"/)
+    expect(html).not.toMatch(/data-visual-id="PageFamilyPaginationShell"/)
+    expect(html).not.toMatch(/data-visual-id="PageFamilyCollaborateBandShell"/)
+    expect(html).not.toMatch(/disabled/)
   })
 
   it('renders creative work cards when the index model is ready', async () => {
@@ -114,19 +105,20 @@ describe('PUBLIC-221 creative pages', () => {
     expect(html).toMatch(/src="https:\/\/example.com\/image.jpg"/)
   })
 
-  it('renders honest empty creative detail shell without inventing CMS copy', async () => {
+  it('renders the same honest unavailable state for the empty-shell design-QA fixture slug, not fabricated chrome', async () => {
+    // "empty-shell" (src/pages/{en,fa}/gallery/empty-shell/) was a reserved
+    // slug that rendered a fully fabricated preview page. It now reuses the
+    // real unavailable-detail ContentState — see CreativeDetailContent.astro.
     const html = await render(CreativeDetailContent, {
       locale: 'en',
       model: { status: 'empty-shell' },
     })
-    expect(html).toMatch(/data-visual-id="PageFamilyCreativeDetailShell"/)
-    expect(html).toMatch(/data-visual-id="PageFamilyCollaborateBandShell"/)
-    expect(html).toContain('Awaiting approved CMS copy')
-    expect(html).toContain('Medium')
-    expect(html).toContain('Process')
-    expect(html).toMatch(/Research\s*(?:&|&amp;)\s*mood exploration/)
-    expect(html).not.toContain('Ivory Forms')
-    expect(html).not.toContain('Visual Exploration')
+    expect(html).toMatch(/data-visual-id="ContentState"/)
+    expect(html).toMatch(/data-state-variant="unavailable"/)
     expect(html).toMatch(/<h1[\s>]/)
+    expect(html).not.toMatch(/data-visual-id="PageFamilyCreativeDetailShell"/)
+    expect(html).not.toMatch(/data-visual-id="PageFamilyCollaborateBandShell"/)
+    expect(html).not.toContain('Awaiting approved CMS copy')
+    expect(html).not.toMatch(/disabled/)
   })
 })

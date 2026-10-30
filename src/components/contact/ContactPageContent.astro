@@ -18,12 +18,11 @@ import {
   type ContactPageModel,
 } from '../../lib/contact-content'
 import {
-  getContactAntiSpamReadyLabel,
   getContactFormPrivacyNote,
   getContactTopicCards,
   getContactTopicSectionLabel,
 } from '../../lib/page-family-empty-chrome'
-import { type Locale } from '../../lib/navigation'
+import { localePath, type Locale } from '../../lib/navigation'
 
 interface Props {
   locale: Locale
@@ -36,161 +35,21 @@ const formState = parseContactFormState(Astro.url.searchParams)
 const topicCards = getContactTopicCards(locale)
 const topicSectionLabel = getContactTopicSectionLabel(locale)
 const privacyNote = getContactFormPrivacyNote(locale)
-const antiSpamReady = getContactAntiSpamReadyLabel(locale)
-const topicLabels =
-  locale === 'en'
-    ? {
-        region: topicSectionLabel,
-        topicField: 'Topic / purpose',
-        subjectField: 'Subject',
-        replyCheckbox: 'Yes, I would like to receive a reply',
-        antiSpam: 'Anti-spam check',
-      }
-    : {
-        region: topicSectionLabel,
-        topicField: 'موضوع / هدف',
-        subjectField: 'عنوان',
-        replyCheckbox: 'بله، مایل به دریافت پاسخ هستم',
-        antiSpam: 'بررسی ضد هرزنامه',
-      }
 ---
 
 {
   model.status === 'unavailable' ? (
-    <AboutContactUtilityTemplate class="contact-page contact-page--empty">
-      <PageFamilyContactHeroShell slot="lead" locale={locale} />
-
-      <div slot="records" class="contact-page__stack pf-index-empty__shell">
-        <section
-          class="contact-page__topics-band"
-          aria-labelledby="contact-topics-empty-title"
-        >
-          <h2
-            id="contact-topics-empty-title"
-            class="contact-page__section-title"
-          >
-            {topicLabels.region}
-          </h2>
-          <PageFamilyTopicCardsShell
-            locale={locale}
-            labels={topicCards}
-            regionLabel={topicLabels.region}
-            activeIndex={0}
-          />
-        </section>
-
-        <div class="contact-page__layout">
-          <PageFamilyContactSidebarShell locale={locale} />
-
-          <div class="contact-page__main">
-            <section
-              class="contact-page__section contact-page__panel contact-page__panel--form"
-              aria-labelledby="contact-form-empty-title"
-            >
-              <h2
-                id="contact-form-empty-title"
-                class="contact-page__section-title"
-              >
-                {contactFormCopy.formIntro[locale]}
-              </h2>
-
-              <form class="contact-page__form" aria-disabled="true">
-                <div class="contact-page__form-row">
-                  <Input
-                    id="contact-name-empty"
-                    name="name"
-                    label={contactFormCopy.nameLabel[locale]}
-                    disabled
-                  />
-                  <Input
-                    id="contact-email-empty"
-                    name="email"
-                    type="email"
-                    label={contactFormCopy.emailLabel[locale]}
-                    disabled
-                  />
-                </div>
-                <label class="contact-page__select-field">
-                  <span class="contact-page__select-label">
-                    {topicLabels.topicField}
-                  </span>
-                  <select class="contact-page__select" disabled>
-                    <option>{topicCards[0]?.title}</option>
-                  </select>
-                </label>
-                <Input
-                  id="contact-subject-empty"
-                  name="subject"
-                  label={topicLabels.subjectField}
-                  disabled
-                />
-                <Textarea
-                  id="contact-message-empty"
-                  name="message"
-                  label={contactFormCopy.messageLabel[locale]}
-                  rows={6}
-                  disabled
-                />
-                <label class="contact-page__checkbox">
-                  <input type="checkbox" disabled />
-                  <span>{topicLabels.replyCheckbox}</span>
-                </label>
-                <div class="contact-page__anti-spam" aria-hidden="true">
-                  <span class="contact-page__anti-spam-label">
-                    {topicLabels.antiSpam}
-                  </span>
-                  <span class="contact-page__anti-spam-ready">
-                    {antiSpamReady}
-                  </span>
-                </div>
-                <div class="contact-page__form-actions">
-                  <Button
-                    type="button"
-                    label={contactFormCopy.sendLabel[locale]}
-                    disabled
-                  />
-                </div>
-                <p class="contact-page__privacy">
-                  <span class="contact-page__privacy-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" focusable="false">
-                      <rect
-                        x="6"
-                        y="10"
-                        width="12"
-                        height="9"
-                        rx="2"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="1.5"
-                      />
-                      <path
-                        d="M8.5 10V8.2a3.5 3.5 0 0 1 7 0V10"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
-                      />
-                    </svg>
-                  </span>
-                  <span>{privacyNote}</span>
-                </p>
-              </form>
-            </section>
-          </div>
-        </div>
-
-        <PageFamilySendWorkflowShell locale={locale} />
-        <PageFamilyFaqShell locale={locale} />
-
-        <ContentState
-          variant="empty"
-          locale={locale}
-          headingLevel="h2"
-          title={emptyCopy.title}
-          message={emptyCopy.message}
-        />
-      </div>
-    </AboutContactUtilityTemplate>
+    <div class="contact-page contact-page--unavailable">
+      <ContentState
+        variant="unavailable"
+        locale={locale}
+        headingLevel="h1"
+        title={emptyCopy.title}
+        message={emptyCopy.message}
+        actionLabel={locale === 'en' ? 'Back to home' : 'بازگشت به خانه'}
+        actionHref={localePath(locale, 'home')}
+      />
+    </div>
   ) : (
     <AboutContactUtilityTemplate class="contact-page">
       <PageFamilyContactHeroShell slot="lead" locale={locale} />
@@ -201,12 +60,12 @@ const topicLabels =
           aria-labelledby="contact-topics-title"
         >
           <h2 id="contact-topics-title" class="contact-page__section-title">
-            {topicLabels.region}
+            {topicSectionLabel}
           </h2>
           <PageFamilyTopicCardsShell
             locale={locale}
             labels={topicCards}
-            regionLabel={topicLabels.region}
+            regionLabel={topicSectionLabel}
             activeIndex={0}
           />
         </section>

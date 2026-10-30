@@ -1,5 +1,4 @@
 ---
-import PageFamilyBibliographyRowPlaceholder from './PageFamilyBibliographyRowPlaceholder.astro'
 import { localePath, type Locale } from '../../lib/navigation'
 
 import type { PublicationListOut } from '../../lib/research-content'
@@ -61,9 +60,7 @@ const notice =
           )
         })}
       </ul>
-    ) : (
-      <PageFamilyBibliographyRowPlaceholder locale={locale} count={count} />
-    )
+    ) : null
   }
 
   <p class="pf-index-selected-pubs__notice">
