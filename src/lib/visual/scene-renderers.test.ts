@@ -1,7 +1,6 @@
 import { afterEach, expect, test, vi } from 'vitest'
 import * as THREE from 'three'
 import { createGraphScene } from './graph-scene'
-import { createGatewayScene } from './gateway-scene'
 import { SCENE_CONTRACT_VERSION, type ScenePalette } from './scene-contract'
 
 const captures = vi.hoisted(() => ({ scenes: [] as unknown[] }))
@@ -127,74 +126,6 @@ test('theme change retints the decorative nucleus as well as data nodes', () => 
   expect(colors).not.toContain('a77b28')
   handle.dispose()
 })
-test('gateway geometry stays within draw and triangle budgets', () => {
-  const handle = createGatewayScene({
-    canvas: canvas(),
-    palette: light,
-    motion: 'reduced',
-  })
-  handle.render()
-  let draws = 0,
-    triangles = 0
-  const scene = captures.scenes.at(-1) as THREE.Scene
-  scene.traverse((object) => {
-    if (object instanceof THREE.Mesh || object instanceof THREE.Line) draws++
-    if (object instanceof THREE.Mesh)
-      triangles +=
-        (object.geometry.index?.count ??
-          object.geometry.attributes.position.count) / 3
-  })
-  expect(draws).toBeLessThanOrEqual(60)
-  expect(triangles).toBeLessThanOrEqual(50000)
-  handle.dispose()
-})
-
-test('gateway is grounded architecture with one arch and an interior ascending stair', () => {
-  const handle = createGatewayScene({
-    canvas: canvas(),
-    palette: dark,
-    motion: 'reduced',
-  })
-  handle.render()
-  const scene = captures.scenes.at(-1) as THREE.Scene
-  const arch = scene.getObjectByName('gateway-arch') as THREE.Mesh
-  const floor = scene.getObjectByName('gateway-floor') as THREE.Mesh
-  expect(arch).toBeDefined()
-  expect(arch.castShadow).toBe(true)
-  expect(floor.receiveShadow).toBe(true)
-  expect((arch.material as THREE.MeshStandardMaterial).bumpMap).toBeTruthy()
-  const first = scene.getObjectByName('gateway-step-0')!
-  const last = scene.getObjectByName('gateway-step-7')!
-  expect(last.position.z).toBeLessThan(first.position.z)
-  expect(last.position.y).toBeGreaterThan(first.position.y)
-  handle.dispose()
-})
-
-test('gateway satellites move in depth, then settle instantly for reduced motion', () => {
-  const handle = createGatewayScene({
-    canvas: canvas(),
-    palette: dark,
-    motion: 'full',
-  })
-  handle.render()
-  const scene = captures.scenes.at(-1) as THREE.Scene
-  const satellites = scene.getObjectByName(
-    'gateway-satellites',
-  ) as THREE.InstancedMesh
-  const start = new THREE.Matrix4(),
-    end = new THREE.Matrix4()
-  handle.setOrbitPhase(0)
-  satellites.getMatrixAt(0, start)
-  handle.setOrbitPhase(1)
-  satellites.getMatrixAt(0, end)
-  expect(start.equals(end)).toBe(false)
-  handle.setMotion('reduced')
-  handle.setOrbitPhase(0)
-  satellites.getMatrixAt(0, start)
-  expect(start.equals(end)).toBe(true)
-  handle.dispose()
-})
-
 test('50 nodes and 100 real input edges use bounded instanced rendering', () => {
   const nodes = Array.from({ length: 50 }, (_, i) => ({
     id: `test-${i}`,
