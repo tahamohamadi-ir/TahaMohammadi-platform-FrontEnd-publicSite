@@ -117,7 +117,10 @@ html[data-theme='light'] .gw::after {
   z-index: 2;
   margin: 0;
   font-family: var(--font-display);
-  font-size: clamp(0.75rem, 1.6vw, 0.95rem);
+  /* WCAG 2.2 AA: color-signature measures ~3.35:1 on the light .gw
+     background, which only clears the 3:1 "large text" floor, not the
+     4.5:1 normal-text floor — so the minimum stays at/above 18px here. */
+  font-size: clamp(1.125rem, 1.8vw, 1.25rem);
   font-weight: 500;
   line-height: 1.4;
   color: var(--color-signature);

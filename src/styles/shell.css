@@ -317,12 +317,15 @@ html[data-theme='dark'] .site-header {
 }
 
 .language-toggle__locale--unavailable {
-  color: var(--color-ink-tertiary);
+  /* WCAG 2.2 AA: color-ink-tertiary measures ~3.35:1 on the light canvas,
+     below 4.5:1. --shell-ink-muted already resolves to ink-secondary in
+     light and ink-tertiary in dark (both pass here); reuse it. */
+  color: var(--shell-ink-muted);
   cursor: not-allowed;
 }
 
 .language-toggle__sep {
-  color: var(--color-ink-tertiary);
+  color: var(--shell-ink-muted);
   font-size: var(--font-size-xs);
   user-select: none;
 }
@@ -524,8 +527,12 @@ html[data-theme='dark'] .site-footer {
 
 .site-footer__nav-title {
   margin: 0 0 var(--space-2);
-  font-size: var(--font-size-xs);
-  font-weight: 600;
+  /* WCAG 2.2 AA: color-signature measures ~3.35:1 on the light footer
+     background, which clears the 3:1 "large text" floor (>=14px bold)
+     but not the 4.5:1 normal-text floor, so size/weight sit above that
+     floor here. color-accent-gold (dark theme) already clears 4.5:1. */
+  font-size: var(--font-size-sm);
+  font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--color-accent-gold);
