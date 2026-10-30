@@ -267,17 +267,64 @@ html[data-theme='dark'] .site-header {
   }
 }
 
+/* Full-height sheet, not an anchored dropdown: the previous min-width:14rem
+   popover left most of the viewport dimmed-but-interactive and had no
+   backdrop. <details>[open] drives visibility with no JS required; the
+   scrim-click/Escape/focus-trap behavior is a script enhancement
+   (src/lib/header-drawer.ts) layered on top, not a requirement. */
+.site-header__drawer-scrim {
+  display: none;
+}
+
+.site-header__drawer[open] .site-header__drawer-scrim {
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: 49;
+  background: color-mix(in srgb, var(--color-ink) 45%, transparent);
+  animation: site-header-scrim-in var(--motion-base) var(--motion-ease-out);
+}
+
 .site-header__nav--mobile {
-  position: absolute;
+  position: fixed;
+  inset-block: 0;
   inset-inline-end: 0;
-  top: calc(100% + var(--space-2));
   z-index: 50;
-  min-width: 14rem;
-  padding: var(--space-3);
-  border: 1px solid var(--color-border-subtle);
-  border-radius: var(--radius-md);
+  inline-size: min(20rem, 85vw);
+  block-size: 100dvh;
+  overflow-y: auto;
+  padding: var(--space-20) var(--space-5) var(--space-6);
+  border-inline-start: 1px solid var(--color-border-subtle);
   background: var(--color-surface);
-  box-shadow: 0 12px 40px color-mix(in srgb, var(--color-ink) 12%, transparent);
+  box-shadow: -12px 0 40px color-mix(in srgb, var(--color-ink) 16%, transparent);
+  animation: site-header-sheet-in var(--motion-slow) var(--motion-ease-out);
+}
+
+@keyframes site-header-scrim-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes site-header-sheet-in {
+  from {
+    transform: translateX(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-header__drawer-scrim,
+  .site-header__nav--mobile {
+    animation: none;
+  }
+}
+
+.site-header__nav--mobile .site-header__nav-list--stacked {
+  gap: var(--space-1);
+}
+
+.site-header__nav--mobile .site-header__nav-link {
+  font-size: var(--font-size-lg);
 }
 
 .language-toggle {
@@ -297,6 +344,12 @@ html[data-theme='dark'] .site-header {
   justify-content: center;
   min-inline-size: var(--space-7);
   min-block-size: var(--space-8);
+  /* .language-toggle's pill is 44px tall (--layout-touch-target-min), but
+     without this each locale link/span only occupied its own 32px box
+     centered inside it, leaving ~6px of dead padding above/below that
+     looked clickable but wasn't. Stretching to the pill's full height
+     makes the real hit target match what it looks like. */
+  align-self: stretch;
   font-size: var(--font-size-xs);
   font-weight: 600;
   letter-spacing: 0.04em;

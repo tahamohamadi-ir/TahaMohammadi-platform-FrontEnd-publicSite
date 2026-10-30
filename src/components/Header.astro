@@ -60,11 +60,16 @@ const searchLabel = Object.hasOwn(copy, 'nav.search')
 <header class="site-header" data-visual-id="Header">
   <div class="site-header__inner">
     {
-      brandNameDisplay && (
+      (
+        // The home link/logo is chrome and must stay reachable even without
+        // CMS settings — but the owner's name and role are biography, not
+        // chrome, so (per managed-shell.test.ts) they never resurrect here
+        // without a published settings snapshot. The link still renders with
+        // the structural "Home" label; only the name/role text is withheld.
         <a
           href={homeHref}
           class="site-header__brand"
-          aria-label={brandNameDisplay}
+          aria-label={brandNameDisplay || shellCopy.homeLink[locale]}
         >
           <PromotedPicture
             assetId={BRAND_MARK_ASSET_ID}
@@ -74,12 +79,14 @@ const searchLabel = Object.hasOwn(copy, 'nav.search')
             imgClass="site-header__mark"
             loading="eager"
           />
-          <span class="site-header__brand-text">
-            <span class="site-header__brand-name">{brandNameDisplay}</span>
-            {roleLine ? (
-              <span class="site-header__brand-role">{roleLine}</span>
-            ) : null}
-          </span>
+          {brandNameDisplay && (
+            <span class="site-header__brand-text">
+              <span class="site-header__brand-name">{brandNameDisplay}</span>
+              {roleLine ? (
+                <span class="site-header__brand-role">{roleLine}</span>
+              ) : null}
+            </span>
+          )}
         </a>
       )
     }
@@ -136,6 +143,11 @@ const searchLabel = Object.hasOwn(copy, 'nav.search')
             <summary class="site-header__menu-trigger">
               {menuToggleLabel}
             </summary>
+            {/* Native <details>/<summary> is the no-JS fallback: it opens
+              and closes the sheet with no script. header-drawer.ts only
+              layers on Escape-to-close, outside-click-to-close and a focus
+              trap when JS runs; none of that is required to use the menu. */}
+            <div class="site-header__drawer-scrim" tabindex="-1" />
             <nav
               class="site-header__nav site-header__nav--mobile"
               aria-label={mainMenuLabel || undefined}
@@ -163,3 +175,8 @@ const searchLabel = Object.hasOwn(copy, 'nav.search')
     </div>
   </div>
 </header>
+
+<script>
+  import { enhanceHeaderDrawer } from '../lib/header-drawer'
+  enhanceHeaderDrawer()
+</script>

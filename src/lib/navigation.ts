@@ -96,6 +96,10 @@ export const shellCopy = {
     en: 'Skip to main content',
     fa: 'رفتن به محتوای اصلی',
   },
+  /** Structural fallback aria-label for the header's home link when the CMS
+   * brand name is unpublished — generic chrome, not owner identity, so it
+   * is exempt from the fail-closed rule the same way menuToggle/search are. */
+  homeLink: { en: 'Home', fa: 'خانه' },
   mainMenu: { en: 'Main menu', fa: 'منوی اصلی' },
   menuToggle: { en: 'Menu', fa: 'منو' },
   localeSwitch: { en: 'Language', fa: 'زبان' },
