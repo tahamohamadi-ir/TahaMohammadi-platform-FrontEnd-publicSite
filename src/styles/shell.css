@@ -473,36 +473,6 @@ html[data-theme='dark'] .site-footer {
   list-style: none;
 }
 
-.site-footer__social-btn {
-  display: inline-grid;
-  place-items: center;
-  inline-size: var(--layout-touch-target-min);
-  block-size: var(--layout-touch-target-min);
-  border: 1px solid var(--color-border-subtle);
-  border-radius: var(--radius-pill);
-  color: var(--color-ink-secondary);
-  background: color-mix(in srgb, var(--color-surface) 88%, transparent);
-  text-decoration: none;
-  padding: 0;
-  font: inherit;
-  cursor: pointer;
-}
-
-.site-footer__social-btn:hover,
-.site-footer__social-btn:focus-visible {
-  border-color: var(--color-brand);
-  color: var(--color-brand);
-}
-
-.site-footer__social-btn--placeholder {
-  cursor: not-allowed;
-  opacity: 0.72;
-}
-
-.site-footer__social-btn--placeholder:disabled {
-  pointer-events: none;
-}
-
 .site-footer__contact-meta {
   display: grid;
   gap: var(--space-3);

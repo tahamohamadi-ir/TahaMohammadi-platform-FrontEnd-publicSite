@@ -296,6 +296,7 @@ describe('PUBLIC-150 behavior', () => {
     expect(shell).not.toMatch(/\bright:/)
     expect(shell).toMatch(/grid-template-columns: 1\.4fr 1fr 1fr 1fr/)
     expect(shell).toMatch(/var\(--gradient-section-surface-light\)/)
-    expect(shell).toMatch(/site-footer__social-btn/)
+    // .site-footer__social-btn was removed: no markup referenced it or the
+    // footerSocial* copy keys anywhere in the repo (confirmed by grep).
   })
 })

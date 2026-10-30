@@ -27,15 +27,9 @@ const {
   class: className = '',
 } = Astro.props
 
-const teachingPrimaryTitle =
-  locale === 'en' ? 'Optional updates' : 'به‌روزرسانی اختیاری'
-const teachingPrimaryCopy =
-  locale === 'en'
-    ? 'Follow when new teaching paths or resources are published.'
-    : 'وقتی مسیرها یا منابع جدید منتشر شد، مطلع شوید.'
-const teachingPrimaryAction =
-  locale === 'en' ? 'Follow updates' : 'دنبال کردن به‌روزرسانی‌ها'
-
+// variant="dual" is only ever passed with context="about" (About, CV) — no
+// follow/subscribe API exists, so there is no second "dual" context whose
+// primary card would have a real action to offer.
 const aboutPrimaryTitle = locale === 'en' ? 'Curriculum Vitae' : 'رزومه آکادمیک'
 const aboutPrimaryCopy =
   locale === 'en'
@@ -74,11 +68,9 @@ const flatChrome = isFlatBand
   ? getIndexCollaborateChrome(locale, context as IndexCollaborateFamily)
   : null
 
-const primaryTitle =
-  context === 'about' ? aboutPrimaryTitle : teachingPrimaryTitle
-const primaryCopy = context === 'about' ? aboutPrimaryCopy : teachingPrimaryCopy
-const primaryAction =
-  context === 'about' ? aboutPrimaryAction : teachingPrimaryAction
+const primaryTitle = aboutPrimaryTitle
+const primaryCopy = aboutPrimaryCopy
+const primaryAction = aboutPrimaryAction
 const collaborateTitle =
   context === 'about'
     ? aboutCollaborateTitle
@@ -135,25 +127,16 @@ const collaborateCopy =
         {variant === 'dual' ? (
           <article class="pf-index-collaborate-band__card">
             <span
-              class={[
-                'pf-index-collaborate-band__icon',
-                context === 'about'
-                  ? 'pf-index-collaborate-band__icon--cv'
-                  : 'pf-index-collaborate-band__icon--mail',
-              ].join(' ')}
+              class="pf-index-collaborate-band__icon pf-index-collaborate-band__icon--cv"
               aria-hidden="true"
             />
             <h2 class="pf-index-collaborate-band__title">{primaryTitle}</h2>
             <p class="pf-index-collaborate-band__copy">{primaryCopy}</p>
-            {context === 'about' ? (
-              <Button
-                label={primaryAction}
-                href={localePath(locale, 'cv')}
-                variant="secondary"
-              />
-            ) : (
-              <Button label={primaryAction} variant="secondary" disabled />
-            )}
+            <Button
+              label={primaryAction}
+              href={localePath(locale, 'cv')}
+              variant="secondary"
+            />
           </article>
         ) : null}
 

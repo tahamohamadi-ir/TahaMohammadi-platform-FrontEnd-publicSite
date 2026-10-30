@@ -99,7 +99,11 @@ const resources = settings?.audienceLinks ?? []
           <ul class="site-footer__nav-list">
             {contact.email && (
               <li>
-                <a href={`mailto:${contact.email}`}>{contact.email}</a>
+                <Link
+                  href={`mailto:${contact.email}`}
+                  label={contact.email}
+                  variant="inline"
+                />
               </li>
             )}
             {contact.linkedin && copy['footer.linkedin'] && (

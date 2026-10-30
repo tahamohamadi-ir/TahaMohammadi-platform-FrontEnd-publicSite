@@ -132,7 +132,14 @@ const filterLabels =
       >
         <PageFamilyListCardShell locale={locale} family="teaching" />
         <PageFamilyPathProcessShell locale={locale} />
-        <PageFamilyCollaborateBandShell locale={locale} />
+        {/* variant="collaborate-only": the default "dual" variant's
+          teaching primary card renders a disabled, non-functional "Follow
+          updates" button (no follow/subscribe API exists to back it) —
+          hidden rather than shown as broken UI. */}
+        <PageFamilyCollaborateBandShell
+          locale={locale}
+          variant="collaborate-only"
+        />
         <ContentState
           variant="empty"
           locale={locale}
