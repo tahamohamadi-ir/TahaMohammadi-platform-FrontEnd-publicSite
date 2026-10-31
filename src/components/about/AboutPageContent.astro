@@ -1,4 +1,5 @@
 ---
+import { BookOpen, Wrench, GraduationCap, Briefcase } from 'lucide-astro'
 import AboutContactUtilityTemplate from '../templates/AboutContactUtilityTemplate.astro'
 import PageFamilyProfileHeroShell from '../page-family/PageFamilyProfileHeroShell.astro'
 import AboutAtlasPreview from './AboutAtlasPreview.astro'
@@ -77,6 +78,9 @@ const sectionLabels =
             aria-labelledby="about-intro-title"
           >
             <h2 id="about-intro-title" class="about-page__section-title">
+              <span class="about-page__section-icon" aria-hidden="true">
+                <BookOpen size={20} strokeWidth={1.75} />
+              </span>
               {sectionLabels.intro}
             </h2>
             <div class="about-page__prose">
@@ -94,6 +98,9 @@ const sectionLabels =
             aria-labelledby="about-engineering-title"
           >
             <h2 id="about-engineering-title" class="about-page__section-title">
+              <span class="about-page__section-icon" aria-hidden="true">
+                <Wrench size={20} strokeWidth={1.75} />
+              </span>
               {model.profile.engineering_title ?? sectionLabels.engineering}
             </h2>
             <div class="about-page__prose">
@@ -113,11 +120,17 @@ const sectionLabels =
             aria-labelledby="about-education-title"
           >
             <h2 id="about-education-title" class="about-page__section-title">
+              <span class="about-page__section-icon" aria-hidden="true">
+                <GraduationCap size={20} strokeWidth={1.75} />
+              </span>
               {sectionLabels.education}
             </h2>
             <ol class="about-page__timeline">
               {model.profile.education.map((entry) => (
-                <li>
+                <li class="about-page__timeline-item">
+                  <span class="about-page__timeline-node" aria-hidden="true">
+                    <GraduationCap size={16} strokeWidth={1.75} />
+                  </span>
                   <article class="about-page__entry">
                     <h3 class="about-page__entry-title">{entry.title}</h3>
                     {entry.institution ? (
@@ -143,11 +156,17 @@ const sectionLabels =
             aria-labelledby="about-experience-title"
           >
             <h2 id="about-experience-title" class="about-page__section-title">
+              <span class="about-page__section-icon" aria-hidden="true">
+                <Briefcase size={20} strokeWidth={1.75} />
+              </span>
               {sectionLabels.experience}
             </h2>
             <ol class="about-page__timeline">
               {model.profile.experience.map((entry) => (
-                <li>
+                <li class="about-page__timeline-item">
+                  <span class="about-page__timeline-node" aria-hidden="true">
+                    <Briefcase size={16} strokeWidth={1.75} />
+                  </span>
                   <article class="about-page__entry">
                     <h3 class="about-page__entry-title">{entry.title}</h3>
                     {entry.organization ? (
