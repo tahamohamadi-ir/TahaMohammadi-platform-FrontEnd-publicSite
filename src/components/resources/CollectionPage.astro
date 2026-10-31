@@ -1,7 +1,7 @@
 ---
-import SectionLead from '../ui/SectionLead.astro'
-import ContentState from '../state/ContentState.astro'
-import Link from '../ui/Link.astro'
+import GenericCollectionIndex, {
+  type GenericCollectionItem,
+} from '../generic-collection/GenericCollectionIndex.astro'
 import {
   getResourcesRouteTitle,
   getResourcesUnavailableCopy,
@@ -15,48 +15,25 @@ interface Props {
 }
 
 const { locale, model } = Astro.props
-const resourcesHref = localePath(locale, 'resources')
+const items: GenericCollectionItem[] =
+  model.status === 'ready'
+    ? model.resources.map((resource) => ({
+        slug: resource.slug,
+        title: resource.title,
+        description: resource.description,
+      }))
+    : []
 ---
 
-{
-  model.status === 'unavailable' ? (
-    <div class="resources-page resources-page--unavailable">
-      <ContentState
-        variant="unavailable"
-        locale={locale}
-        headingLevel="h1"
-        title={getResourcesUnavailableCopy(locale).title}
-        message={getResourcesUnavailableCopy(locale).message}
-        actionLabel={locale === 'en' ? 'Back to home' : 'بازگشت به خانه'}
-        actionHref={localePath(locale, 'home')}
-      />
-    </div>
-  ) : (
-    <div class="resources-page">
-      <SectionLead
-        eyebrow={getResourcesRouteTitle(locale)}
-        title={getResourcesRouteTitle(locale)}
-        summary={
-          locale === 'en'
-            ? 'Open source tooling, datasets, research whitepapers, and archival downloads.'
-            : 'ابزارهای متن‌باز، مجموعه‌داده‌ها، مقالات پژوهشی و پرونده‌های دانلودی.'
-        }
-      />
-
-      <ul class="resources-page__grid">
-        {model.resources.map((resource) => (
-          <li class="resources-page__card">
-            <h2 class="resources-page__card-title">
-              <Link
-                href={`${resourcesHref.replace(/\/$/, '')}/${resource.slug}`}
-                label={resource.title}
-                variant="standalone"
-              />
-            </h2>
-            <p class="resources-page__card-summary">{resource.description}</p>
-          </li>
-        ))}
-      </ul>
-    </div>
-  )
-}
+<GenericCollectionIndex
+  locale={locale}
+  status={model.status}
+  routeTitle={getResourcesRouteTitle(locale)}
+  summary={locale === 'en'
+    ? 'Open source tooling, datasets, research whitepapers, and archival downloads.'
+    : 'ابزارهای متن‌باز، مجموعه‌داده‌ها، مقالات پژوهشی و پرونده‌های دانلودی.'}
+  unavailableTitle={getResourcesUnavailableCopy(locale).title}
+  unavailableMessage={getResourcesUnavailableCopy(locale).message}
+  hrefBase={localePath(locale, 'resources')}
+  items={items}
+/>

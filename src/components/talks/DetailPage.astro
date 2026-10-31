@@ -1,7 +1,7 @@
 ---
 import LongFormDetailTemplate from '../templates/LongFormDetailTemplate.astro'
 import SectionLead from '../ui/SectionLead.astro'
-import ContentState from '../state/ContentState.astro'
+import GenericCollectionUnavailable from '../generic-collection/GenericCollectionUnavailable.astro'
 import Link from '../ui/Link.astro'
 import StoryDocument from '../story/StoryDocument.astro'
 import { hasStoryContent } from '../../lib/story-content'
@@ -24,19 +24,15 @@ const talksHref = localePath(locale, 'talks')
 
 {
   model.status === 'unavailable' ? (
-    <div class="talks-page talks-page--unavailable">
-      <ContentState
-        variant="unavailable"
-        locale={locale}
-        headingLevel="h1"
-        title={getTalksUnavailableCopy(locale).title}
-        message={getTalksUnavailableCopy(locale).message}
-        actionLabel={locale === 'en' ? 'Back to talks' : 'بازگشت به ارائه‌ها'}
-        actionHref={talksHref}
-      />
-    </div>
+    <GenericCollectionUnavailable
+      locale={locale}
+      title={getTalksUnavailableCopy(locale).title}
+      message={getTalksUnavailableCopy(locale).message}
+      backHref={talksHref}
+      backLabel={locale === 'en' ? 'Back to talks' : 'بازگشت به ارائه‌ها'}
+    />
   ) : (
-    <LongFormDetailTemplate class="talks-page talks-page--detail">
+    <LongFormDetailTemplate class="generic-collection generic-collection--detail">
       <SectionLead
         slot="lead"
         eyebrow={getTalksRouteTitle(locale)}
@@ -44,8 +40,8 @@ const talksHref = localePath(locale, 'talks')
         summary={model.talk.abstract}
       />
 
-      <div slot="body" class="talks-page__detail">
-        <dl class="talks-page__meta">
+      <div slot="body" class="generic-collection__detail">
+        <dl class="generic-collection__meta">
           {model.talk.speakers ? (
             <>
               <dt>{locale === 'en' ? 'Speakers' : 'سخنرانان'}</dt>
@@ -89,12 +85,12 @@ const talksHref = localePath(locale, 'talks')
         hasStoryContent(model.talk.story) ? (
           <StoryDocument story={model.talk.story} locale={locale} />
         ) : model.talk.abstract?.trim() ? (
-          <div class="talks-page__prose">
+          <div class="generic-collection__prose">
             <p>{model.talk.abstract}</p>
           </div>
         ) : null}
 
-        <div class="talks-page__links">
+        <div class="generic-collection__action">
           {model.talk.video_url ? (
             <Link
               href={model.talk.video_url}
@@ -112,13 +108,13 @@ const talksHref = localePath(locale, 'talks')
         </div>
 
         {model.talk.relatedRecords?.length ? (
-          <section class="talks-page__section">
-            <h2 class="talks-page__section-title">
+          <section class="generic-collection__section">
+            <h2 class="generic-collection__section-title">
               {locale === 'en' ? 'Related Work' : 'آثار مرتبط'}
             </h2>
-            <ul class="talks-page__grid">
+            <ul class="generic-collection__grid">
               {model.talk.relatedRecords.map((ref) => (
-                <li class="talks-page__card">
+                <li class="generic-collection__card">
                   <strong>{ref.title}</strong>
                   {ref.summary ? <p>{ref.summary}</p> : null}
                 </li>
@@ -128,7 +124,7 @@ const talksHref = localePath(locale, 'talks')
         ) : null}
       </div>
 
-      <p slot="related" class="talks-page__back">
+      <p slot="related" class="generic-collection__back">
         <Link
           href={talksHref}
           label={locale === 'en' ? '← Back to talks' : '← بازگشت به ارائه‌ها'}

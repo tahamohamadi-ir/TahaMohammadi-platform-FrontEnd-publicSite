@@ -1,0 +1,90 @@
+---
+// Shared shape for the books/talks/resources/collections/series index
+// pages, which were five near-byte-identical copies of this exact
+// markup (unavailable ContentState, SectionLead, card list) over five
+// near-identical CSS files (see src/styles/generic-collection.css for
+// why those were consolidated too). The per-family differences — which
+// fields a card shows, the route, the locale summary text — stay in
+// each small *CollectionPage.astro wrapper, which maps its model's real
+// fields into the plain strings this component renders. No per-item
+// render function/slot: every field here is a plain, pre-formatted
+// string the caller computes, matching how the rest of this codebase
+// already formats card metadata (see ProjectsPageContent.astro's
+// formatProjectType/.../.join(' · ')).
+import SectionLead from '../ui/SectionLead.astro'
+import ContentState from '../state/ContentState.astro'
+import Link from '../ui/Link.astro'
+import { localePath, type Locale } from '../../lib/navigation'
+
+export interface GenericCollectionItem {
+  slug: string
+  title: string
+  /** Short joined line, e.g. "Jane Doe · ACM 2026 · 2026-03-01". */
+  meta?: string
+  /** Longer single-paragraph description, shown below meta if both are set. */
+  description?: string
+}
+
+interface Props {
+  locale: Locale
+  status: 'ready' | 'unavailable'
+  routeTitle: string
+  summary: string
+  unavailableTitle: string
+  unavailableMessage: string
+  hrefBase: string
+  items?: GenericCollectionItem[]
+}
+
+const {
+  locale,
+  status,
+  routeTitle,
+  summary,
+  unavailableTitle,
+  unavailableMessage,
+  hrefBase,
+  items = [],
+} = Astro.props
+const normalizedHrefBase = hrefBase.replace(/\/$/, '')
+---
+
+{
+  status === 'unavailable' ? (
+    <div class="generic-collection generic-collection--unavailable">
+      <ContentState
+        variant="unavailable"
+        locale={locale}
+        headingLevel="h1"
+        title={unavailableTitle}
+        message={unavailableMessage}
+        actionLabel={locale === 'en' ? 'Back to home' : 'بازگشت به خانه'}
+        actionHref={localePath(locale, 'home')}
+      />
+    </div>
+  ) : (
+    <div class="generic-collection">
+      <SectionLead eyebrow={routeTitle} title={routeTitle} summary={summary} />
+
+      <ul class="generic-collection__grid">
+        {items.map((item) => (
+          <li class="generic-collection__card">
+            <h2 class="generic-collection__card-title">
+              <Link
+                href={`${normalizedHrefBase}/${item.slug}`}
+                label={item.title}
+                variant="standalone"
+              />
+            </h2>
+            {item.meta ? (
+              <p class="generic-collection__card-meta">{item.meta}</p>
+            ) : null}
+            {item.description ? (
+              <p class="generic-collection__card-desc">{item.description}</p>
+            ) : null}
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}

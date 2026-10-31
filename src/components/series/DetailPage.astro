@@ -1,7 +1,7 @@
 ---
 import LongFormDetailTemplate from '../templates/LongFormDetailTemplate.astro'
 import SectionLead from '../ui/SectionLead.astro'
-import ContentState from '../state/ContentState.astro'
+import GenericCollectionUnavailable from '../generic-collection/GenericCollectionUnavailable.astro'
 import Link from '../ui/Link.astro'
 import StoryDocument from '../story/StoryDocument.astro'
 import { hasStoryContent } from '../../lib/story-content'
@@ -41,19 +41,15 @@ function resolveArticleHref(item: {
 
 {
   model.status === 'unavailable' ? (
-    <div class="series-page series-page--unavailable">
-      <ContentState
-        variant="unavailable"
-        locale={locale}
-        headingLevel="h1"
-        title={getSeriesUnavailableCopy(locale).title}
-        message={getSeriesUnavailableCopy(locale).message}
-        actionLabel={locale === 'en' ? 'Back to blog' : 'بازگشت به وبلاگ'}
-        actionHref={blogHref}
-      />
-    </div>
+    <GenericCollectionUnavailable
+      locale={locale}
+      title={getSeriesUnavailableCopy(locale).title}
+      message={getSeriesUnavailableCopy(locale).message}
+      backHref={blogHref}
+      backLabel={locale === 'en' ? 'Back to blog' : 'بازگشت به وبلاگ'}
+    />
   ) : (
-    <LongFormDetailTemplate class="series-page series-page--detail">
+    <LongFormDetailTemplate class="generic-collection generic-collection--detail">
       <SectionLead
         slot="lead"
         eyebrow={getSeriesRouteTitle(locale)}
@@ -61,32 +57,35 @@ function resolveArticleHref(item: {
         summary={model.series.description}
       />
 
-      <div slot="body" class="series-page__detail">
+      <div slot="body" class="generic-collection__detail">
         {hasStoryContent(model.series.story) ? (
-          <div class="series-page__story">
+          <div class="generic-collection__story">
             <StoryDocument story={model.series.story} locale={locale} />
           </div>
         ) : null}
 
         {model.series.items && model.series.items.length > 0 ? (
           <section
-            class="series-page__items"
+            class="generic-collection__items"
             aria-labelledby="series-parts-heading"
           >
-            <h2 id="series-parts-heading" class="series-page__items-heading">
+            <h2
+              id="series-parts-heading"
+              class="generic-collection__items-heading"
+            >
               {locale === 'en' ? 'Series Articles' : 'مقالات این مجموعه'}
             </h2>
-            <ol class="series-page__items-list">
+            <ol class="generic-collection__items-list">
               {model.series.items.map((item, index) => {
                 const articleHref = resolveArticleHref(item)
                 return (
-                  <li class="series-page__item-card">
-                    <span class="series-page__item-number">
+                  <li class="generic-collection__item-card">
+                    <span class="generic-collection__item-number">
                       {locale === 'en'
                         ? `Part ${index + 1}`
                         : `بخش ${index + 1}`}
                     </span>
-                    <h3 class="series-page__item-title">
+                    <h3 class="generic-collection__item-title">
                       <Link
                         href={articleHref}
                         label={item.title}
@@ -94,7 +93,9 @@ function resolveArticleHref(item: {
                       />
                     </h3>
                     {item.summary ? (
-                      <p class="series-page__item-summary">{item.summary}</p>
+                      <p class="generic-collection__item-summary">
+                        {item.summary}
+                      </p>
                     ) : null}
                   </li>
                 )

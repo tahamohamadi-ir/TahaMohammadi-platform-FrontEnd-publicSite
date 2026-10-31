@@ -1,7 +1,7 @@
 ---
 import LongFormDetailTemplate from '../templates/LongFormDetailTemplate.astro'
 import SectionLead from '../ui/SectionLead.astro'
-import ContentState from '../state/ContentState.astro'
+import GenericCollectionUnavailable from '../generic-collection/GenericCollectionUnavailable.astro'
 import Link from '../ui/Link.astro'
 import StoryDocument from '../story/StoryDocument.astro'
 import { hasStoryContent } from '../../lib/story-content'
@@ -38,21 +38,17 @@ function resolveItemHref(item: {
 
 {
   model.status === 'unavailable' ? (
-    <div class="collections-page collections-page--unavailable">
-      <ContentState
-        variant="unavailable"
-        locale={locale}
-        headingLevel="h1"
-        title={getCollectionsUnavailableCopy(locale).title}
-        message={getCollectionsUnavailableCopy(locale).message}
-        actionLabel={
-          locale === 'en' ? 'Back to collections' : 'بازگشت به مجموعه‌ها'
-        }
-        actionHref={collectionsHref}
-      />
-    </div>
+    <GenericCollectionUnavailable
+      locale={locale}
+      title={getCollectionsUnavailableCopy(locale).title}
+      message={getCollectionsUnavailableCopy(locale).message}
+      backHref={collectionsHref}
+      backLabel={
+        locale === 'en' ? 'Back to collections' : 'بازگشت به مجموعه‌ها'
+      }
+    />
   ) : (
-    <LongFormDetailTemplate class="collections-page collections-page--detail">
+    <LongFormDetailTemplate class="generic-collection generic-collection--detail">
       <SectionLead
         slot="lead"
         eyebrow={getCollectionsRouteTitle(locale)}
@@ -60,14 +56,14 @@ function resolveItemHref(item: {
         summary={model.collection.description}
       />
 
-      <div slot="body" class="collections-page__detail">
+      <div slot="body" class="generic-collection__detail">
         {model.collection.curatorName || model.collection.criteria ? (
           <aside
-            class="collections-page__curator-block"
+            class="generic-collection__curator-block"
             aria-label={locale === 'en' ? 'Curation Details' : 'مشخصات گردآوری'}
           >
             {model.collection.curatorName ? (
-              <p class="collections-page__curator-meta">
+              <p class="generic-collection__curator-meta">
                 <strong>
                   {locale === 'en' ? 'Curated by:' : 'گردآورنده:'}
                 </strong>{' '}
@@ -81,7 +77,7 @@ function resolveItemHref(item: {
               </p>
             ) : null}
             {model.collection.criteria ? (
-              <p class="collections-page__criteria">
+              <p class="generic-collection__criteria">
                 <strong>
                   {locale === 'en' ? 'Selection criteria:' : 'معیار گزینش:'}
                 </strong>{' '}
@@ -92,7 +88,7 @@ function resolveItemHref(item: {
         ) : null}
 
         {model.collection.cover?.url ? (
-          <figure class="collections-page__cover">
+          <figure class="generic-collection__cover">
             <img
               src={model.collection.cover.url}
               alt={model.collection.cover.alt || model.collection.title}
@@ -103,33 +99,33 @@ function resolveItemHref(item: {
         ) : null}
 
         {hasStoryContent(model.collection.story) ? (
-          <div class="collections-page__story">
+          <div class="generic-collection__story">
             <StoryDocument story={model.collection.story} locale={locale} />
           </div>
         ) : null}
 
         {model.collection.items && model.collection.items.length > 0 ? (
           <section
-            class="collections-page__items"
+            class="generic-collection__items"
             aria-labelledby="collection-items-heading"
           >
             <h2
               id="collection-items-heading"
-              class="collections-page__items-heading"
+              class="generic-collection__items-heading"
             >
               {locale === 'en' ? 'Included Works' : 'آثار گنجانده‌شده'}
             </h2>
-            <ul class="collections-page__items-list">
+            <ul class="generic-collection__items-list">
               {model.collection.items.map((item) => {
                 const itemHref = resolveItemHref(item)
                 return (
-                  <li class="collections-page__item-card">
+                  <li class="generic-collection__item-card">
                     {item.contentType ? (
-                      <span class="collections-page__item-type">
+                      <span class="generic-collection__item-type">
                         {item.contentType}
                       </span>
                     ) : null}
-                    <h3 class="collections-page__item-title">
+                    <h3 class="generic-collection__item-title">
                       {itemHref ? (
                         <Link
                           href={itemHref}
@@ -141,7 +137,7 @@ function resolveItemHref(item: {
                       )}
                     </h3>
                     {item.summary ? (
-                      <p class="collections-page__item-summary">
+                      <p class="generic-collection__item-summary">
                         {item.summary}
                       </p>
                     ) : null}

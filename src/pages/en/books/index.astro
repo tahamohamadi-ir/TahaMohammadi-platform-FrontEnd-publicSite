@@ -3,7 +3,7 @@ import SiteLayout from '../../../layouts/SiteLayout.astro'
 import CollectionPage from '../../../components/books/CollectionPage.astro'
 import { fetchBooksIndex, getBooksRouteTitle } from '../../../lib/books-content'
 import '../../../styles/page-families.css'
-import '../../../styles/product-books.css'
+import '../../../styles/generic-collection.css'
 
 const locale = 'en' as const
 const model = await fetchBooksIndex(locale)
