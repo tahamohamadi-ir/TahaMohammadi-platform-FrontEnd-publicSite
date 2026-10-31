@@ -1,4 +1,13 @@
 ---
+import {
+  BrainCircuit,
+  Palette,
+  Microscope,
+  Code2,
+  Database,
+  Globe,
+  FolderGit2,
+} from 'lucide-astro'
 import CollectionIndexTemplate from '../templates/CollectionIndexTemplate.astro'
 import PageFamilyIndexHero from '../page-family/PageFamilyIndexHero.astro'
 import ContentState from '../state/ContentState.astro'
@@ -18,6 +27,20 @@ interface Props {
 
 const { locale, model } = Astro.props
 const emptyCopy = getProjectsUnavailableCopy(locale)
+
+const PROJECT_TYPE_ICONS = {
+  ai: BrainCircuit,
+  design: Palette,
+  research: Microscope,
+  software: Code2,
+  data: Database,
+  public: Globe,
+} as const
+
+function projectTypeIcon(value: string | null | undefined) {
+  const token = (value ?? '').trim().toLowerCase()
+  return PROJECT_TYPE_ICONS[token as keyof typeof PROJECT_TYPE_ICONS] ?? FolderGit2
+}
 ---
 
 {
@@ -44,34 +67,54 @@ const emptyCopy = getProjectsUnavailableCopy(locale)
       />
 
       <ul slot="records" class="projects-page__list">
-        {model.projects.map((project) => (
-          <li>
-            <article class="projects-page__card" data-glow-card>
-              <h2 class="projects-page__card-title">
-                <a
-                  href={localePath(locale, `projects/${project.slug}`)}
-                  class="projects-page__card-link card-stretch-link"
-                >
-                  {project.title}
-                </a>
-              </h2>
-              {project.objective ? (
-                <p class="projects-page__card-summary">{project.objective}</p>
-              ) : null}
-              {(() => {
-                const meta = [
-                  formatProjectType(project.project_type, locale),
-                  formatProjectAvailability(project, locale),
+        {model.projects.map((project, index) => {
+          const Icon = projectTypeIcon(project.project_type)
+          const typeLabel = formatProjectType(project.project_type, locale)
+          const availability = formatProjectAvailability(project, locale)
+          const featured = index === 0
+          return (
+            <li>
+              <article
+                class={[
+                  'projects-page__card',
+                  featured ? 'projects-page__card--featured' : '',
                 ]
                   .filter(Boolean)
-                  .join(' · ')
-                return meta ? (
-                  <p class="projects-page__card-meta">{meta}</p>
-                ) : null
-              })()}
-            </article>
-          </li>
-        ))}
+                  .join(' ')}
+                data-glow-card
+              >
+                <span class="projects-page__card-icon" aria-hidden="true">
+                  <Icon size={featured ? 28 : 22} strokeWidth={1.75} />
+                </span>
+                <div class="projects-page__card-body">
+                  <h2 class="projects-page__card-title">
+                    <a
+                      href={localePath(locale, `projects/${project.slug}`)}
+                      class="projects-page__card-link card-stretch-link"
+                    >
+                      {project.title}
+                    </a>
+                  </h2>
+                  {project.objective ? (
+                    <p class="projects-page__card-summary">
+                      {project.objective}
+                    </p>
+                  ) : null}
+                  <p class="projects-page__card-tags">
+                    {typeLabel ? (
+                      <span class="projects-page__card-tag">{typeLabel}</span>
+                    ) : null}
+                    {availability ? (
+                      <span class="projects-page__card-tag projects-page__card-tag--muted">
+                        {availability}
+                      </span>
+                    ) : null}
+                  </p>
+                </div>
+              </article>
+            </li>
+          )
+        })}
       </ul>
     </CollectionIndexTemplate>
   )
