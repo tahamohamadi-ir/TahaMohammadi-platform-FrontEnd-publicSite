@@ -36,7 +36,9 @@ const PROJECT_TYPE_ICONS = {
 
 function projectTypeIcon(value: string | null | undefined) {
   const token = (value ?? '').trim().toLowerCase()
-  return PROJECT_TYPE_ICONS[token as keyof typeof PROJECT_TYPE_ICONS] ?? FolderGit2
+  return (
+    PROJECT_TYPE_ICONS[token as keyof typeof PROJECT_TYPE_ICONS] ?? FolderGit2
+  )
 }
 
 interface Props {
@@ -173,7 +175,10 @@ const roleLine = getGatewayRoleLine(locale)
                       <div class="research-page__card-body">
                         <h3 class="research-page__card-title">
                           <Link
-                            href={localePath(locale, `projects/${project.slug}`)}
+                            href={localePath(
+                              locale,
+                              `projects/${project.slug}`,
+                            )}
                             label={project.title}
                             variant="standalone"
                             class="research-page__card-link card-stretch-link"
