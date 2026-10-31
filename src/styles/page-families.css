@@ -1564,7 +1564,7 @@ html[data-theme='dark'] .pf-index-featured__card {
   display: block;
   inline-size: clamp(4.5rem, 18vw, 6.5rem);
   block-size: 1.75rem;
-  border-radius: var(--radius-full, 999px);
+  border-radius: var(--radius-pill);
   background: var(--color-border-subtle);
 }
 
@@ -2109,7 +2109,7 @@ html[data-theme='dark'] .pf-index-featured__card {
 
 .writing-page__tag {
   padding: var(--space-1) var(--space-3);
-  border-radius: var(--radius-full, 999px);
+  border-radius: var(--radius-pill);
   background: var(--color-surface-muted, var(--color-surface));
   color: var(--color-ink-secondary);
   font-size: var(--font-size-sm);
@@ -4843,7 +4843,7 @@ html[data-theme='dark'] .contact-page .contact-page__panel--form {
 
 .pf-index-optional-updates__title {
   margin: 0;
-  font-size: var(--font-size-md);
+  font-size: var(--font-size-base);
   font-weight: 600;
   color: var(--color-ink);
 }
