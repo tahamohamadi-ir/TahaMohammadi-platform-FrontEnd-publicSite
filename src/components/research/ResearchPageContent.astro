@@ -1,4 +1,14 @@
 ---
+import {
+  Lightbulb,
+  BrainCircuit,
+  Palette,
+  Microscope,
+  Code2,
+  Database,
+  Globe,
+  FolderGit2,
+} from 'lucide-astro'
 import CollectionIndexTemplate from '../templates/CollectionIndexTemplate.astro'
 import PageFamilyIndexHero from '../page-family/PageFamilyIndexHero.astro'
 import PageFamilyConstellationShell from '../page-family/PageFamilyConstellationShell.astro'
@@ -14,6 +24,20 @@ import {
   type ResearchIndexModel,
 } from '../../lib/research-content'
 import { localePath, type Locale } from '../../lib/navigation'
+
+const PROJECT_TYPE_ICONS = {
+  ai: BrainCircuit,
+  design: Palette,
+  research: Microscope,
+  software: Code2,
+  data: Database,
+  public: Globe,
+} as const
+
+function projectTypeIcon(value: string | null | undefined) {
+  const token = (value ?? '').trim().toLowerCase()
+  return PROJECT_TYPE_ICONS[token as keyof typeof PROJECT_TYPE_ICONS] ?? FolderGit2
+}
 
 interface Props {
   locale: Locale
@@ -87,18 +111,28 @@ const roleLine = getGatewayRoleLine(locale)
             <ul class="research-page__list">
               {model.topics.map((topic) => (
                 <li>
-                  <article class="research-page__card" data-glow-card>
-                    <h3 class="research-page__card-title">
-                      <a
-                        href={localePath(locale, `research/${topic.slug}`)}
-                        class="research-page__card-link card-stretch-link"
-                      >
-                        {topic.title}
-                      </a>
-                    </h3>
-                    {topic.summary ? (
-                      <p class="research-page__card-summary">{topic.summary}</p>
-                    ) : null}
+                  <article
+                    class="research-page__card research-page__card--icon"
+                    data-glow-card
+                  >
+                    <span class="research-page__card-icon" aria-hidden="true">
+                      <Lightbulb size={22} strokeWidth={1.75} />
+                    </span>
+                    <div class="research-page__card-body">
+                      <h3 class="research-page__card-title">
+                        <a
+                          href={localePath(locale, `research/${topic.slug}`)}
+                          class="research-page__card-link card-stretch-link"
+                        >
+                          {topic.title}
+                        </a>
+                      </h3>
+                      {topic.summary ? (
+                        <p class="research-page__card-summary">
+                          {topic.summary}
+                        </p>
+                      ) : null}
+                    </div>
                   </article>
                 </li>
               ))}
@@ -125,25 +159,36 @@ const roleLine = getGatewayRoleLine(locale)
               {locale === 'en' ? 'Research systems' : 'سامانه‌های پژوهشی'}
             </h2>
             <ul class="research-page__list">
-              {model.projects.map((project) => (
-                <li>
-                  <article class="research-page__card" data-glow-card>
-                    <h3 class="research-page__card-title">
-                      <Link
-                        href={localePath(locale, `projects/${project.slug}`)}
-                        label={project.title}
-                        variant="standalone"
-                        class="research-page__card-link card-stretch-link"
-                      />
-                    </h3>
-                    {project.objective ? (
-                      <p class="research-page__card-summary">
-                        {project.objective}
-                      </p>
-                    ) : null}
-                  </article>
-                </li>
-              ))}
+              {model.projects.map((project) => {
+                const Icon = projectTypeIcon(project.project_type)
+                return (
+                  <li>
+                    <article
+                      class="research-page__card research-page__card--icon"
+                      data-glow-card
+                    >
+                      <span class="research-page__card-icon" aria-hidden="true">
+                        <Icon size={22} strokeWidth={1.75} />
+                      </span>
+                      <div class="research-page__card-body">
+                        <h3 class="research-page__card-title">
+                          <Link
+                            href={localePath(locale, `projects/${project.slug}`)}
+                            label={project.title}
+                            variant="standalone"
+                            class="research-page__card-link card-stretch-link"
+                          />
+                        </h3>
+                        {project.objective ? (
+                          <p class="research-page__card-summary">
+                            {project.objective}
+                          </p>
+                        ) : null}
+                      </div>
+                    </article>
+                  </li>
+                )
+              })}
             </ul>
           </section>
         ) : null}
