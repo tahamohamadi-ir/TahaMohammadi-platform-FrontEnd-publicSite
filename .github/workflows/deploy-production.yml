@@ -106,6 +106,11 @@ jobs:
             "PROD_APP_DIR='$PROD_APP_DIR' DEPLOY_SHA='$DEPLOY_SHA' bash -se" <<'REMOTE'
           set -euo pipefail
 
+          # 0. Serialize with the cms/admin deploys, which edit the same
+          #    .env.prod. (GitHub concurrency groups do not span repos.)
+          exec 9>/home/deploy/.deploy-prod.lock
+          flock -w 900 9
+
           # 1. Checkout the exact deployed commit into a dedicated build
           #    directory. This never touches /home/deploy/prod (the running
           #    compose stack's config) or any other service's checkout.
@@ -145,6 +150,26 @@ jobs:
           #    every existing one with a single fresh line instead of
           #    appending another.
           env_file=/home/deploy/.env.prod
+          compose() {
+            docker compose -p taha-cms-prod --env-file "$env_file" \
+              -f /home/deploy/prod/docker-compose.prod.yml "$@"
+          }
+          # RELEASE_ID is shared by every app image (taha-{cms,web,admin}-prod),
+          # so cms and admin's running images also get the new tag; otherwise
+          # their next recreate would look for an image that does not exist.
+          old_release=$(sed -n 's/^RELEASE_ID=//p' "$env_file" | tail -n 1)
+          echo "Current RELEASE_ID (rollback target): ${old_release:-<unset>}"
+          for svc in cms web admin; do
+            cid=$(compose ps -q "$svc")
+            [ -n "$cid" ] || continue
+            image=$(docker inspect --format '{{.Image}}' "$cid")
+            if [ -n "$old_release" ]; then
+              docker tag "$image" "taha-${svc}-prod:${old_release}"
+            fi
+            if [ "$svc" != web ]; then
+              docker tag "$image" "taha-${svc}-prod:${release_id}"
+            fi
+          done
           grep -v '^RELEASE_ID=' "$env_file" > "${env_file}.tmp"
           printf 'RELEASE_ID=%s\n' "$release_id" >> "${env_file}.tmp"
           mv "${env_file}.tmp" "$env_file"
