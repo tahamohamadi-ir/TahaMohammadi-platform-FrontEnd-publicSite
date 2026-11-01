@@ -1,18 +1,13 @@
 import { expect, test } from '@playwright/test'
 
-// V2 checks semantic content in the state actually delivered by this build.
-/** Stage 4: the hero's semantic contract is the authored image sequence — no scene runtime. */
-async function expectHeroSequence(page: import('@playwright/test').Page) {
-  const hero = page.locator('[data-hero-layout="integrated"]')
+// ADR-0011: the hero's semantic contract is the copy column plus the graph constellation.
+async function expectHeroConstellation(page: import('@playwright/test').Page) {
+  const hero = page.locator('[data-hero-v3]')
   await expect(hero).toHaveCount(1)
-  const sequence = hero.locator('[data-hero-sequence]')
-  await expect(sequence).toHaveCount(1)
-  await expect(sequence).toBeVisible()
-  await expect(sequence).toHaveAttribute('data-hero-sequence-frame-count', '4')
-  await expect(sequence.locator('[data-hero-sequence-frame]')).toHaveCount(8)
-  await expect(sequence.locator('[data-hero-sequence-theme]')).toHaveCount(2)
-  await expect(hero.locator('canvas')).toHaveCount(0)
-  await expect(hero.locator('[data-graph-node]')).toHaveCount(0)
+  await expect(hero).toHaveAttribute('data-hero-visual', 'constellation')
+  await expect(hero.locator('.hv3-const__poster')).toHaveCount(1)
+  await expect(hero.locator('.hv3-const__label')).not.toHaveCount(0)
+  await expect(page.locator('[data-hero-sequence]')).toHaveCount(0)
   await expect(page.locator('#home-graph-region')).toHaveCount(0)
 }
 
@@ -81,8 +76,6 @@ test.describe('WP-40 home structure acceptance', () => {
     await page.keyboard.press('Enter')
     await expect(page.locator('#main-content')).toBeFocused()
 
-    await expect(page.locator('.hm-hero__focus-list')).toHaveCount(1)
-
     const themeToggle = page.locator('[data-theme-toggle]')
     await themeToggle.focus()
     await expect(themeToggle).toHaveCSS('outline-style', 'solid')
@@ -97,7 +90,7 @@ test.describe('WP-40 home structure acceptance', () => {
   }) => {
     for (const path of ['/en/', '/fa/']) {
       await page.goto(path)
-      await expectHeroSequence(page)
+      await expectHeroConstellation(page)
     }
   })
 
@@ -111,11 +104,8 @@ test.describe('WP-40 home structure acceptance', () => {
     )
     await page.goto('/en/')
 
-    await expectHeroSequence(page)
-    await expect(page.locator('.hm-hero__name')).toContainText('Taha Mohammadi')
-    await expect(
-      page.locator('.hm-hero[data-hero-layout="integrated"]'),
-    ).toHaveCount(1)
+    await expectHeroConstellation(page)
+    await expect(page.locator('.hv3__name')).toContainText('Taha Mohammadi')
     await expect
       .poll(() =>
         page.evaluate(
@@ -132,13 +122,10 @@ test.describe('WP-40 home structure acceptance', () => {
     const noJsPage = await context.newPage()
     await noJsPage.goto('/en/')
 
-    await expect(noJsPage.locator('.hm-hero__name')).toContainText(
-      'Taha Mohammadi',
-    )
-    await expectHeroSequence(noJsPage)
-    // Stage 4.1: no scene runtime on Home, with or without JavaScript.
-    await expect(noJsPage.locator('[data-graph-node]')).toHaveCount(0)
-    await expect(noJsPage.locator('canvas')).toHaveCount(0)
+    await expect(noJsPage.locator('.hv3__name')).toContainText('Taha Mohammadi')
+    await expectHeroConstellation(noJsPage)
+    // Without JavaScript the SVG poster stays; the live scene never mounts.
+    await expect(noJsPage.locator('[data-hv3-live-ready]')).toHaveCount(0)
     await expect
       .poll(() =>
         noJsPage.evaluate(

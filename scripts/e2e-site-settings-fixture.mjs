@@ -97,6 +97,7 @@ const HOME_CONTENT_PATTERNS = [
     pattern: /^\/api\/research\/statements\/([a-z]{2})\/?$/,
     key: 'statements',
   },
+  { pattern: /^\/api\/graph\/([a-z]{2})\/?$/, key: 'graph' },
 ]
 
 function homeContentPayload(pathname) {

@@ -188,18 +188,18 @@ describe('CA-03 locked scene contract', () => {
 })
 
 describe('CA-03 Home integration', () => {
-  it('keeps the interactive graph off Home and wires the image sequence instead', () => {
+  it('draws the published graph inside the Home hero (ADR-0011), not as a second section', () => {
     for (const locale of ['fa', 'en'] as const) {
       const source = readSource(`src/pages/${locale}/index.astro`)
       expect(source).not.toContain('loadHeroGraph')
-      expect(source).not.toContain('graph={graph}')
       expect(source).toContain('HomeContent')
       expect(source).not.toContain('HomeResearchGraph')
       expect(source).not.toContain('relationship-graph')
     }
-    const hero = readSource('src/components/home/HomeHero.astro')
-    expect(hero).toContain('HeroSequence')
-    expect(hero).not.toContain('HeroGraph')
+    const hero = readSource('src/components/home/hero-v3/HeroV3.astro')
+    expect(hero).toContain('loadHeroGraph')
+    expect(hero).toContain('HeroV3Constellation')
+    expect(hero).not.toContain('HeroSequence')
   })
 
   // The graph experience was moved, not weakened: About is still the
