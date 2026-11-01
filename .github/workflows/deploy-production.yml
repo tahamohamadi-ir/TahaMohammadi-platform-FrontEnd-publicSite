@@ -102,7 +102,7 @@ jobs:
         env:
           DEPLOY_SHA: ${{ github.sha }}
         run: |
-          ssh -i ~/.ssh/id_ed25519 -o BatchMode=yes -o StrictHostKeyChecking=yes -p "$PROD_SSH_PORT" "$PROD_SSH_USER@$PROD_SSH_HOST" \
+          ssh -i ~/.ssh/id_ed25519 -o BatchMode=yes -o StrictHostKeyChecking=yes -o ServerAliveInterval=30 -o ServerAliveCountMax=10 -p "$PROD_SSH_PORT" "$PROD_SSH_USER@$PROD_SSH_HOST" \
             "PROD_APP_DIR='$PROD_APP_DIR' DEPLOY_SHA='$DEPLOY_SHA' bash -se" <<'REMOTE'
           set -euo pipefail
 
