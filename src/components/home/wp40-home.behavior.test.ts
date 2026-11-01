@@ -121,62 +121,113 @@ afterEach(() => {
   vi.unstubAllEnvs()
 })
 
-import HomeHero from './HomeHero.astro'
+import HeroV3 from './hero-v3/HeroV3.astro'
 
-describe('CMS Home keeps the image hero and carries no graph runtime', () => {
+function withGraph(locale: Locale) {
+  const cms = globalThis.fetch as unknown as (
+    input: string,
+  ) => Promise<Response>
+  vi.stubGlobal(
+    'fetch',
+    vi.fn(async (input: string) => {
+      const url = new URL(input, 'https://api.example.test')
+      if (url.pathname !== '/api/graph/' + locale) return cms(input)
+      return new Response(
+        JSON.stringify({
+          nodes: [
+            {
+              id: 'identity',
+              type: 'identity',
+              label: 'Identity',
+              accessibleLabel: 'Identity',
+              weight: 1,
+              colorRole: 'brand',
+              iconRole: 'ring',
+              position: { x: 0, y: 0, z: 8 },
+              relatedRecords: [],
+            },
+            {
+              id: 'topic-1',
+              type: 'research-topic',
+              label: 'Graph topic',
+              accessibleLabel: 'Graph topic',
+              weight: 1,
+              colorRole: 'research',
+              iconRole: 'disc',
+              position: { x: 96, y: 38, z: 0 },
+              relatedRecords: [],
+            },
+          ],
+          edges: [
+            {
+              id: 'e1',
+              source: 'identity',
+              target: 'topic-1',
+              relationType: 'research-focus',
+              directed: true,
+              weight: 1,
+            },
+          ],
+        }),
+      )
+    }),
+  )
+}
+
+describe('Home Hero v3 keeps one copy column and draws only the published graph', () => {
   it.each(['en', 'fa'] as const)(
-    'keeps hero and copy together with the image sequence in %s',
+    'renders one heading, no scroll sequence and no hero image in %s',
     async (locale) => {
       mockCms(locale)
-      const html = await render(HomeHero, { locale })
-      expect(html).toContain('data-hero-layout="integrated"')
-      expect(html).toContain('hm-hero__copy')
-      expect(html).toContain('hm-hero__sequence')
-      expect(html).toContain('data-hero-sequence')
-      expect(html).not.toContain('portal-orbit')
+      withGraph(locale)
+      const html = await render(HeroV3, { locale })
+      expect(html).toContain('hv3__copy')
       expect(html.match(/<h1[\s>]/g)).toHaveLength(1)
+      // Two coloured spans, but one accessible name with a word gap.
+      expect(html).toMatch(/hv3__name-line"[^>]*>[^<]+<\/span> <span/)
+      expect(html).not.toContain('data-hero-sequence')
+      expect(html).not.toContain('data-hero-scroll-shell')
+      expect(html).not.toContain('portal-orbit')
+      expect(html).not.toContain('<img')
     },
   )
 
-  it('renders the four authored states and mounts no graph, canvas or scene payload', async () => {
+  it('ships the SVG poster, the live canvas and its payload for the published graph', async () => {
     mockCms('en')
-    const html = await render(HomeHero, { locale: 'en' })
-    // Four authored states, one set per authored theme (one of them hidden server-side).
-    expect(html).toContain('data-hero-sequence-frame-count="4"')
-    expect(html.match(/data-hero-sequence-frame="/g)).toHaveLength(8)
-    expect(html.match(/data-hero-sequence-theme="/g)).toHaveLength(2)
-    expect(html).not.toContain('data-graph-node')
-    expect(html).not.toContain('data-graph-edge')
-    expect(html).not.toContain('data-graph-region')
-    expect(html).not.toContain('data-graph-canvas')
-    expect(html).not.toContain('data-scene-payload')
+    withGraph('en')
+    const html = await render(HeroV3, { locale: 'en' })
+    expect(html).toContain('data-hero-visual="constellation"')
+    expect(html).toContain('class="hv3-const__poster"')
+    expect(html).toContain('<canvas')
+    expect(html).toContain('data-hv3-payload')
+    expect(html.match(/class="hv3-const__edge"/g)).toHaveLength(1)
+    expect(html).toContain('Graph topic')
+  })
+
+  it('falls back to the copy column with focus chips when no graph is published', async () => {
+    mockCms('en')
+    const html = await render(HeroV3, { locale: 'en' })
+    expect(html).toContain('hv3--copy-only')
+    expect(html).toContain('data-hero-visual="none"')
+    expect(html).toContain('hv3__focus')
     expect(html).not.toContain('<canvas')
+    expect(html).not.toContain('data-hv3-constellation')
   })
 
-  it('ships device-specific art through a real source query, never a CSS crop', async () => {
+  it('does not render a hidden identity or graph module', async () => {
     mockCms('en')
-    const html = await render(HomeHero, { locale: 'en' })
-    expect(html).toMatch(/media="\(min-width:\s*768px\)"/)
-    expect(html).toContain('image/avif')
-    expect(html).toContain('image/webp')
-    // Exactly one frame is the eager, high-priority one: the visible theme's first state.
-    expect(html.match(/loading="eager"/g)).toHaveLength(1)
-    expect(html.match(/fetchpriority="high"/g)).toHaveLength(1)
-  })
-
-  it('does not render a hidden identity or sequence module', async () => {
-    mockCms('en')
-    const withoutSequence = await render(HomeHero, {
+    withGraph('en')
+    const withoutGraph = await render(HeroV3, {
       locale: 'en',
-      showSequence: false,
+      showGraph: false,
     })
-    expect(withoutSequence).not.toContain('data-hero-sequence')
-    expect(withoutSequence).toContain('hm-hero__copy')
-    const withoutIdentity = await render(HomeHero, {
+    expect(withoutGraph).not.toContain('data-hv3-constellation')
+    expect(withoutGraph).toContain('hv3__copy')
+    const withoutIdentity = await render(HeroV3, {
       locale: 'en',
       showIdentity: false,
     })
-    expect(withoutIdentity).not.toContain('hm-hero__copy')
-    expect(withoutIdentity).toContain('data-hero-sequence')
+    expect(withoutIdentity).not.toContain('hv3__copy')
+    expect(withoutIdentity).toContain('data-hv3-constellation')
   })
 })

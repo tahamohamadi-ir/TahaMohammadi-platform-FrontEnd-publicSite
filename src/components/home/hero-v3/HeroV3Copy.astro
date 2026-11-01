@@ -2,7 +2,10 @@
 import Button from '../../ui/Button.astro'
 import Chip from '../../ui/Chip.astro'
 import { ArrowRight, FileText, Mail } from 'lucide-astro'
-import { getHomeHeroContent } from '../../../lib/home-content'
+import {
+  getHomeHeroContent,
+  getHomeResearchContent,
+} from '../../../lib/home-content'
 import { getManagedCopy } from '../../../lib/site-settings-content'
 import { localePath, type Locale } from '../../../lib/navigation'
 
@@ -13,8 +16,9 @@ interface Props {
 }
 
 const { locale, showFocus = true } = Astro.props
-const [content, copy] = await Promise.all([
+const [content, research, copy] = await Promise.all([
   getHomeHeroContent(locale),
+  getHomeResearchContent(locale),
   getManagedCopy(locale),
 ])
 const [given, ...rest] = content.name.trim().split(/\s+/)
@@ -46,6 +50,7 @@ const actions = [
     content.name && (
       <h1 class="hv3__name">
         <span class="hv3__name-line">{given}</span>
+        {family && ' '}
         {family && (
           <span class="hv3__name-line hv3__name-line--accent">{family}</span>
         )}
@@ -65,6 +70,7 @@ const actions = [
       </div>
     )
   }
+  {research.lead && <p class="hv3__research hv3__rise">{research.lead}</p>}
   {
     showFocus && content.focusChips.length > 0 && (
       <div class="hv3__focus hv3__rise">

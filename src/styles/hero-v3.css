@@ -112,6 +112,17 @@
   color: var(--color-ink-secondary);
 }
 
+.hv3__research {
+  margin: 0;
+  max-inline-size: 34rem;
+  padding-inline-start: var(--space-4);
+  border-inline-start: 2px solid
+    color-mix(in srgb, var(--color-brand) 40%, transparent);
+  font-size: var(--font-size-sm);
+  line-height: 1.7;
+  color: var(--color-ink-secondary);
+}
+
 .hv3__actions {
   display: flex;
   flex-wrap: wrap;

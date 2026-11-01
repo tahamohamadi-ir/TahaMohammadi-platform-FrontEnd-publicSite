@@ -1,5 +1,5 @@
 {
-  "_comment": "Deterministic Home content for the Playwright E2E build. Stage 4.1: the Home hero contract (identity + graph modules, primary profile, home landing) must render without the live CMS, otherwise every Home spec fails environmentally with 'element count 0'. Read-only, per-locale, and only these three routes are served by scripts/e2e-site-settings-fixture.mjs. Stage 4.1 also serves topics and statements, which are what the hero research lead reads.",
+  "_comment": "Deterministic Home content for the Playwright E2E build. Stage 4.1: the Home hero contract (identity + graph modules, primary profile, home landing) must render without the live CMS, otherwise every Home spec fails environmentally with 'element count 0'. Read-only, per-locale, and only these three routes are served by scripts/e2e-site-settings-fixture.mjs. Stage 4.1 also serves topics and statements, which are what the hero research lead reads. ADR-0011 adds a synthetic two-node graph so the Home hero constellation has a deterministic answer.",
   "en": {
     "composition": {
       "locale": "en",
@@ -66,7 +66,51 @@
         "body": "Published statement body.",
         "published_at": "2026-09-01T00:00:00Z"
       }
-    ]
+    ],
+    "graph": {
+      "nodes": [
+        {
+          "id": "identity",
+          "type": "identity",
+          "label": "Taha Mohammadi",
+          "accessibleLabel": "Taha Mohammadi",
+          "weight": 1,
+          "colorRole": "brand",
+          "iconRole": "ring",
+          "position": {
+            "x": 0,
+            "y": 0,
+            "z": 8
+          },
+          "relatedRecords": []
+        },
+        {
+          "id": "research-topic-1",
+          "type": "research-topic",
+          "label": "Human-Centered AI",
+          "accessibleLabel": "Human-Centered AI",
+          "weight": 1,
+          "colorRole": "research",
+          "iconRole": "disc",
+          "position": {
+            "x": 0,
+            "y": -76,
+            "z": -8
+          },
+          "relatedRecords": []
+        }
+      ],
+      "edges": [
+        {
+          "id": "identity->research-topic-1:research-focus",
+          "source": "identity",
+          "target": "research-topic-1",
+          "relationType": "research-focus",
+          "directed": true,
+          "weight": 1
+        }
+      ]
+    }
   },
   "fa": {
     "composition": {
@@ -134,6 +178,50 @@
         "body": "متن منتشرشدهٔ بیانیه.",
         "published_at": "2026-09-01T00:00:00Z"
       }
-    ]
+    ],
+    "graph": {
+      "nodes": [
+        {
+          "id": "identity",
+          "type": "identity",
+          "label": "طاها محمدی",
+          "accessibleLabel": "طاها محمدی",
+          "weight": 1,
+          "colorRole": "brand",
+          "iconRole": "ring",
+          "position": {
+            "x": 0,
+            "y": 0,
+            "z": 8
+          },
+          "relatedRecords": []
+        },
+        {
+          "id": "research-topic-1",
+          "type": "research-topic",
+          "label": "هوش مصنوعی انسان‌محور",
+          "accessibleLabel": "هوش مصنوعی انسان‌محور",
+          "weight": 1,
+          "colorRole": "research",
+          "iconRole": "disc",
+          "position": {
+            "x": 0,
+            "y": -76,
+            "z": -8
+          },
+          "relatedRecords": []
+        }
+      ],
+      "edges": [
+        {
+          "id": "identity->research-topic-1:research-focus",
+          "source": "identity",
+          "target": "research-topic-1",
+          "relationType": "research-focus",
+          "directed": true,
+          "weight": 1
+        }
+      ]
+    }
   }
 }

@@ -1,5 +1,5 @@
 ---
-import HomeHero from './HomeHero.astro'
+import HeroV3 from './hero-v3/HeroV3.astro'
 import HomeResearchInterests from './HomeResearchInterests.astro'
 import HomeJourney from './HomeJourney.astro'
 import HomeFeaturedProjects from './HomeFeaturedProjects.astro'
@@ -59,24 +59,14 @@ const components = {
     }
     {
       modules.map((key) => {
-        // Stage 4.1 — the shell owns the scrub travel, the viewport is what pins. The template
-        // styles every section as a flex column and a sticky flex item can only move inside its
-        // own area, so the viewport is a block inside a block shell: that is the containing
-        // block it was missing in Stage 4.
         if (key === 'identity' || key === 'graph')
           return (
-            <div
-              class="tm-template__section hm-hero-scroll-shell"
-              data-home-module="hero"
-              data-hero-scroll-shell
-            >
-              <div class="hm-hero-sticky-viewport" data-hero-sticky-viewport>
-                <HomeHero
-                  locale={locale}
-                  showIdentity={visible.has('identity')}
-                  showSequence={visible.has('graph')}
-                />
-              </div>
+            <div class="tm-template__section" data-home-module="hero">
+              <HeroV3
+                locale={locale}
+                showIdentity={visible.has('identity')}
+                showGraph={visible.has('graph')}
+              />
             </div>
           )
         const Component = components[key]

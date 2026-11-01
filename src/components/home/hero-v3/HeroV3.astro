@@ -1,42 +1,37 @@
 ---
 import HeroV3Copy from './HeroV3Copy.astro'
 import HeroV3Constellation from './HeroV3Constellation.astro'
-import HeroV3Still from './HeroV3Still.astro'
 import { loadHeroGraph } from '../../../lib/hero-graph-content'
 import type { Locale } from '../../../lib/navigation'
 import '../../../styles/hero-v3.css'
 
-export type HeroV3Variant = 'a' | 'b' | 'c'
-
 interface Props {
   locale: Locale
-  variant: HeroV3Variant
+  showIdentity?: boolean
+  showGraph?: boolean
 }
 
-const { locale, variant } = Astro.props
-const graph = await loadHeroGraph(locale)
-const ready = graph.status === 'ready' && graph.nodes.length > 1
+const { locale, showIdentity = true, showGraph = true } = Astro.props
+const graph = showGraph ? await loadHeroGraph(locale) : null
+const ready = graph?.status === 'ready' && graph.nodes.length > 1 ? graph : null
 ---
 
 <section
   class:list={['hv3', !ready && 'hv3--copy-only']}
-  data-hero-v3={variant}
+  data-hero-v3
+  data-hero-visual={ready ? 'constellation' : 'none'}
 >
   <div class="hv3__atmosphere" aria-hidden="true"></div>
-  <HeroV3Copy locale={locale} showFocus={!ready} />
+  {showIdentity && <HeroV3Copy locale={locale} showFocus={!ready} />}
   {
-    ready && graph.status === 'ready' && (
+    ready && (
       <div class="hv3__visual">
-        {variant === 'c' ? (
-          <HeroV3Still locale={locale} nodes={graph.nodes} />
-        ) : (
-          <HeroV3Constellation
-            locale={locale}
-            nodes={graph.nodes}
-            edges={graph.edges}
-            live={variant === 'b'}
-          />
-        )}
+        <HeroV3Constellation
+          locale={locale}
+          nodes={ready.nodes}
+          edges={ready.edges}
+          live
+        />
       </div>
     )
   }

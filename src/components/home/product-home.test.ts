@@ -143,7 +143,7 @@ afterEach(() => {
   vi.unstubAllEnvs()
 })
 
-import HomeHero from './HomeHero.astro'
+import HeroV3 from './hero-v3/HeroV3.astro'
 import HomeContent from './HomeContent.astro'
 import HomeFeaturedProjects from './HomeFeaturedProjects.astro'
 import HomeFeaturedPublications from './HomeFeaturedPublications.astro'
@@ -158,8 +158,9 @@ describe('PU-17 Home CMS integration', () => {
     'renders published identity, introduction and focus in %s',
     async (locale) => {
       mockCms(locale, locale === 'fa' ? 'هویت ویرایش شده' : 'Edited identity')
-      const html = await render(HomeHero, { locale })
-      expect(html).toContain(locale === 'fa' ? 'هویت ویرایش شده' : 'Edited')
+      const html = await render(HeroV3, { locale })
+      expect(html).toContain(locale === 'fa' ? 'هویت' : 'Edited')
+      expect(html).toContain(locale === 'fa' ? 'ویرایش شده' : 'identity')
       expect(html).toContain('Edited introduction')
       expect(html).toContain('Published statement body')
       expect(html).toContain('Edited role')
@@ -169,12 +170,12 @@ describe('PU-17 Home CMS integration', () => {
   )
   it('reflects edited text on the next render and removes deleted selected records', async () => {
     mockCms('en', 'First identity')
-    expect(await render(HomeHero, { locale: 'en' })).toContain('First')
+    expect(await render(HeroV3, { locale: 'en' })).toContain('First')
     expect(await render(HomeFeaturedProjects, { locale: 'en' })).toContain(
       'href="/en/projects/selected-project/"',
     )
     mockCms('en', 'Second identity', false)
-    const updated = await render(HomeHero, { locale: 'en' })
+    const updated = await render(HeroV3, { locale: 'en' })
     expect(updated).toContain('Second')
     expect(updated).not.toContain('First')
     expect(await render(HomeFeaturedProjects, { locale: 'en' })).not.toContain(
@@ -183,6 +184,63 @@ describe('PU-17 Home CMS integration', () => {
     expect(
       await render(HomeFeaturedPublications, { locale: 'en' }),
     ).not.toContain('Selected paper')
+  })
+  it('draws the published graph as linked constellation nodes without duplicate focus chips', async () => {
+    mockCms('en')
+    const cms = globalThis.fetch as unknown as (
+      input: string,
+    ) => Promise<Response>
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (input: string) => {
+        const url = new URL(input, 'https://api.example.test')
+        if (url.pathname !== '/api/graph/en') return cms(input)
+        return new Response(
+          JSON.stringify({
+            nodes: [
+              {
+                id: 'identity',
+                type: 'identity',
+                label: 'Edited identity',
+                accessibleLabel: 'Edited identity',
+                weight: 1,
+                colorRole: 'brand',
+                iconRole: 'ring',
+                position: { x: 0, y: 0, z: 8 },
+                relatedRecords: [],
+              },
+              {
+                id: 'topic-1',
+                type: 'research-topic',
+                label: 'Graph topic',
+                accessibleLabel: 'Graph topic',
+                weight: 1,
+                colorRole: 'research',
+                iconRole: 'disc',
+                position: { x: 0, y: -76, z: -8 },
+                relatedRecords: [{ family: 'project', id: '1' }],
+              },
+            ],
+            edges: [
+              {
+                id: 'e1',
+                source: 'identity',
+                target: 'topic-1',
+                relationType: 'research-focus',
+                directed: true,
+                weight: 1,
+              },
+            ],
+          }),
+        )
+      }),
+    )
+    const html = await render(HeroV3, { locale: 'en' })
+    expect(html).toContain('data-hero-visual="constellation"')
+    expect(html).toContain('data-hv3-live')
+    expect(html).toContain('Graph topic')
+    expect(html).toContain('href="/en/projects/selected-project/"')
+    expect(html).not.toContain('hv3__focus')
   })
   it('links selected publications to the actual publication detail family', async () => {
     mockCms('en')
@@ -258,7 +316,7 @@ describe('PU-17 Home CMS integration', () => {
     )
     expect(html.match(/data-home-module="hero"/g)).toHaveLength(1)
     expect(html).not.toContain('data-home-module="research-fit"')
-    expect(html).toContain('data-hero-layout="integrated"')
+    expect(html).toContain('data-hero-v3')
     expect(html).not.toContain('portal-orbit')
   })
   it('renders the managed unavailable message when no home modules are published', async () => {
