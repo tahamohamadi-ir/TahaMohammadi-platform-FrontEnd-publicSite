@@ -1,9 +1,16 @@
 ---
+// Generic, locale-less catch-all: the host's error page for any unmatched
+// path with no /en/ or /fa/ prefix (src/pages/en/404.astro and
+// src/pages/fa/404.astro serve the normal, single-locale case).
+// ContentState is single-locale by design (it sets lang on its own root),
+// so this page marks each language run with its own lang/dir directly
+// instead of forcing one wrong document lang over mixed-language text.
+import { Compass } from 'lucide-astro'
 import BaseLayout from '../layouts/BaseLayout.astro'
-import ContentState from '../components/state/ContentState.astro'
+import Button from '../components/ui/Button.astro'
 import '../styles/shell.css'
 
-const pageTitle = 'Page Not Found — Taha Mohammadi'
+const pageTitle = 'Page Not Found / صفحه یافت نشد — Taha Mohammadi'
 ---
 
 <BaseLayout
@@ -12,21 +19,103 @@ const pageTitle = 'Page Not Found — Taha Mohammadi'
   dir="ltr"
   canonical="/404"
   description="The requested page could not be found."
+  robots="noindex, nofollow"
 >
   <main id="main-content" class="site-main site-main--utility" tabindex="-1">
-    <div
-      class="utility-container"
-      style="max-width: 48rem; margin: 6rem auto; padding: 0 1.5rem;"
-    >
-      <ContentState
-        variant="unavailable"
-        locale="en"
-        headingLevel="h1"
-        title="Page Not Found / صفحه مورد نظر یافت نشد"
-        message="The page you requested does not exist or has been moved. / صفحه درخواست‌شده وجود ندارد یا منتقل شده است."
-        actionLabel="Return to Home / بازگشت به خانه"
-        actionHref="/"
-      />
+    <div class="utility-container">
+      <section
+        class="ui-content-state ui-content-state--unavailable"
+        role="status"
+        aria-labelledby="content-state-title-404"
+      >
+        <div class="ui-content-state__body">
+          <span class="ui-content-state__icon" aria-hidden="true">
+            <Compass size={24} strokeWidth={1.75} />
+          </span>
+          <h1 id="content-state-title-404" class="ui-content-state__title">
+            <span lang="en">Page not found</span>
+            <span class="utility-sep" aria-hidden="true">/</span>
+            <span lang="fa" dir="rtl">صفحه یافت نشد</span>
+          </h1>
+          <p class="ui-content-state__message" lang="en">
+            The page you requested does not exist or has been moved.
+          </p>
+          <p class="ui-content-state__message" lang="fa" dir="rtl">
+            صفحه درخواست‌شده وجود ندارد یا منتقل شده است.
+          </p>
+        </div>
+        <div class="ui-content-state__actions">
+          <Button href="/en/" label="Return to Home" variant="primary" />
+          <Button href="/fa/" label="بازگشت به خانه" variant="secondary" />
+        </div>
+      </section>
     </div>
   </main>
 </BaseLayout>
+
+<style>
+  .utility-container {
+    max-width: var(--max-width-narrow, 42rem);
+    margin-inline: auto;
+    margin-block: var(--space-24, 6rem);
+    padding-inline: var(--space-6, 1.5rem);
+  }
+
+  .ui-content-state {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-6);
+    padding: var(--space-10) var(--space-8);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-xl);
+    background: var(--card-background, var(--color-surface));
+    box-shadow: var(--shadow-atlas-glow);
+    color: var(--color-ink);
+    text-align: center;
+  }
+
+  .ui-content-state__body {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-3);
+  }
+
+  .ui-content-state__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 3rem;
+    block-size: 3rem;
+    flex-shrink: 0;
+    border-radius: var(--radius-pill);
+    background: var(--color-brand-soft);
+    color: var(--color-brand);
+    margin-block-end: var(--space-2);
+  }
+
+  .ui-content-state__title {
+    margin: 0;
+    font-size: var(--font-size-xl);
+    font-weight: 700;
+    line-height: 1.3;
+  }
+
+  .utility-sep {
+    color: var(--color-ink-tertiary);
+    padding-inline: var(--space-1);
+  }
+
+  .ui-content-state__message {
+    margin: 0;
+    font-size: var(--font-size-md, var(--font-size-sm));
+    line-height: 1.6;
+    color: var(--color-ink-secondary);
+  }
+
+  .ui-content-state__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-3);
+  }
+</style>

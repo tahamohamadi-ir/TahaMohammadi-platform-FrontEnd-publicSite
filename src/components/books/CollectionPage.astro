@@ -1,7 +1,7 @@
 ---
-import SectionLead from '../ui/SectionLead.astro'
-import ContentState from '../state/ContentState.astro'
-import Link from '../ui/Link.astro'
+import GenericCollectionIndex, {
+  type GenericCollectionItem,
+} from '../generic-collection/GenericCollectionIndex.astro'
 import {
   getBooksRouteTitle,
   getBooksUnavailableCopy,
@@ -15,50 +15,25 @@ interface Props {
 }
 
 const { locale, model } = Astro.props
-const booksHref = localePath(locale, 'books')
+const items: GenericCollectionItem[] =
+  model.status === 'ready'
+    ? model.books.map((book) => ({
+        slug: book.slug,
+        title: book.title,
+        meta: book.authors || undefined,
+      }))
+    : []
 ---
 
-{
-  model.status === 'unavailable' ? (
-    <div class="books-page books-page--unavailable">
-      <ContentState
-        variant="unavailable"
-        locale={locale}
-        headingLevel="h1"
-        title={getBooksUnavailableCopy(locale).title}
-        message={getBooksUnavailableCopy(locale).message}
-        actionLabel={locale === 'en' ? 'Back to home' : 'بازگشت به خانه'}
-        actionHref={localePath(locale, 'home')}
-      />
-    </div>
-  ) : (
-    <div class="books-page">
-      <SectionLead
-        eyebrow={getBooksRouteTitle(locale)}
-        title={getBooksRouteTitle(locale)}
-        summary={
-          locale === 'en'
-            ? 'Monographs, edited volumes, and publications in print and digital editions.'
-            : 'کتاب‌ها، تک‌نگاری‌ها و مجلدات منتشرشده چاپی و دیجیتال.'
-        }
-      />
-
-      <ul class="books-page__grid">
-        {model.books.map((book) => (
-          <li class="books-page__card">
-            <h2 class="books-page__card-title">
-              <Link
-                href={`${booksHref.replace(/\/$/, '')}/${book.slug}`}
-                label={book.title}
-                variant="standalone"
-              />
-            </h2>
-            {book.authors ? (
-              <p class="books-page__card-authors">{book.authors}</p>
-            ) : null}
-          </li>
-        ))}
-      </ul>
-    </div>
-  )
-}
+<GenericCollectionIndex
+  locale={locale}
+  status={model.status}
+  routeTitle={getBooksRouteTitle(locale)}
+  summary={locale === 'en'
+    ? 'Monographs, edited volumes, and publications in print and digital editions.'
+    : 'کتاب‌ها، تک‌نگاری‌ها و مجلدات منتشرشده چاپی و دیجیتال.'}
+  unavailableTitle={getBooksUnavailableCopy(locale).title}
+  unavailableMessage={getBooksUnavailableCopy(locale).message}
+  hrefBase={localePath(locale, 'books')}
+  items={items}
+/>

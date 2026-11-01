@@ -4,8 +4,13 @@
     color: var(--color-ink);
   }
 
+  /* html's background shows only before body paints and in overscroll/
+     bounce gaps, so it must match body's bg-canvas (BaseLayout.astro) —
+     not --shell-canvas-warm, which is a deliberate warm accent used only
+     in section gradients, not the page canvas. Mismatching the two left
+     a visible seam at the viewport edges. */
   html[data-theme='light'] {
-    background-color: var(--shell-canvas-warm);
+    background-color: var(--color-canvas);
   }
 
   html[data-theme='dark'] {
@@ -14,7 +19,7 @@
 
   @media (prefers-color-scheme: light) {
     html:not([data-theme]) {
-      background-color: var(--shell-canvas-warm);
+      background-color: var(--color-canvas);
     }
   }
 

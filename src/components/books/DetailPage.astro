@@ -1,7 +1,7 @@
 ---
 import LongFormDetailTemplate from '../templates/LongFormDetailTemplate.astro'
 import SectionLead from '../ui/SectionLead.astro'
-import ContentState from '../state/ContentState.astro'
+import GenericCollectionUnavailable from '../generic-collection/GenericCollectionUnavailable.astro'
 import Link from '../ui/Link.astro'
 import StoryDocument from '../story/StoryDocument.astro'
 import { hasStoryContent } from '../../lib/story-content'
@@ -24,19 +24,15 @@ const booksHref = localePath(locale, 'books')
 
 {
   model.status === 'unavailable' ? (
-    <div class="books-page books-page--unavailable">
-      <ContentState
-        variant="unavailable"
-        locale={locale}
-        headingLevel="h1"
-        title={getBooksUnavailableCopy(locale).title}
-        message={getBooksUnavailableCopy(locale).message}
-        actionLabel={locale === 'en' ? 'Back to books' : 'بازگشت به کتاب‌ها'}
-        actionHref={booksHref}
-      />
-    </div>
+    <GenericCollectionUnavailable
+      locale={locale}
+      title={getBooksUnavailableCopy(locale).title}
+      message={getBooksUnavailableCopy(locale).message}
+      backHref={booksHref}
+      backLabel={locale === 'en' ? 'Back to books' : 'بازگشت به کتاب‌ها'}
+    />
   ) : (
-    <LongFormDetailTemplate class="books-page books-page--detail">
+    <LongFormDetailTemplate class="generic-collection generic-collection--detail">
       <SectionLead
         slot="lead"
         eyebrow={getBooksRouteTitle(locale)}
@@ -44,9 +40,9 @@ const booksHref = localePath(locale, 'books')
         summary={model.book.description}
       />
 
-      <div slot="body" class="books-page__detail">
+      <div slot="body" class="generic-collection__detail">
         {model.book.cover?.url ? (
-          <figure class="books-page__cover">
+          <figure class="generic-collection__cover">
             <img
               src={model.book.cover.url}
               alt={model.book.cover.alt || model.book.title}
@@ -56,7 +52,7 @@ const booksHref = localePath(locale, 'books')
           </figure>
         ) : null}
 
-        <dl class="books-page__meta">
+        <dl class="generic-collection__meta">
           {model.book.authors ? (
             <>
               <dt>{locale === 'en' ? 'Authors' : 'نویسندگان'}</dt>
@@ -100,19 +96,19 @@ const booksHref = localePath(locale, 'books')
         hasStoryContent(model.book.story) ? (
           <StoryDocument story={model.book.story} locale={locale} />
         ) : model.book.description?.trim() ? (
-          <div class="books-page__prose">
+          <div class="generic-collection__prose">
             <p>{model.book.description}</p>
           </div>
         ) : null}
 
         {model.book.relatedRecords?.length ? (
-          <section class="books-page__section">
-            <h2 class="books-page__section-title">
+          <section class="generic-collection__section">
+            <h2 class="generic-collection__section-title">
               {locale === 'en' ? 'Related Work' : 'آثار مرتبط'}
             </h2>
-            <ul class="books-page__grid">
+            <ul class="generic-collection__grid">
               {model.book.relatedRecords.map((ref) => (
-                <li class="books-page__card">
+                <li class="generic-collection__card">
                   <strong>{ref.title}</strong>
                   {ref.summary ? <p>{ref.summary}</p> : null}
                 </li>
@@ -122,7 +118,7 @@ const booksHref = localePath(locale, 'books')
         ) : null}
       </div>
 
-      <p slot="related" class="books-page__back">
+      <p slot="related" class="generic-collection__back">
         <Link
           href={booksHref}
           label={locale === 'en' ? '← Back to books' : '← بازگشت به کتاب‌ها'}

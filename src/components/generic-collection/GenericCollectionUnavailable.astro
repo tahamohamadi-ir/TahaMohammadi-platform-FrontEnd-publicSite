@@ -1,0 +1,30 @@
+---
+// The unavailable-detail state was byte-identical across all 5
+// books/talks/resources/collections/series DetailPage.astro files
+// (only the title/message/back-link text differed). Shared here so a
+// detail page is three lines instead of a 12-line copy-paste block.
+import ContentState from '../state/ContentState.astro'
+import type { Locale } from '../../lib/navigation'
+
+interface Props {
+  locale: Locale
+  title: string
+  message: string
+  backHref: string
+  backLabel: string
+}
+
+const { locale, title, message, backHref, backLabel } = Astro.props
+---
+
+<div class="generic-collection generic-collection--unavailable">
+  <ContentState
+    variant="unavailable"
+    locale={locale}
+    headingLevel="h1"
+    title={title}
+    message={message}
+    actionLabel={backLabel}
+    actionHref={backHref}
+  />
+</div>

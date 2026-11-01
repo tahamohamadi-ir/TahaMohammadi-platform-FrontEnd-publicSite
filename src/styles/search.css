@@ -48,7 +48,9 @@
 
 .search-page__result-excerpt {
   margin: var(--space-2) 0 0;
-  color: var(--color-ink-muted);
+  /* WCAG 2.2 AA: --color-ink-muted (ink-tertiary) measures ~3.35:1 on the
+     light canvas at this size, below the 4.5:1 the a11y crawl enforces. */
+  color: var(--color-ink-secondary);
   font-size: var(--font-size-sm);
   line-height: 1.5;
 }

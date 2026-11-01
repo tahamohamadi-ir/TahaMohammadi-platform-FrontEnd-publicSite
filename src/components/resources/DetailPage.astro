@@ -1,7 +1,7 @@
 ---
 import LongFormDetailTemplate from '../templates/LongFormDetailTemplate.astro'
 import SectionLead from '../ui/SectionLead.astro'
-import ContentState from '../state/ContentState.astro'
+import GenericCollectionUnavailable from '../generic-collection/GenericCollectionUnavailable.astro'
 import Link from '../ui/Link.astro'
 import StoryDocument from '../story/StoryDocument.astro'
 import { hasStoryContent } from '../../lib/story-content'
@@ -25,19 +25,15 @@ const resourcesHref = localePath(locale, 'resources')
 
 {
   model.status === 'unavailable' ? (
-    <div class="resources-page resources-page--unavailable">
-      <ContentState
-        variant="unavailable"
-        locale={locale}
-        headingLevel="h1"
-        title={getResourcesUnavailableCopy(locale).title}
-        message={getResourcesUnavailableCopy(locale).message}
-        actionLabel={locale === 'en' ? 'Back to resources' : 'بازگشت به منابع'}
-        actionHref={resourcesHref}
-      />
-    </div>
+    <GenericCollectionUnavailable
+      locale={locale}
+      title={getResourcesUnavailableCopy(locale).title}
+      message={getResourcesUnavailableCopy(locale).message}
+      backHref={resourcesHref}
+      backLabel={locale === 'en' ? 'Back to resources' : 'بازگشت به منابع'}
+    />
   ) : (
-    <LongFormDetailTemplate class="resources-page resources-page--detail">
+    <LongFormDetailTemplate class="generic-collection generic-collection--detail">
       <SectionLead
         slot="lead"
         eyebrow={getResourcesRouteTitle(locale)}
@@ -45,8 +41,8 @@ const resourcesHref = localePath(locale, 'resources')
         summary={model.resource.description}
       />
 
-      <div slot="body" class="resources-page__detail">
-        <dl class="resources-page__meta">
+      <div slot="body" class="generic-collection__detail">
+        <dl class="generic-collection__meta">
           {model.resource.download_type ? (
             <>
               <dt>{locale === 'en' ? 'Type' : 'نوع پرونده'}</dt>
@@ -88,7 +84,7 @@ const resourcesHref = localePath(locale, 'resources')
         </dl>
 
         {model.resource.file?.url ? (
-          <div class="resources-page__action">
+          <div class="generic-collection__action">
             <Link
               href={model.resource.file.url}
               label={locale === 'en' ? 'Download Resource' : 'دانلود فایل منبع'}
@@ -102,19 +98,19 @@ const resourcesHref = localePath(locale, 'resources')
         hasStoryContent(model.resource.story) ? (
           <StoryDocument story={model.resource.story} locale={locale} />
         ) : model.resource.description?.trim() ? (
-          <div class="resources-page__prose">
+          <div class="generic-collection__prose">
             <p>{model.resource.description}</p>
           </div>
         ) : null}
 
         {model.resource.relatedRecords?.length ? (
-          <section class="resources-page__section">
-            <h2 class="resources-page__section-title">
+          <section class="generic-collection__section">
+            <h2 class="generic-collection__section-title">
               {locale === 'en' ? 'Related Work' : 'آثار مرتبط'}
             </h2>
-            <ul class="resources-page__grid">
+            <ul class="generic-collection__grid">
               {model.resource.relatedRecords.map((ref) => (
-                <li class="resources-page__card">
+                <li class="generic-collection__card">
                   <strong>{ref.title}</strong>
                   {ref.summary ? <p>{ref.summary}</p> : null}
                 </li>
@@ -124,7 +120,7 @@ const resourcesHref = localePath(locale, 'resources')
         ) : null}
       </div>
 
-      <p slot="related" class="resources-page__back">
+      <p slot="related" class="generic-collection__back">
         <Link
           href={resourcesHref}
           label={locale === 'en' ? '← Back to resources' : '← بازگشت به منابع'}

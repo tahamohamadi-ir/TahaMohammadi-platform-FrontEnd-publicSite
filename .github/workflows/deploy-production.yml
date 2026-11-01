@@ -1,0 +1,166 @@
+name: Deploy production
+
+# Rebuilds and redeploys ONLY the public site's `web` service in the
+# shared `taha-cms-prod` Docker Compose stack. cms/admin/db/mailpit/Caddy
+# are never touched: the existing compose file, its network wiring
+# (host-edge, alias taha-prod-web) and Caddy routing are reused as-is.
+#
+# Every push to main runs verify only (lint/test/build/validate). The
+# deploy job requires a manual "Run workflow" dispatch — matching the
+# existing deploy-staging.yml pattern — so nothing reaches the live site
+# without someone deliberately triggering it.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-production-public-site
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Verify release candidate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Format check
+        run: npm run format:check
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Design authority validation
+        run: npm run validate:design
+
+      - name: Production build
+        run: npm run build
+
+      - name: SEO validation
+        run: npm run validate:seo
+
+  deploy:
+    name: Deploy public site to production
+    needs: verify
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      PROD_SSH_PRIVATE_KEY: ${{ secrets.PROD_SSH_PRIVATE_KEY }}
+      PROD_SSH_KNOWN_HOSTS: ${{ secrets.PROD_SSH_KNOWN_HOSTS }}
+      PROD_SSH_HOST: ${{ secrets.PROD_SSH_HOST }}
+      PROD_SSH_PORT: ${{ secrets.PROD_SSH_PORT }}
+      PROD_SSH_USER: ${{ secrets.PROD_SSH_USER }}
+      PROD_APP_DIR: ${{ secrets.PROD_APP_DIR }}
+    steps:
+      - name: Check production deployment configuration
+        id: prod
+        shell: bash
+        run: |
+          required=(
+            PROD_SSH_PRIVATE_KEY
+            PROD_SSH_KNOWN_HOSTS
+            PROD_SSH_HOST
+            PROD_SSH_PORT
+            PROD_SSH_USER
+            PROD_APP_DIR
+          )
+          for name in "${required[@]}"; do
+            if [[ -z "${!name}" ]]; then
+              echo "::error::Production deployment skipped: repository secret $name is not configured. See deploy/README.md."
+              exit 1
+            fi
+          done
+
+      - name: Configure production SSH access
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$PROD_SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          printf '%s\n' "$PROD_SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Build image and recreate the web service only
+        env:
+          DEPLOY_SHA: ${{ github.sha }}
+        run: |
+          ssh -i ~/.ssh/id_ed25519 -o BatchMode=yes -o StrictHostKeyChecking=yes -p "$PROD_SSH_PORT" "$PROD_SSH_USER@$PROD_SSH_HOST" \
+            "PROD_APP_DIR='$PROD_APP_DIR' DEPLOY_SHA='$DEPLOY_SHA' bash -se" <<'REMOTE'
+          set -euo pipefail
+
+          # 1. Checkout the exact deployed commit into a dedicated build
+          #    directory. This never touches /home/deploy/prod (the running
+          #    compose stack's config) or any other service's checkout.
+          mkdir -p "$PROD_APP_DIR"
+          cd "$PROD_APP_DIR"
+          if [ -d "src/.git" ]; then
+            git -C src reset --hard HEAD
+            git -C src fetch --prune origin "$DEPLOY_SHA"
+          else
+            git clone https://github.com/tahamohamadi-ir/TahaMohammadi-platform-FrontEnd-publicSite.git src
+            git -C src fetch --prune origin "$DEPLOY_SHA"
+          fi
+          fetched_sha=$(git -C src rev-parse FETCH_HEAD)
+          test "$fetched_sha" = "$DEPLOY_SHA"
+          git -C src checkout --detach "$DEPLOY_SHA"
+
+          # 2. Build the web image. --network=host plus the loopback alias
+          #    lets the Astro build reach the live CMS through the host's
+          #    own Caddy (PUBLIC_API_BASE_URL=https://tahamohamadi.ir)
+          #    instead of going out to the public internet.
+          release_id="prod-${DEPLOY_SHA:0:8}"
+          docker build -q --network=host --add-host=tahamohamadi.ir:127.0.0.1 \
+            -f src/deploy/Dockerfile.prod \
+            --build-arg PUBLIC_SITE_URL=https://tahamohamadi.ir \
+            --build-arg PUBLIC_API_BASE_URL=https://tahamohamadi.ir \
+            -t "taha-web-prod:${release_id}" src
+
+          # 3. Sync the fresh static build into the persistent volume the
+          #    running web container already serves from.
+          docker run --rm -v taha-cms-prod_prod_public_html:/target \
+            "taha-web-prod:${release_id}" sh -c 'cp -a /usr/share/nginx/html/. /target/'
+
+          # 4. Point RELEASE_ID at the new tag. docker-compose.prod.yml's
+          #    env_file resolves to this exact path (../.env.prod relative
+          #    to /home/deploy/prod/docker-compose.prod.yml). A prior
+          #    manual edit left two RELEASE_ID= lines in this file; replace
+          #    every existing one with a single fresh line instead of
+          #    appending another.
+          env_file=/home/deploy/.env.prod
+          grep -v '^RELEASE_ID=' "$env_file" > "${env_file}.tmp"
+          printf 'RELEASE_ID=%s\n' "$release_id" >> "${env_file}.tmp"
+          mv "${env_file}.tmp" "$env_file"
+
+          # 5. Recreate only the web service. The existing compose file,
+          #    network wiring (host-edge, alias taha-prod-web) and Caddy
+          #    routing are reused untouched — cms/admin/db/mailpit are not
+          #    part of this command and are not restarted.
+          docker compose -p taha-cms-prod --env-file "$env_file" \
+            -f /home/deploy/prod/docker-compose.prod.yml up -d --force-recreate web
+
+          # 6. Verify the new container is healthy before finishing.
+          sleep 3
+          docker compose -p taha-cms-prod -f /home/deploy/prod/docker-compose.prod.yml ps web
+          web_cid=$(docker compose -p taha-cms-prod -f /home/deploy/prod/docker-compose.prod.yml ps -q web)
+          test -n "$web_cid"
+          curl -sf -o /dev/null http://127.0.0.1:28012/
+          echo "Deployed taha-web-prod:${release_id}"
+          REMOTE

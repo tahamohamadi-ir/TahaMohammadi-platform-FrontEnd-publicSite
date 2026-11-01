@@ -87,7 +87,14 @@ describe('PUBLIC-150 behavior', () => {
     })
     const skipHtml = await renderComponent(SkipLink, { locale: 'en' })
 
-    expect(headerHtml).not.toMatch(/site-header__brand/)
+    // The home link/logo is essential chrome and must stay reachable
+    // without CMS settings, with a structural "Home" label — but unlike
+    // nav items, the owner's name/role is biography, not chrome, so it
+    // does not resurrect here (see managed-shell.test.ts).
+    expect(headerHtml).toMatch(
+      /<a href="\/en\/" class="site-header__brand" aria-label="Home">/,
+    )
+    expect(headerHtml).not.toMatch(/site-header__brand-name/)
     expect(headerHtml).toMatch(/site-header__search-link/)
     expect(headerHtml).toContain('>Search<')
     expect(headerHtml).toMatch(/theme-toggle--shell/)
@@ -289,6 +296,7 @@ describe('PUBLIC-150 behavior', () => {
     expect(shell).not.toMatch(/\bright:/)
     expect(shell).toMatch(/grid-template-columns: 1\.4fr 1fr 1fr 1fr/)
     expect(shell).toMatch(/var\(--gradient-section-surface-light\)/)
-    expect(shell).toMatch(/site-footer__social-btn/)
+    // .site-footer__social-btn was removed: no markup referenced it or the
+    // footerSocial* copy keys anywhere in the repo (confirmed by grep).
   })
 })

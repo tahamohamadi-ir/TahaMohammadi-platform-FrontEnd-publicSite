@@ -15,15 +15,17 @@ async function render(
 }
 
 describe('PU-18 About Product Family (F13)', () => {
-  it('renders structural empty-state chrome when profile is unavailable', async () => {
+  it('renders one honest unavailable state when profile is unavailable, not fabricated chrome', async () => {
     const html = await render(AboutPageContent, {
       locale: 'en',
       model: { status: 'unavailable' },
     })
 
-    expect(html).toContain('AboutContactUtilityTemplate')
-    expect(html).toContain('PageFamilyProfileHeroShell')
-    expect(html).toContain('Awaiting approved CMS copy')
+    expect(html).toContain('ContentState')
+    expect(html).toContain('data-state-variant="unavailable"')
+    expect(html).not.toContain('AboutContactUtilityTemplate')
+    expect(html).not.toContain('PageFamilyProfileHeroShell')
+    expect(html).not.toContain('Awaiting approved CMS copy')
   })
 
   it('does not resurrect hardcoded identity when profile is unavailable', async () => {

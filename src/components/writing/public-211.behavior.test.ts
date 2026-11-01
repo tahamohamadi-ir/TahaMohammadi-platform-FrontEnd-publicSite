@@ -17,15 +17,19 @@ async function render(
 }
 
 describe('PUBLIC-211/212 writing pages', () => {
-  it('renders structural empty-state chrome on the writing index', async () => {
+  it('renders one honest unavailable state on the writing index, not fabricated chrome', async () => {
+    // Empty-state policy: see the equivalent test in
+    // src/components/projects/public-210.behavior.test.ts.
     const html = await render(WritingPageContent, {
       locale: 'en',
       model: { status: 'unavailable' },
     })
-    expect(html).toMatch(/data-visual-id="EditorialIndexTemplate"/)
-    expect(html).toMatch(/data-state-variant="empty"/)
-    expect(html).toMatch(/data-visual-id="PageFamilyIndexHero"/)
+    expect(html).toMatch(/data-visual-id="ContentState"/)
+    expect(html).toMatch(/data-state-variant="unavailable"/)
     expect(html).toContain('Published writing is not available yet.')
+    expect(html).toMatch(/href="\/en\/home\/"/)
+    expect(html).not.toMatch(/data-visual-id="EditorialIndexTemplate"/)
+    expect(html).not.toMatch(/data-visual-id="PageFamilyIndexHero"/)
     expect(html).not.toMatch(/pf-index-empty__filter-chip/)
     expect(html).not.toMatch(/<button[^>]*disabled/)
   })

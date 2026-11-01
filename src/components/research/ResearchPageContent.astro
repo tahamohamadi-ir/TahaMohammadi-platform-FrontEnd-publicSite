@@ -1,19 +1,21 @@
 ---
+import {
+  Lightbulb,
+  BrainCircuit,
+  Palette,
+  Microscope,
+  Code2,
+  Database,
+  Globe,
+  FolderGit2,
+} from 'lucide-astro'
 import CollectionIndexTemplate from '../templates/CollectionIndexTemplate.astro'
 import PageFamilyIndexHero from '../page-family/PageFamilyIndexHero.astro'
-import PageFamilySubNavShell from '../page-family/PageFamilySubNavShell.astro'
 import PageFamilyConstellationShell from '../page-family/PageFamilyConstellationShell.astro'
-import PageFamilyResearchFitShell from '../page-family/PageFamilyResearchFitShell.astro'
-import PageFamilyResearchDirectionsShell from '../page-family/PageFamilyResearchDirectionsShell.astro'
 import PageFamilySelectedPublicationsShell from '../page-family/PageFamilySelectedPublicationsShell.astro'
-import PageFamilyCollaborateBandShell from '../page-family/PageFamilyCollaborateBandShell.astro'
 import ContentState from '../state/ContentState.astro'
 import Link from '../ui/Link.astro'
-import {
-  getGatewayRoleLine,
-  getCmsPlaceholderCopy,
-  getResearchSubNavLabels,
-} from '../../lib/page-family-empty-chrome'
+import { getGatewayRoleLine } from '../../lib/page-family-empty-chrome'
 import {
   getResearchEmptyTopicsCopy,
   getResearchRouteTitle,
@@ -22,6 +24,22 @@ import {
   type ResearchIndexModel,
 } from '../../lib/research-content'
 import { localePath, type Locale } from '../../lib/navigation'
+
+const PROJECT_TYPE_ICONS = {
+  ai: BrainCircuit,
+  design: Palette,
+  research: Microscope,
+  software: Code2,
+  data: Database,
+  public: Globe,
+} as const
+
+function projectTypeIcon(value: string | null | undefined) {
+  const token = (value ?? '').trim().toLowerCase()
+  return (
+    PROJECT_TYPE_ICONS[token as keyof typeof PROJECT_TYPE_ICONS] ?? FolderGit2
+  )
+}
 
 interface Props {
   locale: Locale
@@ -32,67 +50,21 @@ const { locale, model } = Astro.props
 const routeTitle = getResearchRouteTitle(locale)
 const emptyCopy = getResearchUnavailableCopy(locale)
 const roleLine = getGatewayRoleLine(locale)
-const cmsPlaceholder = getCmsPlaceholderCopy(locale)
-const subNavLabels = getResearchSubNavLabels(locale)
-const tabRegion = locale === 'en' ? 'Research sections' : 'بخش‌های پژوهش'
 ---
 
 {
   model.status === 'unavailable' ? (
-    <CollectionIndexTemplate class="research-page research-page--empty">
-      <PageFamilyIndexHero
-        slot="lead"
+    <div class="research-page research-page--unavailable">
+      <ContentState
+        variant="unavailable"
         locale={locale}
-        family="research"
-        eyebrow={locale === 'en' ? 'Research profile' : 'پروفایل پژوهشی'}
-        title={routeTitle}
-        summary={cmsPlaceholder}
-        roleLine={roleLine}
-        atmosphere
+        headingLevel="h1"
+        title={emptyCopy.title}
+        message={emptyCopy.message}
+        actionLabel={locale === 'en' ? 'Back to home' : 'بازگشت به خانه'}
+        actionHref={localePath(locale, 'home')}
       />
-
-      <PageFamilySubNavShell
-        slot="filters"
-        locale={locale}
-        labels={subNavLabels}
-        regionLabel={tabRegion}
-        activeIndex={0}
-        class="research-page__tabs"
-      />
-
-      <div slot="records" class="research-page__sections pf-index-empty__shell">
-        <section class="research-page__band research-page__band--constellation">
-          <PageFamilyConstellationShell locale={locale} />
-        </section>
-
-        <section class="research-page__band research-page__band--fit">
-          <PageFamilyResearchFitShell locale={locale} />
-        </section>
-
-        <section class="research-page__band research-page__band--directions">
-          <PageFamilyResearchDirectionsShell locale={locale} />
-        </section>
-
-        <section class="research-page__band research-page__band--publications">
-          <PageFamilySelectedPublicationsShell locale={locale} count={4} />
-        </section>
-
-        <ContentState
-          variant="empty"
-          locale={locale}
-          headingLevel="h2"
-          title={emptyCopy.title}
-          message={emptyCopy.message}
-        />
-      </div>
-
-      <PageFamilyCollaborateBandShell
-        slot="footer"
-        locale={locale}
-        context="research"
-        variant="collaborate-only"
-      />
-    </CollectionIndexTemplate>
+    </div>
   ) : (
     <CollectionIndexTemplate class="research-page">
       <PageFamilyIndexHero
@@ -141,18 +113,28 @@ const tabRegion = locale === 'en' ? 'Research sections' : 'بخش‌های پژ�
             <ul class="research-page__list">
               {model.topics.map((topic) => (
                 <li>
-                  <article class="research-page__card" data-glow-card>
-                    <h3 class="research-page__card-title">
-                      <a
-                        href={localePath(locale, `research/${topic.slug}`)}
-                        class="research-page__card-link card-stretch-link"
-                      >
-                        {topic.title}
-                      </a>
-                    </h3>
-                    {topic.summary ? (
-                      <p class="research-page__card-summary">{topic.summary}</p>
-                    ) : null}
+                  <article
+                    class="research-page__card research-page__card--icon"
+                    data-glow-card
+                  >
+                    <span class="research-page__card-icon" aria-hidden="true">
+                      <Lightbulb size={22} strokeWidth={1.75} />
+                    </span>
+                    <div class="research-page__card-body">
+                      <h3 class="research-page__card-title">
+                        <a
+                          href={localePath(locale, `research/${topic.slug}`)}
+                          class="research-page__card-link card-stretch-link"
+                        >
+                          {topic.title}
+                        </a>
+                      </h3>
+                      {topic.summary ? (
+                        <p class="research-page__card-summary">
+                          {topic.summary}
+                        </p>
+                      ) : null}
+                    </div>
                   </article>
                 </li>
               ))}
@@ -179,25 +161,39 @@ const tabRegion = locale === 'en' ? 'Research sections' : 'بخش‌های پژ�
               {locale === 'en' ? 'Research systems' : 'سامانه‌های پژوهشی'}
             </h2>
             <ul class="research-page__list">
-              {model.projects.map((project) => (
-                <li>
-                  <article class="research-page__card" data-glow-card>
-                    <h3 class="research-page__card-title">
-                      <Link
-                        href={localePath(locale, `projects/${project.slug}`)}
-                        label={project.title}
-                        variant="standalone"
-                        class="research-page__card-link card-stretch-link"
-                      />
-                    </h3>
-                    {project.objective ? (
-                      <p class="research-page__card-summary">
-                        {project.objective}
-                      </p>
-                    ) : null}
-                  </article>
-                </li>
-              ))}
+              {model.projects.map((project) => {
+                const Icon = projectTypeIcon(project.project_type)
+                return (
+                  <li>
+                    <article
+                      class="research-page__card research-page__card--icon"
+                      data-glow-card
+                    >
+                      <span class="research-page__card-icon" aria-hidden="true">
+                        <Icon size={22} strokeWidth={1.75} />
+                      </span>
+                      <div class="research-page__card-body">
+                        <h3 class="research-page__card-title">
+                          <Link
+                            href={localePath(
+                              locale,
+                              `projects/${project.slug}`,
+                            )}
+                            label={project.title}
+                            variant="standalone"
+                            class="research-page__card-link card-stretch-link"
+                          />
+                        </h3>
+                        {project.objective ? (
+                          <p class="research-page__card-summary">
+                            {project.objective}
+                          </p>
+                        ) : null}
+                      </div>
+                    </article>
+                  </li>
+                )
+              })}
             </ul>
           </section>
         ) : null}

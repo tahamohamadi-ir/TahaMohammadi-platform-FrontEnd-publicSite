@@ -1,5 +1,6 @@
 ---
-import Link from '../ui/Link.astro'
+import { AlertTriangle, Inbox, Languages, SearchX, Clock } from 'lucide-astro'
+import Button from '../ui/Button.astro'
 import type { ContentStateLocale, ContentStateVariant } from './types'
 
 interface Props {
@@ -42,6 +43,16 @@ if (variant === 'untranslated' && !hasAlternate) {
     'ContentState untranslated requires alternateLabel and alternateHref',
   )
 }
+
+const stateIcons = {
+  empty: Inbox,
+  unavailable: Clock,
+  error: AlertTriangle,
+  untranslated: Languages,
+  'no-results': SearchX,
+} as const
+
+const Icon = variant === 'loading' ? null : stateIcons[variant]
 ---
 
 <section
@@ -58,9 +69,13 @@ if (variant === 'untranslated' && !hasAlternate) {
   <div class="ui-content-state__body">
     {
       variant === 'loading' ? (
-        <span class="ui-content-state__spinner" aria-hidden="true" />
+        <span class="ui-content-state__icon" aria-hidden="true">
+          <span class="ui-content-state__spinner" />
+        </span>
       ) : (
-        <span class="ui-content-state__icon" aria-hidden="true" />
+        <span class="ui-content-state__icon" aria-hidden="true">
+          {Icon ? <Icon size={24} strokeWidth={1.75} /> : null}
+        </span>
       )
     }
     <HeadingTag
@@ -72,71 +87,72 @@ if (variant === 'untranslated' && !hasAlternate) {
     {message ? <p class="ui-content-state__message">{message}</p> : null}
   </div>
 
-  <div class="ui-content-state__actions">
-    {
-      hasAction ? (
-        <Link
-          href={actionHref!}
-          label={actionLabel!}
-          variant="standalone"
-          showIcon
-        />
-      ) : null
-    }
-    {
-      hasAlternate ? (
-        <Link
-          href={alternateHref!}
-          label={alternateLabel!}
-          variant="standalone"
-          showIcon
-        />
-      ) : null
-    }
-  </div>
+  {
+    hasAction || hasAlternate ? (
+      <div class="ui-content-state__actions">
+        {hasAction ? (
+          <Button href={actionHref!} label={actionLabel!} variant="primary" />
+        ) : null}
+        {hasAlternate ? (
+          <Button
+            href={alternateHref!}
+            label={alternateLabel!}
+            variant="secondary"
+          />
+        ) : null}
+      </div>
+    ) : null
+  }
 </section>
 
 <style>
   .ui-content-state {
     display: grid;
-    gap: var(--space-4);
-    padding: var(--space-6);
+    justify-items: center;
+    gap: var(--space-6);
+    padding: var(--space-10) var(--space-8);
     border: 1px solid var(--color-border-subtle);
-    border-radius: var(--radius-lg);
-    background: var(--color-surface);
+    border-radius: var(--radius-xl);
+    background: var(--card-background, var(--color-surface));
+    box-shadow: var(--shadow-atlas-glow);
     color: var(--color-ink);
+    text-align: center;
   }
 
   .ui-content-state__body {
     display: grid;
+    justify-items: center;
     gap: var(--space-3);
-    justify-items: start;
-  }
-
-  .ui-content-state__icon,
-  .ui-content-state__spinner {
-    inline-size: 1.25rem;
-    block-size: 1.25rem;
-    flex-shrink: 0;
+    max-width: 36rem;
   }
 
   .ui-content-state__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 3rem;
+    block-size: 3rem;
+    flex-shrink: 0;
     border-radius: var(--radius-pill);
-    background: var(--color-border-subtle);
+    background: var(--color-brand-soft);
+    color: var(--color-brand);
+    margin-block-end: var(--space-2);
   }
 
   .ui-content-state--error .ui-content-state__icon {
-    background: var(--color-status-error, var(--color-accent-coral));
-  }
-
-  .ui-content-state--empty .ui-content-state__icon,
-  .ui-content-state--no-results .ui-content-state__icon {
-    background: var(--color-border-strong, var(--color-border-subtle));
+    background: color-mix(
+      in srgb,
+      var(--color-status-error, var(--color-accent-coral)) 16%,
+      transparent
+    );
+    color: var(--color-status-error, var(--color-accent-coral));
   }
 
   .ui-content-state__spinner {
-    border: 2px solid var(--color-border-subtle);
-    border-top-color: var(--color-accent-turquoise);
+    inline-size: 1.375rem;
+    block-size: 1.375rem;
+    border: 2px solid color-mix(in srgb, var(--color-brand) 25%, transparent);
+    border-top-color: var(--color-brand);
     border-radius: 50%;
     animation: ui-content-state-spin var(--motion-base) linear infinite;
   }
@@ -150,21 +166,22 @@ if (variant === 'untranslated' && !hasAlternate) {
 
   .ui-content-state__title {
     margin: 0;
-    font-size: var(--font-size-lg);
-    font-weight: 600;
+    font-size: var(--font-size-xl);
+    font-weight: 700;
     line-height: var(--line-height-snug, 1.3);
   }
 
   .ui-content-state__message {
     margin: 0;
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-md, var(--font-size-sm));
+    line-height: 1.6;
     color: var(--color-ink-secondary);
-    max-width: 42rem;
   }
 
   .ui-content-state__actions {
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
     gap: var(--space-3);
   }
 

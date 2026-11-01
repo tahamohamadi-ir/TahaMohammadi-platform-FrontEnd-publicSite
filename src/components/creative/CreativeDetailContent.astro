@@ -5,7 +5,6 @@ import ContentState from '../state/ContentState.astro'
 import Link from '../ui/Link.astro'
 import StoryDocument from '../story/StoryDocument.astro'
 import { hasStoryContent } from '../../lib/story-content'
-import PageFamilyCreativeDetailShell from '../page-family/PageFamilyCreativeDetailShell.astro'
 import {
   getCreativeRouteTitle,
   getCreativeUnavailableCopy,
@@ -28,11 +27,11 @@ const creativeHref = localePath(locale, 'gallery')
 ---
 
 {
-  model.status === 'empty-shell' ? (
-    <div class="creative-page creative-page--detail-shell">
-      <PageFamilyCreativeDetailShell locale={locale} />
-    </div>
-  ) : model.status === 'unavailable' ? (
+  // "empty-shell" was a reserved design-QA fixture slug that rendered a
+  // fully fabricated (fake data, disabled controls) preview of this page.
+  // It now renders the same honest unavailable state as a real unavailable
+  // detail — the current, correct pattern for "nothing to show here".
+  model.status === 'unavailable' || model.status === 'empty-shell' ? (
     <div class="creative-page creative-page--unavailable">
       <ContentState
         variant="unavailable"

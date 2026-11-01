@@ -1,10 +1,6 @@
 ---
 import EditorialIndexTemplate from '../templates/EditorialIndexTemplate.astro'
 import PageFamilyIndexHero from '../page-family/PageFamilyIndexHero.astro'
-import PageFamilyFeaturedPathShell from '../page-family/PageFamilyFeaturedPathShell.astro'
-import PageFamilyListCardShell from '../page-family/PageFamilyListCardShell.astro'
-import PageFamilyPathProcessShell from '../page-family/PageFamilyPathProcessShell.astro'
-import PageFamilyCollaborateBandShell from '../page-family/PageFamilyCollaborateBandShell.astro'
 import ContentState from '../state/ContentState.astro'
 import {
   formatCourseCardMeta,
@@ -13,11 +9,6 @@ import {
   getTeachingUnavailableCopy,
   type TeachingIndexModel,
 } from '../../lib/teaching-content'
-import PageFamilyTeachingFilterDropdowns from '../page-family/PageFamilyTeachingFilterDropdowns.astro'
-import {
-  getPageFamilyHeroSummary,
-  getTeachingBrowsePathsLabel,
-} from '../../lib/page-family-empty-chrome'
 import { localePath, type Locale } from '../../lib/navigation'
 
 interface Props {
@@ -27,121 +18,21 @@ interface Props {
 
 const { locale, model } = Astro.props
 const emptyCopy = getTeachingUnavailableCopy(locale)
-const filterLabels =
-  locale === 'en'
-    ? {
-        region: 'Learning filters',
-        allPaths: 'All',
-        guides: 'Guides',
-        tutorials: 'Tutorials',
-        notes: 'Notes',
-        paths: 'Reading paths',
-        resources: 'Resources',
-        search: 'Search learning…',
-      }
-    : {
-        region: 'پالایش یادگیری',
-        allPaths: 'همه',
-        guides: 'راهنماها',
-        tutorials: 'آموزش‌ها',
-        notes: 'یادداشت‌ها',
-        paths: 'مسیرهای مطالعه',
-        resources: 'منابع',
-        search: 'جستجوی یادگیری…',
-      }
 ---
 
 {
   model.status === 'unavailable' ? (
-    <EditorialIndexTemplate class="teaching-page teaching-page--empty teaching-page--grid">
-      <PageFamilyIndexHero
-        slot="lead"
+    <div class="teaching-page teaching-page--unavailable">
+      <ContentState
+        variant="unavailable"
         locale={locale}
-        family="teaching"
-        eyebrow={locale === 'en' ? 'Courses & talks' : 'دوره‌ها و سخنرانی‌ها'}
-        title={getTeachingRouteTitle(locale)}
-        summary={getPageFamilyHeroSummary(locale, 'teaching')}
-        browseCtaLabel={getTeachingBrowsePathsLabel(locale)}
+        headingLevel="h1"
+        title={emptyCopy.title}
+        message={emptyCopy.message}
+        actionLabel={locale === 'en' ? 'Back to home' : 'بازگشت به خانه'}
+        actionHref={localePath(locale, 'home')}
       />
-
-      <PageFamilyFeaturedPathShell
-        slot="featured"
-        locale={locale}
-        family="teaching"
-      />
-
-      <div
-        slot="filters"
-        class="teaching-page__filters pf-index-empty__filters"
-        role="group"
-        aria-label={filterLabels.region}
-        aria-disabled="true"
-      >
-        <p class="teaching-page__filters-active">{filterLabels.allPaths}</p>
-        <div class="teaching-page__filters-controls">
-          <button
-            type="button"
-            class="pf-index-empty__filter-chip pf-index-empty__filter-chip--rect"
-            disabled
-          >
-            {filterLabels.guides}
-          </button>
-          <button
-            type="button"
-            class="pf-index-empty__filter-chip pf-index-empty__filter-chip--rect"
-            disabled
-          >
-            {filterLabels.tutorials}
-          </button>
-          <button
-            type="button"
-            class="pf-index-empty__filter-chip pf-index-empty__filter-chip--rect"
-            disabled
-          >
-            {filterLabels.notes}
-          </button>
-          <button
-            type="button"
-            class="pf-index-empty__filter-chip pf-index-empty__filter-chip--rect"
-            disabled
-          >
-            {filterLabels.paths}
-          </button>
-          <button
-            type="button"
-            class="pf-index-empty__filter-chip pf-index-empty__filter-chip--rect"
-            disabled
-          >
-            {filterLabels.resources}
-          </button>
-        </div>
-        <input
-          type="search"
-          class="teaching-page__search pf-index-empty__search"
-          placeholder={filterLabels.search}
-          disabled
-          aria-hidden="true"
-          tabindex="-1"
-        />
-        <PageFamilyTeachingFilterDropdowns locale={locale} />
-      </div>
-
-      <div
-        slot="records"
-        class="teaching-page__grid-shell pf-index-empty__shell"
-      >
-        <PageFamilyListCardShell locale={locale} family="teaching" />
-        <PageFamilyPathProcessShell locale={locale} />
-        <PageFamilyCollaborateBandShell locale={locale} />
-        <ContentState
-          variant="empty"
-          locale={locale}
-          headingLevel="h2"
-          title={emptyCopy.title}
-          message={emptyCopy.message}
-        />
-      </div>
-    </EditorialIndexTemplate>
+    </div>
   ) : (
     <EditorialIndexTemplate class="teaching-page">
       <PageFamilyIndexHero

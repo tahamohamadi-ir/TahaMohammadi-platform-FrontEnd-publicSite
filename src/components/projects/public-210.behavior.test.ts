@@ -17,35 +17,29 @@ async function render(
 }
 
 describe('PUBLIC-210 projects pages', () => {
-  it('renders structural empty-state chrome on the projects index', async () => {
+  it('renders one honest unavailable state on the projects index, not fabricated chrome', async () => {
+    // Empty-state policy: an unpublished index shows ContentState alone
+    // (title/message/a real way home), the same pattern as books/talks/
+    // resources/collections — not a wireframe replica of a populated page
+    // (fake filters, disabled chips, placeholder rows, a fake "featured"
+    // shell, fake pagination). See Docs/04-design/CONTENT-STATE-MATRIX.md.
     const html = await render(ProjectsPageContent, {
       locale: 'en',
       model: { status: 'unavailable' },
     })
-    expect(html).toMatch(/data-visual-id="CollectionIndexTemplate"/)
-    expect(html).toMatch(/data-state-variant="empty"/)
-    expect(html).toContain('Projects')
+    expect(html).toMatch(/data-visual-id="ContentState"/)
+    expect(html).toMatch(/data-state-variant="unavailable"/)
     expect(html).toMatch(/<h1[\s>]/)
-    expect(html).toMatch(/projects-page__filters/)
-    expect(html).toMatch(/data-visual-id="PageFamilyIndexHero"/)
-    expect(html).toMatch(/data-visual-id="PageFamilyFeaturedShell"/)
-    expect(html).toMatch(/data-visual-id="PageFamilyContentRowPlaceholder"/)
-    expect(html).toMatch(/data-visual-id="PageFamilyEvidenceGridShell"/)
-    expect(html).toMatch(/data-visual-id="PageFamilyPaginationShell"/)
-    expect(html).toMatch(/data-visual-id="PageFamilySortShell"/)
-    expect(html).toMatch(/pf-index-featured--project/)
-    expect(html).toMatch(/pf-index-featured__dots/)
-    expect(html).toMatch(/pf-index-hero--atmosphere/)
-    expect(html).toMatch(/pf-index-hero__notice/)
-    expect(html).toMatch(/pf-index-row-placeholder__sanitized/)
-    expect(html).toMatch(/projects-page--grid/)
-    expect(html).toMatch(/pf-index-empty__filter-chip--rect/)
-    expect(html).toMatch(/pf-index-empty__filter-chip--active/)
-    expect(html).toMatch(/data-visual-id="PageFamilyCollaborateBandShell"/)
-    expect(html).toMatch(
-      /Let(?:'|&#39;)s collaborate on research that advances knowledge/,
-    )
-    expect(html).toMatch(/Let(?:'|&#39;)s Connect/)
+    expect(html).toContain('Projects')
+    expect(html).toMatch(/href="\/en\/home\/"/)
+    expect(html).not.toMatch(/disabled/)
+    expect(html).not.toMatch(/aria-disabled="true"/)
+    expect(html).not.toMatch(/data-visual-id="PageFamilyContentRowPlaceholder"/)
+    expect(html).not.toMatch(/data-visual-id="PageFamilyEvidenceGridShell"/)
+    expect(html).not.toMatch(/data-visual-id="PageFamilyPaginationShell"/)
+    expect(html).not.toMatch(/data-visual-id="PageFamilySortShell"/)
+    expect(html).not.toMatch(/data-visual-id="PageFamilyFeaturedShell"/)
+    expect(html).not.toMatch(/data-visual-id="PageFamilyCollaborateBandShell"/)
   })
 
   it('renders project cards when the index model is ready', async () => {

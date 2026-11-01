@@ -17,26 +17,29 @@ async function render(
 }
 
 describe('PUBLIC-201 publications pages', () => {
-  it('renders structural empty-state chrome on the publications index', async () => {
+  it('renders one honest unavailable state on the publications index, not fabricated chrome', async () => {
+    // Empty-state policy: see the equivalent test in
+    // src/components/projects/public-210.behavior.test.ts.
     const html = await render(PublicationsPageContent, {
       locale: 'en',
       model: { status: 'unavailable' },
     })
-    expect(html).toMatch(/data-visual-id="CollectionIndexTemplate"/)
-    expect(html).toMatch(/data-state-variant="empty"/)
-    expect(html).toContain('Research Outputs')
+    expect(html).toMatch(/data-visual-id="ContentState"/)
+    expect(html).toMatch(/data-state-variant="unavailable"/)
     expect(html).toMatch(/<h1[\s>]/)
-    expect(html).toMatch(/publications-page__filters/)
-    expect(html).toMatch(/data-visual-id="PageFamilyIndexHero"/)
-    expect(html).toMatch(
+    expect(html).toContain('Research Outputs')
+    expect(html).toMatch(/href="\/en\/home\/"/)
+    expect(html).not.toMatch(/data-visual-id="PageFamilyIndexHero"/)
+    expect(html).not.toMatch(
       /data-visual-id="PageFamilyBibliographyRowPlaceholder"/,
     )
-    expect(html).toMatch(/data-visual-id="PageFamilyPublicationsSidebarShell"/)
-    expect(html).toMatch(/Research interests/)
-    expect(html).toMatch(/pf-index-pub-sidebar__interest/)
-    expect(html).toMatch(/data-visual-id="PageFamilySelectedPublicationsShell"/)
-    expect(html).toMatch(/data-visual-id="PageFamilyCollaborateBandShell"/)
-    expect(html).toMatch(/collaborate on research/)
+    expect(html).not.toMatch(
+      /data-visual-id="PageFamilyPublicationsSidebarShell"/,
+    )
+    expect(html).not.toMatch(
+      /data-visual-id="PageFamilySelectedPublicationsShell"/,
+    )
+    expect(html).not.toMatch(/data-visual-id="PageFamilyCollaborateBandShell"/)
   })
 
   it('renders publication cards when the index model is ready', async () => {

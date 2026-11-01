@@ -1,7 +1,6 @@
 ---
 import EditorialIndexTemplate from '../templates/EditorialIndexTemplate.astro'
 import PageFamilyIndexHero from '../page-family/PageFamilyIndexHero.astro'
-import PageFamilyCollaborateBandShell from '../page-family/PageFamilyCollaborateBandShell.astro'
 import ContentState from '../state/ContentState.astro'
 import {
   formatBookCardMeta,
@@ -61,31 +60,17 @@ const seriesFilters =
 
 {
   model.status === 'unavailable' ? (
-    <EditorialIndexTemplate class="writing-page writing-page--empty">
-      <PageFamilyIndexHero
-        slot="lead"
+    <div class="writing-page writing-page--unavailable">
+      <ContentState
+        variant="unavailable"
         locale={locale}
-        family="writing"
-        eyebrow={getWritingHeroEyebrow(locale)}
-        title={getWritingRouteTitle(locale)}
-        summary={getPageFamilyHeroSummary(locale, 'writing')}
+        headingLevel="h1"
+        title={emptyCopy.title}
+        message={emptyCopy.message}
+        actionLabel={locale === 'en' ? 'Back to home' : 'بازگشت به خانه'}
+        actionHref={localePath(locale, 'home')}
       />
-      <div slot="records">
-        <ContentState
-          variant="empty"
-          locale={locale}
-          headingLevel="h2"
-          title={emptyCopy.title}
-          message={emptyCopy.message}
-        />
-      </div>
-      <PageFamilyCollaborateBandShell
-        slot="footer"
-        locale={locale}
-        context="writing"
-        variant="collaborate-only"
-      />
-    </EditorialIndexTemplate>
+    </div>
   ) : (
     <EditorialIndexTemplate class="writing-page">
       <PageFamilyIndexHero

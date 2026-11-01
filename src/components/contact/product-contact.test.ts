@@ -16,14 +16,16 @@ async function render(
 }
 
 describe('PU-18 Contact Product Family (F14)', () => {
-  it('renders structural empty state when contact details are unavailable', async () => {
+  it('renders one honest unavailable state when contact details are unavailable, not fabricated chrome', async () => {
     const html = await render(ContactPageContent, {
       locale: 'en',
       model: { status: 'unavailable' },
     })
 
-    expect(html).toContain('AboutContactUtilityTemplate')
-    expect(html).toContain('PageFamilyContactHeroShell')
+    expect(html).toContain('data-state-variant="unavailable"')
+    expect(html).toContain(getContactUnavailableCopy('en').title)
+    expect(html).not.toContain('AboutContactUtilityTemplate')
+    expect(html).not.toContain('PageFamilyContactHeroShell')
     expect(html).not.toContain('data-contact-form')
   })
 
