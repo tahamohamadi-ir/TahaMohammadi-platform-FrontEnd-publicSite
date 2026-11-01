@@ -1,0 +1,84 @@
+---
+import Button from '../../ui/Button.astro'
+import Chip from '../../ui/Chip.astro'
+import { ArrowRight, FileText, Mail } from 'lucide-astro'
+import { getHomeHeroContent } from '../../../lib/home-content'
+import { getManagedCopy } from '../../../lib/site-settings-content'
+import { localePath, type Locale } from '../../../lib/navigation'
+
+interface Props {
+  locale: Locale
+  /** Off when the visual already lists the research topics. */
+  showFocus?: boolean
+}
+
+const { locale, showFocus = true } = Astro.props
+const [content, copy] = await Promise.all([
+  getHomeHeroContent(locale),
+  getManagedCopy(locale),
+])
+const [given, ...rest] = content.name.trim().split(/\s+/)
+const family = rest.join(' ')
+const actions = [
+  {
+    label: copy['hero.cta.research'],
+    href: localePath(locale, 'research'),
+    variant: 'primary' as const,
+    Icon: ArrowRight,
+  },
+  {
+    label: copy['hero.cta.cv'],
+    href: localePath(locale, 'cv'),
+    variant: 'secondary' as const,
+    Icon: FileText,
+  },
+  {
+    label: copy['hero.cta.contact'],
+    href: localePath(locale, 'contact'),
+    variant: 'secondary' as const,
+    Icon: Mail,
+  },
+].filter((action) => Boolean(action.label))
+---
+
+<div class="hv3__copy">
+  {
+    content.name && (
+      <h1 class="hv3__name">
+        <span class="hv3__name-line">{given}</span>
+        {family && (
+          <span class="hv3__name-line hv3__name-line--accent">{family}</span>
+        )}
+      </h1>
+    )
+  }
+  {content.role && <p class="hv3__role hv3__rise">{content.role}</p>}
+  {content.intro && <p class="hv3__intro hv3__rise">{content.intro}</p>}
+  {
+    actions.length > 0 && (
+      <div class="hv3__actions hv3__rise">
+        {actions.map(({ label, href, variant, Icon }) => (
+          <Button label={label!} href={href} variant={variant} class="hv3__cta">
+            <Icon class="hv3__cta-icon" aria-hidden="true" />
+          </Button>
+        ))}
+      </div>
+    )
+  }
+  {
+    showFocus && content.focusChips.length > 0 && (
+      <div class="hv3__focus hv3__rise">
+        {content.focusAreasLabel && (
+          <p class="hv3__focus-label">{content.focusAreasLabel}</p>
+        )}
+        <ul class="hv3__focus-list">
+          {content.focusChips.map((chip) => (
+            <li>
+              <Chip label={chip} />
+            </li>
+          ))}
+        </ul>
+      </div>
+    )
+  }
+</div>

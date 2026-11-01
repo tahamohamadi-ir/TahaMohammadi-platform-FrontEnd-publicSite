@@ -12,6 +12,10 @@ export default function designAtlasIntegration() {
           pattern: '/_design',
           entrypoint: new URL('../atlas/AtlasRoute.astro', import.meta.url),
         })
+        injectRoute({
+          pattern: '/_design/home-hero/[locale]/[variant]',
+          entrypoint: new URL('../atlas/HomeHeroLab.astro', import.meta.url),
+        })
       },
     },
   }

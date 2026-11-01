@@ -1,0 +1,143 @@
+---
+import SiteLayout from '../layouts/SiteLayout.astro'
+import HeroV3, {
+  type HeroV3Variant,
+} from '../components/home/hero-v3/HeroV3.astro'
+import HomeResearchInterests from '../components/home/HomeResearchInterests.astro'
+import HomeJourney from '../components/home/HomeJourney.astro'
+import HomeFeaturedProjects from '../components/home/HomeFeaturedProjects.astro'
+import HomeFeaturedPublications from '../components/home/HomeFeaturedPublications.astro'
+import HomeExploreRails from '../components/home/HomeExploreRails.astro'
+import HomeCollaborationCta from '../components/home/HomeCollaborationCta.astro'
+import { fetchHomeComposition, homeModuleOrder } from '../lib/home-content'
+import type { Locale } from '../lib/navigation'
+import '../styles/home.css'
+import '../components/templates/template-base.css'
+
+export function getStaticPaths() {
+  return (['en', 'fa'] as const).flatMap((locale) =>
+    (['a', 'b', 'c'] as const).map((variant) => ({
+      params: { locale, variant },
+    })),
+  )
+}
+
+const { locale, variant } = Astro.params as {
+  locale: Locale
+  variant: HeroV3Variant
+}
+const VARIANTS: Record<HeroV3Variant, string> = {
+  a: 'A · Editorial constellation',
+  b: 'B · Live constellation',
+  c: 'C · Refined still',
+}
+const composition = await fetchHomeComposition(locale)
+const rest = homeModuleOrder(composition).filter(
+  (key) => key !== 'identity' && key !== 'graph',
+)
+const components = {
+  'research-fit': HomeResearchInterests,
+  journey: HomeJourney,
+  projects: HomeFeaturedProjects,
+  publications: HomeFeaturedPublications,
+  previews: HomeExploreRails,
+  cta: HomeCollaborationCta,
+}
+---
+
+<SiteLayout
+  title={`Hero v3 lab — ${VARIANTS[variant]}`}
+  locale={locale}
+  robots="noindex, nofollow"
+  searchIndexable={false}
+>
+  <nav class="hv3-lab" aria-label="Hero v3 lab" dir="ltr">
+    <span class="hv3-lab__title">Home Hero v3 lab</span>
+    <ul class="hv3-lab__group">
+      {
+        (Object.keys(VARIANTS) as HeroV3Variant[]).map((key) => (
+          <li>
+            <a
+              href={`/_design/home-hero/${locale}/${key}/`}
+              aria-current={key === variant ? 'page' : undefined}
+            >
+              {VARIANTS[key]}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+    <ul class="hv3-lab__group">
+      {
+        (['en', 'fa'] as const).map((key) => (
+          <li>
+            <a
+              href={`/_design/home-hero/${key}/${variant}/`}
+              aria-current={key === locale ? 'page' : undefined}
+            >
+              {key.toUpperCase()}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+
+  <div class="tm-template tm-home-template">
+    <div class="tm-template__main tm-home-template__main">
+      <HeroV3 locale={locale} variant={variant} />
+      {
+        rest.map((key) => {
+          const Component = components[key as keyof typeof components]
+          return Component ? (
+            <div
+              class="tm-template__section tm-template__section--optional"
+              data-home-module={key}
+            >
+              <Component locale={locale} />
+            </div>
+          ) : null
+        })
+      }
+    </div>
+  </div>
+</SiteLayout>
+
+<style>
+  .hv3-lab {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2) var(--space-5);
+    margin-block: var(--space-3) 0;
+    padding: var(--space-2) var(--space-4);
+    border: 1px dashed var(--color-border-strong, var(--color-border-subtle));
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-xs);
+    color: var(--color-ink-secondary);
+  }
+
+  .hv3-lab__title {
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .hv3-lab__group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .hv3-lab a {
+    color: inherit;
+  }
+
+  .hv3-lab a[aria-current='page'] {
+    color: var(--color-brand);
+    font-weight: 700;
+  }
+</style>
