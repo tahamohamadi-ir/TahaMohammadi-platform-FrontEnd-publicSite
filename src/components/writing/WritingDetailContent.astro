@@ -5,6 +5,7 @@ import ContentState from '../state/ContentState.astro'
 import Link from '../ui/Link.astro'
 import StoryDocument from '../story/StoryDocument.astro'
 import { hasStoryContent } from '../../lib/story-content'
+import { outlineArticleHtml } from '../../lib/article-outline'
 import {
   formatPublishedDate,
   formatReadingTime,
@@ -24,6 +25,19 @@ interface Props {
 
 const { locale, model, previous = null, next = null } = Astro.props
 const writingHref = localePath(locale, 'blog')
+const story =
+  model.status === 'ready' &&
+  'story' in model.article &&
+  model.article.story &&
+  hasStoryContent(model.article.story)
+    ? model.article.story
+    : null
+const outline =
+  model.status === 'ready' && !story && model.article.body?.trim()
+    ? outlineArticleHtml(model.article.body)
+    : null
+const toc = outline && outline.headings.length >= 2 ? outline.headings : []
+const tocLabel = locale === 'en' ? 'On this page' : 'در این صفحه'
 ---
 
 {
@@ -116,48 +130,66 @@ const writingHref = localePath(locale, 'blog')
           </ul>
         ) : null}
 
-        {'story' in model.article &&
-        model.article.story &&
-        hasStoryContent(model.article.story) ? (
-          <StoryDocument story={model.article.story} locale={locale} />
-        ) : model.article.body?.trim() ? (
+        {story ? (
+          <StoryDocument story={story} locale={locale} />
+        ) : outline ? (
           <div
             class="writing-page__prose writing-page__body-html"
-            set:html={model.article.body}
+            set:html={outline.html}
           />
         ) : null}
       </div>
+
+      {toc.length > 0 && (
+        <nav slot="toc" class="reading-toc" aria-label={tocLabel}>
+          <details class="reading-toc__details" open>
+            <summary class="reading-toc__title">{tocLabel}</summary>
+            <ol class="reading-toc__list">
+              {toc.map((heading) => (
+                <li class="reading-toc__item" data-level={heading.level}>
+                  <a href={`#${heading.id}`}>{heading.text}</a>
+                </li>
+              ))}
+            </ol>
+          </details>
+        </nav>
+      )}
 
       <nav
         slot="related"
         class="writing-page__neighbors"
         aria-label={locale === 'en' ? 'More writing' : 'نوشته‌های دیگر'}
       >
-        {previous ? (
+        {previous && (
           <a
             class="writing-page__neighbor"
             rel="prev"
             href={localePath(locale, `blog/${previous.slug}`)}
           >
-            {locale === 'en' ? 'Previous' : 'قبلی'}: {previous.title}
+            <span class="writing-page__neighbor-label">
+              {locale === 'en' ? 'Previous' : 'قبلی'}
+            </span>
+            <span class="writing-page__neighbor-title">{previous.title}</span>
           </a>
-        ) : (
-          <span />
         )}
-        <Link
-          href={writingHref}
-          label={locale === 'en' ? 'Back to blog' : 'بازگشت به وبلاگ'}
-          variant="standalone"
-        />
-        {next ? (
+        {next && (
           <a
             class="writing-page__neighbor writing-page__neighbor--next"
             rel="next"
             href={localePath(locale, `blog/${next.slug}`)}
           >
-            {locale === 'en' ? 'Next' : 'بعدی'}: {next.title}
+            <span class="writing-page__neighbor-label">
+              {locale === 'en' ? 'Next' : 'بعدی'}
+            </span>
+            <span class="writing-page__neighbor-title">{next.title}</span>
           </a>
-        ) : null}
+        )}
+        <Link
+          href={writingHref}
+          label={locale === 'en' ? 'Back to blog' : 'بازگشت به وبلاگ'}
+          variant="standalone"
+          class="writing-page__back"
+        />
       </nav>
     </LongFormDetailTemplate>
   )
