@@ -1,9 +1,13 @@
-import { scenePaletteFromCss, type ScenePayload } from './scene-contract'
+import {
+  scenePaletteFromCss,
+  type GraphSceneHandle,
+  type ScenePayload,
+} from './scene-contract'
 
 const THEME_EVENT = 'tm-themechange'
 const SCENE_EXTENT = 50
 
-/** The CA-04 scene sizes nodes for coordinates near ±60; API positions are larger. Presentation only. */
+/** The CA-04 scene sizes nodes for coordinates near ±60. Presentation only. */
 function fitToScene(payload: ScenePayload): ScenePayload {
   const extent = Math.max(
     1,
@@ -19,13 +23,13 @@ function fitToScene(payload: ScenePayload): ScenePayload {
       x: node.x * scale,
       y: node.y * scale,
       z: node.z * scale,
-      weight: node.colorRole === 'brand' ? 5 : 3.5,
     })),
   }
 }
 
-/** Upgrades the SVG poster to the Three.js scene once visible, idle, motion-allowed and WebGL-capable. */
-export function mountHeroV3Live(root: HTMLElement): void {
+/** Branch highlighting on every constellation; the 3D upgrade only where allowed. */
+export function mountHeroV3(root: HTMLElement): void {
+  const highlight = mountHighlight(root)
   const canvas = root.querySelector('canvas')
   const raw = root.dataset.hv3Payload
   if (!canvas || !raw) return
@@ -33,12 +37,15 @@ export function mountHeroV3Live(root: HTMLElement): void {
 
   let payload: ScenePayload
   try {
-    payload = JSON.parse(raw) as ScenePayload
+    payload = fitToScene(JSON.parse(raw) as ScenePayload)
   } catch {
     return
   }
 
-  const start = () => void boot(root, canvas, fitToScene(payload))
+  const start = () =>
+    void boot(root, canvas, payload).then((scene) => {
+      if (scene) highlight.onSelect((id) => scene.setSelection(id))
+    })
   const observer = new IntersectionObserver((entries) => {
     if (!entries.some((entry) => entry.isIntersecting)) return
     observer.disconnect()
@@ -49,11 +56,47 @@ export function mountHeroV3Live(root: HTMLElement): void {
   observer.observe(root)
 }
 
+function mountHighlight(root: HTMLElement) {
+  const listeners: ((id: string | null) => void)[] = []
+  const members = [...root.querySelectorAll<Element>('[data-branch]')]
+  const crossEdges = [...root.querySelectorAll<Element>('[data-kind="cross"]')]
+
+  const apply = (label: HTMLElement | null) => {
+    const branch = label?.dataset.branch ?? null
+    for (const member of members)
+      member.toggleAttribute(
+        'data-hv3-dim',
+        branch !== null && member.getAttribute('data-branch') !== branch,
+      )
+    for (const edge of crossEdges)
+      edge.toggleAttribute('data-hv3-dim', branch !== null)
+    const id = label?.dataset.nodeId ?? null
+    for (const listener of listeners) listener(id)
+  }
+
+  const labelOf = (target: EventTarget | null) =>
+    target instanceof Element
+      ? target.closest<HTMLElement>('.hv3-const__label')
+      : null
+
+  root.addEventListener('pointerover', (event) => apply(labelOf(event.target)))
+  root.addEventListener('pointerleave', () => apply(null))
+  root.addEventListener('focusin', (event) => apply(labelOf(event.target)))
+  root.addEventListener('focusout', (event) => {
+    if (!root.contains(event.relatedTarget as Node | null)) apply(null)
+  })
+
+  return {
+    onSelect: (listener: (id: string | null) => void) =>
+      listeners.push(listener),
+  }
+}
+
 async function boot(
   root: HTMLElement,
   canvas: HTMLCanvasElement,
   payload: ScenePayload,
-): Promise<void> {
+): Promise<GraphSceneHandle | null> {
   const [{ createGraphScene }, { createGraphMotion }] = await Promise.all([
     import('./graph-scene'),
     import('./graph-motion'),
@@ -106,7 +149,7 @@ async function boot(
       item.setAttribute('style', item.dataset.posterStyle ?? '')
   }
 
-  if (failed) return
+  if (failed) return null
 
   const resize = () => {
     const rect = canvas.getBoundingClientRect()
@@ -131,4 +174,11 @@ async function boot(
     scene.setPalette(readPalette())
     scene.render()
   })
+  return {
+    ...scene,
+    setSelection(id) {
+      scene.setSelection(id)
+      scene.render()
+    },
+  }
 }

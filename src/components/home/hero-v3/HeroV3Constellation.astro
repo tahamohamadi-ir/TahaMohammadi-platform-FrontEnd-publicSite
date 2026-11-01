@@ -4,7 +4,10 @@ import type {
   HeroGraphNode,
   HeroGraphEdge,
 } from '../../../lib/hero-graph-content'
-import { toScenePayload } from '../../../lib/visual/scene-contract'
+import {
+  SCENE_CONTRACT_VERSION,
+  type ScenePayload,
+} from '../../../lib/visual/scene-contract'
 import type { Locale } from '../../../lib/navigation'
 import HeroV3LiveScript from './HeroV3LiveScript.astro'
 
@@ -16,12 +19,37 @@ interface Props {
 }
 
 const { locale, nodes, edges, live = false } = Astro.props
-const FRAME = { width: 600, height: 520, padding: 96 }
+const FRAME = { width: 600, height: 560, padding: 56 }
 const view = projectConstellation({ nodes, edges }, FRAME)
 const label = locale === 'fa' ? 'منظومهٔ پژوهشی' : 'Research constellation'
-const payload = live
-  ? JSON.stringify(toScenePayload({ nodes, edges, locale }))
-  : undefined
+const outer = view.nodes.filter((node) => node.depth >= 2)
+const fields = view.nodes.filter((node) => node.depth === 1)
+const branchMembers = (id: string) => outer.filter((node) => node.branch === id)
+
+const WEIGHT = [5, 3.5, 2.2]
+const scene: ScenePayload = {
+  contractVersion: SCENE_CONTRACT_VERSION,
+  locale,
+  nodes: view.nodes.map((node) => ({
+    id: node.id,
+    label: node.label,
+    x: node.x - FRAME.width / 2,
+    y: FRAME.height / 2 - node.y,
+    z: node.core ? 6 : node.depth === 1 ? 0 : -8,
+    colorRole: node.colorRole,
+    weight: WEIGHT[Math.min(node.depth, WEIGHT.length - 1)]!,
+    selected: false,
+    dimmed: false,
+  })),
+  edges: view.edges.map((edge) => ({
+    id: edge.id,
+    source: edge.source,
+    target: edge.target,
+    directed: false,
+    emphasized: false,
+  })),
+}
+const payload = live ? JSON.stringify(scene) : undefined
 ---
 
 <figure
@@ -30,6 +58,7 @@ const payload = live
   data-hv3-constellation
   data-hv3-live={live ? '' : undefined}
   data-hv3-payload={payload}
+  data-hv3-depth={Math.max(0, ...view.nodes.map((node) => node.depth))}
 >
   <div class="hv3-const__stage">
     <svg
@@ -69,13 +98,20 @@ const payload = live
       <g class="hv3-const__edges">
         {
           view.edges.map((edge, index) => {
-            const target = view.nodes.find((node) => node.id === edge.target)
+            const child = view.nodes.find(
+              (node) =>
+                node.branch === edge.branch &&
+                (node.id === edge.target || node.id === edge.source) &&
+                !node.core,
+            )
             return (
               <path
                 d={edge.d}
                 pathLength="1"
                 class="hv3-const__edge"
-                data-role={target?.colorRole}
+                data-kind={edge.kind}
+                data-branch={edge.branch ?? undefined}
+                data-role={child?.colorRole}
                 style={`--hv3-i:${index}`}
               />
             )
@@ -116,6 +152,8 @@ const payload = live
               <g
                 class="hv3-const__node"
                 data-role={node.colorRole}
+                data-depth={node.depth}
+                data-branch={node.branch ?? undefined}
                 style={`--hv3-i:${index}`}
               >
                 <circle
@@ -152,6 +190,8 @@ const payload = live
               class="hv3-const__label"
               data-node-id={node.id}
               data-side={node.side}
+              data-depth={Math.min(node.depth, 2)}
+              data-branch={node.branch ?? undefined}
               data-role={node.colorRole}
               style={`left:${node.left}%;top:${node.top}%`}
             >
@@ -167,5 +207,33 @@ const payload = live
       }
     </ul>
   </div>
+  {
+    outer.length > 0 && (
+      <ul class="hv3-const__index">
+        {fields.map((field) => (
+          <li class="hv3-const__index-field" data-role={field.colorRole}>
+            {field.href ? (
+              <a href={field.href}>{field.label}</a>
+            ) : (
+              <span>{field.label}</span>
+            )}
+            {branchMembers(field.id).length > 0 && (
+              <ul>
+                {branchMembers(field.id).map((member) => (
+                  <li>
+                    {member.href ? (
+                      <a href={member.href}>{member.label}</a>
+                    ) : (
+                      <span>{member.label}</span>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </li>
+        ))}
+      </ul>
+    )
+  }
 </figure>
-{live && <HeroV3LiveScript />}
+<HeroV3LiveScript />

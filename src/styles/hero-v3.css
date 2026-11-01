@@ -385,61 +385,83 @@
   outline-offset: 3px;
 }
 
-/* C — refined still */
+/* Outer rings, cross links, branch highlight, narrow-screen index */
 
-.hv3-still {
-  display: grid;
-  gap: var(--space-5);
-  inline-size: min(100%, 36rem);
-  margin: 0;
+.hv3-const__label[data-depth='2'] {
+  --hv3-gap: clamp(0.9rem, 2.6cqi, 1.2rem);
+
+  max-inline-size: min(9rem, 26cqi);
+  font-size: clamp(0.7rem, 2cqi, 0.78rem);
+  font-weight: 500;
 }
 
-.hv3-still__art {
-  aspect-ratio: 1600 / 1400;
+.hv3-const__label[data-depth='2'] .hv3-const__link,
+.hv3-const__label[data-depth='2'] .hv3-const__text {
+  padding: 0.2em 0.55em;
 }
 
-.hv3-still__image {
-  inline-size: 100%;
-  block-size: 100%;
-  object-fit: contain;
+.hv3-const__edge[data-kind='cross'] {
+  stroke: color-mix(in srgb, var(--color-ink) 22%, transparent);
+  stroke-width: 1;
+  stroke-dasharray: 0.012 0.018;
 }
 
-.hv3-still__legend {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: var(--space-2) var(--space-5);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  font-size: var(--font-size-sm);
-  font-weight: 600;
+.hv3-const__node[data-depth='2'] .hv3-const__halo {
+  fill: color-mix(in srgb, var(--hv3-role) 9%, transparent);
 }
 
-.hv3-still__item {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
+.hv3-const__node,
+.hv3-const__edge,
+.hv3-const__label {
+  transition: opacity 220ms ease;
 }
 
-.hv3-still__item::before {
-  content: '';
-  inline-size: 0.6rem;
-  block-size: 0.6rem;
-  border-radius: 50%;
-  background: var(--hv3-role);
-  flex-shrink: 0;
+[data-hv3-dim] {
+  opacity: 0.18;
 }
 
-.hv3-still__link {
-  color: var(--color-ink);
-  text-decoration: underline;
-  text-decoration-color: color-mix(in srgb, var(--hv3-role) 50%, transparent);
-  text-underline-offset: 0.25em;
+.hv3-const__index {
+  display: none;
 }
 
-.hv3-still__link:hover {
-  text-decoration-color: var(--hv3-role);
+@container (max-width: 30rem) {
+  .hv3-const[data-hv3-depth='2'] .hv3-const__label[data-depth='2'],
+  .hv3-const[data-hv3-depth='3'] .hv3-const__label[data-depth='2'] {
+    display: none;
+  }
+
+  .hv3-const__index {
+    display: grid;
+    gap: var(--space-3);
+    margin: var(--space-4) 0 0;
+    padding: 0;
+    list-style: none;
+    font-size: var(--font-size-sm);
+  }
+
+  .hv3-const__index-field {
+    display: grid;
+    gap: var(--space-1);
+    padding-inline-start: var(--space-3);
+    border-inline-start: 2px solid var(--hv3-role);
+    font-weight: 700;
+  }
+
+  .hv3-const__index-field ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-3);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-weight: 500;
+    color: var(--color-ink-secondary);
+  }
+
+  .hv3-const__index a {
+    color: inherit;
+    text-underline-offset: 0.2em;
+  }
 }
 
 /* Motion — only when the reader allows it; every element is fully visible without it. */
@@ -468,12 +490,12 @@
   .hv3-const__edge {
     stroke-dasharray: 1;
     animation: hv3-draw 1200ms cubic-bezier(0.3, 0.6, 0.2, 1) both;
-    animation-delay: calc(300ms + var(--hv3-i, 0) * 140ms);
+    animation-delay: calc(300ms + min(var(--hv3-i, 0), 12) * 80ms);
   }
 
   .hv3-const__node {
     animation: hv3-pop 600ms cubic-bezier(0.2, 0.8, 0.2, 1.2) both;
-    animation-delay: calc(700ms + var(--hv3-i, 0) * 120ms);
+    animation-delay: calc(600ms + min(var(--hv3-i, 0), 14) * 60ms);
     transform-origin: center;
     transform-box: fill-box;
   }
@@ -487,13 +509,10 @@
     animation-delay: 1100ms;
   }
 
-  .hv3-still__art {
-    animation: hv3-reveal 1400ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
-  }
-
-  .hv3-still__legend {
-    animation: hv3-fade 600ms ease both;
-    animation-delay: 900ms;
+  .hv3-const__edge[data-kind='cross'] {
+    stroke-dasharray: 0.012 0.018;
+    animation: hv3-fade 800ms ease both;
+    animation-delay: 1400ms;
   }
 }
 
@@ -536,16 +555,5 @@
   50% {
     transform: scale(1.18);
     opacity: 0.6;
-  }
-}
-
-@keyframes hv3-reveal {
-  from {
-    clip-path: circle(22% at 47% 46%);
-    transform: scale(1.03);
-  }
-  to {
-    clip-path: circle(75% at 47% 46%);
-    transform: scale(1);
   }
 }

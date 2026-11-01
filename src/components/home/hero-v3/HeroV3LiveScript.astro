@@ -1,6 +1,8 @@
 <script>
-  import { mountHeroV3Live } from '../../../lib/visual/hero-v3-live'
+  import { mountHeroV3 } from '../../../lib/visual/hero-v3-live'
 
-  for (const root of document.querySelectorAll<HTMLElement>('[data-hv3-live]'))
-    mountHeroV3Live(root)
+  for (const root of document.querySelectorAll<HTMLElement>(
+    '[data-hv3-constellation]',
+  ))
+    mountHeroV3(root)
 </script>
