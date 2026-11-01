@@ -25,10 +25,7 @@ const { class: className = '' } = Astro.props
     <div class="tm-template__detail-grid">
       {
         Astro.slots.has('toc') ? (
-          <aside
-            class="tm-template__section tm-template__section--optional"
-            aria-label="Table of contents"
-          >
+          <aside class="tm-template__section tm-template__section--optional tm-long-form-detail-template__toc">
             <slot name="toc" />
           </aside>
         ) : null

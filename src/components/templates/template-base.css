@@ -51,4 +51,27 @@
     grid-template-columns: minmax(0, 1fr) minmax(16rem, 22rem);
     align-items: start;
   }
+
+  /* Long-form with a TOC: the TOC sits above the text until there is room beside it. */
+  .tm-template__detail-grid:has(> .tm-long-form-detail-template__toc) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .tm-template__detail-grid:has(> .tm-long-form-detail-template__toc) {
+    grid-template-columns: minmax(0, 1fr) minmax(13rem, 17rem);
+  }
+
+  .tm-long-form-detail-template__toc {
+    grid-column: 2;
+    grid-row: 1;
+    position: sticky;
+    inset-block-start: 6rem;
+  }
+
+  .tm-long-form-detail-template__toc + .tm-long-form-detail-template__body {
+    grid-column: 1;
+    grid-row: 1;
+  }
 }
