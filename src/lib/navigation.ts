@@ -144,3 +144,19 @@ export const shellCopy = {
     fa: 'محتوای منتشرشده هنوز در دسترس نیست.',
   },
 } as const satisfies Record<string, Record<Locale, string>>
+
+/**
+ * `Page title — brand` for `<title>`. A few Persian pages have always used the long spelling
+ * ("طاها محمدی"); `legacy` keeps them byte-identical until the spelling is unified.
+ */
+export function brandedTitle(
+  locale: Locale,
+  title: string,
+  spelling: 'standard' | 'legacy' = 'standard',
+): string {
+  const brand =
+    locale === 'fa' && spelling === 'legacy'
+      ? 'طاها محمدی'
+      : shellCopy.brandName[locale]
+  return `${title} — ${brand}`
+}
