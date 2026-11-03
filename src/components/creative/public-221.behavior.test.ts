@@ -106,7 +106,7 @@ describe('PUBLIC-221 creative pages', () => {
   })
 
   it('renders the same honest unavailable state for the empty-shell design-QA fixture slug, not fabricated chrome', async () => {
-    // "empty-shell" (src/pages/{en,fa}/gallery/empty-shell/) was a reserved
+    // "empty-shell" (src/pages/[locale]/gallery/empty-shell/) was a reserved
     // slug that rendered a fully fabricated preview page. It now reuses the
     // real unavailable-detail ContentState — see CreativeDetailContent.astro.
     const html = await render(CreativeDetailContent, {

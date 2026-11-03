@@ -27,7 +27,7 @@ Use **Astro file-based routes with `astro:i18n`** for bilingual static routing:
 
 ## Consequences
 
-- New page families add files under `src/pages/fa/` and `src/pages/en/` (or shared dynamic segments) — never a locale-free public route except `/`.
+- New page families add one file under `src/pages/[locale]/` whose `getStaticPaths` comes from `localeStaticPaths` in `src/lib/locale-paths.ts` (it emits only `en` and `fa`, so the segment never swallows another top-level route) — never a locale-free public route except `/`. Page titles use `brandedTitle` from `src/lib/navigation.ts`.
 - Alternate links render only when the equivalent record is published in the other locale; missing translations surface as content states, not silent fallback.
 - Design atlas routes (`/_design/`) and Pagefind assets are excluded from the production sitemap filter.
 
