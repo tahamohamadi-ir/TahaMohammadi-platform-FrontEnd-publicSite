@@ -1,0 +1,44 @@
+---
+import SiteLayout from '../../../layouts/SiteLayout.astro'
+import { localeStaticPaths, type Locale } from '../../../lib/locale-paths'
+import { brandedTitle } from '../../../lib/navigation'
+import { pickDetailSeo } from '../../../lib/seo'
+import ResearchTopicDetailContent from '../../../components/research/ResearchTopicDetailContent.astro'
+import {
+  fetchResearchDetail,
+  listResearchDetailSlugs,
+  resolveResearchAlternateAvailability,
+} from '../../../lib/research-content'
+import '../../../styles/page-families.css'
+import '../../../styles/pf05-alignment.css'
+import '../../../styles/product-research.css'
+
+export async function getStaticPaths() {
+  return localeStaticPaths(async (locale) =>
+    (await listResearchDetailSlugs(locale)).map((slug) => ({ slug })),
+  )
+}
+
+const locale = Astro.params.locale as Locale
+const slug = Astro.params.slug ?? ''
+const model = await fetchResearchDetail(locale, slug)
+
+if (model.status === 'unavailable') {
+  return new Response(null, { status: 404, statusText: 'Not Found' })
+}
+
+const alternateAvailable = await resolveResearchAlternateAvailability(locale)
+const pageTitle = brandedTitle(locale, model.record.title, 'latin')
+const detailSeo = pickDetailSeo(model.record.seo)
+---
+
+<SiteLayout
+  title={pageTitle}
+  locale={locale}
+  pathSegment={`research/${slug}`}
+  alternateAvailable={alternateAvailable}
+  description={detailSeo.description}
+  socialImage={detailSeo.socialImage}
+>
+  <ResearchTopicDetailContent locale={locale} model={model} />
+</SiteLayout>

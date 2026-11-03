@@ -1,0 +1,30 @@
+---
+import SiteLayout from '../../../layouts/SiteLayout.astro'
+import { localeStaticPaths, type Locale } from '../../../lib/locale-paths'
+import { brandedTitle } from '../../../lib/navigation'
+import ContactPageContent from '../../../components/contact/ContactPageContent.astro'
+import {
+  fetchContactPageModel,
+  getContactRouteTitle,
+  resolveContactAlternateAvailability,
+} from '../../../lib/contact-content'
+import '../../../styles/page-families.css'
+
+export function getStaticPaths() {
+  return localeStaticPaths()
+}
+
+const locale = Astro.params.locale as Locale
+const model = await fetchContactPageModel()
+const alternateAvailable = resolveContactAlternateAvailability(model)
+const pageTitle = brandedTitle(locale, getContactRouteTitle(locale), 'latin')
+---
+
+<SiteLayout
+  title={pageTitle}
+  locale={locale}
+  pathSegment="contact"
+  alternateAvailable={alternateAvailable}
+>
+  <ContactPageContent locale={locale} model={model} />
+</SiteLayout>

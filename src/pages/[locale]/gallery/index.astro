@@ -1,0 +1,30 @@
+---
+import SiteLayout from '../../../layouts/SiteLayout.astro'
+import { localeStaticPaths, type Locale } from '../../../lib/locale-paths'
+import { brandedTitle } from '../../../lib/navigation'
+import CreativePageContent from '../../../components/creative/CreativePageContent.astro'
+import {
+  fetchCreativeIndex,
+  getCreativeRouteTitle,
+  resolveCreativeAlternateAvailability,
+} from '../../../lib/creative-content'
+import '../../../styles/page-families.css'
+
+export function getStaticPaths() {
+  return localeStaticPaths()
+}
+
+const locale = Astro.params.locale as Locale
+const model = await fetchCreativeIndex(locale)
+const alternateAvailable = await resolveCreativeAlternateAvailability(locale)
+const pageTitle = brandedTitle(locale, getCreativeRouteTitle(locale))
+---
+
+<SiteLayout
+  title={pageTitle}
+  locale={locale}
+  pathSegment="gallery"
+  alternateAvailable={alternateAvailable}
+>
+  <CreativePageContent locale={locale} model={model} />
+</SiteLayout>

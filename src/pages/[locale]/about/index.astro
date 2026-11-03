@@ -1,0 +1,32 @@
+---
+import SiteLayout from '../../../layouts/SiteLayout.astro'
+import { localeStaticPaths, type Locale } from '../../../lib/locale-paths'
+import { brandedTitle } from '../../../lib/navigation'
+import AboutPageContent from '../../../components/about/AboutPageContent.astro'
+import {
+  fetchAboutProfile,
+  resolveAboutAlternateAvailability,
+} from '../../../lib/about-profile'
+import '../../../styles/page-families.css'
+
+export function getStaticPaths() {
+  return localeStaticPaths()
+}
+
+const locale = Astro.params.locale as Locale
+const model = await fetchAboutProfile(locale)
+const alternateAvailable = await resolveAboutAlternateAvailability(locale)
+const pageTitle =
+  model.status === 'ready'
+    ? brandedTitle(locale, model.profile.title)
+    : brandedTitle(locale, { en: 'About', fa: 'درباره' }[locale])
+---
+
+<SiteLayout
+  title={pageTitle}
+  locale={locale}
+  pathSegment="about"
+  alternateAvailable={alternateAvailable}
+>
+  <AboutPageContent locale={locale} model={model} />
+</SiteLayout>

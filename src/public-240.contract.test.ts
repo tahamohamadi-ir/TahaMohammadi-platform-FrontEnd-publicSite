@@ -25,29 +25,15 @@ describe('PUBLIC-240 pagefind build contract', () => {
         path.join(repositoryRoot, 'src', 'integrations', 'pagefind.mjs'),
       ),
     ).toBe(true)
-    expect(
-      existsSync(
-        path.join(
-          repositoryRoot,
-          'src',
-          'pages',
-          'en',
-          'search',
-          'index.astro',
-        ),
-      ),
-    ).toBe(true)
-    expect(
-      existsSync(
-        path.join(
-          repositoryRoot,
-          'src',
-          'pages',
-          'fa',
-          'search',
-          'index.astro',
-        ),
-      ),
-    ).toBe(true)
+    const searchPage = path.join(
+      repositoryRoot,
+      'src',
+      'pages',
+      '[locale]',
+      'search',
+      'index.astro',
+    )
+    expect(existsSync(searchPage)).toBe(true)
+    expect(readFileSync(searchPage, 'utf8')).toContain('localeStaticPaths')
   })
 })

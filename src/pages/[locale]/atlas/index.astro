@@ -1,0 +1,30 @@
+---
+import SiteLayout from '../../../layouts/SiteLayout.astro'
+import { localeStaticPaths, type Locale } from '../../../lib/locale-paths'
+import { brandedTitle } from '../../../lib/navigation'
+import AtlasPageContent from '../../../components/atlas/AtlasPageContent.astro'
+import { fetchAtlasSnapshot } from '../../../lib/atlas/snapshot'
+import '../../../styles/atlas.css'
+
+export function getStaticPaths() {
+  return localeStaticPaths()
+}
+
+const locale = Astro.params.locale as Locale
+const snapshot = await fetchAtlasSnapshot(locale)
+const pageTitle = brandedTitle(
+  locale,
+  { en: 'Knowledge Atlas', fa: 'اطلس دانش' }[locale],
+  'legacy',
+)
+---
+
+<SiteLayout
+  title={pageTitle}
+  locale={locale}
+  pathSegment="atlas"
+  alternateAvailable={true}
+>
+  <AtlasPageContent locale={locale} snapshot={snapshot} />
+  <script src="../../../scripts/atlas-runtime.ts"></script>
+</SiteLayout>
