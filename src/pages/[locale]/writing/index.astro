@@ -1,0 +1,9 @@
+---
+import { localeStaticPaths, type Locale } from '../../../lib/locale-paths'
+export function getStaticPaths() {
+  return localeStaticPaths()
+}
+
+const locale = Astro.params.locale as Locale
+return Astro.redirect(`/${locale}/blog/`, 301)
+---

@@ -1,0 +1,46 @@
+---
+import SiteLayout from '../../../layouts/SiteLayout.astro'
+import { localeStaticPaths, type Locale } from '../../../lib/locale-paths'
+import { brandedTitle } from '../../../lib/navigation'
+import { pickDetailSeo } from '../../../lib/seo'
+import DetailPage from '../../../components/collections/DetailPage.astro'
+import {
+  fetchCollectionDetail,
+  listCollectionSlugs,
+  resolveCollectionAlternateAvailability,
+} from '../../../lib/collections-content'
+import '../../../styles/page-families.css'
+import '../../../styles/generic-collection.css'
+
+export async function getStaticPaths() {
+  return localeStaticPaths(async (locale) =>
+    (await listCollectionSlugs(locale)).map((slug) => ({ slug })),
+  )
+}
+
+const locale = Astro.params.locale as Locale
+const slug = Astro.params.slug ?? ''
+const model = await fetchCollectionDetail(locale, slug)
+
+if (model.status === 'unavailable') {
+  return new Response(null, { status: 404, statusText: 'Not Found' })
+}
+
+const alternateAvailable = await resolveCollectionAlternateAvailability(
+  locale,
+  slug,
+)
+const pageTitle = brandedTitle(locale, model.collection.title)
+const detailSeo = pickDetailSeo(model.collection.seo)
+---
+
+<SiteLayout
+  title={pageTitle}
+  locale={locale}
+  pathSegment={`collections/${slug}`}
+  alternateAvailable={alternateAvailable}
+  description={detailSeo.description}
+  socialImage={detailSeo.socialImage}
+>
+  <DetailPage locale={locale} model={model} />
+</SiteLayout>

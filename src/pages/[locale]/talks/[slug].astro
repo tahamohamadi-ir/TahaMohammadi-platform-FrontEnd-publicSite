@@ -1,0 +1,43 @@
+---
+import SiteLayout from '../../../layouts/SiteLayout.astro'
+import { localeStaticPaths, type Locale } from '../../../lib/locale-paths'
+import { brandedTitle } from '../../../lib/navigation'
+import { pickDetailSeo } from '../../../lib/seo'
+import DetailPage from '../../../components/talks/DetailPage.astro'
+import {
+  fetchTalkDetail,
+  listTalkSlugs,
+  resolveTalkAlternateAvailability,
+} from '../../../lib/talks-content'
+import '../../../styles/page-families.css'
+import '../../../styles/generic-collection.css'
+
+export async function getStaticPaths() {
+  return localeStaticPaths(async (locale) =>
+    (await listTalkSlugs(locale)).map((slug) => ({ slug })),
+  )
+}
+
+const locale = Astro.params.locale as Locale
+const slug = Astro.params.slug ?? ''
+const model = await fetchTalkDetail(locale, slug)
+
+if (model.status === 'unavailable') {
+  return new Response(null, { status: 404, statusText: 'Not Found' })
+}
+
+const alternateAvailable = await resolveTalkAlternateAvailability(locale, slug)
+const pageTitle = brandedTitle(locale, model.talk.title, 'legacy')
+const detailSeo = pickDetailSeo(model.talk.seo)
+---
+
+<SiteLayout
+  title={pageTitle}
+  locale={locale}
+  pathSegment={`talks/${slug}`}
+  alternateAvailable={alternateAvailable}
+  description={detailSeo.description}
+  socialImage={detailSeo.socialImage}
+>
+  <DetailPage locale={locale} model={model} />
+</SiteLayout>

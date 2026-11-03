@@ -189,13 +189,13 @@ describe('CA-03 locked scene contract', () => {
 
 describe('CA-03 Home integration', () => {
   it('draws the published graph inside the Home hero (ADR-0011), not as a second section', () => {
-    for (const locale of ['fa', 'en'] as const) {
-      const source = readSource(`src/pages/${locale}/index.astro`)
-      expect(source).not.toContain('loadHeroGraph')
-      expect(source).toContain('HomeContent')
-      expect(source).not.toContain('HomeResearchGraph')
-      expect(source).not.toContain('relationship-graph')
-    }
+    // One [locale] page serves both /en/ and /fa/ (getStaticPaths emits only those two).
+    const source = readSource('src/pages/[locale]/index.astro')
+    expect(source).toContain('localeStaticPaths')
+    expect(source).not.toContain('loadHeroGraph')
+    expect(source).toContain('HomeContent')
+    expect(source).not.toContain('HomeResearchGraph')
+    expect(source).not.toContain('relationship-graph')
     const hero = readSource('src/components/home/hero-v3/HeroV3.astro')
     expect(hero).toContain('loadHeroGraph')
     expect(hero).toContain('HeroV3Constellation')

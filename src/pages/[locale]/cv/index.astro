@@ -1,0 +1,30 @@
+---
+import SiteLayout from '../../../layouts/SiteLayout.astro'
+import { localeStaticPaths, type Locale } from '../../../lib/locale-paths'
+import { brandedTitle } from '../../../lib/navigation'
+import CvPageContent from '../../../components/cv/CvPageContent.astro'
+import {
+  fetchCvPageModel,
+  getCvRouteTitle,
+  resolveCvAlternateAvailability,
+} from '../../../lib/cv-content'
+import '../../../styles/page-families.css'
+
+export function getStaticPaths() {
+  return localeStaticPaths()
+}
+
+const locale = Astro.params.locale as Locale
+const model = await fetchCvPageModel()
+const alternateAvailable = resolveCvAlternateAvailability(model)
+const pageTitle = brandedTitle(locale, getCvRouteTitle(locale), 'latin')
+---
+
+<SiteLayout
+  title={pageTitle}
+  locale={locale}
+  pathSegment="cv"
+  alternateAvailable={alternateAvailable}
+>
+  <CvPageContent locale={locale} model={model} />
+</SiteLayout>

@@ -1,0 +1,42 @@
+---
+import SiteLayout from '../../../layouts/SiteLayout.astro'
+import { localeStaticPaths, type Locale } from '../../../lib/locale-paths'
+import { brandedTitle } from '../../../lib/navigation'
+import { pickDetailSeo } from '../../../lib/seo'
+import ProjectDetailContent from '../../../components/projects/ProjectDetailContent.astro'
+import {
+  fetchProjectDetail,
+  listProjectSlugs,
+  resolveProjectsAlternateAvailability,
+} from '../../../lib/projects-content'
+import '../../../styles/page-families.css'
+
+export async function getStaticPaths() {
+  return localeStaticPaths(async (locale) =>
+    (await listProjectSlugs(locale)).map((slug) => ({ slug })),
+  )
+}
+
+const locale = Astro.params.locale as Locale
+const slug = Astro.params.slug ?? ''
+const model = await fetchProjectDetail(locale, slug)
+
+if (model.status === 'unavailable') {
+  return new Response(null, { status: 404, statusText: 'Not Found' })
+}
+
+const alternateAvailable = await resolveProjectsAlternateAvailability(locale)
+const pageTitle = brandedTitle(locale, model.project.title, 'latin')
+const detailSeo = pickDetailSeo(model.project.seo)
+---
+
+<SiteLayout
+  title={pageTitle}
+  locale={locale}
+  pathSegment={`projects/${slug}`}
+  alternateAvailable={alternateAvailable}
+  description={detailSeo.description}
+  socialImage={detailSeo.socialImage}
+>
+  <ProjectDetailContent locale={locale} model={model} />
+</SiteLayout>

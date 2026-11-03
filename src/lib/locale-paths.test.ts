@@ -52,4 +52,11 @@ describe('brandedTitle', () => {
     expect(brandedTitle('fa', 'کتاب‌ها', 'legacy')).toBe('کتاب‌ها — طاها محمدی')
     expect(brandedTitle('en', 'Books', 'legacy')).toBe('Books — Taha Mohammadi')
   })
+
+  it('keeps the English brand on Persian pages that always used it', () => {
+    expect(brandedTitle('fa', 'تماس', 'latin')).toBe('تماس — Taha Mohammadi')
+    expect(brandedTitle('en', 'Contact', 'latin')).toBe(
+      'Contact — Taha Mohammadi',
+    )
+  })
 })

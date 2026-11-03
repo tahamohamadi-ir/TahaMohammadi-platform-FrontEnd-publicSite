@@ -1,0 +1,14 @@
+---
+import { localeStaticPaths, type Locale } from '../../../lib/locale-paths'
+import { listTeachingDetailSlugs } from '../../../lib/teaching-content'
+
+export async function getStaticPaths() {
+  return localeStaticPaths(async (locale) =>
+    (await listTeachingDetailSlugs(locale)).map((slug) => ({ slug })),
+  )
+}
+
+const locale = Astro.params.locale as Locale
+const slug = Astro.params.slug ?? ''
+return Astro.redirect(`/${locale}/education/${slug}/`, 301)
+---

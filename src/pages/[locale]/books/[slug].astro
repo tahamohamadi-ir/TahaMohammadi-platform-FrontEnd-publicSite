@@ -1,0 +1,43 @@
+---
+import SiteLayout from '../../../layouts/SiteLayout.astro'
+import { localeStaticPaths, type Locale } from '../../../lib/locale-paths'
+import { brandedTitle } from '../../../lib/navigation'
+import DetailPage from '../../../components/books/DetailPage.astro'
+import { pickDetailSeo } from '../../../lib/seo'
+import {
+  fetchBookDetail,
+  listBookSlugs,
+  resolveBookAlternateAvailability,
+} from '../../../lib/books-content'
+import '../../../styles/page-families.css'
+import '../../../styles/generic-collection.css'
+
+export async function getStaticPaths() {
+  return localeStaticPaths(async (locale) =>
+    (await listBookSlugs(locale)).map((slug) => ({ slug })),
+  )
+}
+
+const locale = Astro.params.locale as Locale
+const slug = Astro.params.slug ?? ''
+const model = await fetchBookDetail(locale, slug)
+
+if (model.status === 'unavailable') {
+  return new Response(null, { status: 404, statusText: 'Not Found' })
+}
+
+const alternateAvailable = await resolveBookAlternateAvailability(locale, slug)
+const pageTitle = brandedTitle(locale, model.book.title, 'legacy')
+const detailSeo = pickDetailSeo(model.book.seo)
+---
+
+<SiteLayout
+  title={pageTitle}
+  locale={locale}
+  pathSegment={`books/${slug}`}
+  alternateAvailable={alternateAvailable}
+  description={detailSeo.description}
+  socialImage={detailSeo.socialImage}
+>
+  <DetailPage locale={locale} model={model} />
+</SiteLayout>

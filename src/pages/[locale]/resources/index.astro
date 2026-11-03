@@ -1,0 +1,29 @@
+---
+import SiteLayout from '../../../layouts/SiteLayout.astro'
+import { localeStaticPaths, type Locale } from '../../../lib/locale-paths'
+import { brandedTitle } from '../../../lib/navigation'
+import CollectionPage from '../../../components/resources/CollectionPage.astro'
+import {
+  fetchResourcesIndex,
+  getResourcesRouteTitle,
+} from '../../../lib/resources-content'
+import '../../../styles/page-families.css'
+import '../../../styles/generic-collection.css'
+
+export function getStaticPaths() {
+  return localeStaticPaths()
+}
+
+const locale = Astro.params.locale as Locale
+const model = await fetchResourcesIndex(locale)
+const pageTitle = brandedTitle(locale, getResourcesRouteTitle(locale), 'legacy')
+---
+
+<SiteLayout
+  title={pageTitle}
+  locale={locale}
+  pathSegment="resources"
+  alternateAvailable={true}
+>
+  <CollectionPage locale={locale} model={model} />
+</SiteLayout>

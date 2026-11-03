@@ -1,0 +1,30 @@
+---
+import SiteLayout from '../../../layouts/SiteLayout.astro'
+import { localeStaticPaths, type Locale } from '../../../lib/locale-paths'
+import { brandedTitle } from '../../../lib/navigation'
+import ProjectsPageContent from '../../../components/projects/ProjectsPageContent.astro'
+import {
+  fetchProjectsIndex,
+  getProjectsRouteTitle,
+  resolveProjectsAlternateAvailability,
+} from '../../../lib/projects-content'
+import '../../../styles/page-families.css'
+
+export function getStaticPaths() {
+  return localeStaticPaths()
+}
+
+const locale = Astro.params.locale as Locale
+const model = await fetchProjectsIndex(locale)
+const alternateAvailable = await resolveProjectsAlternateAvailability(locale)
+const pageTitle = brandedTitle(locale, getProjectsRouteTitle(locale), 'latin')
+---
+
+<SiteLayout
+  title={pageTitle}
+  locale={locale}
+  pathSegment="projects"
+  alternateAvailable={alternateAvailable}
+>
+  <ProjectsPageContent locale={locale} model={model} />
+</SiteLayout>

@@ -1,0 +1,31 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro'
+import { localeStaticPaths, type Locale } from '../../lib/locale-paths'
+import HomeContent from '../../components/home/HomeContent.astro'
+import { fetchHomeComposition, fetchHomeLanding } from '../../lib/home-content'
+import { shellCopy } from '../../lib/navigation'
+import '../../styles/home.css'
+
+export function getStaticPaths() {
+  return localeStaticPaths()
+}
+
+const locale = Astro.params.locale as Locale
+const [composition, landing, alternateLanding] = await Promise.all([
+  fetchHomeComposition(locale),
+  fetchHomeLanding(locale),
+  fetchHomeLanding(locale === 'en' ? 'fa' : 'en'),
+])
+---
+
+<SiteLayout
+  title={landing?.seo_title ||
+    landing?.title ||
+    shellCopy.homeUnavailableTitle[locale]}
+  description={landing?.seo_description || ''}
+  locale={locale}
+  alternateAvailable={Boolean(alternateLanding)}
+  hideFooterPromo
+>
+  <HomeContent locale={locale} composition={composition} />
+</SiteLayout>

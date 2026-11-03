@@ -1,0 +1,32 @@
+---
+import SiteLayout from '../../../layouts/SiteLayout.astro'
+import { localeStaticPaths, type Locale } from '../../../lib/locale-paths'
+import { brandedTitle } from '../../../lib/navigation'
+import ResearchPageContent from '../../../components/research/ResearchPageContent.astro'
+import {
+  fetchResearchIndex,
+  getResearchRouteTitle,
+  resolveResearchAlternateAvailability,
+} from '../../../lib/research-content'
+import '../../../styles/page-families.css'
+import '../../../styles/pf05-alignment.css'
+import '../../../styles/product-research.css'
+
+export function getStaticPaths() {
+  return localeStaticPaths()
+}
+
+const locale = Astro.params.locale as Locale
+const model = await fetchResearchIndex(locale)
+const alternateAvailable = await resolveResearchAlternateAvailability(locale)
+const pageTitle = brandedTitle(locale, getResearchRouteTitle(locale), 'latin')
+---
+
+<SiteLayout
+  title={pageTitle}
+  locale={locale}
+  pathSegment="research"
+  alternateAvailable={alternateAvailable}
+>
+  <ResearchPageContent locale={locale} model={model} />
+</SiteLayout>

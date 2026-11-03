@@ -1,0 +1,24 @@
+---
+import SiteLayout from '../../../layouts/SiteLayout.astro'
+import { localeStaticPaths, type Locale } from '../../../lib/locale-paths'
+import { brandedTitle } from '../../../lib/navigation'
+import SearchPageContent from '../../../components/search/SearchPageContent.astro'
+import { getSearchRouteTitle } from '../../../lib/search-content'
+import '../../../styles/search.css'
+
+export function getStaticPaths() {
+  return localeStaticPaths()
+}
+
+const locale = Astro.params.locale as Locale
+const pageTitle = brandedTitle(locale, getSearchRouteTitle(locale), 'latin')
+---
+
+<SiteLayout
+  title={pageTitle}
+  locale={locale}
+  pathSegment="search"
+  alternateAvailable
+>
+  <SearchPageContent locale={locale} />
+</SiteLayout>

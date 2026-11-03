@@ -1,0 +1,31 @@
+---
+import SiteLayout from '../../../layouts/SiteLayout.astro'
+import { localeStaticPaths, type Locale } from '../../../lib/locale-paths'
+import { brandedTitle } from '../../../lib/navigation'
+import PublicationsPageContent from '../../../components/publications/PublicationsPageContent.astro'
+import {
+  fetchPublicationsIndex,
+  publicationsRouteTitle,
+  resolvePublicationsAlternateAvailability,
+} from '../../../lib/publications-content'
+import '../../../styles/page-families.css'
+
+export function getStaticPaths() {
+  return localeStaticPaths()
+}
+
+const locale = Astro.params.locale as Locale
+const model = await fetchPublicationsIndex(locale)
+const alternateAvailable =
+  await resolvePublicationsAlternateAvailability(locale)
+const pageTitle = brandedTitle(locale, publicationsRouteTitle[locale], 'latin')
+---
+
+<SiteLayout
+  title={pageTitle}
+  locale={locale}
+  pathSegment="publications"
+  alternateAvailable={alternateAvailable}
+>
+  <PublicationsPageContent locale={locale} model={model} />
+</SiteLayout>

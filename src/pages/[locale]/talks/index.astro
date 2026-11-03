@@ -1,0 +1,26 @@
+---
+import SiteLayout from '../../../layouts/SiteLayout.astro'
+import { localeStaticPaths, type Locale } from '../../../lib/locale-paths'
+import { brandedTitle } from '../../../lib/navigation'
+import CollectionPage from '../../../components/talks/CollectionPage.astro'
+import { fetchTalksIndex, getTalksRouteTitle } from '../../../lib/talks-content'
+import '../../../styles/page-families.css'
+import '../../../styles/generic-collection.css'
+
+export function getStaticPaths() {
+  return localeStaticPaths()
+}
+
+const locale = Astro.params.locale as Locale
+const model = await fetchTalksIndex(locale)
+const pageTitle = brandedTitle(locale, getTalksRouteTitle(locale), 'legacy')
+---
+
+<SiteLayout
+  title={pageTitle}
+  locale={locale}
+  pathSegment="talks"
+  alternateAvailable={true}
+>
+  <CollectionPage locale={locale} model={model} />
+</SiteLayout>
