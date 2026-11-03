@@ -1,5 +1,11 @@
 /** Gives an article body's h2/h3 headings stable anchor ids and returns them as an outline. */
 
+export interface DetailTocItem {
+  id: string
+  text: string
+  level?: 2 | 3
+}
+
 export interface OutlineHeading {
   id: string
   text: string

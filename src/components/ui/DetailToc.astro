@@ -1,0 +1,29 @@
+---
+import type { Locale } from '../../lib/navigation'
+import type { DetailTocItem } from '../../lib/article-outline'
+
+interface Props {
+  locale: Locale
+  items: DetailTocItem[]
+}
+
+const { locale, items } = Astro.props
+const label = locale === 'en' ? 'On this page' : 'در این صفحه'
+---
+
+{
+  items.length >= 2 && (
+    <nav class="reading-toc" aria-label={label}>
+      <details class="reading-toc__details" open>
+        <summary class="reading-toc__title">{label}</summary>
+        <ol class="reading-toc__list">
+          {items.map((item) => (
+            <li class="reading-toc__item" data-level={item.level ?? 2}>
+              <a href={`#${item.id}`}>{item.text}</a>
+            </li>
+          ))}
+        </ol>
+      </details>
+    </nav>
+  )
+}

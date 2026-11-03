@@ -3,6 +3,9 @@ import LongFormDetailTemplate from '../templates/LongFormDetailTemplate.astro'
 import SectionLead from '../ui/SectionLead.astro'
 import ContentState from '../state/ContentState.astro'
 import Link from '../ui/Link.astro'
+import DetailToc from '../ui/DetailToc.astro'
+import { ArrowRight } from 'lucide-astro'
+import type { DetailTocItem } from '../../lib/article-outline'
 import StoryDocument from '../story/StoryDocument.astro'
 import { hasStoryContent } from '../../lib/story-content'
 import { canonicalPath, type RouteFamily } from '../../lib/routes'
@@ -13,6 +16,7 @@ import {
   type ResearchDetailModel,
 } from '../../lib/research-content'
 import { localePath, type Locale } from '../../lib/navigation'
+import '../../styles/detail-layout.css'
 
 interface Props {
   locale: Locale
@@ -21,6 +25,44 @@ interface Props {
 
 const { locale, model } = Astro.props
 const researchHref = localePath(locale, 'research')
+
+const topic =
+  model.status === 'ready' && model.kind !== 'statement' ? model.record : null
+const topicHasStory = Boolean(
+  topic && 'story' in topic && topic.story && hasStoryContent(topic.story),
+)
+const topicSections = topic
+  ? [
+      {
+        id: 'motivation',
+        label: locale === 'en' ? 'Motivation' : 'انگیزه',
+        value: topic.motivation,
+      },
+      {
+        id: 'problems',
+        label: locale === 'en' ? 'Problems' : 'مسائل',
+        value: topic.problems,
+      },
+      {
+        id: 'research-questions',
+        label: locale === 'en' ? 'Research questions' : 'پرسش‌های پژوهشی',
+        value: topic.research_questions,
+      },
+      {
+        id: 'methods',
+        label: locale === 'en' ? 'Methods' : 'روش‌ها',
+        value: topic.methods,
+      },
+      {
+        id: 'future-directions',
+        label: locale === 'en' ? 'Future directions' : 'جهت‌های آینده',
+        value: topic.future_directions,
+      },
+    ].filter((section) => section.value?.trim())
+  : []
+const toc: DetailTocItem[] = topicHasStory
+  ? []
+  : topicSections.map((section) => ({ id: section.id, text: section.label }))
 ---
 
 {
@@ -44,7 +86,7 @@ const researchHref = localePath(locale, 'research')
         title={model.record.title}
       />
 
-      <div slot="body" class="research-page__prose">
+      <div slot="body" class="research-page__prose detail-prose">
         {splitBodyParagraphs(model.record.body).map((paragraph) => (
           <p>{paragraph}</p>
         ))}
@@ -74,38 +116,11 @@ const researchHref = localePath(locale, 'research')
           <StoryDocument story={model.record.story} locale={locale} />
         ) : (
           <div class="research-page__detail-sections">
-            {[
-              {
-                id: 'motivation',
-                label: locale === 'en' ? 'Motivation' : 'انگیزه',
-                value: model.record.motivation,
-              },
-              {
-                id: 'problems',
-                label: locale === 'en' ? 'Problems' : 'مسائل',
-                value: model.record.problems,
-              },
-              {
-                id: 'research-questions',
-                label:
-                  locale === 'en' ? 'Research questions' : 'پرسش‌های پژوهشی',
-                value: model.record.research_questions,
-              },
-              {
-                id: 'methods',
-                label: locale === 'en' ? 'Methods' : 'روش‌ها',
-                value: model.record.methods,
-              },
-              {
-                id: 'future-directions',
-                label: locale === 'en' ? 'Future directions' : 'جهت‌های آینده',
-                value: model.record.future_directions,
-              },
-            ].map((section) =>
+            {topicSections.map((section) =>
               section.value?.trim() ? (
                 <section
                   id={section.id}
-                  class="research-page__section"
+                  class="research-page__section detail-section"
                   aria-labelledby={`${section.id}-title`}
                 >
                   <h2
@@ -114,7 +129,7 @@ const researchHref = localePath(locale, 'research')
                   >
                     {section.label}
                   </h2>
-                  <div class="research-page__prose">
+                  <div class="research-page__prose detail-prose">
                     {splitBodyParagraphs(section.value).map((paragraph) => (
                       <p>{paragraph}</p>
                     ))}
@@ -126,11 +141,13 @@ const researchHref = localePath(locale, 'research')
         )}
       </div>
 
+      {toc.length >= 2 && <DetailToc slot="toc" locale={locale} items={toc} />}
+
       {model.record.projects?.length ||
       model.record.publications?.length ||
       ('relatedRecords' in model.record &&
         model.record.relatedRecords?.length) ? (
-        <div slot="related" class="research-page__related">
+        <div slot="related" class="research-page__related detail-related">
           {model.record.projects?.length ? (
             <section aria-labelledby="related-projects-title">
               <h2
@@ -139,14 +156,19 @@ const researchHref = localePath(locale, 'research')
               >
                 {locale === 'en' ? 'Related projects' : 'پروژه‌های مرتبط'}
               </h2>
-              <ul class="research-page__related-list">
+              <ul class="detail-cards">
                 {model.record.projects.map((item) => (
                   <li>
-                    <Link
+                    <a
+                      class="detail-card"
                       href={localePath(locale, `projects/${item.slug}`)}
-                      label={item.title}
-                      variant="standalone"
-                    />
+                    >
+                      <span>{item.title}</span>
+                      <ArrowRight
+                        class="detail-card__icon"
+                        aria-hidden="true"
+                      />
+                    </a>
                   </li>
                 ))}
               </ul>
@@ -160,14 +182,19 @@ const researchHref = localePath(locale, 'research')
               >
                 {locale === 'en' ? 'Related outputs' : 'خروجی‌های مرتبط'}
               </h2>
-              <ul class="research-page__related-list">
+              <ul class="detail-cards">
                 {model.record.publications.map((item) => (
                   <li>
-                    <Link
+                    <a
+                      class="detail-card"
                       href={localePath(locale, `publications/${item.slug}`)}
-                      label={item.title}
-                      variant="standalone"
-                    />
+                    >
+                      <span>{item.title}</span>
+                      <ArrowRight
+                        class="detail-card__icon"
+                        aria-hidden="true"
+                      />
+                    </a>
                   </li>
                 ))}
               </ul>
@@ -182,7 +209,7 @@ const researchHref = localePath(locale, 'research')
               >
                 {locale === 'en' ? 'Related records' : 'رکوردهای مرتبط'}
               </h2>
-              <ul class="research-page__related-list">
+              <ul class="detail-cards">
                 {model.record.relatedRecords.map((ref) => {
                   const fam = ref.family || ref.routeFamily || ''
                   const familyKey = (
@@ -208,11 +235,13 @@ const researchHref = localePath(locale, 'research')
                   )
                   return (
                     <li>
-                      <Link
-                        href={href}
-                        label={ref.title || `${ref.family} #${ref.id}`}
-                        variant="standalone"
-                      />
+                      <a class="detail-card" href={href}>
+                        <span>{ref.title || `${ref.family} #${ref.id}`}</span>
+                        <ArrowRight
+                          class="detail-card__icon"
+                          aria-hidden="true"
+                        />
+                      </a>
                     </li>
                   )
                 })}

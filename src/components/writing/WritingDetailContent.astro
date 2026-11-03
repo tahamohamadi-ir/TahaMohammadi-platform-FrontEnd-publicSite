@@ -3,6 +3,7 @@ import LongFormDetailTemplate from '../templates/LongFormDetailTemplate.astro'
 import SectionLead from '../ui/SectionLead.astro'
 import ContentState from '../state/ContentState.astro'
 import Link from '../ui/Link.astro'
+import DetailToc from '../ui/DetailToc.astro'
 import StoryDocument from '../story/StoryDocument.astro'
 import { hasStoryContent } from '../../lib/story-content'
 import { outlineArticleHtml } from '../../lib/article-outline'
@@ -37,7 +38,6 @@ const outline =
     ? outlineArticleHtml(model.article.body)
     : null
 const toc = outline && outline.headings.length >= 2 ? outline.headings : []
-const tocLabel = locale === 'en' ? 'On this page' : 'در این صفحه'
 ---
 
 {
@@ -140,20 +140,7 @@ const tocLabel = locale === 'en' ? 'On this page' : 'در این صفحه'
         ) : null}
       </div>
 
-      {toc.length > 0 && (
-        <nav slot="toc" class="reading-toc" aria-label={tocLabel}>
-          <details class="reading-toc__details" open>
-            <summary class="reading-toc__title">{tocLabel}</summary>
-            <ol class="reading-toc__list">
-              {toc.map((heading) => (
-                <li class="reading-toc__item" data-level={heading.level}>
-                  <a href={`#${heading.id}`}>{heading.text}</a>
-                </li>
-              ))}
-            </ol>
-          </details>
-        </nav>
-      )}
+      {toc.length > 0 && <DetailToc slot="toc" locale={locale} items={toc} />}
 
       <nav
         slot="related"
